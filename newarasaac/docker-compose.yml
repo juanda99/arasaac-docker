@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+
+  newarasaac:
+    image: nginx
+    hostname: newarasaac
+    container_name: newarasaac
+    volumes:
+       - ./beta-code:/usr/share/nginx/html
+      #- ./beta-arasaac/nginx.conf:/etc/nginx/nginx.conf:ro
+    environment:
+      NGINX_HOST: beta.arasaac.org
+      NGINX_PORT: 80
+      VIRTUAL_HOST: "www.beta.arasaac.org,beta.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+
+  apiarasaac:
+    hostname: apiarasaac
+    container_name: apiarasaac
+    build:
+      context: ./api-swagger
+      dockerfile: node-dockerfile.yml
+    command: yarn start
+    ports:
+      - "8100:8100"
+    depends_on:
+      - mongodb
+    volumes:
+    - ./api-swagger/app:/app
+    - ./api-swagger/app/node_modules:/app/node_modules
+    networks:
+      - nginxproxy_frontend
+      - backend
+
+  mongodb:
+    hostname: mongodb
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - ./api-swagger/dump:/docker-entrypoint-initdb.d
+      - ./api-swagger/dbdata:/data/db
+    networks:
+      - backend
+
+networks:
+  nginxproxy_frontend:
+    external: true
+  backend:
+    driver: bridge

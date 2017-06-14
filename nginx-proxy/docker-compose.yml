@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+
+  nginx-proxy:
+    hostname: nginx-proxy
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/tmp/docker.sock:ro"
+      - "/etc/nginx/vhost.d"
+      #- ./vhost.d:/etc/nginx/vhost.d
+      - "/usr/share/nginx/html"
+      - "./certs:/etc/nginx/certs:ro"
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
