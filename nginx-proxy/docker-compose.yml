@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
 
@@ -15,6 +15,17 @@ services:
       #- ./vhost.d:/etc/nginx/vhost.d
       - "/usr/share/nginx/html"
       - "./certs:/etc/nginx/certs:ro"
+    networks:
+      - frontend
+  letsencrypt:
+    hostname: letsencrypt
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
+    volumes:
+      - "./certs:/etc/nginx/certs:rw"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    volumes_from:
+      - "nginx-proxy"
     networks:
       - frontend
 
