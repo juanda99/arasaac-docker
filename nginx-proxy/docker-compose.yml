@@ -11,8 +11,7 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
-      - "/etc/nginx/vhost.d"
-      #- ./vhost.d:/etc/nginx/vhost.d
+      - "./vhost.d:/etc/nginx/vhost.d"
       - "/usr/share/nginx/html"
       - "./certs:/etc/nginx/certs:ro"
     networks:
@@ -24,8 +23,7 @@ services:
     volumes:
       - "./certs:/etc/nginx/certs:rw"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    volumes_from:
-      - "nginx-proxy"
+      - "./vhost.d:/etc/nginx/vhost.d"
     networks:
       - frontend
 
