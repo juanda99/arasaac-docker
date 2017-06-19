@@ -18,11 +18,11 @@ services:
     networks:
       - nginxproxy_frontend
 
-  apiarasaac:
-    hostname: apiarasaac
-    container_name: apiarasaac
+  api-arasaac:
+    hostname: api-arasaac
+    container_name: api-arasaac
     build:
-      context: ./api-swagger
+      context: ./api-arasaac
       dockerfile: node-dockerfile.yml
     command: yarn start
     ports:
@@ -30,8 +30,8 @@ services:
     depends_on:
       - mongodb
     volumes:
-    - ./api-swagger/app:/app
-    - ./api-swagger/app/node_modules:/app/node_modules
+    - ./api-arasaac/app:/app
+    - ./api-arasaac/app/node_modules:/app/node_modules
     networks:
       - nginxproxy_frontend
       - backend
@@ -41,8 +41,8 @@ services:
     container_name: mongodb
     image: mongo
     volumes:
-      - ./api-swagger/dump:/docker-entrypoint-initdb.d
-      - ./api-swagger/dbdata:/data/db
+      - ./api-arasaac/dump:/docker-entrypoint-initdb.d
+      - ./api-arasaac/dbdata:/data/db
     networks:
       - backend
 
