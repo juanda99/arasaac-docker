@@ -31,7 +31,7 @@ services:
       - mongodb
     volumes:
     - ./api-arasaac/app:/app
-    - ./api-arasaac/app/node_modules:/app/node_modules
+    - /app/node_modules
     networks:
       - nginxproxy_frontend
       - backend
