@@ -26,7 +26,7 @@ services:
       dockerfile: node-dockerfile.yml
     command: yarn start
     ports:
-      - "8100:8100"
+      - "8100:80"
     depends_on:
       - mongodb
     volumes:
