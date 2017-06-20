@@ -7,8 +7,8 @@ services:
     hostname: newarasaac
     container_name: newarasaac
     volumes:
-       - ./beta-code:/usr/share/nginx/html
-      #- ./beta-arasaac/nginx.conf:/etc/nginx/nginx.conf:ro
+       - ./code:/usr/share/nginx/html
+       - ./conf/:/etc/nginx/conf.d:ro
     environment:
       # NGINX_HOST: beta2.arasaac.org
       # NGINX_PORT: 80
