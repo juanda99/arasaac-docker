@@ -18,6 +18,15 @@ services:
     networks:
       - nginxproxy_frontend
 
+  apidocs:
+    image: swaggerapi/swagger-ui
+    environment:
+     SWAGGER_JSON: "./config/arasaac.json"
+    ports:
+    - "8002:8080"
+    volumes:
+    - ./api-arasaac/app/arasaac.json:/config/arasaac.json
+
   api-arasaac:
     hostname: api-arasaac
     container_name: api-arasaac
