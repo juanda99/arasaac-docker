@@ -48,3 +48,11 @@ cd arasaac-docker
 git submodule update --init --recursive
 ```
 - Copy certificates from server (*nginx-proxy/certs* folder)
+
+- Execute ```./start.sh``` script to load all the containers.
+
+
+## Problems
+- Web will be served by 443 port by default
+- If there's any error with the certificates it will use 80 port **but api won't work**
+- Any cache problem with ports, http and https, check *chrome://net-internals* HSTS (query and delete domain)
