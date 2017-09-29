@@ -41,5 +41,10 @@ Located in *nginx-proxy* folder. Based on docker it runs two services:
 127.0.0.1       www.api.arasaac.org             api.arasaac.org
 127.0.0.1       www.beta2.arasaac.org           beta2.arasaac.org
 ```
-
+- Clone repo and init submodule:
+```
+git@github.com:juanda99/arasaac-docker.git
+cd arasaac-docker
+git submodule update --init --recursive
+```
 - Copy certificates from server (*nginx-proxy/certs* folder)
