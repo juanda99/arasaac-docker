@@ -13,12 +13,12 @@ Both projects are located in *newarasaac* folder:
     - Execute ```npm run build``` in source repo and move it to this repo code folder.  It's done periodically as we improve our software. No releases yet :-(
 - *api-arasaac*: submodule from  our repo [api-araasaac](https://github.com/juanda99/api-arasaac)
   - How to update code: 
-	```
+```
   git submodule foreach git pull origin master
-  ```
+```
 - *docker-compose.yml*: docker configuraton file for the following services:
   - *newarasaac*: nginx container for our client code. Connected to our proxy and certificates using env variables:
-     	```
+```
  LETSENCRYPT_HOST: "beta2.arasaac.org"
  LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
 VIRTUAL_HOST: "beta2.arasaac.org"
