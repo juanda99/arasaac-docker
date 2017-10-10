@@ -2,30 +2,32 @@ version: '3'
 
 services:
 
-  newarasaac:
+  arasaac:
     image: nginx
     hostname: newarasaac
     container_name: newarasaac
     volumes:
-       - ./code:/usr/share/nginx/html
-       - ./conf/:/etc/nginx/conf.d:ro
+       - ./arasaac-conf/:/etc/nginx/conf.d:ro
+       - ./arasaac-code/:/usr/share/nginx/html
     environment:
-      # NGINX_HOST: beta2.arasaac.org
-      # NGINX_PORT: 80
-      LETSENCRYPT_HOST: "beta2.arasaac.org"
+      LETSENCRYPT_HOST: "beta.arasaac.org"
       LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
-      VIRTUAL_HOST: "beta2.arasaac.org"
+      VIRTUAL_HOST: "beta.arasaac.org"
     networks:
       - nginxproxy_frontend
-
-  apidocs:
-    image: swaggerapi/swagger-ui
-    environment:
-     SWAGGER_JSON: "./config/arasaac.json"
-    ports:
-    - "8002:8080"
+  webstatic:
+    image: nginx
+    hostname: webstatic
+    container_name: webstatic
     volumes:
-    - ./api-arasaac/app/arasaac.json:/config/arasaac.json
+       - ./materiales:/usr/share/nginx/html:ro
+       - ./webstatic-conf/:/etc/nginx/conf.d:ro
+    environment:
+      LETSENCRYPT_HOST: "static.arasaac.org"
+      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      VIRTUAL_HOST: "static.arasaac.org"
+    networks:
+      - nginxproxy_frontend
 
   api-arasaac:
     hostname: api-arasaac
@@ -34,12 +36,11 @@ services:
       context: ./api-arasaac
       dockerfile: node-dockerfile.yml
     command: yarn start
-    ports:
-      - "8100:80"
     depends_on:
       - mongodb
     volumes:
     - ./api-arasaac/app:/app
+    - ./materiales:/app/materiales
     - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
