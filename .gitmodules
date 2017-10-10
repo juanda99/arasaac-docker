@@ -1,3 +1,3 @@
 [submodule "newarasaac/api-arasaac"]
 	path = newarasaac/api-arasaac
-	url = git@github.com:juanda99/api-arasaac.git
+	url = https://github.com/juanda99/api-arasaac.git
