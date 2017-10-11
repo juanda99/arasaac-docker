@@ -2,4 +2,4 @@ nginx-proxy/certs/**/
 nginx-proxy/certs/*.key
 nginx-proxy/certs/*.crt
 nginx-proxy/certs/*.pem
-materiales
+materials
