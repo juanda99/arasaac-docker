@@ -59,6 +59,8 @@ services:
       - ./api-arasaac/dbdata:/data/db
     networks:
       - backend
+    ports:
+      - "27000:27017"
 
 networks:
   nginxproxy_frontend:
