@@ -1,0 +1,10 @@
+2017-11-13T22:52:06.151Z [32minfo[39m: ARASAAC WATCHER STARTED
+2017-11-13T22:52:06.156Z [32minfo[39m: It will wait 3 seconds on every material before starting processing it
+2017-11-13T22:52:06.156Z [32minfo[39m: Start scanning...
+2017-11-13T22:52:06.163Z [32minfo[39m: Initial scan complete, waiting for changes
+2017-11-13T22:55:57.660Z [32minfo[39m: ARASAAC WATCHER STARTED
+2017-11-13T22:55:57.663Z [32minfo[39m: It will wait 3 seconds on every material before starting processing it
+2017-11-13T22:55:57.663Z [32minfo[39m: Start scanning...
+2017-11-13T22:55:57.684Z [32minfo[39m: Initial scan complete, waiting for changes
+2017-11-13T22:57:08.528Z [32minfo[39m: ADDED DIRECTORY: /app/materials/222
+2017-11-13T22:57:08.529Z [33mwarn[39m: Directory 222 added, but not executing any action!

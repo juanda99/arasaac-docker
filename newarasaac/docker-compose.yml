@@ -49,6 +49,18 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
+  
+  arasaac-watcher:
+    hostname: arasaac-watcher
+    container_name: arasaac-watcher
+    build:
+      context: ./arasaac-watcher
+      dockerfile: node-dockerfile.yml
+    command: yarn start
+    volumes:
+    - ./arasaac-watcher/app:/app
+    - ./materials:/app/materials
+    - /app/node_modules
 
   mongodb:
     hostname: mongodb
