@@ -53,6 +53,28 @@ git submodule update --init --recursive
 
 
 ## Problems
+### Ports
 - Web will be served by 443 port by default
 - If there's any error with the certificates it will use 80 port **but api won't work**
 - Any cache problem with ports, http and https, check *chrome://net-internals* HSTS (query and delete domain)
+### Changes monitor
+Arasaac-watcher uses inotify by default on Linux to monitor directories for changes. It's not uncommon to encounter a system limit on the number of files you can monitor. You can get your current inotify file watch limit by executing:
+```
+$ cat /proc/sys/fs/inotify/max_user_watches
+```
+
+When this limit is not enough to monitor all files inside a directory, the limit must be increased for Listen to work properly.
+
+You can set a new limit temporary with:
+```
+$ sudo sysctl fs.inotify.max_user_watches=524288
+$ sudo sysctl -p
+```
+
+If you like to make your limit permanent, use:
+
+```
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+You may also need to pay attention to the values of max_queued_events and max_user_instances if Listen keeps on complaining.
