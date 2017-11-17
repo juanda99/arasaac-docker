@@ -36,7 +36,7 @@ const logger = createLogger({
     colorize(),
     timestamp(),
     myFormat
-  ),
+  ), 
   transports: [
     //
     // - Write to all logs with level `info` and below to `combined.log` 
@@ -74,23 +74,31 @@ logger.info('ARASAAC WATCHER STARTED')
 logger.info(`It will wait ${parseInt(TIME)/1000} seconds on every material before starting processing it`)
 logger.info('Start scanning...')
 
+process.on('uncaughtException', function (err) {
+  logger.log('error', 'Fatal uncaught exception crashed cluster', err, function (err, level, msg, meta) {
+    process.exit(1)
+  })
+})
+
 // Add event listeners.
 watcher
   .on('add', (file) => {
     logger.info(`WATCHER - ADDED FILE: ${path.resolve(MATERIALS, file)}`)
-    addTask(file, INCLUDE)
+    // addTask(file, INCLUDE)
   })
+  
   .on('addDir', (dir) => {
+    // console.log(`ADDED DIRECTORY: ${path.resolve(MATERIALS, dir)}`)
     logger.info(`ADDED DIRECTORY: ${path.resolve(MATERIALS, dir)}`)
-    addTask(dir, 'dir')
+    // addTask(dir, 'dir')
   })
   .on('change', (file) => {
     logger.info(`WATCHER - CHANGED FILE: ${path.resolve(MATERIALS, file)}`)
-    addTask(file, INCLUDE)
+    // addTask(file, INCLUDE)
   })
   .on('unlink', (file) => {
     logger.info(`WATCHER - REMOVED FILE: ${path.resolve(MATERIALS, file)}`)
-    addTask(file, EXCLUDE)
+    // addTask(file, EXCLUDE)
   })
   .on('error', error => logger.error(`WATCHER ERROR: ${error}`))
   .on('ready', () => logger.info('Initial scan complete, waiting for changes'))
