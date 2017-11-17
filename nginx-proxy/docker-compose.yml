@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
 
@@ -23,7 +23,7 @@ services:
     hostname: letsencrypt
     image: jrcs/letsencrypt-nginx-proxy-companion
     container_name: letsencrypt
-    #depends_on: nginx-proxy
+    depends_on: [nginx-proxy]
     volumes:
       - "./certs:/etc/nginx/certs:rw"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
