@@ -49,6 +49,8 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
+    ports:
+      - "9229:9229"
   
   arasaac-watcher:
     hostname: arasaac-watcher
