@@ -15,11 +15,11 @@
     "remoteRoot": "/app",
     "protocol": "inspector"
   },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/app/app.js"
-    }
+  {
+    "type": "node",
+    "request": "launch",
+    "name": "Launch Program",
+    "program": "${workspaceFolder}/app/app.js"
+  }
   ]
 }

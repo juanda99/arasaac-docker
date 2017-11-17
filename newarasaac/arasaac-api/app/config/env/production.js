@@ -1,6 +1,6 @@
 module.exports = {
   env: 'production',
-  databaseUrl: process.env.MONGO_URL || 'mongodb://localhost/API_prod',
+  databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac',
   facebook: {
     clientID: process.env.FACEBOOK_CLIENTID,
     clientSecret: process.env.FACEBOOK_SECRET,
