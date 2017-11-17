@@ -3,3 +3,4 @@ nginx-proxy/certs/*.key
 nginx-proxy/certs/*.crt
 nginx-proxy/certs/*.pem
 newarasaac/materials
+newarasaac/arasaac-watcher/app/*.log
