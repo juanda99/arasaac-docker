@@ -6,3 +6,4 @@ newarasaac/materials
 newarasaac/watcher/app/*.log
 !newarasaac/mongodb/dbdata/.gitkeep
 ./**/*.log
+.DS_Store
