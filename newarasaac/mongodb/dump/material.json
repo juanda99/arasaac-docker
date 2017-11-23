@@ -1,0 +1,26 @@
+{
+        "activities": [ "Ficha de actividades", "Juego Colectivo" ], 
+        "files": [ "Asociacion_Profesiones.zip"], 
+        "areas": ["Literatura", "Ciencias Naturales", "Ciencias Sociales" ], 
+        "authors": [
+            { "author": "César Canalis Casasús", "email": "ccanalis@gmail.com", "empresa": "Colegio Público de Educación Especial Alborada (Zaragoza)", "_id": 4, "web": "http://prueba.com"}, 
+            { "author": "José Manuel Marcos Rodrigo", "email": "jmmarcosrodrigo@gmail.com", "empresa": "Colegio Público de Educación Especial Alborada (Zaragoza)", "id": 5, "web": "http://centros6.pntic.mec.es" }
+        ], 
+        "desc": "La leche, el agua, el vino y la bebida", 
+        "state":  1, 
+        "date": ISODate("2013-11-20T23:32:18Z"),
+        "updated": null, 
+        "id": 1, 
+        "language": "spanish",
+        "images": [], 
+        "license": "Creative Commons BY-NC-SA", 
+        "downloads": 0, 
+        "popular": false, 
+        "title": "La bebida", 
+        "file": "1.zip",
+        "translations": [
+           {"language": "english", "title": "Beverages", "desc": "Milk, water, wine and all related with drinking", "authors": [], "files": [], "file": "1.zip", "images": [], "downloads": 0, "state": 1, "created": null,  "updated": null},
+           {"language": "french", "title": "le boisson", "desc": "du lait, de l'eau, du vin, boire", "authors": [], "files": [], "file": "1.zip", "images": [], "downloads": 0, "state": 1, "created": null,  "updated": null} ,
+ 	{"language": "german", "title": "Getränk", "desc": "Milch, Wasser, Wein und Getränke", "authors": [], "files": [], "file": "1.zip", "images": [], "downloads": 0, "state": 1, "created": null,  "updated": null} 
+        ]
+}

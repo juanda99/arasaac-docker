@@ -1,0 +1,323 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  description: "REST API for Arasaac pictograms. WIP!!!"
+  title: "API Arasaac"
+# during dev, should point to your local machine
+host: api.arasaac.org
+# basePath prefixes all resource paths 
+basePath: /api
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - https
+  - http
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+  - text/html
+parameters:
+  IdMaterial:
+    name: idMaterial
+    description: Material identifier
+    type: integer
+    in: path
+    required: true
+  Locale:
+    name: locale
+    type: string
+    in: path
+    required: true
+    description: Provides more efficient searches. If you specify a language value of "none", then the text search uses simple tokenization with no list of stop words and no stemming.
+    enum: ["da", "nl", "en", "fi", "fr", "de", "hu", "it", "nb", "pt", "ro", "ru", "es", "sv", "tr", "ara", "prs", "pes", "urd", "zhs", "zht", "none"]
+  SearchText:
+    name: searchText
+    in: path
+    description: Text for searching materials. By default, the phrase search makes an OR search on all the specified keywords. In case you would like to perform an exact phrase search (logical AND), you can do so by specifying double quotes in the search text. Prefixing a search keyword with – (minus sign) excludes all the documents that contain the negated term. 
+    required: true
+    type: string
+  User:
+    name: user
+    in: body
+    description: User data for creating a new local user 
+    required: true
+    schema:
+      type: object
+      required:
+      - name
+      - email
+      - username
+      - password
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        locale:
+          type: string
+          enum: ["da", "nl", "en", "fi", "fr", "de", "hu", "it", "nb", "pt", "ro", "ru", "es", "sv", "tr", "ara", "prs", "pes", "urd", "zhs", "zht", "none"]
+  Language:
+    name: language
+    description: Languages than we currently use for pictograms searches.
+    type: string
+    in: path
+    required: true
+    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "ga", "br", "cr", "val"]
+paths:
+  /keywords/{language}:
+    # our controller name
+    x-swagger-router-controller: keywords
+    get:
+      operationId: getAll
+      description: Obtain a list of keywords for pictogams for an specific language (es, en...)
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Language'
+      responses:
+        "200":
+          description: An object with the list of keywords for the specified language.
+          schema:
+            $ref: '#/definitions/Keywords'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /materials/{idMaterial}:
+    x-swagger-router-controller: materials
+    get:
+      operationId: getMaterialById
+      description: Obtain a material based on its key.
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/IdMaterial'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetMaterialResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /materials/{locale}/{searchText}:
+    x-swagger-router-controller: materials
+    get:
+      operationId: searchMaterials
+      description: Obtain a list of materials based on the searchText. It will search inside title and description of each material. Locale is only used for search optimization.
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Locale'
+        - $ref: '#/parameters/SearchText'
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Materials"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /sessions:
+    x-swagger-router-controller: sessions
+    post:
+      operationId: createSession
+      description: Obtains a token for the user
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: username
+          in: formData
+          description: User name for login
+          required: true
+          type: string
+        - name: password
+          in: formData
+          description: User password 
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /users:
+    x-swagger-router-controller: users
+    post:
+      operationId: createUser
+      description: Create a new user
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/User'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    get:
+      operationId: getUser
+      description: Obtain a user data 
+      # define the type of response for Success "200" and Error
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetKeywordsResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /users/activate/{url}:
+    x-swagger-router-controller: users
+    post:
+      operationId: activateUser
+      description: Create a new user
+      # define the type of response for Success "200" and Error
+      parameters:
+        - name: url
+          in: path
+          description: Random generated key for user activation
+          required: true
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetKeywordsResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /users/signin:
+    x-swagger-router-controller: users
+    post:
+      operationId: signIn
+      description: Authenticate user by email and password
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/User'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+
+  Keywords:
+    type: object
+    properties:
+      locale:
+        type: string
+        enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "ga", "br", "cr", "val"]
+        description: Language of the keywords (two letters code), same as requested locale parameter.
+      words:
+        type: array
+        items:
+          type: string
+  Material:
+    required:
+      - author
+      - desc
+      - files
+      - title
+    properties: 
+      _id:
+        type: string
+      activity: 
+        type: array
+        items: 
+          type: integer
+      area: 
+        type: array
+        items: 
+          type: integer
+      author:
+        type: array
+        items: 
+          type: object
+      created:
+        type: string
+        format: date-time
+      desc:
+        type: string
+      downloads:
+        type: number
+      file:
+        type: string
+      files:
+        type: array
+        items: 
+          type: string
+      idMaterial:
+        type: integer
+      images:
+        type: array
+        items:
+          type: string
+      lang:
+        type: string
+      language:
+        type: string
+      lastUpdate:
+        type: string
+        format: date-time
+      score:
+        type: number
+      status:
+        type: integer
+      title:
+        type: string
+      translations:
+        type: array
+        items: 
+          type: object
+  Materials: 
+    type: array
+    items: 
+      $ref: "#/definitions/Material"
+
+  GetMaterialResponse:
+    properties:
+      material:
+        type: object
+  GetKeywordsResponse:
+    required:
+      - keywords
+    properties:
+      keywords:
+        type: object
+  SuccessResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

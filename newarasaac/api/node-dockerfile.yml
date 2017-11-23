@@ -1,0 +1,17 @@
+FROM node:latest
+
+MAINTAINER juandacorreo@gmail.com
+
+ENV NODE_ENV=development 
+ENV PORT=80
+
+# Set working directory
+RUN mkdir /app
+WORKDIR /app
+ENV HOME=/app
+
+# Install dependencies
+COPY ./app/package.json ./app/yarn.lock $HOME/
+RUN yarn install
+
+EXPOSE $PORT
