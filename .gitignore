@@ -4,6 +4,5 @@ nginx-proxy/certs/*.crt
 nginx-proxy/certs/*.pem
 newarasaac/materials
 newarasaac/watcher/app/*.log
-newarasaac/mongodb/**
-newarasaac/mongodb/dbdata/WiredTiger
+!newarasaac/mongodb/dbdata/.gitkeep
 ./**/*.log
