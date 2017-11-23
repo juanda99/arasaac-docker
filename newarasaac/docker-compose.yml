@@ -57,11 +57,11 @@ services:
     hostname: watcher
     container_name: watcher
     build:
-      context: ./watcher
-      dockerfile: node-dockerfile.yml
+      context: .
+      dockerfile: watcher-dockerfile.yml
     command: yarn start
     volumes:
-    - ./watcher/app:/app
+    - ./watcher:/app
     - ./materials:/app/materials
     - /app/node_modules
 
