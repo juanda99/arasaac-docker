@@ -29,17 +29,17 @@ services:
     networks:
       - nginxproxy_frontend
 
-  arasaac-api:
-    hostname: arasaac-api
-    container_name: arasaac-api
+  api:
+    hostname: api
+    container_name: api
     build:
-      context: ./arasaac-api
+      context: ./api
       dockerfile: node-dockerfile.yml
     command: yarn start
     depends_on:
       - mongodb
     volumes:
-    - ./arasaac-api/app:/app
+    - ./api/app:/app
     - ./materials:/app/materials
     - /app/node_modules
     environment:
@@ -53,15 +53,15 @@ services:
     ports:
       - "9229:9229"
   
-  arasaac-watcher:
-    hostname: arasaac-watcher
-    container_name: arasaac-watcher
+  watcher:
+    hostname: watcher
+    container_name: watcher
     build:
-      context: ./arasaac-watcher
+      context: ./watcher
       dockerfile: node-dockerfile.yml
     command: yarn start
     volumes:
-    - ./arasaac-watcher/app:/app
+    - ./watcher/app:/app
     - ./materials:/app/materials
     - /app/node_modules
 
@@ -70,8 +70,8 @@ services:
     container_name: mongodb
     image: mongo
     volumes:
-      - ./arasaac-api/dump:/docker-entrypoint-initdb.d
-      - ./arasaac-api/dbdata:/data/db
+      - ./mongodb/dump:/docker-entrypoint-initdb.d
+      - ./mongodb/dbdata:/data/db
     networks:
       - backend
     ports:
