@@ -4792,7 +4792,7 @@
       "basename": "app"
     },
     "ignored": false,
-    "code": "'use strict';\n\nvar SwaggerExpress = require('swagger-express-mw');\nvar path = require('path');\nvar express = require('express');\nvar cors = require('cors');\nvar app = express();\nvar morgan = require('morgan');\n// const swaggerUi = require('swagger-ui-express')\n\nvar config = require('./config');\n// const errorhandler = require('errorhandler')  \n\n\nvar yaml = require('js-yaml');\nvar fs = require('fs');\ntry {\n  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './api/swagger/swagger.yaml'), 'utf8'));\n  var swaggerJSON = JSON.stringify(swaggerDocument, null, 4);\n  fs.writeFile(path.join(__dirname, './public/arasaac.json'), swaggerJSON, function (err) {\n    if (err) return console.log(err);\n    console.log('arasaac.json file generated');\n  });\n} catch (e) {\n  console.log(e);\n}\n\nvar swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config')\n  // swaggerFile: `${__dirname}/path/to/my/swagger.yaml`  \n};\n\n/*bbdd configuration in its own file*/\nrequire('./db');\n\napp.use(cors());\napp.set('etag', false);\napp.use(morgan('dev'));\napp.use(express.static('./public'));\n\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) {\n    throw err;\n  }\n  // install middleware\n  swaggerExpress.register(app);\n\n  var port = process.env.PORT || config.port;\n  app.listen(port);\n  console.log('App running on port ' + port);\n});\n\nmodule.exports = app; // for testing\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcyJdLCJuYW1lcyI6WyJTd2FnZ2VyRXhwcmVzcyIsInJlcXVpcmUiLCJwYXRoIiwiZXhwcmVzcyIsImNvcnMiLCJhcHAiLCJtb3JnYW4iLCJjb25maWciLCJ5YW1sIiwiZnMiLCJzd2FnZ2VyRG9jdW1lbnQiLCJzYWZlTG9hZCIsInJlYWRGaWxlU3luYyIsImpvaW4iLCJfX2Rpcm5hbWUiLCJzd2FnZ2VySlNPTiIsIkpTT04iLCJzdHJpbmdpZnkiLCJ3cml0ZUZpbGUiLCJlcnIiLCJjb25zb2xlIiwibG9nIiwiZSIsInN3YWdnZXJDb25maWciLCJhcHBSb290IiwiY29uZmlnRGlyIiwicmVzb2x2ZSIsInVzZSIsInNldCIsInN0YXRpYyIsImNyZWF0ZSIsInN3YWdnZXJFeHByZXNzIiwicmVnaXN0ZXIiLCJwb3J0IiwicHJvY2VzcyIsImVudiIsIlBPUlQiLCJsaXN0ZW4iLCJtb2R1bGUiLCJleHBvcnRzIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQU1BLGlCQUFpQkMsUUFBUSxvQkFBUixDQUF2QjtBQUNBLElBQU1DLE9BQU9ELFFBQVEsTUFBUixDQUFiO0FBQ0EsSUFBSUUsVUFBVUYsUUFBUSxTQUFSLENBQWQ7QUFDQSxJQUFJRyxPQUFPSCxRQUFRLE1BQVIsQ0FBWDtBQUNBLElBQUlJLE1BQU1GLFNBQVY7QUFDQSxJQUFNRyxTQUFTTCxRQUFRLFFBQVIsQ0FBZjtBQUNBOztBQUVBLElBQU1NLFNBQVNOLFFBQVEsVUFBUixDQUFmO0FBQ0E7OztBQUdBLElBQU1PLE9BQU9QLFFBQVEsU0FBUixDQUFiO0FBQ0EsSUFBTVEsS0FBS1IsUUFBUSxJQUFSLENBQVg7QUFDQSxJQUFJO0FBQ0YsTUFBSVMsa0JBQWtCRixLQUFLRyxRQUFMLENBQWNGLEdBQUdHLFlBQUgsQ0FBZ0JWLEtBQUtXLElBQUwsQ0FBVUMsU0FBVixFQUFxQiw0QkFBckIsQ0FBaEIsRUFBb0UsTUFBcEUsQ0FBZCxDQUF0QjtBQUNBLE1BQU1DLGNBQWNDLEtBQUtDLFNBQUwsQ0FBZVAsZUFBZixFQUFnQyxJQUFoQyxFQUFzQyxDQUF0QyxDQUFwQjtBQUNBRCxLQUFHUyxTQUFILENBQWFoQixLQUFLVyxJQUFMLENBQVVDLFNBQVYsRUFBb0IsdUJBQXBCLENBQWIsRUFBMkRDLFdBQTNELEVBQXdFLFVBQVVJLEdBQVYsRUFBZTtBQUNyRixRQUFJQSxHQUFKLEVBQVMsT0FBT0MsUUFBUUMsR0FBUixDQUFZRixHQUFaLENBQVA7QUFDVEMsWUFBUUMsR0FBUixDQUFZLDZCQUFaO0FBQ0QsR0FIRDtBQUlELENBUEQsQ0FPRSxPQUFPQyxDQUFQLEVBQVU7QUFDVkYsVUFBUUMsR0FBUixDQUFZQyxDQUFaO0FBQ0Q7O0FBRUQsSUFBSUMsZ0JBQWdCO0FBQ2xCQyxXQUFTVixTQURTLEVBQ0U7QUFDcEJXLGFBQVd2QixLQUFLd0IsT0FBTCxDQUFhWixTQUFiLEVBQXdCLFFBQXhCO0FBQ1g7QUFIa0IsQ0FBcEI7O0FBT0E7QUFDQWIsUUFBUSxNQUFSOztBQUVBSSxJQUFJc0IsR0FBSixDQUFRdkIsTUFBUjtBQUNBQyxJQUFJdUIsR0FBSixDQUFRLE1BQVIsRUFBZ0IsS0FBaEI7QUFDQXZCLElBQUlzQixHQUFKLENBQVFyQixPQUFPLEtBQVAsQ0FBUjtBQUNBRCxJQUFJc0IsR0FBSixDQUFReEIsUUFBUTBCLE1BQVIsQ0FBZSxVQUFmLENBQVI7O0FBSUE7O0FBRUE3QixlQUFlOEIsTUFBZixDQUFzQlAsYUFBdEIsRUFBcUMsVUFBVUosR0FBVixFQUFlWSxjQUFmLEVBQStCO0FBQ2xFLE1BQUlaLEdBQUosRUFBUztBQUFFLFVBQU1BLEdBQU47QUFBVztBQUN0QjtBQUNBWSxpQkFBZUMsUUFBZixDQUF3QjNCLEdBQXhCOztBQUVBLE1BQUk0QixPQUFPQyxRQUFRQyxHQUFSLENBQVlDLElBQVosSUFBb0I3QixPQUFPMEIsSUFBdEM7QUFDQTVCLE1BQUlnQyxNQUFKLENBQVdKLElBQVg7QUFDQWIsVUFBUUMsR0FBUixDQUFZLHlCQUF5QlksSUFBckM7QUFFRCxDQVREOztBQVlBSyxPQUFPQyxPQUFQLEdBQWlCbEMsR0FBakIsQyxDQUFxQiIsImZpbGUiOiJhcHAuanMiLCJzb3VyY2VSb290IjoiL2FwcCIsInNvdXJjZXNDb250ZW50IjpbImNvbnN0IFN3YWdnZXJFeHByZXNzID0gcmVxdWlyZSgnc3dhZ2dlci1leHByZXNzLW13JylcbmNvbnN0IHBhdGggPSByZXF1aXJlKCdwYXRoJylcbnZhciBleHByZXNzID0gcmVxdWlyZSgnZXhwcmVzcycpXG52YXIgY29ycyA9IHJlcXVpcmUoJ2NvcnMnKVxudmFyIGFwcCA9IGV4cHJlc3MoKVxuY29uc3QgbW9yZ2FuID0gcmVxdWlyZSgnbW9yZ2FuJylcbi8vIGNvbnN0IHN3YWdnZXJVaSA9IHJlcXVpcmUoJ3N3YWdnZXItdWktZXhwcmVzcycpXG5cbmNvbnN0IGNvbmZpZyA9IHJlcXVpcmUoJy4vY29uZmlnJylcbi8vIGNvbnN0IGVycm9yaGFuZGxlciA9IHJlcXVpcmUoJ2Vycm9yaGFuZGxlcicpICBcblxuXG5jb25zdCB5YW1sID0gcmVxdWlyZSgnanMteWFtbCcpXG5jb25zdCBmcyA9IHJlcXVpcmUoJ2ZzJylcbnRyeSB7XG4gIHZhciBzd2FnZ2VyRG9jdW1lbnQgPSB5YW1sLnNhZmVMb2FkKGZzLnJlYWRGaWxlU3luYyhwYXRoLmpvaW4oX19kaXJuYW1lLCAnLi9hcGkvc3dhZ2dlci9zd2FnZ2VyLnlhbWwnKSwgJ3V0ZjgnKSlcbiAgY29uc3Qgc3dhZ2dlckpTT04gPSBKU09OLnN0cmluZ2lmeShzd2FnZ2VyRG9jdW1lbnQsIG51bGwsIDQpXG4gIGZzLndyaXRlRmlsZShwYXRoLmpvaW4oX19kaXJuYW1lLCcuL3B1YmxpYy9hcmFzYWFjLmpzb24nKSwgc3dhZ2dlckpTT04sIGZ1bmN0aW9uIChlcnIpIHtcbiAgICBpZiAoZXJyKSByZXR1cm4gY29uc29sZS5sb2coZXJyKVxuICAgIGNvbnNvbGUubG9nKCdhcmFzYWFjLmpzb24gZmlsZSBnZW5lcmF0ZWQnKVxuICB9KVxufSBjYXRjaCAoZSkge1xuICBjb25zb2xlLmxvZyhlKVxufVxuXG52YXIgc3dhZ2dlckNvbmZpZyA9IHtcbiAgYXBwUm9vdDogX19kaXJuYW1lLCAvLyByZXF1aXJlZCBjb25maWdcbiAgY29uZmlnRGlyOiBwYXRoLnJlc29sdmUoX19kaXJuYW1lLCAnY29uZmlnJylcbiAgLy8gc3dhZ2dlckZpbGU6IGAke19fZGlybmFtZX0vcGF0aC90by9teS9zd2FnZ2VyLnlhbWxgICBcbn1cblxuXG4vKmJiZGQgY29uZmlndXJhdGlvbiBpbiBpdHMgb3duIGZpbGUqL1xucmVxdWlyZSgnLi9kYicpXG5cbmFwcC51c2UoY29ycygpKVxuYXBwLnNldCgnZXRhZycsIGZhbHNlKVxuYXBwLnVzZShtb3JnYW4oJ2RldicpKVxuYXBwLnVzZShleHByZXNzLnN0YXRpYygnLi9wdWJsaWMnKSlcblxuXG5cbi8vIGFwcC51c2UoJy9hcGktZG9jcycsIHN3YWdnZXJVaS5zZXJ2ZSwgc3dhZ2dlclVpLnNldHVwKHN3YWdnZXJEb2N1bWVudCkpXG5cblN3YWdnZXJFeHByZXNzLmNyZWF0ZShzd2FnZ2VyQ29uZmlnLCBmdW5jdGlvbiAoZXJyLCBzd2FnZ2VyRXhwcmVzcykge1xuICBpZiAoZXJyKSB7IHRocm93IGVyciB9XG4gIC8vIGluc3RhbGwgbWlkZGxld2FyZVxuICBzd2FnZ2VyRXhwcmVzcy5yZWdpc3RlcihhcHApXG5cbiAgdmFyIHBvcnQgPSBwcm9jZXNzLmVudi5QT1JUIHx8IGNvbmZpZy5wb3J0XG4gIGFwcC5saXN0ZW4ocG9ydClcbiAgY29uc29sZS5sb2coJ0FwcCBydW5uaW5nIG9uIHBvcnQgJyArIHBvcnQpXG5cbn0pXG5cblxubW9kdWxlLmV4cG9ydHMgPSBhcHAgLy8gZm9yIHRlc3RpbmdcbiJdfQ==",
+    "code": "'use strict';\n\nvar SwaggerExpress = require('swagger-express-mw');\nvar path = require('path');\nvar express = require('express');\nvar cors = require('cors');\nvar app = express();\nvar morgan = require('morgan');\n// const swaggerUi = require('swagger-ui-express')\n\nvar config = require('./config');\n// const errorhandler = require('errorhandler')  \n\n\nvar yaml = require('js-yaml');\nvar fs = require('fs');\ntry {\n  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'));\n  var swaggerJSON = JSON.stringify(swaggerDocument, null, 4);\n  fs.writeFile(path.join(__dirname, './public/arasaac.json'), swaggerJSON, function (err) {\n    if (err) return console.log(err);\n    console.log('arasaac.json file generated');\n  });\n} catch (e) {\n  console.log(e);\n}\n\nvar swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config'),\n  swaggerFile: __dirname + '/swagger/swagger.yaml'\n};\n\n/*bbdd configuration in its own file*/\nrequire('./db');\n\napp.use(cors());\napp.set('etag', false);\napp.use(morgan('dev'));\napp.use(express.static('./public'));\n\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) {\n    throw err;\n  }\n  // install middleware\n  swaggerExpress.register(app);\n\n  var port = process.env.PORT || config.port;\n  app.listen(port);\n  console.log('App running on port ' + port);\n});\n\nmodule.exports = app; // for testing\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcyJdLCJuYW1lcyI6WyJTd2FnZ2VyRXhwcmVzcyIsInJlcXVpcmUiLCJwYXRoIiwiZXhwcmVzcyIsImNvcnMiLCJhcHAiLCJtb3JnYW4iLCJjb25maWciLCJ5YW1sIiwiZnMiLCJzd2FnZ2VyRG9jdW1lbnQiLCJzYWZlTG9hZCIsInJlYWRGaWxlU3luYyIsImpvaW4iLCJfX2Rpcm5hbWUiLCJzd2FnZ2VySlNPTiIsIkpTT04iLCJzdHJpbmdpZnkiLCJ3cml0ZUZpbGUiLCJlcnIiLCJjb25zb2xlIiwibG9nIiwiZSIsInN3YWdnZXJDb25maWciLCJhcHBSb290IiwiY29uZmlnRGlyIiwicmVzb2x2ZSIsInN3YWdnZXJGaWxlIiwidXNlIiwic2V0Iiwic3RhdGljIiwiY3JlYXRlIiwic3dhZ2dlckV4cHJlc3MiLCJyZWdpc3RlciIsInBvcnQiLCJwcm9jZXNzIiwiZW52IiwiUE9SVCIsImxpc3RlbiIsIm1vZHVsZSIsImV4cG9ydHMiXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBTUEsaUJBQWlCQyxRQUFRLG9CQUFSLENBQXZCO0FBQ0EsSUFBTUMsT0FBT0QsUUFBUSxNQUFSLENBQWI7QUFDQSxJQUFJRSxVQUFVRixRQUFRLFNBQVIsQ0FBZDtBQUNBLElBQUlHLE9BQU9ILFFBQVEsTUFBUixDQUFYO0FBQ0EsSUFBSUksTUFBTUYsU0FBVjtBQUNBLElBQU1HLFNBQVNMLFFBQVEsUUFBUixDQUFmO0FBQ0E7O0FBRUEsSUFBTU0sU0FBU04sUUFBUSxVQUFSLENBQWY7QUFDQTs7O0FBR0EsSUFBTU8sT0FBT1AsUUFBUSxTQUFSLENBQWI7QUFDQSxJQUFNUSxLQUFLUixRQUFRLElBQVIsQ0FBWDtBQUNBLElBQUk7QUFDRixNQUFJUyxrQkFBa0JGLEtBQUtHLFFBQUwsQ0FBY0YsR0FBR0csWUFBSCxDQUFnQlYsS0FBS1csSUFBTCxDQUFVQyxTQUFWLEVBQXFCLHdCQUFyQixDQUFoQixFQUFnRSxNQUFoRSxDQUFkLENBQXRCO0FBQ0EsTUFBTUMsY0FBY0MsS0FBS0MsU0FBTCxDQUFlUCxlQUFmLEVBQWdDLElBQWhDLEVBQXNDLENBQXRDLENBQXBCO0FBQ0FELEtBQUdTLFNBQUgsQ0FBYWhCLEtBQUtXLElBQUwsQ0FBVUMsU0FBVixFQUFvQix1QkFBcEIsQ0FBYixFQUEyREMsV0FBM0QsRUFBd0UsVUFBVUksR0FBVixFQUFlO0FBQ3JGLFFBQUlBLEdBQUosRUFBUyxPQUFPQyxRQUFRQyxHQUFSLENBQVlGLEdBQVosQ0FBUDtBQUNUQyxZQUFRQyxHQUFSLENBQVksNkJBQVo7QUFDRCxHQUhEO0FBSUQsQ0FQRCxDQU9FLE9BQU9DLENBQVAsRUFBVTtBQUNWRixVQUFRQyxHQUFSLENBQVlDLENBQVo7QUFDRDs7QUFFRCxJQUFJQyxnQkFBZ0I7QUFDbEJDLFdBQVNWLFNBRFMsRUFDRTtBQUNwQlcsYUFBV3ZCLEtBQUt3QixPQUFMLENBQWFaLFNBQWIsRUFBd0IsUUFBeEIsQ0FGTztBQUdsQmEsZUFBZ0JiLFNBQWhCO0FBSGtCLENBQXBCOztBQU9BO0FBQ0FiLFFBQVEsTUFBUjs7QUFFQUksSUFBSXVCLEdBQUosQ0FBUXhCLE1BQVI7QUFDQUMsSUFBSXdCLEdBQUosQ0FBUSxNQUFSLEVBQWdCLEtBQWhCO0FBQ0F4QixJQUFJdUIsR0FBSixDQUFRdEIsT0FBTyxLQUFQLENBQVI7QUFDQUQsSUFBSXVCLEdBQUosQ0FBUXpCLFFBQVEyQixNQUFSLENBQWUsVUFBZixDQUFSOztBQUlBOztBQUVBOUIsZUFBZStCLE1BQWYsQ0FBc0JSLGFBQXRCLEVBQXFDLFVBQVVKLEdBQVYsRUFBZWEsY0FBZixFQUErQjtBQUNsRSxNQUFJYixHQUFKLEVBQVM7QUFBRSxVQUFNQSxHQUFOO0FBQVc7QUFDdEI7QUFDQWEsaUJBQWVDLFFBQWYsQ0FBd0I1QixHQUF4Qjs7QUFFQSxNQUFJNkIsT0FBT0MsUUFBUUMsR0FBUixDQUFZQyxJQUFaLElBQW9COUIsT0FBTzJCLElBQXRDO0FBQ0E3QixNQUFJaUMsTUFBSixDQUFXSixJQUFYO0FBQ0FkLFVBQVFDLEdBQVIsQ0FBWSx5QkFBeUJhLElBQXJDO0FBRUQsQ0FURDs7QUFZQUssT0FBT0MsT0FBUCxHQUFpQm5DLEdBQWpCLEMsQ0FBcUIiLCJmaWxlIjoiYXBwLmpzIiwic291cmNlUm9vdCI6Ii9hcHAiLCJzb3VyY2VzQ29udGVudCI6WyJjb25zdCBTd2FnZ2VyRXhwcmVzcyA9IHJlcXVpcmUoJ3N3YWdnZXItZXhwcmVzcy1tdycpXG5jb25zdCBwYXRoID0gcmVxdWlyZSgncGF0aCcpXG52YXIgZXhwcmVzcyA9IHJlcXVpcmUoJ2V4cHJlc3MnKVxudmFyIGNvcnMgPSByZXF1aXJlKCdjb3JzJylcbnZhciBhcHAgPSBleHByZXNzKClcbmNvbnN0IG1vcmdhbiA9IHJlcXVpcmUoJ21vcmdhbicpXG4vLyBjb25zdCBzd2FnZ2VyVWkgPSByZXF1aXJlKCdzd2FnZ2VyLXVpLWV4cHJlc3MnKVxuXG5jb25zdCBjb25maWcgPSByZXF1aXJlKCcuL2NvbmZpZycpXG4vLyBjb25zdCBlcnJvcmhhbmRsZXIgPSByZXF1aXJlKCdlcnJvcmhhbmRsZXInKSAgXG5cblxuY29uc3QgeWFtbCA9IHJlcXVpcmUoJ2pzLXlhbWwnKVxuY29uc3QgZnMgPSByZXF1aXJlKCdmcycpXG50cnkge1xuICB2YXIgc3dhZ2dlckRvY3VtZW50ID0geWFtbC5zYWZlTG9hZChmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKF9fZGlybmFtZSwgJy4vc3dhZ2dlci9zd2FnZ2VyLnlhbWwnKSwgJ3V0ZjgnKSlcbiAgY29uc3Qgc3dhZ2dlckpTT04gPSBKU09OLnN0cmluZ2lmeShzd2FnZ2VyRG9jdW1lbnQsIG51bGwsIDQpXG4gIGZzLndyaXRlRmlsZShwYXRoLmpvaW4oX19kaXJuYW1lLCcuL3B1YmxpYy9hcmFzYWFjLmpzb24nKSwgc3dhZ2dlckpTT04sIGZ1bmN0aW9uIChlcnIpIHtcbiAgICBpZiAoZXJyKSByZXR1cm4gY29uc29sZS5sb2coZXJyKVxuICAgIGNvbnNvbGUubG9nKCdhcmFzYWFjLmpzb24gZmlsZSBnZW5lcmF0ZWQnKVxuICB9KVxufSBjYXRjaCAoZSkge1xuICBjb25zb2xlLmxvZyhlKVxufVxuXG52YXIgc3dhZ2dlckNvbmZpZyA9IHtcbiAgYXBwUm9vdDogX19kaXJuYW1lLCAvLyByZXF1aXJlZCBjb25maWdcbiAgY29uZmlnRGlyOiBwYXRoLnJlc29sdmUoX19kaXJuYW1lLCAnY29uZmlnJyksXG4gIHN3YWdnZXJGaWxlOiBgJHtfX2Rpcm5hbWV9L3N3YWdnZXIvc3dhZ2dlci55YW1sYCAgXG59XG5cblxuLypiYmRkIGNvbmZpZ3VyYXRpb24gaW4gaXRzIG93biBmaWxlKi9cbnJlcXVpcmUoJy4vZGInKVxuXG5hcHAudXNlKGNvcnMoKSlcbmFwcC5zZXQoJ2V0YWcnLCBmYWxzZSlcbmFwcC51c2UobW9yZ2FuKCdkZXYnKSlcbmFwcC51c2UoZXhwcmVzcy5zdGF0aWMoJy4vcHVibGljJykpXG5cblxuXG4vLyBhcHAudXNlKCcvYXBpLWRvY3MnLCBzd2FnZ2VyVWkuc2VydmUsIHN3YWdnZXJVaS5zZXR1cChzd2FnZ2VyRG9jdW1lbnQpKVxuXG5Td2FnZ2VyRXhwcmVzcy5jcmVhdGUoc3dhZ2dlckNvbmZpZywgZnVuY3Rpb24gKGVyciwgc3dhZ2dlckV4cHJlc3MpIHtcbiAgaWYgKGVycikgeyB0aHJvdyBlcnIgfVxuICAvLyBpbnN0YWxsIG1pZGRsZXdhcmVcbiAgc3dhZ2dlckV4cHJlc3MucmVnaXN0ZXIoYXBwKVxuXG4gIHZhciBwb3J0ID0gcHJvY2Vzcy5lbnYuUE9SVCB8fCBjb25maWcucG9ydFxuICBhcHAubGlzdGVuKHBvcnQpXG4gIGNvbnNvbGUubG9nKCdBcHAgcnVubmluZyBvbiBwb3J0ICcgKyBwb3J0KVxuXG59KVxuXG5cbm1vZHVsZS5leHBvcnRzID0gYXBwIC8vIGZvciB0ZXN0aW5nXG4iXX0=",
     "ast": null,
     "map": {
       "version": 3,
@@ -4827,6 +4827,7 @@
         "appRoot",
         "configDir",
         "resolve",
+        "swaggerFile",
         "use",
         "set",
         "static",
@@ -4841,14 +4842,14 @@
         "module",
         "exports"
       ],
-      "mappings": ";;AAAA,IAAMA,iBAAiBC,QAAQ,oBAAR,CAAvB;AACA,IAAMC,OAAOD,QAAQ,MAAR,CAAb;AACA,IAAIE,UAAUF,QAAQ,SAAR,CAAd;AACA,IAAIG,OAAOH,QAAQ,MAAR,CAAX;AACA,IAAII,MAAMF,SAAV;AACA,IAAMG,SAASL,QAAQ,QAAR,CAAf;AACA;;AAEA,IAAMM,SAASN,QAAQ,UAAR,CAAf;AACA;;;AAGA,IAAMO,OAAOP,QAAQ,SAAR,CAAb;AACA,IAAMQ,KAAKR,QAAQ,IAAR,CAAX;AACA,IAAI;AACF,MAAIS,kBAAkBF,KAAKG,QAAL,CAAcF,GAAGG,YAAH,CAAgBV,KAAKW,IAAL,CAAUC,SAAV,EAAqB,4BAArB,CAAhB,EAAoE,MAApE,CAAd,CAAtB;AACA,MAAMC,cAAcC,KAAKC,SAAL,CAAeP,eAAf,EAAgC,IAAhC,EAAsC,CAAtC,CAApB;AACAD,KAAGS,SAAH,CAAahB,KAAKW,IAAL,CAAUC,SAAV,EAAoB,uBAApB,CAAb,EAA2DC,WAA3D,EAAwE,UAAUI,GAAV,EAAe;AACrF,QAAIA,GAAJ,EAAS,OAAOC,QAAQC,GAAR,CAAYF,GAAZ,CAAP;AACTC,YAAQC,GAAR,CAAY,6BAAZ;AACD,GAHD;AAID,CAPD,CAOE,OAAOC,CAAP,EAAU;AACVF,UAAQC,GAAR,CAAYC,CAAZ;AACD;;AAED,IAAIC,gBAAgB;AAClBC,WAASV,SADS,EACE;AACpBW,aAAWvB,KAAKwB,OAAL,CAAaZ,SAAb,EAAwB,QAAxB;AACX;AAHkB,CAApB;;AAOA;AACAb,QAAQ,MAAR;;AAEAI,IAAIsB,GAAJ,CAAQvB,MAAR;AACAC,IAAIuB,GAAJ,CAAQ,MAAR,EAAgB,KAAhB;AACAvB,IAAIsB,GAAJ,CAAQrB,OAAO,KAAP,CAAR;AACAD,IAAIsB,GAAJ,CAAQxB,QAAQ0B,MAAR,CAAe,UAAf,CAAR;;AAIA;;AAEA7B,eAAe8B,MAAf,CAAsBP,aAAtB,EAAqC,UAAUJ,GAAV,EAAeY,cAAf,EAA+B;AAClE,MAAIZ,GAAJ,EAAS;AAAE,UAAMA,GAAN;AAAW;AACtB;AACAY,iBAAeC,QAAf,CAAwB3B,GAAxB;;AAEA,MAAI4B,OAAOC,QAAQC,GAAR,CAAYC,IAAZ,IAAoB7B,OAAO0B,IAAtC;AACA5B,MAAIgC,MAAJ,CAAWJ,IAAX;AACAb,UAAQC,GAAR,CAAY,yBAAyBY,IAArC;AAED,CATD;;AAYAK,OAAOC,OAAP,GAAiBlC,GAAjB,C,CAAqB",
+      "mappings": ";;AAAA,IAAMA,iBAAiBC,QAAQ,oBAAR,CAAvB;AACA,IAAMC,OAAOD,QAAQ,MAAR,CAAb;AACA,IAAIE,UAAUF,QAAQ,SAAR,CAAd;AACA,IAAIG,OAAOH,QAAQ,MAAR,CAAX;AACA,IAAII,MAAMF,SAAV;AACA,IAAMG,SAASL,QAAQ,QAAR,CAAf;AACA;;AAEA,IAAMM,SAASN,QAAQ,UAAR,CAAf;AACA;;;AAGA,IAAMO,OAAOP,QAAQ,SAAR,CAAb;AACA,IAAMQ,KAAKR,QAAQ,IAAR,CAAX;AACA,IAAI;AACF,MAAIS,kBAAkBF,KAAKG,QAAL,CAAcF,GAAGG,YAAH,CAAgBV,KAAKW,IAAL,CAAUC,SAAV,EAAqB,wBAArB,CAAhB,EAAgE,MAAhE,CAAd,CAAtB;AACA,MAAMC,cAAcC,KAAKC,SAAL,CAAeP,eAAf,EAAgC,IAAhC,EAAsC,CAAtC,CAApB;AACAD,KAAGS,SAAH,CAAahB,KAAKW,IAAL,CAAUC,SAAV,EAAoB,uBAApB,CAAb,EAA2DC,WAA3D,EAAwE,UAAUI,GAAV,EAAe;AACrF,QAAIA,GAAJ,EAAS,OAAOC,QAAQC,GAAR,CAAYF,GAAZ,CAAP;AACTC,YAAQC,GAAR,CAAY,6BAAZ;AACD,GAHD;AAID,CAPD,CAOE,OAAOC,CAAP,EAAU;AACVF,UAAQC,GAAR,CAAYC,CAAZ;AACD;;AAED,IAAIC,gBAAgB;AAClBC,WAASV,SADS,EACE;AACpBW,aAAWvB,KAAKwB,OAAL,CAAaZ,SAAb,EAAwB,QAAxB,CAFO;AAGlBa,eAAgBb,SAAhB;AAHkB,CAApB;;AAOA;AACAb,QAAQ,MAAR;;AAEAI,IAAIuB,GAAJ,CAAQxB,MAAR;AACAC,IAAIwB,GAAJ,CAAQ,MAAR,EAAgB,KAAhB;AACAxB,IAAIuB,GAAJ,CAAQtB,OAAO,KAAP,CAAR;AACAD,IAAIuB,GAAJ,CAAQzB,QAAQ2B,MAAR,CAAe,UAAf,CAAR;;AAIA;;AAEA9B,eAAe+B,MAAf,CAAsBR,aAAtB,EAAqC,UAAUJ,GAAV,EAAea,cAAf,EAA+B;AAClE,MAAIb,GAAJ,EAAS;AAAE,UAAMA,GAAN;AAAW;AACtB;AACAa,iBAAeC,QAAf,CAAwB5B,GAAxB;;AAEA,MAAI6B,OAAOC,QAAQC,GAAR,CAAYC,IAAZ,IAAoB9B,OAAO2B,IAAtC;AACA7B,MAAIiC,MAAJ,CAAWJ,IAAX;AACAd,UAAQC,GAAR,CAAY,yBAAyBa,IAArC;AAED,CATD;;AAYAK,OAAOC,OAAP,GAAiBnC,GAAjB,C,CAAqB",
       "file": "app.js",
       "sourceRoot": "/app",
       "sourcesContent": [
-        "const SwaggerExpress = require('swagger-express-mw')\nconst path = require('path')\nvar express = require('express')\nvar cors = require('cors')\nvar app = express()\nconst morgan = require('morgan')\n// const swaggerUi = require('swagger-ui-express')\n\nconst config = require('./config')\n// const errorhandler = require('errorhandler')  \n\n\nconst yaml = require('js-yaml')\nconst fs = require('fs')\ntry {\n  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './api/swagger/swagger.yaml'), 'utf8'))\n  const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)\n  fs.writeFile(path.join(__dirname,'./public/arasaac.json'), swaggerJSON, function (err) {\n    if (err) return console.log(err)\n    console.log('arasaac.json file generated')\n  })\n} catch (e) {\n  console.log(e)\n}\n\nvar swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config')\n  // swaggerFile: `${__dirname}/path/to/my/swagger.yaml`  \n}\n\n\n/*bbdd configuration in its own file*/\nrequire('./db')\n\napp.use(cors())\napp.set('etag', false)\napp.use(morgan('dev'))\napp.use(express.static('./public'))\n\n\n\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) { throw err }\n  // install middleware\n  swaggerExpress.register(app)\n\n  var port = process.env.PORT || config.port\n  app.listen(port)\n  console.log('App running on port ' + port)\n\n})\n\n\nmodule.exports = app // for testing\n"
+        "const SwaggerExpress = require('swagger-express-mw')\nconst path = require('path')\nvar express = require('express')\nvar cors = require('cors')\nvar app = express()\nconst morgan = require('morgan')\n// const swaggerUi = require('swagger-ui-express')\n\nconst config = require('./config')\n// const errorhandler = require('errorhandler')  \n\n\nconst yaml = require('js-yaml')\nconst fs = require('fs')\ntry {\n  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))\n  const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)\n  fs.writeFile(path.join(__dirname,'./public/arasaac.json'), swaggerJSON, function (err) {\n    if (err) return console.log(err)\n    console.log('arasaac.json file generated')\n  })\n} catch (e) {\n  console.log(e)\n}\n\nvar swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config'),\n  swaggerFile: `${__dirname}/swagger/swagger.yaml`  \n}\n\n\n/*bbdd configuration in its own file*/\nrequire('./db')\n\napp.use(cors())\napp.set('etag', false)\napp.use(morgan('dev'))\napp.use(express.static('./public'))\n\n\n\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) { throw err }\n  // install middleware\n  swaggerExpress.register(app)\n\n  var port = process.env.PORT || config.port\n  app.listen(port)\n  console.log('App running on port ' + port)\n\n})\n\n\nmodule.exports = app // for testing\n"
       ]
     },
-    "mtime": 1510960395000
+    "mtime": 1511456987000
   },
   "{\"filename\":\"/app/db.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
     "metadata": {
@@ -7021,6 +7022,2530 @@
       "sourceRoot": "/app/api/models",
       "sourcesContent": [
         "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar keywordSchema = new Schema({\n  locale: String, \n  keyword: String\n})\n\nvar Keyword = mongoose.model('Keyword', keywordSchema, 'keywords')\n\nmodule.exports = Keyword\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/cervezasController.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/cervezasController.js",
+      "filenameRelative": "/app/controllers/cervezasController.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "cervezasController.js",
+      "sourceFileName": "cervezasController.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "cervezasController"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar Cervezas = require('../models/Cervezas');\nmodule.exports = {\n  // https://docs.mongodb.com/v3.0/reference/operator/query/text/\n  search: function search(req, res) {\n    var q = req.query.q;\n    Cervezas.find({ $text: { $search: q } }, function (err, cervezas) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error en la búsqueda'\n        });\n      }\n      return res.json(cervezas);\n    });\n  },\n  list: function list(req, res) {\n    Cervezas.find(function (err, cervezas) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error obteniendo la cerveza'\n        });\n      }\n      return res.json(cervezas);\n    });\n  },\n  show: function show(req, res) {\n    var id = req.params.id;\n    Cervezas.findOne({ _id: id }, function (err, cerveza) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener la cerveza'\n        });\n      }\n      if (!cerveza) {\n        return res.status(404).json({\n          message: 'No tenemos esta cerveza'\n        });\n      }\n      return res.json(cerveza);\n    });\n  },\n  create: function create(req, res) {\n    var cerveza = new Cervezas(req.body);\n    cerveza.save(function (err, cerveza) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error al guardar la cerveza',\n          error: err\n        });\n      }\n      return res.status(201).json({\n        message: 'saved',\n        _id: cerveza._id\n      });\n    });\n  },\n  update: function update(req, res) {\n    var id = req.params.id;\n    Cervezas.findOne({ _id: id }, function (err, cerveza) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al guardar la cerveza',\n          error: err\n        });\n      }\n      if (!cerveza) {\n        return res.status(404).json({\n          message: 'No hemos encontrado la cerveza'\n        });\n      }\n      cerveza.Nombre = req.body.nombre;\n      cerveza.Descripción = req.body.descripcion;\n      cerveza.Graduacion = req.body.graduacion;\n      cerveza.Envase = req.body.envase;\n      cerveza.Precio = req.body.precio;\n      cerveza.save(function (err, cerveza) {\n        if (err) {\n          return res.status(500).json({\n            message: 'Error al guardar la cerveza'\n          });\n        }\n        if (!cerveza) {\n          return res.status(404).json({\n            message: 'No hemos encontrado la cerveza'\n          });\n        }\n        return res.json(cerveza);\n      });\n    });\n  },\n  remove: function remove(req, res) {\n    var id = req.params.id;\n    Cervezas.findByIdAndRemove(id, function (err, cerveza) {\n      if (err) {\n        return res.json(500, {\n          message: 'No hemos encontrado la cerveza'\n        });\n      }\n      return res.json(cerveza);\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNlcnZlemFzQ29udHJvbGxlci5qcyJdLCJuYW1lcyI6WyJDZXJ2ZXphcyIsInJlcXVpcmUiLCJtb2R1bGUiLCJleHBvcnRzIiwic2VhcmNoIiwicmVxIiwicmVzIiwicSIsInF1ZXJ5IiwiZmluZCIsIiR0ZXh0IiwiJHNlYXJjaCIsImVyciIsImNlcnZlemFzIiwic3RhdHVzIiwianNvbiIsIm1lc3NhZ2UiLCJsaXN0Iiwic2hvdyIsImlkIiwicGFyYW1zIiwiZmluZE9uZSIsIl9pZCIsImNlcnZlemEiLCJjcmVhdGUiLCJib2R5Iiwic2F2ZSIsImVycm9yIiwidXBkYXRlIiwiTm9tYnJlIiwibm9tYnJlIiwiRGVzY3JpcGNpw7NuIiwiZGVzY3JpcGNpb24iLCJHcmFkdWFjaW9uIiwiZ3JhZHVhY2lvbiIsIkVudmFzZSIsImVudmFzZSIsIlByZWNpbyIsInByZWNpbyIsInJlbW92ZSIsImZpbmRCeUlkQW5kUmVtb3ZlIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsb0JBQVIsQ0FBZjtBQUNBQyxPQUFPQyxPQUFQLEdBQWlCO0FBQ2Y7QUFDQUMsVUFBUSxnQkFBVUMsR0FBVixFQUFlQyxHQUFmLEVBQW9CO0FBQzFCLFFBQUlDLElBQUlGLElBQUlHLEtBQUosQ0FBVUQsQ0FBbEI7QUFDQVAsYUFBU1MsSUFBVCxDQUFjLEVBQUVDLE9BQU8sRUFBRUMsU0FBU0osQ0FBWCxFQUFULEVBQWQsRUFBeUMsVUFBU0ssR0FBVCxFQUFjQyxRQUFkLEVBQXdCO0FBQy9ELFVBQUdELEdBQUgsRUFBUTtBQUNOLGVBQU9OLElBQUlRLE1BQUosQ0FBVyxHQUFYLEVBQWdCQyxJQUFoQixDQUFxQjtBQUMxQkMsbUJBQVM7QUFEaUIsU0FBckIsQ0FBUDtBQUdEO0FBQ0QsYUFBT1YsSUFBSVMsSUFBSixDQUFTRixRQUFULENBQVA7QUFDRCxLQVBEO0FBUUQsR0FaYztBQWFmSSxRQUFNLGNBQVNaLEdBQVQsRUFBY0MsR0FBZCxFQUFtQjtBQUN2Qk4sYUFBU1Ms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LEdBQVgsRUFBZ0JDLElBQWhCLENBQXFCO0FBQzFCQyxxQkFBUztBQURpQixXQUFyQixDQUFQO0FBR0Q7QUFDRCxZQUFHLENBQUNPLE9BQUosRUFBYTtBQUNYLGlCQUFPakIsSUFBSVEsTUFBSixDQUFXLEdBQVgsRUFBZ0JDLElBQWhCLENBQXFCO0FBQzFCQyxxQkFBUztBQURpQixXQUFyQixDQUFQO0FBR0Q7QUFDRCxlQUFPVixJQUFJUyxJQUFKLENBQVNRLE9BQVQsQ0FBUDtBQUNELE9BWkQ7QUFhRCxLQTlCRDtBQStCRCxHQXZGYztBQXdGZmdCLFVBQVEsZ0JBQVNsQyxHQUFULEVBQWNDLEdBQWQsRUFBbUI7QUFDekIsUUFBSWEsS0FBS2QsSUFBSWUsTUFBSixDQUFXRCxFQUFwQjtBQUNBbkIsYUFBU3dDLGlCQUFULENBQTJCckIsRUFBM0IsRUFBK0IsVUFBU1AsR0FBVCxFQUFjVyxPQUFkLEVBQXNCO0FBQ25ELFVBQUdYLEdBQUgsRUFBUTtBQUNOLGVBQU9OLElBQUlTLElBQUosQ0FBUyxHQUFULEVBQWM7QUFDbkJDLG1CQUFTO0FBRFUsU0FBZCxDQUFQO0FBR0Q7QUFDRCxhQUFPVixJQUFJUyxJQUFKLENBQVNRLE9BQVQsQ0FBUDtBQUNELEtBUEQ7QUFRRDtBQWxHYyxDQUFqQiIsImZpbGUiOiJjZXJ2ZXphc0NvbnRyb2xsZXIuanMiLCJzb3VyY2VSb290IjoiL2FwcC9jb250cm9sbGVycyIsInNvdXJjZXNDb250ZW50IjpbInZhciBDZXJ2ZXphcyA9IHJlcXVpcmUoJy4uL21vZGVscy9DZXJ2ZXphcycpXG5tb2R1bGUuZXhwb3J0cyA9IHtcbiAgLy8gaHR0cHM6Ly9kb2NzLm1vbmdvZGIuY29tL3YzLjAvcmVmZXJlbmNlL29wZXJhdG9yL3F1ZXJ5L3RleHQvXG4gIHNlYXJjaDogZnVuY3Rpb24gKHJlcSwgcmVzKSB7XG4gICAgdmFyIHEgPSByZXEucXVlcnkucVxuICAgIENlcnZlemFzLmZpbmQoeyAkdGV4dDogeyAkc2VhcmNoOiBxIH0gfSwgZnVuY3Rpb24oZXJyLCBjZXJ2ZXphcykge1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ0Vycm9yIGVuIGxhIGLDunNxdWVkYSdcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuanNvbihjZXJ2ZXphcylcbiAgICB9KVxuICB9LFxuICBsaXN0OiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIENlcnZlemFzLmZpbmQoZnVuY3Rpb24oZXJyLCBjZXJ2ZXphcyl7XG4gICAgICBpZihlcnIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHtcbiAgICAgICAgICBtZXNzYWdlOiAnRXJyb3Igb2J0ZW5pZW5kbyBsYSBjZXJ2ZXphJ1xuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgcmV0dXJuIHJlcy5qc29uKGNlcnZlemFzKVxuICAgIH0pXG4gIH0sXG4gIHNob3c6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIGlkID0gcmVxLnBhcmFtcy5pZFxuICAgIENlcnZlemFzLmZpbmRPbmUoe19pZDogaWR9LCBmdW5jdGlvbihlcnIsIGNlcnZlemEpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ1NlIGhhIHByb2R1Y2lkbyB1biBlcnJvciBhbCBvYnRlbmVyIGxhIGNlcnZlemEnXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighY2VydmV6YSkge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oIHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gdGVuZW1vcyBlc3RhIGNlcnZlemEnXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICByZXR1cm4gcmVzLmpzb24oY2VydmV6YSlcbiAgICB9KVxuICB9LFxuICBjcmVhdGU6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIGNlcnZlemEgPSBuZXcgQ2VydmV6YXMgKHJlcS5ib2R5KVxuICAgIGNlcnZlemEuc2F2ZShmdW5jdGlvbihlcnIsIGNlcnZlemEpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbigge1xuICAgICAgICAgIG1lc3NhZ2U6ICdFcnJvciBhbCBndWFyZGFyIGxhIGNlcnZlemEnLFxuICAgICAgICAgIGVycm9yOiBlcnJcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuc3RhdHVzKDIwMSkuanNvbih7XG4gICAgICAgIG1lc3NhZ2U6ICdzYXZlZCcsXG4gICAgICAgIF9pZDogY2VydmV6YS5faWRcbiAgICAgIH0pXG4gICAgfSlcbiAgfSxcbiAgdXBkYXRlOiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIHZhciBpZCA9IHJlcS5wYXJhbXMuaWRcbiAgICBDZXJ2ZXphcy5maW5kT25lKHtfaWQ6IGlkfSwgZnVuY3Rpb24oZXJyLCBjZXJ2ZXphKXtcbiAgICAgIGlmKGVycikge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg1MDApLmpzb24oe1xuICAgICAgICAgIG1lc3NhZ2U6ICdTZSBoYSBwcm9kdWNpZG8gdW4gZXJyb3IgYWwgZ3VhcmRhciBsYSBjZXJ2ZXphJyxcbiAgICAgICAgICBlcnJvcjogZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighY2VydmV6YSkge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oe1xuICAgICAgICAgIG1lc3NhZ2U6ICdObyBoZW1vcyBlbmNvbnRyYWRvIGxhIGNlcnZlemEnXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBjZXJ2ZXphLk5vbWJyZSA9IHJlcS5ib2R5Lm5vbWJyZVxuICAgICAgY2VydmV6YS5EZXNjcmlwY2nDs24gPSAgcmVxLmJvZHkuZGVzY3JpcGNpb25cbiAgICAgIGNlcnZlemEuR3JhZHVhY2lvbiA9IHJlcS5ib2R5LmdyYWR1YWNpb25cbiAgICAgIGNlcnZlemEuRW52YXNlID0gcmVxLmJvZHkuZW52YXNlXG4gICAgICBjZXJ2ZXphLlByZWNpbyA9IHJlcS5ib2R5LnByZWNpb1xuICAgICAgY2VydmV6YS5zYXZlKGZ1bmN0aW9uKGVyciwgY2VydmV6YSl7XG4gICAgICAgIGlmKGVycikge1xuICAgICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgICBtZXNzYWdlOiAnRXJyb3IgYWwgZ3VhcmRhciBsYSBjZXJ2ZXphJ1xuICAgICAgICAgIH0pXG4gICAgICAgIH1cbiAgICAgICAgaWYoIWNlcnZlemEpIHtcbiAgICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oe1xuICAgICAgICAgICAgbWVzc2FnZTogJ05vIGhlbW9zIGVuY29udHJhZG8gbGEgY2VydmV6YSdcbiAgICAgICAgICB9KVxuICAgICAgICB9XG4gICAgICAgIHJldHVybiByZXMuanNvbihjZXJ2ZXphKVxuICAgICAgfSlcbiAgICB9KVxuICB9LFxuICByZW1vdmU6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIGlkID0gcmVxLnBhcmFtcy5pZFxuICAgIENlcnZlemFzLmZpbmRCeUlkQW5kUmVtb3ZlKGlkLCBmdW5jdGlvbihlcnIsIGNlcnZlemEpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuanNvbig1MDAsIHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gaGVtb3MgZW5jb250cmFkbyBsYSBjZXJ2ZXphJ1xuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgcmV0dXJuIHJlcy5qc29uKGNlcnZlemEpXG4gICAgfSlcbiAgfVxufSJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "cervezasController.js"
+      ],
+      "names": [
+        "Cervezas",
+        "require",
+        "module",
+        "exports",
+        "search",
+        "req",
+        "res",
+        "q",
+        "query",
+        "find",
+        "$text",
+        "$search",
+        "err",
+        "cervezas",
+        "status",
+        "json",
+        "message",
+        "list",
+        "show",
+        "id",
+        "params",
+        "findOne",
+        "_id",
+        "cerveza",
+        "create",
+        "body",
+        "save",
+        "error",
+        "update",
+        "Nombre",
+        "nombre",
+        "Descripción",
+        "descripcion",
+        "Graduacion",
+        "graduacion",
+        "Envase",
+        "envase",
+        "Precio",
+        "precio",
+        "remove",
+        "findByIdAndRemove"
+      ],
+      "mappings": "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",
+      "file": "cervezasController.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var Cervezas = require('../models/Cervezas')\nmodule.exports = {\n  // https://docs.mongodb.com/v3.0/reference/operator/query/text/\n  search: function (req, res) {\n    var q = req.query.q\n    Cervezas.find({ $text: { $search: q } }, function(err, cervezas) {\n      if(err) {\n        return res.status(500).json({\n          message: 'Error en la búsqueda'\n        })\n      }\n      return res.json(cervezas)\n    })\n  },\n  list: function(req, res) {\n    Cervezas.find(function(err, cervezas){\n      if(err) {\n        return res.status(500).json({\n          message: 'Error obteniendo la cerveza'\n        })\n      }\n      return res.json(cervezas)\n    })\n  },\n  show: function(req, res) {\n    var id = req.params.id\n    Cervezas.findOne({_id: id}, function(err, cerveza){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener la cerveza'\n        })\n      }\n      if(!cerveza) {\n        return res.status(404).json( {\n          message: 'No tenemos esta cerveza'\n        })\n      }\n      return res.json(cerveza)\n    })\n  },\n  create: function(req, res) {\n    var cerveza = new Cervezas (req.body)\n    cerveza.save(function(err, cerveza){\n      if(err) {\n        return res.status(500).json( {\n          message: 'Error al guardar la cerveza',\n          error: err\n        })\n      }\n      return res.status(201).json({\n        message: 'saved',\n        _id: cerveza._id\n      })\n    })\n  },\n  update: function(req, res) {\n    var id = req.params.id\n    Cervezas.findOne({_id: id}, function(err, cerveza){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al guardar la cerveza',\n          error: err\n        })\n      }\n      if(!cerveza) {\n        return res.status(404).json({\n          message: 'No hemos encontrado la cerveza'\n        })\n      }\n      cerveza.Nombre = req.body.nombre\n      cerveza.Descripción =  req.body.descripcion\n      cerveza.Graduacion = req.body.graduacion\n      cerveza.Envase = req.body.envase\n      cerveza.Precio = req.body.precio\n      cerveza.save(function(err, cerveza){\n        if(err) {\n          return res.status(500).json({\n            message: 'Error al guardar la cerveza'\n          })\n        }\n        if(!cerveza) {\n          return res.status(404).json({\n            message: 'No hemos encontrado la cerveza'\n          })\n        }\n        return res.json(cerveza)\n      })\n    })\n  },\n  remove: function(req, res) {\n    var id = req.params.id\n    Cervezas.findByIdAndRemove(id, function(err, cerveza){\n      if(err) {\n        return res.json(500, {\n          message: 'No hemos encontrado la cerveza'\n        })\n      }\n      return res.json(cerveza)\n    })\n  }\n}"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/models/Cervezas.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/Cervezas.js",
+      "filenameRelative": "/app/models/Cervezas.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "Cervezas.js",
+      "sourceFileName": "Cervezas.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "Cervezas"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar Schema = mongoose.Schema;\n\nvar cervezaSchema = new Schema({\n  Nombre: String,\n  Descripción: String,\n  Graduacion: String,\n  Envase: String,\n  Precio: String\n});\n\nvar Cerveza = mongoose.model('Cerveza', cervezaSchema);\n\n/*\n\nEsto da error en update y create:\ncervezaSchema.pre('save', function (next) {\n  var self = this\n  Cerveza.count({cerveza: self.name}, function (err, count) {\n    if (count>0){\n      next(new Error('¡Ya existe esta cerveza!'))\n    }else{                \n      next()\n    }\n  })\n}) \n\n*/\n\nmodule.exports = Cerveza;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkNlcnZlemFzLmpzIl0sIm5hbWVzIjpbIm1vbmdvb3NlIiwicmVxdWlyZSIsIlNjaGVtYSIsImNlcnZlemFTY2hlbWEiLCJOb21icmUiLCJTdHJpbmciLCJEZXNjcmlwY2nDs24iLCJHcmFkdWFjaW9uIiwiRW52YXNlIiwiUHJlY2lvIiwiQ2VydmV6YSIsIm1vZGVsIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFJQSxXQUFXQyxRQUFRLFVBQVIsQ0FBZjtBQUNBLElBQUlDLFNBQVNGLFNBQVNFLE1BQXRCOztBQUVBLElBQUlDLGdCQUFnQixJQUFJRCxNQUFKLENBQVc7QUFDN0JFLFVBQVFDLE1BRHFCO0FBRTdCQyxlQUFhRCxNQUZnQjtBQUc3QkUsY0FBWUYsTUFIaUI7QUFJN0JHLFVBQVFILE1BSnFCO0FBSzdCSSxVQUFRSjtBQUxxQixDQUFYLENBQXBCOztBQVFBLElBQUlLLFVBQVVWLFNBQVNXLEtBQVQsQ0FBZSxTQUFmLEVBQTBCUixhQUExQixDQUFkOztBQUVBOzs7Ozs7Ozs7Ozs7Ozs7O0FBZ0JBUyxPQUFPQyxPQUFQLEdBQWlCSCxPQUFqQiIsImZpbGUiOiJDZXJ2ZXphcy5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL21vZGVscyIsInNvdXJjZXNDb250ZW50IjpbInZhciBtb25nb29zZSA9IHJlcXVpcmUoJ21vbmdvb3NlJylcbnZhciBTY2hlbWEgPSBtb25nb29zZS5TY2hlbWFcblxudmFyIGNlcnZlemFTY2hlbWEgPSBuZXcgU2NoZW1hKHtcbiAgTm9tYnJlOiBTdHJpbmcsIFxuICBEZXNjcmlwY2nDs246IFN0cmluZywgXG4gIEdyYWR1YWNpb246IFN0cmluZyxcbiAgRW52YXNlOiBTdHJpbmcsXG4gIFByZWNpbzogU3RyaW5nIFxufSlcblxudmFyIENlcnZlemEgPSBtb25nb29zZS5tb2RlbCgnQ2VydmV6YScsIGNlcnZlemFTY2hlbWEpXG5cbi8qXG5cbkVzdG8gZGEgZXJyb3IgZW4gdXBkYXRlIHkgY3JlYXRlOlxuY2VydmV6YVNjaGVtYS5wcmUoJ3NhdmUnLCBmdW5jdGlvbiAobmV4dCkge1xuICB2YXIgc2VsZiA9IHRoaXNcbiAgQ2VydmV6YS5jb3VudCh7Y2VydmV6YTogc2VsZi5uYW1lfSwgZnVuY3Rpb24gKGVyciwgY291bnQpIHtcbiAgICBpZiAoY291bnQ+MCl7XG4gICAgICBuZXh0KG5ldyBFcnJvcignwqFZYSBleGlzdGUgZXN0YSBjZXJ2ZXphIScpKVxuICAgIH1lbHNleyAgICAgICAgICAgICAgICBcbiAgICAgIG5leHQoKVxuICAgIH1cbiAgfSlcbn0pIFxuXG4qL1xuXG5tb2R1bGUuZXhwb3J0cyA9IENlcnZlemFcbiJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "Cervezas.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "Schema",
+        "cervezaSchema",
+        "Nombre",
+        "String",
+        "Descripción",
+        "Graduacion",
+        "Envase",
+        "Precio",
+        "Cerveza",
+        "model",
+        "module",
+        "exports"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,UAAR,CAAf;AACA,IAAIC,SAASF,SAASE,MAAtB;;AAEA,IAAIC,gBAAgB,IAAID,MAAJ,CAAW;AAC7BE,UAAQC,MADqB;AAE7BC,eAAaD,MAFgB;AAG7BE,cAAYF,MAHiB;AAI7BG,UAAQH,MAJqB;AAK7BI,UAAQJ;AALqB,CAAX,CAApB;;AAQA,IAAIK,UAAUV,SAASW,KAAT,CAAe,SAAf,EAA0BR,aAA1B,CAAd;;AAEA;;;;;;;;;;;;;;;;AAgBAS,OAAOC,OAAP,GAAiBH,OAAjB",
+      "file": "Cervezas.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar cervezaSchema = new Schema({\n  Nombre: String, \n  Descripción: String, \n  Graduacion: String,\n  Envase: String,\n  Precio: String \n})\n\nvar Cerveza = mongoose.model('Cerveza', cervezaSchema)\n\n/*\n\nEsto da error en update y create:\ncervezaSchema.pre('save', function (next) {\n  var self = this\n  Cerveza.count({cerveza: self.name}, function (err, count) {\n    if (count>0){\n      next(new Error('¡Ya existe esta cerveza!'))\n    }else{                \n      next()\n    }\n  })\n}) \n\n*/\n\nmodule.exports = Cerveza\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/hello_world.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/hello_world.js",
+      "filenameRelative": "/app/controllers/hello_world.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "hello_world.js",
+      "sourceFileName": "hello_world.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "hello_world"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar util = require('util');\n\n/*\n  In the starter/skeleton project the 'get' operation on the '/hello' path has an operationId named 'hello'.  Here,\n  we specify that in the exports of this module that 'hello' maps to the function named 'hello'\n */\nmodule.exports = {\n  hello: hello\n};\n\n/*\n  Functions in a127 controllers used for operations should take two parameters:\n\n  Param 1: a handle to the request object\n  Param 2: a handle to the response object\n */\nfunction hello(req, res) {\n  // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}\n  var name = req.swagger.params.name.value || 'stranger';\n  var hello = util.format('Hello, %s!', name);\n\n  // this sends back a JSON response which is a single string\n  res.json(hello);\n}\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlbGxvX3dvcmxkLmpzIl0sIm5hbWVzIjpbInV0aWwiLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsImhlbGxvIiwicmVxIiwicmVzIiwibmFtZSIsInN3YWdnZXIiLCJwYXJhbXMiLCJ2YWx1ZSIsImZvcm1hdCIsImpzb24iXSwibWFwcGluZ3MiOiJBQUFBOztBQUVBLElBQUlBLE9BQU9DLFFBQVEsTUFBUixDQUFYOztBQUVBOzs7O0FBSUFDLE9BQU9DLE9BQVAsR0FBaUI7QUFDZkMsU0FBT0E7QUFEUSxDQUFqQjs7QUFJQTs7Ozs7O0FBTUEsU0FBU0EsS0FBVCxDQUFlQyxHQUFmLEVBQW9CQyxHQUFwQixFQUF5QjtBQUN2QjtBQUNBLE1BQUlDLE9BQU9GLElBQUlHLE9BQUosQ0FBWUMsTUFBWixDQUFtQkYsSUFBbkIsQ0FBd0JHLEtBQXhCLElBQWlDLFVBQTVDO0FBQ0EsTUFBSU4sUUFBUUosS0FBS1csTUFBTCxDQUFZLFlBQVosRUFBMEJKLElBQTFCLENBQVo7O0FBRUE7QUFDQUQsTUFBSU0sSUFBSixDQUFTUixLQUFUO0FBQ0QiLCJmaWxlIjoiaGVsbG9fd29ybGQuanMiLCJzb3VyY2VSb290IjoiL2FwcC9jb250cm9sbGVycyIsInNvdXJjZXNDb250ZW50IjpbIid1c2Ugc3RyaWN0J1xuXG52YXIgdXRpbCA9IHJlcXVpcmUoJ3V0aWwnKVxuXG4vKlxuICBJbiB0aGUgc3RhcnRlci9za2VsZXRvbiBwcm9qZWN0IHRoZSAnZ2V0JyBvcGVyYXRpb24gb24gdGhlICcvaGVsbG8nIHBhdGggaGFzIGFuIG9wZXJhdGlvbklkIG5hbWVkICdoZWxsbycuICBIZXJlLFxuICB3ZSBzcGVjaWZ5IHRoYXQgaW4gdGhlIGV4cG9ydHMgb2YgdGhpcyBtb2R1bGUgdGhhdCAnaGVsbG8nIG1hcHMgdG8gdGhlIGZ1bmN0aW9uIG5hbWVkICdoZWxsbydcbiAqL1xubW9kdWxlLmV4cG9ydHMgPSB7XG4gIGhlbGxvOiBoZWxsb1xufVxuXG4vKlxuICBGdW5jdGlvbnMgaW4gYTEyNyBjb250cm9sbGVycyB1c2VkIGZvciBvcGVyYXRpb25zIHNob3VsZCB0YWtlIHR3byBwYXJhbWV0ZXJzOlxuXG4gIFBhcmFtIDE6IGEgaGFuZGxlIHRvIHRoZSByZXF1ZXN0IG9iamVjdFxuICBQYXJhbSAyOiBhIGhhbmRsZSB0byB0aGUgcmVzcG9uc2Ugb2JqZWN0XG4gKi9cbmZ1bmN0aW9uIGhlbGxvKHJlcSwgcmVzKSB7XG4gIC8vIHZhcmlhYmxlcyBkZWZpbmVkIGluIHRoZSBTd2FnZ2VyIGRvY3VtZW50IGNhbiBiZSByZWZlcmVuY2VkIHVzaW5nIHJlcS5zd2FnZ2VyLnBhcmFtcy57cGFyYW1ldGVyX25hbWV9XG4gIHZhciBuYW1lID0gcmVxLnN3YWdnZXIucGFyYW1zLm5hbWUudmFsdWUgfHwgJ3N0cmFuZ2VyJ1xuICB2YXIgaGVsbG8gPSB1dGlsLmZvcm1hdCgnSGVsbG8sICVzIScsIG5hbWUpXG5cbiAgLy8gdGhpcyBzZW5kcyBiYWNrIGEgSlNPTiByZXNwb25zZSB3aGljaCBpcyBhIHNpbmdsZSBzdHJpbmdcbiAgcmVzLmpzb24oaGVsbG8pXG59XG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "hello_world.js"
+      ],
+      "names": [
+        "util",
+        "require",
+        "module",
+        "exports",
+        "hello",
+        "req",
+        "res",
+        "name",
+        "swagger",
+        "params",
+        "value",
+        "format",
+        "json"
+      ],
+      "mappings": "AAAA;;AAEA,IAAIA,OAAOC,QAAQ,MAAR,CAAX;;AAEA;;;;AAIAC,OAAOC,OAAP,GAAiB;AACfC,SAAOA;AADQ,CAAjB;;AAIA;;;;;;AAMA,SAASA,KAAT,CAAeC,GAAf,EAAoBC,GAApB,EAAyB;AACvB;AACA,MAAIC,OAAOF,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBF,IAAnB,CAAwBG,KAAxB,IAAiC,UAA5C;AACA,MAAIN,QAAQJ,KAAKW,MAAL,CAAY,YAAZ,EAA0BJ,IAA1B,CAAZ;;AAEA;AACAD,MAAIM,IAAJ,CAASR,KAAT;AACD",
+      "file": "hello_world.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "'use strict'\n\nvar util = require('util')\n\n/*\n  In the starter/skeleton project the 'get' operation on the '/hello' path has an operationId named 'hello'.  Here,\n  we specify that in the exports of this module that 'hello' maps to the function named 'hello'\n */\nmodule.exports = {\n  hello: hello\n}\n\n/*\n  Functions in a127 controllers used for operations should take two parameters:\n\n  Param 1: a handle to the request object\n  Param 2: a handle to the response object\n */\nfunction hello(req, res) {\n  // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}\n  var name = req.swagger.params.name.value || 'stranger'\n  var hello = util.format('Hello, %s!', name)\n\n  // this sends back a JSON response which is a single string\n  res.json(hello)\n}\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/keywords.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/keywords.js",
+      "filenameRelative": "/app/controllers/keywords.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "keywords.js",
+      "sourceFileName": "keywords.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "keywords"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar Keywords = require('../models/Keyword');\nmodule.exports = {\n  getAll: function getAll(req, res) {\n    var language = req.swagger.params.language.value;\n    Keywords.findOne({ language: language }, function (err, keywords) {\n      if (err) {\n        return res.status(500).json({ error: err.message });\n      }\n      console.log(keywords);\n      return res.json(keywords);\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImtleXdvcmRzLmpzIl0sIm5hbWVzIjpbIktleXdvcmRzIiwicmVxdWlyZSIsIm1vZHVsZSIsImV4cG9ydHMiLCJnZXRBbGwiLCJyZXEiLCJyZXMiLCJsYW5ndWFnZSIsInN3YWdnZXIiLCJwYXJhbXMiLCJ2YWx1ZSIsImZpbmRPbmUiLCJlcnIiLCJrZXl3b3JkcyIsInN0YXR1cyIsImpzb24iLCJlcnJvciIsIm1lc3NhZ2UiLCJjb25zb2xlIiwibG9nIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsbUJBQVIsQ0FBZjtBQUNBQyxPQUFPQyxPQUFQLEdBQWlCO0FBQ2ZDLFVBQVEsZ0JBQVNDLEdBQVQsRUFBY0MsR0FBZCxFQUFtQjtBQUN6QixRQUFJQyxXQUFXRixJQUFJRyxPQUFKLENBQVlDLE1BQVosQ0FBbUJGLFFBQW5CLENBQTRCRyxLQUEzQztBQUNBVixhQUFTVyxPQUFULENBQWlCLEVBQUNKLGtCQUFELEVBQWpCLEVBQTZCLFVBQUNLLEdBQUQsRUFBTUMsUUFBTixFQUFtQjtBQUM5QyxVQUFHRCxHQUFILEVBQVE7QUFDTixlQUFPTixJQUFJUSxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUIsRUFBQ0MsT0FBT0osSUFBSUssT0FBWixFQUFyQixDQUFQO0FBQ0Q7QUFDREMsY0FBUUMsR0FBUixDQUFZTixRQUFaO0FBQ0EsYUFBT1AsSUFBSVMsSUFBSixDQUFTRixRQUFULENBQVA7QUFDRCxLQU5EO0FBT0Q7QUFWYyxDQUFqQiIsImZpbGUiOiJrZXl3b3Jkcy5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL2NvbnRyb2xsZXJzIiwic291cmNlc0NvbnRlbnQiOlsidmFyIEtleXdvcmRzID0gcmVxdWlyZSgnLi4vbW9kZWxzL0tleXdvcmQnKVxubW9kdWxlLmV4cG9ydHMgPSB7XG4gIGdldEFsbDogZnVuY3Rpb24ocmVxLCByZXMpIHtcbiAgICB2YXIgbGFuZ3VhZ2UgPSByZXEuc3dhZ2dlci5wYXJhbXMubGFuZ3VhZ2UudmFsdWVcbiAgICBLZXl3b3Jkcy5maW5kT25lKHtsYW5ndWFnZX0sIChlcnIsIGtleXdvcmRzKSA9PiB7XG4gICAgICBpZihlcnIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHtlcnJvcjogZXJyLm1lc3NhZ2V9KVxuICAgICAgfVxuICAgICAgY29uc29sZS5sb2coa2V5d29yZHMpXG4gICAgICByZXR1cm4gcmVzLmpzb24oa2V5d29yZHMpXG4gICAgfSlcbiAgfVxufVxuIl19",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "keywords.js"
+      ],
+      "names": [
+        "Keywords",
+        "require",
+        "module",
+        "exports",
+        "getAll",
+        "req",
+        "res",
+        "language",
+        "swagger",
+        "params",
+        "value",
+        "findOne",
+        "err",
+        "keywords",
+        "status",
+        "json",
+        "error",
+        "message",
+        "console",
+        "log"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,mBAAR,CAAf;AACAC,OAAOC,OAAP,GAAiB;AACfC,UAAQ,gBAASC,GAAT,EAAcC,GAAd,EAAmB;AACzB,QAAIC,WAAWF,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBF,QAAnB,CAA4BG,KAA3C;AACAV,aAASW,OAAT,CAAiB,EAACJ,kBAAD,EAAjB,EAA6B,UAACK,GAAD,EAAMC,QAAN,EAAmB;AAC9C,UAAGD,GAAH,EAAQ;AACN,eAAON,IAAIQ,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB,EAACC,OAAOJ,IAAIK,OAAZ,EAArB,CAAP;AACD;AACDC,cAAQC,GAAR,CAAYN,QAAZ;AACA,aAAOP,IAAIS,IAAJ,CAASF,QAAT,CAAP;AACD,KAND;AAOD;AAVc,CAAjB",
+      "file": "keywords.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var Keywords = require('../models/Keyword')\nmodule.exports = {\n  getAll: function(req, res) {\n    var language = req.swagger.params.language.value\n    Keywords.findOne({language}, (err, keywords) => {\n      if(err) {\n        return res.status(500).json({error: err.message})\n      }\n      console.log(keywords)\n      return res.json(keywords)\n    })\n  }\n}\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/models/Keyword.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/Keyword.js",
+      "filenameRelative": "/app/models/Keyword.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "Keyword.js",
+      "sourceFileName": "Keyword.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "Keyword"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar Schema = mongoose.Schema;\n\nvar keywordSchema = new Schema({\n  locale: String,\n  keyword: String\n});\n\nvar Keyword = mongoose.model('Keyword', keywordSchema, 'keywords');\n\nmodule.exports = Keyword;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIktleXdvcmQuanMiXSwibmFtZXMiOlsibW9uZ29vc2UiLCJyZXF1aXJlIiwiU2NoZW1hIiwia2V5d29yZFNjaGVtYSIsImxvY2FsZSIsIlN0cmluZyIsImtleXdvcmQiLCJLZXl3b3JkIiwibW9kZWwiLCJtb2R1bGUiLCJleHBvcnRzIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsVUFBUixDQUFmO0FBQ0EsSUFBSUMsU0FBU0YsU0FBU0UsTUFBdEI7O0FBRUEsSUFBSUMsZ0JBQWdCLElBQUlELE1BQUosQ0FBVztBQUM3QkUsVUFBUUMsTUFEcUI7QUFFN0JDLFdBQVNEO0FBRm9CLENBQVgsQ0FBcEI7O0FBS0EsSUFBSUUsVUFBVVAsU0FBU1EsS0FBVCxDQUFlLFNBQWYsRUFBMEJMLGFBQTFCLEVBQXlDLFVBQXpDLENBQWQ7O0FBRUFNLE9BQU9DLE9BQVAsR0FBaUJILE9BQWpCIiwiZmlsZSI6IktleXdvcmQuanMiLCJzb3VyY2VSb290IjoiL2FwcC9tb2RlbHMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgbW9uZ29vc2UgPSByZXF1aXJlKCdtb25nb29zZScpXG52YXIgU2NoZW1hID0gbW9uZ29vc2UuU2NoZW1hXG5cbnZhciBrZXl3b3JkU2NoZW1hID0gbmV3IFNjaGVtYSh7XG4gIGxvY2FsZTogU3RyaW5nLCBcbiAga2V5d29yZDogU3RyaW5nXG59KVxuXG52YXIgS2V5d29yZCA9IG1vbmdvb3NlLm1vZGVsKCdLZXl3b3JkJywga2V5d29yZFNjaGVtYSwgJ2tleXdvcmRzJylcblxubW9kdWxlLmV4cG9ydHMgPSBLZXl3b3JkXG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "Keyword.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "Schema",
+        "keywordSchema",
+        "locale",
+        "String",
+        "keyword",
+        "Keyword",
+        "model",
+        "module",
+        "exports"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,UAAR,CAAf;AACA,IAAIC,SAASF,SAASE,MAAtB;;AAEA,IAAIC,gBAAgB,IAAID,MAAJ,CAAW;AAC7BE,UAAQC,MADqB;AAE7BC,WAASD;AAFoB,CAAX,CAApB;;AAKA,IAAIE,UAAUP,SAASQ,KAAT,CAAe,SAAf,EAA0BL,aAA1B,EAAyC,UAAzC,CAAd;;AAEAM,OAAOC,OAAP,GAAiBH,OAAjB",
+      "file": "Keyword.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar keywordSchema = new Schema({\n  locale: String, \n  keyword: String\n})\n\nvar Keyword = mongoose.model('Keyword', keywordSchema, 'keywords')\n\nmodule.exports = Keyword\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/materials.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [
+        "asyncToGenerator"
+      ],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/materials.js",
+      "filenameRelative": "/app/controllers/materials.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "materials.js",
+      "sourceFileName": "materials.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "materials"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nfunction _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step(\"next\", value); }, function (err) { step(\"throw\", err); }); } } return step(\"next\"); }); }; }\n\n// habrá que concatenar dos funciones asíncronas,\n// Una para recibir los ficheros (imagenes de materiales) del dir correspondiente\n// Otra que lee los datos en la bbdd\n// mandar json cuandto todo acabe:\n// https://stackoverflow.com/questions/2727167/how-do-you-get-a-list-of-the-names-of-all-files-present-in-a-directory-in-node-j/37532027#37532027\nvar Materials = require('../models/Materials');\nvar config = require('../config');\nvar recursive = require('recursive-readdir');\nvar path = require('path');\nvar Promise = require('bluebird');\n\nmodule.exports = {\n  getMaterialById: function getMaterialById(req, res) {\n    var id = req.swagger.params.idMaterial.value;\n    // Use lean to get a plain JS object to modify it, instead of a full model instance\n    // Materials.findOne({idMaterial: id}, function(err, material){\n    Materials.findOne({ idMaterial: id }).lean().exec(function () {\n      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(err, material) {\n        var response;\n        return regeneratorRuntime.wrap(function _callee$(_context) {\n          while (1) {\n            switch (_context.prev = _context.next) {\n              case 0:\n                if (!err) {\n                  _context.next = 2;\n                  break;\n                }\n\n                return _context.abrupt('return', res.status(500).json({\n                  message: 'Se ha producido un error al obtener el material',\n                  error: err\n                }));\n\n              case 2:\n                if (material) {\n                  _context.next = 4;\n                  break;\n                }\n\n                return _context.abrupt('return', res.status(404).json({\n                  message: 'No tenemos este material',\n                  err: err\n                }));\n\n              case 4:\n                // getImages(material, ()=>(res.json(material)))\n                initMaterial(material);\n                _context.next = 7;\n                return getFiles(material);\n\n              case 7:\n                response = _context.sent;\n                return _context.abrupt('return', res.json(response));\n\n              case 9:\n              case 'end':\n                return _context.stop();\n            }\n          }\n        }, _callee, undefined);\n      }));\n\n      return function (_x, _x2) {\n        return _ref.apply(this, arguments);\n      };\n    }());\n  },\n  // Materials.find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}}).sort({score:{$meta:'textScore'}}, function(err, materials) {\n  // https://docs.mongodb.com/v3.0/reference/operator/query/text/\n  searchMaterials: function searchMaterials(req, res) {\n    var locale = req.swagger.params.locale.value;\n    var searchText = req.swagger.params.searchText.value;\n    Materials.find({ $text: { $search: searchText, $language: locale } }, { score: { $meta: 'textScore' } }).sort({ 'score': { '$meta': 'textScore' } }).lean().exec(function () {\n      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(err, materials) {\n        return regeneratorRuntime.wrap(function _callee2$(_context2) {\n          while (1) {\n            switch (_context2.prev = _context2.next) {\n              case 0:\n                if (!err) {\n                  _context2.next = 2;\n                  break;\n                }\n\n                return _context2.abrupt('return', res.status(500).json({\n                  message: 'Error buscando el material',\n                  error: err\n                }));\n\n              case 2:\n                if (!(materials.length === 0)) {\n                  _context2.next = 4;\n                  break;\n                }\n\n                return _context2.abrupt('return', res.status(404).json([]));\n\n              case 4:\n                _context2.next = 6;\n                return Promise.all(materials.map(function (material) {\n                  return getFiles(material);\n                }) // not async&await as we want to get all material images in parallel\n                );\n\n              case 6:\n                console.log(materials);\n                return _context2.abrupt('return', res.json(materials));\n\n              case 8:\n              case 'end':\n                return _context2.stop();\n            }\n          }\n        }, _callee2, undefined);\n      }));\n\n      return function (_x3, _x4) {\n        return _ref2.apply(this, arguments);\n      };\n    }());\n  },\n  listMaterials: function listMaterials(req, res) {\n    Materials.find(function (err, materials) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error obteniendo los materiales',\n          error: err\n        });\n      }\n      return res.json(materials);\n    });\n  },\n  showMaterials: function showMaterials(req, res) {\n    var id = req.params.id;\n    Materials.findOne({ _id: id }, function (err, material) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener el material',\n          error: err\n        });\n      }\n      if (!cerveza) {\n        return res.status(404).json({\n          message: 'No tenemos este material',\n          err: err\n        });\n      }\n      return res.json(material);\n    });\n  },\n  createMaterials: function createMaterials(req, res) {\n    var material = new Materials(req.body);\n    material.save(function (err, material) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error al guardar el material',\n          error: err\n        });\n      }\n      return res.status(201).json({\n        message: 'saved',\n        _id: material._id\n      });\n    });\n  },\n  updateMaterials: function updateMaterials(req, res) {\n    var id = req.params.id;\n    Materials.findOne({ _id: id }, function (err, material) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al guardar el material',\n          error: err\n        });\n      }\n      if (!material) {\n        return res.status(404).json({\n          message: 'No hemos encontrado el material'\n        });\n      }\n      material.Nombre = req.body.nombre;\n      material.Descripción = req.body.descripcion;\n      material.Graduacion = req.body.graduacion;\n      material.Envase = req.body.envase;\n      material.Precio = req.body.precio;\n      material.save(function (err, material) {\n        if (err) {\n          return res.status(500).json({\n            message: 'Error al guardar el material'\n          });\n        }\n        if (!material) {\n          return res.status(404).json({\n            message: 'No hemos encontrado el material'\n          });\n        }\n        return res.json(material);\n      });\n    });\n  },\n  removeMaterials: function removeMaterials(req, res) {\n    var id = req.params.id;\n    Materials.findByIdAndRemove(id, function (err, material) {\n      if (err) {\n        return res.json(500, {\n          message: 'No hemos encontrado el  material',\n          error: err\n        });\n      }\n      return res.json(material);\n    });\n  }\n};\n\nfunction isNumeric(n) {\n  return !isNaN(parseFloat(n)) && isFinite(n);\n}\n\nvar initMaterial = function initMaterial(material) {\n  material.commonFiles = [];\n  material.screenshots = {};\n  material.files = {};\n  material.file = {};\n};\n\nvar getFiles = function getFiles(material) {\n  return new Promise(function (resolve) {\n    var materialLocales = [material.lang];\n    var baseDir = '' + config.materialsDir + path.sep + material.idMaterial + path.sep;\n    material.translations.map(function (translation) {\n      return materialLocales.push(translation.lang);\n    });\n    recursive(baseDir, function (err, files) {\n      // if err return material, if err is different from no screenshots dir, warning through console\n      if (err) err.code != 'ENOENT' && console.warn(err);\n      if (files != null) {\n        files.map(function (file) {\n          var relativeFile = file.replace(baseDir, '');\n          var fileName = path.basename(file);\n          if (fileName == 'index.html') return; // extra files from previous app\n          var dir = path.dirname(relativeFile);\n          var subdir = path.dirname(relativeFile).split(path.sep).pop();\n          if (dir === '.') {\n            //if file is tar.gz, put it inside file json  {es: xxx-es.tgz, fr: xxx.fr.tgz...}\n            var filePattern = new RegExp('^index-[A-z]{2,3}-[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}.tgz$', 'i');\n            if (filePattern.test(fileName)) {\n              var fileLocale = fileName.split('-')[1];\n              material.file[fileLocale] = fileName;\n            } else material.commonFiles.push(fileName);\n          } else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName);else if (dir.match(/screenshots_300\\/[A-z]{2,3}$/)) material.screenshots[subdir] ? material.screenshots[subdir].push(fileName) : material.screenshots[subdir] = [fileName];else if (dir.match(/^[A-z]{2,3}$/)) material.files[subdir] ? material.files[subdir].push(fileName) : material.files[subdir] = [fileName];\n        });\n      }\n      resolve(material);\n    });\n  });\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1hdGVyaWFscy5qcyJdLCJuYW1lcyI6WyJNYXRlcmlhbHMiLCJyZXF1aXJlIiwiY29uZmlnIiwicmVjdXJzaXZlIiwicGF0aCIsIlByb21pc2UiLCJtb2R1bGUiLCJleHBvcnRzIiwiZ2V0TWF0ZXJpYWxCeUlkIiwicmVxIiwicmVzIiwiaWQiLCJzd2FnZ2VyIiwicGFyYW1zIiwiaWRNYXRlcmlhbCIsInZhbHVlIiwiZmluZE9uZSIsImxlYW4iLCJleGVjIiwiZXJyIiwibWF0ZXJpYWwiLCJzdGF0dXMiLCJqc29uIiwibWVzc2FnZSIsImVycm9yIiwiaW5pdE1hdGVyaWFsIiwiZ2V0RmlsZXMiLCJyZXNwb25zZSIsInNlYXJjaE1hdGVyaWFscyIsImxvY2FsZSIsInNlYXJjaFRleHQiLCJmaW5kIiwiJHRleHQiLCIkc2VhcmNoIiwiJGxhbmd1YWdlIiwic2NvcmUiLCIkbWV0YSIsInNvcnQiLCJtYXRlcmlhbHMiLCJsZW5ndGgiLCJhbGwiLCJtYXAiLCJjb25zb2xlIiwibG9nIiwibGlzdE1hdGVyaWFscyIsInNob3dNYXRlcmlhbHMiLCJfaWQiLCJjZXJ2ZXphIiwiY3JlYXRlTWF0ZXJpYWxzIiwiYm9keSIsInNhdmUiLCJ1cGRhdGVNYXRlcmlhbHMiLCJOb21icmUiLCJub21icmUiLCJEZXNjcmlwY2nDs24iLCJkZXNjcmlwY2lvbiIsIkdyYWR1YWNpb24iLCJncmFkdWFjaW9uIiwiRW52YXNlIiwiZW52YXNlIiwiUHJlY2lvIiwicHJlY2lvIiwicmVtb3ZlTWF0ZXJpYWxzIiwiZmluZEJ5SWRBbmRSZW1vdmUiLCJpc051bWVyaWMiLCJuIiwiaXNOYU4iLCJwYXJzZUZsb2F0IiwiaXNGaW5pdGUiLCJjb21tb25GaWxlcyIsInNjcmVlbnNob3RzIiwiZmlsZXMiLCJmaWxlIiwicmVzb2x2ZSIsIm1hdGVyaWFsTG9jYWxlcyIsImxhbmciLCJiYXNlRGlyIiwibWF0ZXJpYWxzRGlyIiwic2VwIiwidHJhbnNsYXRpb25zIiwidHJhbnNsYXRpb24iLCJwdXNoIiwiY29kZSIsIndhcm4iLCJyZWxhdGl2ZUZpbGUiLCJyZXBsYWNlIiwiZmlsZU5hbWUiLCJiYXNlbmFtZSIsImRpciIsImRpcm5hbWUiLCJzdWJkaXIiLCJzcGxpdCIsInBvcCIsImZpbGVQYXR0ZXJuIiwiUmVnRXhwIiwidGVzdCIsImZpbGVMb2NhbGUiLCJtYXRjaCIsImNvbW1vblNjcmVlbnNob3RzIl0sIm1hcHBpbmdzIjoiOzs7O0FBQUE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBLElBQUlBLFlBQVlDLFFBQVEscUJBQVIsQ0FBaEI7QUFDQSxJQUFNQyxTQUFTRCxRQUFRLFdBQVIsQ0FBZjtBQUNBLElBQUlFLFlBQVlGLFFBQVEsbUJBQVIsQ0FBaEI7QUFDQSxJQUFJRyxPQUFPSCxRQUFRLE1BQVIsQ0FBWDtBQUNBLElBQUlJLFVBQVVKLFFBQVEsVUFBUixDQUFkOztBQUVBSyxPQUFPQyxPQUFQLEdBQWlCO0FBQ2ZDLG1CQUFpQix5QkFBQ0MsR0FBRCxFQUFNQyxHQUFOLEVBQWM7QUFDN0IsUUFBSUMsS0FBS0YsSUFBSUcsT0FBSixDQUFZQyxNQUFaLENBQW1CQyxVQUFuQixDQUE4QkMsS0FBdkM7QUFDQTtBQUNBO0FBQ0FmLGNBQVVnQixPQUFWLENBQWtCLEVBQUNGLFlBQVlILEVBQWIsRUFBbEIsRUFBb0NNLElBQXBDLEdBQTJDQyxJQUEzQztBQUFBLDJEQUFnRCxpQkFBT0MsR0FBUCxFQUFZQyxRQUFaO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLHFCQUMzQ0QsR0FEMkM7QUFBQTtBQUFBO0FBQUE7O0FBQUEsaURBRXJDVCxJQUFJVyxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUI7QUFDMUJDLDJCQUFTLGlEQURpQjtBQUUxQkMseUJBQU9MO0FBRm1CLGlCQUFyQixDQUZxQzs7QUFBQTtBQUFBLG9CQU8xQ0MsUUFQMEM7QUFBQTtBQUFBO0FBQUE7O0FBQUEsaURBUXJDVixJQUFJVyxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBc0I7QUFDM0JDLDJCQUFT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QixJQUErQixDQUFDSixRQUFELENBRmpDLENBREcsS0FJQSxJQUFJRSxJQUFJUyxLQUFKLENBQVUsY0FBVixDQUFKLEVBQ0g3RSxTQUFTbUQsS0FBVCxDQUFlbUIsTUFBZixJQUNFdEUsU0FBU21ELEtBQVQsQ0FBZW1CLE1BQWYsRUFBdUJULElBQXZCLENBQTZCSyxRQUE3QixDQURGLEdBRUlsRSxTQUFTbUQsS0FBVCxDQUFlbUIsTUFBZixJQUF5QixDQUFDSixRQUFELENBRjdCO0FBR0gsU0F2QkQ7QUF3QkQ7QUFDRGIsY0FBUXJELFFBQVI7QUFDRCxLQTlCRDtBQStCRCxHQW5DTSxDQUFQO0FBb0NELENBckNEIiwiZmlsZSI6Im1hdGVyaWFscy5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL2NvbnRyb2xsZXJzIiwic291cmNlc0NvbnRlbnQiOlsiLy8gaGFicsOhIHF1ZSBjb25jYXRlbmFyIGRvcyBmdW5jaW9uZXMgYXPDrW5jcm9uYXMsXG4vLyBVbmEgcGFyYSByZWNpYmlyIGxvcyBmaWNoZXJvcyAoaW1hZ2VuZXMgZGUgbWF0ZXJpYWxlcykgZGVsIGRpciBjb3JyZXNwb25kaWVudGVcbi8vIE90cmEgcXVlIGxlZSBsb3MgZGF0b3MgZW4gbGEgYmJkZFxuLy8gbWFuZGFyIGpzb24gY3VhbmR0byB0b2RvIGFjYWJlOlxuLy8gaHR0cHM6Ly9zdGFja292ZXJmbG93LmNvbS9xdWVzdGlvbnMvMjcyNzE2Ny9ob3ctZG8teW91LWdldC1hLWxpc3Qtb2YtdGhlLW5hbWVzLW9mLWFsbC1maWxlcy1wcmVzZW50LWluLWEtZGlyZWN0b3J5LWluLW5vZGUtai8zNzUzMjAyNyMzNzUzMjAyN1xudmFyIE1hdGVyaWFscyA9IHJlcXVpcmUoJy4uL21vZGVscy9NYXRlcmlhbHMnKVxuY29uc3QgY29uZmlnID0gcmVxdWlyZSgnLi4vY29uZmlnJylcbnZhciByZWN1cnNpdmUgPSByZXF1aXJlKCdyZWN1cnNpdmUtcmVhZGRpcicpXG52YXIgcGF0aCA9IHJlcXVpcmUoJ3BhdGgnKVxudmFyIFByb21pc2UgPSByZXF1aXJlKCdibHVlYmlyZCcpXG5cbm1vZHVsZS5leHBvcnRzID0ge1xuICBnZXRNYXRlcmlhbEJ5SWQ6IChyZXEsIHJlcykgPT4ge1xuICAgIHZhciBpZCA9IHJlcS5zd2FnZ2VyLnBhcmFtcy5pZE1hdGVyaWFsLnZhbHVlXG4gICAgLy8gVXNlIGxlYW4gdG8gZ2V0IGEgcGxhaW4gSlMgb2JqZWN0IHRvIG1vZGlmeSBpdCwgaW5zdGVhZCBvZiBhIGZ1bGwgbW9kZWwgaW5zdGFuY2VcbiAgICAvLyBNYXRlcmlhbHMuZmluZE9uZSh7aWRNYXRlcmlhbDogaWR9LCBmdW5jdGlvbihlcnIsIG1hdGVyaWFsKXtcbiAgICBNYXRlcmlhbHMuZmluZE9uZSh7aWRNYXRlcmlhbDogaWR9KS5sZWFuKCkuZXhlYyhhc3luYyAoZXJyLCBtYXRlcmlhbCkgPT4ge1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ1NlIGhhIHByb2R1Y2lkbyB1biBlcnJvciBhbCBvYnRlbmVyIGVsIG1hdGVyaWFsJyxcbiAgICAgICAgICBlcnJvcjogZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighbWF0ZXJpYWwpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNDA0KS5qc29uKCB7XG4gICAgICAgICAgbWVzc2FnZTogJ05vIHRlbmVtb3MgZXN0ZSBtYXRlcmlhbCcsXG4gICAgICAgICAgZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICAvLyBnZXRJbWFnZXMobWF0ZXJpYWwsICgpPT4ocmVzLmpzb24obWF0ZXJpYWwpKSlcbiAgICAgIGluaXRNYXRlcmlhbChtYXRlcmlhbClcbiAgICAgIGNvbnN0IHJlc3BvbnNlID0gIGF3YWl0IGdldEZpbGVzKG1hdGVyaWFsKVxuICAgICAgcmV0dXJuIHJlcy5qc29uKHJlc3BvbnNlKVxuICAgIH0pXG4gIH0sXG4gIC8vIE1hdGVyaWFscy5maW5kKHsgJHRleHQ6IHsgJHNlYXJjaDogc2VhcmNoVGV4dCwgJGxhbmd1YWdlOiBsb2NhbGUgfSB9LCB7c2NvcmU6IHskbWV0YTogJ3RleHRTY29yZSd9fSkuc29ydCh7c2NvcmU6eyRtZXRhOid0ZXh0U2NvcmUnfX0sIGZ1bmN0aW9uKGVyciwgbWF0ZXJpYWxzKSB7XG4gIC8vIGh0dHBzOi8vZG9jcy5tb25nb2RiLmNvbS92My4wL3JlZmVyZW5jZS9vcGVyYXRvci9xdWVyeS90ZXh0L1xuICBzZWFyY2hNYXRlcmlhbHM6IChyZXEsIHJlcykgPT4ge1xuICAgIHZhciBsb2NhbGUgPSByZXEuc3dhZ2dlci5wYXJhbXMubG9jYWxlLnZhbHVlXG4gICAgdmFyIHNlYXJjaFRleHQgPSByZXEuc3dhZ2dlci5wYXJhbXMuc2VhcmNoVGV4dC52YWx1ZVxuICAgIE1hdGVyaWFsc1xuICAgICAgLmZpbmQoeyAkdGV4dDogeyAkc2VhcmNoOiBzZWFyY2hUZXh0LCAkbGFuZ3VhZ2U6IGxvY2FsZSB9IH0sIHtzY29yZTogeyRtZXRhOiAndGV4dFNjb3JlJ319KVxuICAgICAgLnNvcnQoeydzY29yZSc6IHsgJyRtZXRhJzogJ3RleHRTY29yZSd9IH0pXG4gICAgICAubGVhbigpXG4gICAgICAuZXhlYyAoYXN5bmMgKGVyciwgbWF0ZXJpYWxzKSA9PiB7XG4gICAgICAgIGlmKGVycikge1xuICAgICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgICBtZXNzYWdlOiAnRXJyb3IgYnVzY2FuZG8gZWwgbWF0ZXJpYWwnLFxuICAgICAgICAgICAgZXJyb3I6IGVyclxuICAgICAgICAgIH0pXG4gICAgICAgIH1cbiAgICAgICAgLy8gaWYgbm8gaXRlbXMsIHJldHVybiBlbXB0eSBhcnJheVxuICAgICAgICBpZiAobWF0ZXJpYWxzLmxlbmd0aD09PTApIHJldHVybiByZXMuc3RhdHVzKDQwNCkuanNvbihbXSkgLy9zZW5kIGh0dHAgY29kZSA0MDQhISFcbiAgICAgICAgYXdhaXQgUHJvbWlzZS5hbGwoXG4gICAgICAgICAgbWF0ZXJpYWxzLm1hcCggKG1hdGVyaWFsKSA9PiBnZXRGaWxlcyhtYXRlcmlhbCkpIC8vIG5vdCBhc3luYyZhd2FpdCBhcyB3ZSB3YW50IHRvIGdldCBhbGwgbWF0ZXJpYWwgaW1hZ2VzIGluIHBhcmFsbGVsXG4gICAgICAgIClcbiAgICAgICAgY29uc29sZS5sb2cobWF0ZXJpYWxzKVxuICAgICAgICByZXR1cm4gcmVzLmpzb24obWF0ZXJpYWxzKVxuICAgICAgfSlcbiAgfSxcbiAgbGlzdE1hdGVyaWFsczogZnVuY3Rpb24ocmVxLCByZXMpIHtcbiAgICBNYXRlcmlhbHMuZmluZChmdW5jdGlvbihlcnIsIG1hdGVyaWFscyl7XG4gICAgICBpZihlcnIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHtcbiAgICAgICAgICBtZXNzYWdlOiAnRXJyb3Igb2J0ZW5pZW5kbyBsb3MgbWF0ZXJpYWxlcycsXG4gICAgICAgICAgZXJyb3I6IGVyclxuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgcmV0dXJuIHJlcy5qc29uKG1hdGVyaWFscylcbiAgICB9KVxuICB9LFxuICBzaG93TWF0ZXJpYWxzOiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIHZhciBpZCA9IHJlcS5wYXJhbXMuaWRcbiAgICBNYXRlcmlhbHMuZmluZE9uZSh7X2lkOiBpZH0sIGZ1bmN0aW9uKGVyciwgbWF0ZXJpYWwpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ1NlIGhhIHByb2R1Y2lkbyB1biBlcnJvciBhbCBvYnRlbmVyIGVsIG1hdGVyaWFsJyxcbiAgICAgICAgICBlcnJvcjogZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighY2VydmV6YSkge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oIHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gdGVuZW1vcyBlc3RlIG1hdGVyaWFsJyxcbiAgICAgICAgICBlcnJcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuanNvbihtYXRlcmlhbClcbiAgICB9KVxuICB9LFxuICBjcmVhdGVNYXRlcmlhbHM6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIG1hdGVyaWFsID0gbmV3IE1hdGVyaWFscyAocmVxLmJvZHkpXG4gICAgbWF0ZXJpYWwuc2F2ZShmdW5jdGlvbihlcnIsIG1hdGVyaWFsKXtcbiAgICAgIGlmKGVycikge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg1MDApLmpzb24oIHtcbiAgICAgICAgICBtZXNzYWdlOiAnRXJyb3IgYWwgZ3VhcmRhciBlbCBtYXRlcmlhbCcsXG4gICAgICAgICAgZXJyb3I6IGVyclxuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoMjAxKS5qc29uKHtcbiAgICAgICAgbWVzc2FnZTogJ3NhdmVkJyxcbiAgICAgICAgX2lkOiBtYXRlcmlhbC5faWRcbiAgICAgIH0pXG4gICAgfSlcbiAgfSxcbiAgdXBkYXRlTWF0ZXJpYWxzOiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIHZhciBpZCA9IHJlcS5wYXJhbXMuaWRcbiAgICBNYXRlcmlhbHMuZmluZE9uZSh7X2lkOiBpZH0sIGZ1bmN0aW9uKGVyciwgbWF0ZXJpYWwpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ1NlIGhhIHByb2R1Y2lkbyB1biBlcnJvciBhbCBndWFyZGFyIGVsIG1hdGVyaWFsJyxcbiAgICAgICAgICBlcnJvcjogZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighbWF0ZXJpYWwpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNDA0KS5qc29uKHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gaGVtb3MgZW5jb250cmFkbyBlbCBtYXRlcmlhbCdcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIG1hdGVyaWFsLk5vbWJyZSA9IHJlcS5ib2R5Lm5vbWJyZVxuICAgICAgbWF0ZXJpYWwuRGVzY3JpcGNpw7NuID0gIHJlcS5ib2R5LmRlc2NyaXBjaW9uXG4gICAgICBtYXRlcmlhbC5HcmFkdWFjaW9uID0gcmVxLmJvZHkuZ3JhZHVhY2lvblxuICAgICAgbWF0ZXJpYWwuRW52YXNlID0gcmVxLmJvZHkuZW52YXNlXG4gICAgICBtYXRlcmlhbC5QcmVjaW8gPSByZXEuYm9keS5wcmVjaW9cbiAgICAgIG1hdGVyaWFsLnNhdmUoZnVuY3Rpb24oZXJyLCBtYXRlcmlhbCl7XG4gICAgICAgIGlmKGVycikge1xuICAgICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgICBtZXNzYWdlOiAnRXJyb3IgYWwgZ3VhcmRhciBlbCBtYXRlcmlhbCdcbiAgICAgICAgICB9KVxuICAgICAgICB9XG4gICAgICAgIGlmKCFtYXRlcmlhbCkge1xuICAgICAgICAgIHJldHVybiByZXMuc3RhdHVzKDQwNCkuanNvbih7XG4gICAgICAgICAgICBtZXNzYWdlOiAnTm8gaGVtb3MgZW5jb250cmFkbyBlbCBtYXRlcmlhbCdcbiAgICAgICAgICB9KVxuICAgICAgICB9XG4gICAgICAgIHJldHVybiByZXMuanNvbihtYXRlcmlhbClcbiAgICAgIH0pXG4gICAgfSlcbiAgfSxcbiAgcmVtb3ZlTWF0ZXJpYWxzOiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIHZhciBpZCA9IHJlcS5wYXJhbXMuaWRcbiAgICBNYXRlcmlhbHMuZmluZEJ5SWRBbmRSZW1vdmUoaWQsIGZ1bmN0aW9uKGVyciwgbWF0ZXJpYWwpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuanNvbig1MDAsIHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gaGVtb3MgZW5jb250cmFkbyBlbCAgbWF0ZXJpYWwnLFxuICAgICAgICAgIGVycm9yOiBlcnJcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuanNvbihtYXRlcmlhbClcbiAgICB9KVxuICB9XG59XG5cblxuXG5mdW5jdGlvbiBpc051bWVyaWMobikge1xuICByZXR1cm4gIWlzTmFOKHBhcnNlRmxvYXQobikpICYmIGlzRmluaXRlKG4pO1xufVxuXG5jb25zdCBpbml0TWF0ZXJpYWwgPSAobWF0ZXJpYWwpID0+IHtcbiAgbWF0ZXJpYWwuY29tbW9uRmlsZXM9W11cbiAgbWF0ZXJpYWwuc2NyZWVuc2hvdHM9e31cbiAgbWF0ZXJpYWwuZmlsZXM9e31cbiAgbWF0ZXJpYWwuZmlsZT17fVxufVxuXG5jb25zdCBnZXRGaWxlcyA9IChtYXRlcmlhbCkgPT4ge1xuICByZXR1cm4gbmV3IFByb21pc2UgKChyZXNvbHZlKSA9PiB7XG4gICAgbGV0IG1hdGVyaWFsTG9jYWxlcz1bbWF0ZXJpYWwubGFuZ11cbiAgICBsZXQgYmFzZURpciA9IGAke2NvbmZpZy5tYXRlcmlhbHNEaXJ9JHtwYXRoLnNlcH0ke21hdGVyaWFsLmlkTWF0ZXJpYWx9JHtwYXRoLnNlcH1gXG4gICAgbWF0ZXJpYWwudHJhbnNsYXRpb25zLm1hcCgodHJhbnNsYXRpb24pPT5tYXRlcmlhbExvY2FsZXMucHVzaCh0cmFuc2xhdGlvbi5sYW5nKSlcbiAgICByZWN1cnNpdmUoYmFzZURpciwgKGVyciwgZmlsZXMpID0+IHtcbiAgICAgIC8vIGlmIGVyciByZXR1cm4gbWF0ZXJpYWwsIGlmIGVyciBpcyBkaWZmZXJlbnQgZnJvbSBubyBzY3JlZW5zaG90cyBkaXIsIHdhcm5pbmcgdGhyb3VnaCBjb25zb2xlXG4gICAgICBpZiAoZXJyKSBlcnIuY29kZSAhPSAnRU5PRU5UJyAmJiBjb25zb2xlLndhcm4gKGVycikgXG4gICAgICBpZiAoZmlsZXMgIT0gbnVsbCkge1xuICAgICAgICBmaWxlcy5tYXAoZmlsZSA9PntcbiAgICAgICAgICBsZXQgcmVsYXRpdmVGaWxlID0gZmlsZS5yZXBsYWNlKGJhc2VEaXIsICcnKVxuICAgICAgICAgIGxldCBmaWxlTmFtZSA9IHBhdGguYmFzZW5hbWUoZmlsZSlcbiAgICAgICAgICBpZiAoZmlsZU5hbWU9PSdpbmRleC5odG1sJykgcmV0dXJuIC8vIGV4dHJhIGZpbGVzIGZyb20gcHJldmlvdXMgYXBwXG4gICAgICAgICAgbGV0IGRpciA9IHBhdGguZGlybmFtZShyZWxhdGl2ZUZpbGUpXG4gICAgICAgICAgbGV0IHN1YmRpciA9IHBhdGguZGlybmFtZShyZWxhdGl2ZUZpbGUpLnNwbGl0KHBhdGguc2VwKS5wb3AoKVxuICAgICAgICAgIGlmIChkaXI9PT0nLicpe1xuICAgICAgICAgICAgLy9pZiBmaWxlIGlzIHRhci5neiwgcHV0IGl0IGluc2lkZSBmaWxlIGpzb24gIHtlczogeHh4LWVzLnRneiwgZnI6IHh4eC5mci50Z3ouLi59XG4gICAgICAgICAgICBsZXQgZmlsZVBhdHRlcm4gPSBuZXcgUmVnRXhwKGBeaW5kZXgtW0Etel17MiwzfS1bMC05QS1GXXs4fS1bMC05QS1GXXs0fS1bNF1bMC05QS1GXXszfS1bODlBQl1bMC05QS1GXXszfS1bMC05QS1GXXsxMn0udGd6JGAsICdpJylcbiAgICAgICAgICAgIGlmIChmaWxlUGF0dGVybi50ZXN0KGZpbGVOYW1lKSkge1xuICAgICAgICAgICAgICBsZXQgZmlsZUxvY2FsZSA9IGZpbGVOYW1lLnNwbGl0KCctJylbMV1cbiAgICAgICAgICAgICAgbWF0ZXJpYWwuZmlsZVtmaWxlTG9jYWxlXT1maWxlTmFtZVxuICAgICAgICAgICAgfSBlbHNlIG1hdGVyaWFsLmNvbW1vbkZpbGVzLnB1c2goZmlsZU5hbWUpXG4gICAgICAgICAgfSBcbiAgICAgICAgICBlbHNlIGlmIChkaXIubWF0Y2goL3NjcmVlbnNob3RzXzMwMCQvKSkgbWF0ZXJpYWwuY29tbW9uU2NyZWVuc2hvdHMucHVzaChmaWxlTmFtZSlcbiAgICAgICAgICBlbHNlIGlmIChkaXIubWF0Y2goL3NjcmVlbnNob3RzXzMwMFxcL1tBLXpdezIsM30kLykpIFxuICAgICAgICAgICAgbWF0ZXJpYWwuc2NyZWVuc2hvdHNbc3ViZGlyXSA/IFxuICAgICAgICAgICAgICBtYXRlcmlhbC5zY3JlZW5zaG90c1tzdWJkaXJdLnB1c2goZmlsZU5hbWUpIFxuICAgICAgICAgICAgOiBtYXRlcmlhbC5zY3JlZW5zaG90c1tzdWJkaXJdID0gW2ZpbGVOYW1lXVxuICAgICAgICAgIGVsc2UgaWYgKGRpci5tYXRjaCgvXltBLXpdezIsM30kLykpIFxuICAgICAgICAgICAgbWF0ZXJpYWwuZmlsZXNbc3ViZGlyXSA/XG4gICAgICAgICAgICAgIG1hdGVyaWFsLmZpbGVzW3N1YmRpcl0ucHVzaCAoZmlsZU5hbWUpXG4gICAgICAgICAgICAgIDogbWF0ZXJpYWwuZmlsZXNbc3ViZGlyXSA9IFtmaWxlTmFtZV1cbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJlc29sdmUobWF0ZXJpYWwpXG4gICAgfSlcbiAgfSlcbn1cbiJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "materials.js"
+      ],
+      "names": [
+        "Materials",
+        "require",
+        "config",
+        "recursive",
+        "path",
+        "Promise",
+        "module",
+        "exports",
+        "getMaterialById",
+        "req",
+        "res",
+        "id",
+        "swagger",
+        "params",
+        "idMaterial",
+        "value",
+        "findOne",
+        "lean",
+        "exec",
+        "err",
+        "material",
+        "status",
+        "json",
+        "message",
+        "error",
+        "initMaterial",
+        "getFiles",
+        "response",
+        "searchMaterials",
+        "locale",
+        "searchText",
+        "find",
+        "$text",
+        "$search",
+        "$language",
+        "score",
+        "$meta",
+        "sort",
+        "materials",
+        "length",
+        "all",
+        "map",
+        "console",
+        "log",
+        "listMaterials",
+        "showMaterials",
+        "_id",
+        "cerveza",
+        "createMaterials",
+        "body",
+        "save",
+        "updateMaterials",
+        "Nombre",
+        "nombre",
+        "Descripción",
+        "descripcion",
+        "Graduacion",
+        "graduacion",
+        "Envase",
+        "envase",
+        "Precio",
+        "precio",
+        "removeMaterials",
+        "findByIdAndRemove",
+        "isNumeric",
+        "n",
+        "isNaN",
+        "parseFloat",
+        "isFinite",
+        "commonFiles",
+        "screenshots",
+        "files",
+        "file",
+        "resolve",
+        "materialLocales",
+        "lang",
+        "baseDir",
+        "materialsDir",
+        "sep",
+        "translations",
+        "translation",
+        "push",
+        "code",
+        "warn",
+        "relativeFile",
+        "replace",
+        "fileName",
+        "basename",
+        "dir",
+        "dirname",
+        "subdir",
+        "split",
+        "pop",
+        "filePattern",
+        "RegExp",
+        "test",
+        "fileLocale",
+        "match",
+        "commonScreenshots"
+      ],
+      "mappings": ";;;;AAAA;AACA;AACA;AACA;AACA;AACA,IAAIA,YAAYC,QAAQ,qBAAR,CAAhB;AACA,IAAMC,SAASD,QAAQ,WAAR,CAAf;AACA,IAAIE,YAAYF,QAAQ,mBAAR,CAAhB;AACA,IAAIG,OAAOH,QAAQ,MAAR,CAAX;AACA,IAAII,UAAUJ,QAAQ,UAAR,CAAd;;AAEAK,OAAOC,OAAP,GAAiB;AACfC,mBAAiB,yBAACC,GAAD,EAAMC,GAAN,EAAc;AAC7B,QAAIC,KAAKF,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBC,UAAnB,CAA8BC,KAAvC;AACA;AACA;AACAf,cAAUgB,OAAV,CAAkB,EAACF,YAAYH,EAAb,EAAlB,EAAoCM,IAApC,GAA2CC,IAA3C;AAAA,2DAAgD,iBAAOC,GAAP,EAAYC,QAAZ;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,qBAC3CD,GAD2C;AAAA;AAAA;AAAA;;AAAA,iDAErCT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,2BAAS,iDADiB;AAE1BC,yBAAOL;AAFmB,iBAArB,CAFqC;;AAAA;AAAA,oBAO1CC,QAP0C;AAAA;AAAA;AAAA;;AAAA,iDAQrCV,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAsB;AAC3BC,2BAAS,0BADkB;AAE3BJ;AAF2B,iBAAtB,CARqC;;AAAA;AAa9C;AACAM,6BAAaL,QAAb;AAd8C;AAAA,uBAetBM,SAASN,QAAT,CAfsB;;AAAA;AAexCO,wBAfwC;AAAA,iDAgBvCjB,IAAIY,IAAJ,CAASK,QAAT,CAhBuC;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,OAAhD;;AAAA;AAAA;AAAA;AAAA;AAkBD,GAvBc;AAwBf;AACA;AACAC,mBAAiB,yBAACnB,GAAD,EAAMC,GAAN,EAAc;AAC7B,QAAImB,SAASpB,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBgB,MAAnB,CAA0Bd,KAAvC;AACA,QAAIe,aAAarB,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBiB,UAAnB,CAA8Bf,KAA/C;AACAf,cACG+B,IADH,CACQ,EAAEC,OAAO,EAAEC,SAASH,UAAX,EAAuBI,WAAWL,MAAlC,EAAT,EADR,EAC+D,EAACM,OAAO,EAACC,OAAO,WAAR,EAAR,EAD/D,EAEGC,IAFH,CAEQ,EAAC,SAAS,EAAE,SAAS,WAAX,EAAV,EAFR,EAGGpB,IAHH,GAIGC,IAJH;AAAA,4DAIS,kBAAOC,GAAP,EAAYmB,SAAZ;AAAA;AAAA;AAAA;AAAA;AAAA,qBACFnB,GADE;AAAA;AAAA;AAAA;;AAAA,kDAEIT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,2BAAS,4BADiB;AAE1BC,yBAAOL;AAFmB,iBAArB,CAFJ;;AAAA;AAAA,sBAQDmB,UAAUC,MAAV,KAAmB,CARlB;AAAA;AAAA;AAAA;;AAAA,kDAQ4B7B,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB,EAArB,CAR5B;;AAAA;AAAA;AAAA,uBASCjB,QAAQmC,GAAR,CACJF,UAAUG,GAAV,CAAe,UAACrB,QAAD;AAAA,yBAAcM,SAASN,QAAT,CAAd;AAAA,iBAAf,CADI,CAC6C;AAD7C,iBATD;;AAAA;AAYLsB,wBAAQC,GAAR,CAAYL,SAAZ;AAZK,kDAaE5B,IAAIY,IAAJ,CAASgB,SAAT,CAbF;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA,OAJT;;AAAA;AAAA;AAAA;AAAA;AAmBD,GAhDc;AAiDfM,iBAAe,uBAASnC,GAAT,EAAcC,GAAd,EAAmB;AAChCV,cAAU+B,IAAV,CAAe,UAASZ,GAAT,EAAcmB,SAAd,EAAwB;AACrC,UAAGnB,GAAH,EAAQ;AACN,eAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS,iCADiB;AAE1BC,iBAAOL;AAFmB,SAArB,CAAP;AAID;AACD,aAAOT,IAAIY,IAAJ,CAASgB,SAAT,CAAP;AACD,KARD;AASD,GA3Dc;AA4DfO,iBAAe,uBAASpC,GAAT,EAAcC,GAAd,EAAmB;AAChC,QAAIC,KAAKF,IAAII,MAAJ,CAAWF,EAApB;AACAX,cAAUgB,OAAV,CAAkB,EAAC8B,KAAKnC,EAAN,EAAlB,EAA6B,UAASQ,GAAT,EAAcC,QAAd,EAAuB;AAClD,UAAGD,GAAH,EAAQ;AACN,eAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS,iDADiB;AAE1BC,iBAAOL;AAFmB,SAArB,CAAP;AAID;AACD,UAAG,CAAC4B,OAAJ,EAAa;AACX,eAAOrC,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAsB;AAC3BC,mBAAS,0BADkB;AAE3BJ;AAF2B,SAAtB,CAAP;AAID;AACD,aAAOT,IAAIY,IAAJ,CAASF,QAAT,CAAP;AACD,KAdD;AAeD,GA7Ec;AA8Ef4B,mBAAiB,yBAASvC,GAAT,EAAcC,GAAd,EAAmB;AAClC,QAAIU,WAAW,IAAIpB,SAAJ,CAAeS,IAAIwC,IAAnB,CAAf;AACA7B,aAAS8B,IAAT,CAAc,UAAS/B,GAAT,EAAcC,QAAd,EAAuB;AACnC,UAAGD,GAAH,EAAQ;AACN,eAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAsB;AAC3BC,mBAAS,8BADkB;AAE3BC,iBAAOL;AAFoB,SAAtB,CAAP;AAID;AACD,aAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,iBAAS,OADiB;AAE1BuB,aAAK1B,SAAS0B;AAFY,OAArB,CAAP;AAID,KAXD;AAYD,GA5Fc;AA6FfK,mBAAiB,yBAAS1C,GAAT,EAAcC,GAAd,EAAmB;AAClC,QAAIC,KAAKF,IAAII,MAAJ,CAAWF,EAApB;AACAX,cAAUgB,OAAV,CAAkB,EAAC8B,KAAKnC,EAAN,EAAlB,EAA6B,UAASQ,GAAT,EAAcC,QAAd,EAAuB;AAClD,UAAGD,GAAH,EAAQ;AACN,eAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS,iDADiB;AAE1BC,iBAAOL;AAFmB,SAArB,CAAP;AAID;AACD,UAAG,CAACC,QAAJ,EAAc;AACZ,eAAOV,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS;AADiB,SAArB,CAAP;AAGD;AACDH,eAASgC,MAAT,GAAkB3C,IAAIwC,IAAJ,CAASI,MAA3B;AACAjC,eAASkC,WAAT,GAAwB7C,IAAIwC,IAAJ,CAASM,WAAjC;AACAnC,eAASoC,UAAT,GAAsB/C,IAAIwC,IAAJ,CAASQ,UAA/B;AACArC,eAASsC,MAAT,GAAkBjD,IAAIwC,IAAJ,CAASU,MAA3B;AACAvC,eAASwC,MAAT,GAAkBnD,IAAIwC,IAAJ,CAASY,MAA3B;AACAzC,eAAS8B,IAAT,CAAc,UAAS/B,GAAT,EAAcC,QAAd,EAAuB;AACnC,YAAGD,GAAH,EAAQ;AACN,iBAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,qBAAS;AADiB,WAArB,CAAP;AAGD;AACD,YAAG,CAACH,QAAJ,EAAc;AACZ,iBAAOV,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,qBAAS;AADiB,WAArB,CAAP;AAGD;AACD,eAAOb,IAAIY,IAAJ,CAASF,QAAT,CAAP;AACD,OAZD;AAaD,KA9BD;AA+BD,GA9Hc;AA+Hf0C,mBAAiB,yBAASrD,GAAT,EAAcC,GAAd,EAAmB;AAClC,QAAIC,KAAKF,IAAII,MAAJ,CAAWF,EAApB;AACAX,cAAU+D,iBAAV,CAA4BpD,EAA5B,EAAgC,UAASQ,GAAT,EAAcC,QAAd,EAAuB;AACrD,UAAGD,GAAH,EAAQ;AACN,eAAOT,IAAIY,IAAJ,CAAS,GAAT,EAAc;AACnBC,mBAAS,kCADU;AAEnBC,iBAAOL;AAFY,SAAd,CAAP;AAID;AACD,aAAOT,IAAIY,IAAJ,CAASF,QAAT,CAAP;AACD,KARD;AASD;AA1Ic,CAAjB;;AA+IA,SAAS4C,SAAT,CAAmBC,CAAnB,EAAsB;AACpB,SAAO,CAACC,MAAMC,WAAWF,CAAX,CAAN,CAAD,IAAyBG,SAASH,CAAT,CAAhC;AACD;;AAED,IAAMxC,eAAe,SAAfA,YAAe,CAACL,QAAD,EAAc;AACjCA,WAASiD,WAAT,GAAqB,EAArB;AACAjD,WAASkD,WAAT,GAAqB,EAArB;AACAlD,WAASmD,KAAT,GAAe,EAAf;AACAnD,WAASoD,IAAT,GAAc,EAAd;AACD,CALD;;AAOA,IAAM9C,WAAW,SAAXA,QAAW,CAACN,QAAD,EAAc;AAC7B,SAAO,IAAIf,OAAJ,CAAa,UAACoE,OAAD,EAAa;AAC/B,QAAIC,kBAAgB,CAACtD,SAASuD,IAAV,CAApB;AACA,QAAIC,eAAa1E,OAAO2E,YAApB,GAAmCzE,KAAK0E,GAAxC,GAA8C1D,SAASN,UAAvD,GAAoEV,KAAK0E,GAA7E;AACA1D,aAAS2D,YAAT,CAAsBtC,GAAtB,CAA0B,UAACuC,WAAD;AAAA,aAAeN,gBAAgBO,IAAhB,CAAqBD,YAAYL,IAAjC,CAAf;AAAA,KAA1B;AACAxE,cAAUyE,OAAV,EAAmB,UAACzD,GAAD,EAAMoD,KAAN,EAAgB;AACjC;AACA,UAAIpD,GAAJ,EAASA,IAAI+D,IAAJ,IAAY,QAAZ,IAAwBxC,QAAQyC,IAAR,CAAchE,GAAd,CAAxB;AACT,UAAIoD,SAAS,IAAb,EAAmB;AACjBA,cAAM9B,GAAN,CAAU,gBAAO;AACf,cAAI2C,eAAeZ,KAAKa,OAAL,CAAaT,OAAb,EAAsB,EAAtB,CAAnB;AACA,cAAIU,WAAWlF,KAAKmF,QAAL,CAAcf,IAAd,CAAf;AACA,cAAIc,YAAU,YAAd,EAA4B,OAHb,CAGoB;AACnC,cAAIE,MAAMpF,KAAKqF,OAAL,CAAaL,YAAb,CAAV;AACA,cAAIM,SAAStF,KAAKqF,OAAL,CAAaL,YAAb,EAA2BO,KAA3B,CAAiCvF,KAAK0E,GAAtC,EAA2Cc,GAA3C,EAAb;AACA,cAAIJ,QAAM,GAAV,EAAc;AACZ;AACA,gBAAIK,cAAc,IAAIC,MAAJ,iGAA2G,GAA3G,CAAlB;AACA,gBAAID,YAAYE,IAAZ,CAAiBT,QAAjB,CAAJ,EAAgC;AAC9B,kBAAIU,aAAaV,SAASK,KAAT,CAAe,GAAf,EAAoB,CAApB,CAAjB;AACAvE,uBAASoD,IAAT,CAAcwB,UAAd,IAA0BV,QAA1B;AACD,aAHD,MAGOlE,SAASiD,WAAT,CAAqBY,IAArB,CAA0BK,QAA1B;AACR,WAPD,MAQK,IAAIE,IAAIS,KAAJ,CAAU,kBAAV,CAAJ,EAAmC7E,SAAS8E,iBAAT,CAA2BjB,IAA3B,CAAgCK,QAAhC,EAAnC,KACA,IAAIE,IAAIS,KAAJ,CAAU,8BAAV,CAAJ,EACH7E,SAASkD,WAAT,CAAqBoB,MAArB,IACEtE,SAASkD,WAAT,CAAqBoB,MAArB,EAA6BT,IAA7B,CAAkCK,QAAlC,CADF,GAEElE,SAASkD,WAAT,CAAqBoB,MAArB,IAA+B,CAACJ,QAAD,CAFjC,CADG,KAIA,IAAIE,IAAIS,KAAJ,CAAU,cAAV,CAAJ,EACH7E,SAASmD,KAAT,CAAemB,MAAf,IACEtE,SAASmD,KAAT,CAAemB,MAAf,EAAuBT,IAAvB,CAA6BK,QAA7B,CADF,GAEIlE,SAASmD,KAAT,CAAemB,MAAf,IAAyB,CAACJ,QAAD,CAF7B;AAGH,SAvBD;AAwBD;AACDb,cAAQrD,QAAR;AACD,KA9BD;AA+BD,GAnCM,CAAP;AAoCD,CArCD",
+      "file": "materials.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "// habrá que concatenar dos funciones asíncronas,\n// Una para recibir los ficheros (imagenes de materiales) del dir correspondiente\n// Otra que lee los datos en la bbdd\n// mandar json cuandto todo acabe:\n// https://stackoverflow.com/questions/2727167/how-do-you-get-a-list-of-the-names-of-all-files-present-in-a-directory-in-node-j/37532027#37532027\nvar Materials = require('../models/Materials')\nconst config = require('../config')\nvar recursive = require('recursive-readdir')\nvar path = require('path')\nvar Promise = require('bluebird')\n\nmodule.exports = {\n  getMaterialById: (req, res) => {\n    var id = req.swagger.params.idMaterial.value\n    // Use lean to get a plain JS object to modify it, instead of a full model instance\n    // Materials.findOne({idMaterial: id}, function(err, material){\n    Materials.findOne({idMaterial: id}).lean().exec(async (err, material) => {\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener el material',\n          error: err\n        })\n      }\n      if(!material) {\n        return res.status(404).json( {\n          message: 'No tenemos este material',\n          err\n        })\n      }\n      // getImages(material, ()=>(res.json(material)))\n      initMaterial(material)\n      const response =  await getFiles(material)\n      return res.json(response)\n    })\n  },\n  // Materials.find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}}).sort({score:{$meta:'textScore'}}, function(err, materials) {\n  // https://docs.mongodb.com/v3.0/reference/operator/query/text/\n  searchMaterials: (req, res) => {\n    var locale = req.swagger.params.locale.value\n    var searchText = req.swagger.params.searchText.value\n    Materials\n      .find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}})\n      .sort({'score': { '$meta': 'textScore'} })\n      .lean()\n      .exec (async (err, materials) => {\n        if(err) {\n          return res.status(500).json({\n            message: 'Error buscando el material',\n            error: err\n          })\n        }\n        // if no items, return empty array\n        if (materials.length===0) return res.status(404).json([]) //send http code 404!!!\n        await Promise.all(\n          materials.map( (material) => getFiles(material)) // not async&await as we want to get all material images in parallel\n        )\n        console.log(materials)\n        return res.json(materials)\n      })\n  },\n  listMaterials: function(req, res) {\n    Materials.find(function(err, materials){\n      if(err) {\n        return res.status(500).json({\n          message: 'Error obteniendo los materiales',\n          error: err\n        })\n      }\n      return res.json(materials)\n    })\n  },\n  showMaterials: function(req, res) {\n    var id = req.params.id\n    Materials.findOne({_id: id}, function(err, material){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener el material',\n          error: err\n        })\n      }\n      if(!cerveza) {\n        return res.status(404).json( {\n          message: 'No tenemos este material',\n          err\n        })\n      }\n      return res.json(material)\n    })\n  },\n  createMaterials: function(req, res) {\n    var material = new Materials (req.body)\n    material.save(function(err, material){\n      if(err) {\n        return res.status(500).json( {\n          message: 'Error al guardar el material',\n          error: err\n        })\n      }\n      return res.status(201).json({\n        message: 'saved',\n        _id: material._id\n      })\n    })\n  },\n  updateMaterials: function(req, res) {\n    var id = req.params.id\n    Materials.findOne({_id: id}, function(err, material){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al guardar el material',\n          error: err\n        })\n      }\n      if(!material) {\n        return res.status(404).json({\n          message: 'No hemos encontrado el material'\n        })\n      }\n      material.Nombre = req.body.nombre\n      material.Descripción =  req.body.descripcion\n      material.Graduacion = req.body.graduacion\n      material.Envase = req.body.envase\n      material.Precio = req.body.precio\n      material.save(function(err, material){\n        if(err) {\n          return res.status(500).json({\n            message: 'Error al guardar el material'\n          })\n        }\n        if(!material) {\n          return res.status(404).json({\n            message: 'No hemos encontrado el material'\n          })\n        }\n        return res.json(material)\n      })\n    })\n  },\n  removeMaterials: function(req, res) {\n    var id = req.params.id\n    Materials.findByIdAndRemove(id, function(err, material){\n      if(err) {\n        return res.json(500, {\n          message: 'No hemos encontrado el  material',\n          error: err\n        })\n      }\n      return res.json(material)\n    })\n  }\n}\n\n\n\nfunction isNumeric(n) {\n  return !isNaN(parseFloat(n)) && isFinite(n);\n}\n\nconst initMaterial = (material) => {\n  material.commonFiles=[]\n  material.screenshots={}\n  material.files={}\n  material.file={}\n}\n\nconst getFiles = (material) => {\n  return new Promise ((resolve) => {\n    let materialLocales=[material.lang]\n    let baseDir = `${config.materialsDir}${path.sep}${material.idMaterial}${path.sep}`\n    material.translations.map((translation)=>materialLocales.push(translation.lang))\n    recursive(baseDir, (err, files) => {\n      // if err return material, if err is different from no screenshots dir, warning through console\n      if (err) err.code != 'ENOENT' && console.warn (err) \n      if (files != null) {\n        files.map(file =>{\n          let relativeFile = file.replace(baseDir, '')\n          let fileName = path.basename(file)\n          if (fileName=='index.html') return // extra files from previous app\n          let dir = path.dirname(relativeFile)\n          let subdir = path.dirname(relativeFile).split(path.sep).pop()\n          if (dir==='.'){\n            //if file is tar.gz, put it inside file json  {es: xxx-es.tgz, fr: xxx.fr.tgz...}\n            let filePattern = new RegExp(`^index-[A-z]{2,3}-[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}.tgz$`, 'i')\n            if (filePattern.test(fileName)) {\n              let fileLocale = fileName.split('-')[1]\n              material.file[fileLocale]=fileName\n            } else material.commonFiles.push(fileName)\n          } \n          else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName)\n          else if (dir.match(/screenshots_300\\/[A-z]{2,3}$/)) \n            material.screenshots[subdir] ? \n              material.screenshots[subdir].push(fileName) \n            : material.screenshots[subdir] = [fileName]\n          else if (dir.match(/^[A-z]{2,3}$/)) \n            material.files[subdir] ?\n              material.files[subdir].push (fileName)\n              : material.files[subdir] = [fileName]\n        })\n      }\n      resolve(material)\n    })\n  })\n}\n"
+      ]
+    },
+    "mtime": 1511457107000
+  },
+  "{\"filename\":\"/app/models/Materials.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/Materials.js",
+      "filenameRelative": "/app/models/Materials.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "Materials.js",
+      "sourceFileName": "Materials.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "Materials"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar Schema = mongoose.Schema;\n\nvar materialSchema = new Schema({\n  Nombre: String,\n  Descripción: String,\n  Graduacion: String,\n  Envase: String,\n  Precio: String\n});\n\nvar Material = mongoose.model('Material', materialSchema, 'materials');\n\n/*\n\nEsto da error en update y create:\ncervezaSchema.pre('save', function (next) {\n  var self = this\n  Cerveza.count({cerveza: self.name}, function (err, count) {\n    if (count>0){\n      next(new Error('¡Ya existe esta cerveza!'))\n    }else{                \n      next()\n    }\n  })\n}) \n\n*/\n\nmodule.exports = Material;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIk1hdGVyaWFscy5qcyJdLCJuYW1lcyI6WyJtb25nb29zZSIsInJlcXVpcmUiLCJTY2hlbWEiLCJtYXRlcmlhbFNjaGVtYSIsIk5vbWJyZSIsIlN0cmluZyIsIkRlc2NyaXBjacOzbiIsIkdyYWR1YWNpb24iLCJFbnZhc2UiLCJQcmVjaW8iLCJNYXRlcmlhbCIsIm1vZGVsIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFJQSxXQUFXQyxRQUFRLFVBQVIsQ0FBZjtBQUNBLElBQUlDLFNBQVNGLFNBQVNFLE1BQXRCOztBQUVBLElBQUlDLGlCQUFpQixJQUFJRCxNQUFKLENBQVc7QUFDOUJFLFVBQVFDLE1BRHNCO0FBRTlCQyxlQUFhRCxNQUZpQjtBQUc5QkUsY0FBWUYsTUFIa0I7QUFJOUJHLFVBQVFILE1BSnNCO0FBSzlCSSxVQUFRSjtBQUxzQixDQUFYLENBQXJCOztBQVFBLElBQUlLLFdBQVdWLFNBQVNXLEtBQVQsQ0FBZSxVQUFmLEVBQTJCUixjQUEzQixFQUEyQyxXQUEzQyxDQUFmOztBQUVBOzs7Ozs7Ozs7Ozs7Ozs7O0FBZ0JBUyxPQUFPQyxPQUFQLEdBQWlCSCxRQUFqQiIsImZpbGUiOiJNYXRlcmlhbHMuanMiLCJzb3VyY2VSb290IjoiL2FwcC9tb2RlbHMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgbW9uZ29vc2UgPSByZXF1aXJlKCdtb25nb29zZScpXG52YXIgU2NoZW1hID0gbW9uZ29vc2UuU2NoZW1hXG5cbnZhciBtYXRlcmlhbFNjaGVtYSA9IG5ldyBTY2hlbWEoe1xuICBOb21icmU6IFN0cmluZywgXG4gIERlc2NyaXBjacOzbjogU3RyaW5nLCBcbiAgR3JhZHVhY2lvbjogU3RyaW5nLFxuICBFbnZhc2U6IFN0cmluZyxcbiAgUHJlY2lvOiBTdHJpbmcgXG59KVxuXG52YXIgTWF0ZXJpYWwgPSBtb25nb29zZS5tb2RlbCgnTWF0ZXJpYWwnLCBtYXRlcmlhbFNjaGVtYSwgJ21hdGVyaWFscycpXG5cbi8qXG5cbkVzdG8gZGEgZXJyb3IgZW4gdXBkYXRlIHkgY3JlYXRlOlxuY2VydmV6YVNjaGVtYS5wcmUoJ3NhdmUnLCBmdW5jdGlvbiAobmV4dCkge1xuICB2YXIgc2VsZiA9IHRoaXNcbiAgQ2VydmV6YS5jb3VudCh7Y2VydmV6YTogc2VsZi5uYW1lfSwgZnVuY3Rpb24gKGVyciwgY291bnQpIHtcbiAgICBpZiAoY291bnQ+MCl7XG4gICAgICBuZXh0KG5ldyBFcnJvcignwqFZYSBleGlzdGUgZXN0YSBjZXJ2ZXphIScpKVxuICAgIH1lbHNleyAgICAgICAgICAgICAgICBcbiAgICAgIG5leHQoKVxuICAgIH1cbiAgfSlcbn0pIFxuXG4qL1xuXG5tb2R1bGUuZXhwb3J0cyA9IE1hdGVyaWFsXG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "Materials.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "Schema",
+        "materialSchema",
+        "Nombre",
+        "String",
+        "Descripción",
+        "Graduacion",
+        "Envase",
+        "Precio",
+        "Material",
+        "model",
+        "module",
+        "exports"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,UAAR,CAAf;AACA,IAAIC,SAASF,SAASE,MAAtB;;AAEA,IAAIC,iBAAiB,IAAID,MAAJ,CAAW;AAC9BE,UAAQC,MADsB;AAE9BC,eAAaD,MAFiB;AAG9BE,cAAYF,MAHkB;AAI9BG,UAAQH,MAJsB;AAK9BI,UAAQJ;AALsB,CAAX,CAArB;;AAQA,IAAIK,WAAWV,SAASW,KAAT,CAAe,UAAf,EAA2BR,cAA3B,EAA2C,WAA3C,CAAf;;AAEA;;;;;;;;;;;;;;;;AAgBAS,OAAOC,OAAP,GAAiBH,QAAjB",
+      "file": "Materials.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar materialSchema = new Schema({\n  Nombre: String, \n  Descripción: String, \n  Graduacion: String,\n  Envase: String,\n  Precio: String \n})\n\nvar Material = mongoose.model('Material', materialSchema, 'materials')\n\n/*\n\nEsto da error en update y create:\ncervezaSchema.pre('save', function (next) {\n  var self = this\n  Cerveza.count({cerveza: self.name}, function (err, count) {\n    if (count>0){\n      next(new Error('¡Ya existe esta cerveza!'))\n    }else{                \n      next()\n    }\n  })\n}) \n\n*/\n\nmodule.exports = Material\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/pictogramSearches.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/pictogramSearches.js",
+      "filenameRelative": "/app/controllers/pictogramSearches.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "pictogramSearches.js",
+      "sourceFileName": "pictogramSearches.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "pictogramSearches"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar PictogramSearches = require('../models/PictogramSearches');\n//based on http://stackoverflow.com/questions/28891165/using-weights-for-searching-in-mongoose\nmodule.exports = {\n  show: function show(req, res) {\n    var searchText = req.params.searchText;\n    // return res.json(searchText)\n    PictogramSearches.list(searchText, function (err, regs) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener el listado'\n        });\n      }\n      if (!regs) {\n        return res.status(404).json({\n          message: 'No tenemos ese registro'\n        });\n      }\n      return res.json(regs.map(function (reg) {\n        return reg.nombre;\n      }));\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBpY3RvZ3JhbVNlYXJjaGVzLmpzIl0sIm5hbWVzIjpbIlBpY3RvZ3JhbVNlYXJjaGVzIiwicmVxdWlyZSIsIm1vZHVsZSIsImV4cG9ydHMiLCJzaG93IiwicmVxIiwicmVzIiwic2VhcmNoVGV4dCIsInBhcmFtcyIsImxpc3QiLCJlcnIiLCJyZWdzIiwic3RhdHVzIiwianNvbiIsIm1lc3NhZ2UiLCJtYXAiLCJyZWciLCJub21icmUiXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBSUEsb0JBQW9CQyxRQUFRLDZCQUFSLENBQXhCO0FBQ0E7QUFDQUMsT0FBT0MsT0FBUCxHQUFpQjtBQUNmQyxRQUFNLGNBQVNDLEdBQVQsRUFBY0MsR0FBZCxFQUFtQjtBQUN2QixRQUFJQyxhQUFhRixJQUFJRyxNQUFKLENBQVdELFVBQTVCO0FBQ0E7QUFDQVAsc0JBQWtCUyxJQUFsQixDQUF1QkYsVUFBdkIsRUFBbUMsVUFBU0csR0FBVCxFQUFjQyxJQUFkLEVBQW1CO0FBQ3BELFVBQUdELEdBQUgsRUFBUTtBQUNOLGVBQU9KLElBQUlNLE1BQUosQ0FBVyxHQUFYLEVBQWdCQyxJQUFoQixDQUFxQjtBQUMxQkMsbUJBQVM7QUFEaUIsU0FBckIsQ0FBUDtBQUdEO0FBQ0QsVUFBRyxDQUFDSCxJQUFKLEVBQVU7QUFDUixlQUFPTCxJQUFJTSxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBc0I7QUFDM0JDLG1CQUFTO0FBRGtCLFNBQXRCLENBQVA7QUFHRDtBQUNELGFBQU9SLElBQUlPLElBQUosQ0FBU0YsS0FBS0ksR0FBTCxDQUFTLFVBQVNDLEdBQVQsRUFBYztBQUFDLGVBQU9BLElBQUlDLE1BQVg7QUFBa0IsT0FBMUMsQ0FBVCxDQUFQO0FBQ0QsS0FaRDtBQWFEO0FBakJjLENBQWpCIiwiZmlsZSI6InBpY3RvZ3JhbVNlYXJjaGVzLmpzIiwic291cmNlUm9vdCI6Ii9hcHAvY29udHJvbGxlcnMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgUGljdG9ncmFtU2VhcmNoZXMgPSByZXF1aXJlKCcuLi9tb2RlbHMvUGljdG9ncmFtU2VhcmNoZXMnKVxuLy9iYXNlZCBvbiBodHRwOi8vc3RhY2tvdmVyZmxvdy5jb20vcXVlc3Rpb25zLzI4ODkxMTY1L3VzaW5nLXdlaWdodHMtZm9yLXNlYXJjaGluZy1pbi1tb25nb29zZVxubW9kdWxlLmV4cG9ydHMgPSB7XG4gIHNob3c6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIHNlYXJjaFRleHQgPSByZXEucGFyYW1zLnNlYXJjaFRleHRcbiAgICAvLyByZXR1cm4gcmVzLmpzb24oc2VhcmNoVGV4dClcbiAgICBQaWN0b2dyYW1TZWFyY2hlcy5saXN0KHNlYXJjaFRleHQsIGZ1bmN0aW9uKGVyciwgcmVncyl7XG4gICAgICBpZihlcnIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHtcbiAgICAgICAgICBtZXNzYWdlOiAnU2UgaGEgcHJvZHVjaWRvIHVuIGVycm9yIGFsIG9idGVuZXIgZWwgbGlzdGFkbydcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIGlmKCFyZWdzKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDQwNCkuanNvbigge1xuICAgICAgICAgIG1lc3NhZ2U6ICdObyB0ZW5lbW9zIGVzZSByZWdpc3RybydcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuanNvbihyZWdzLm1hcChmdW5jdGlvbihyZWcpIHtyZXR1cm4gcmVnLm5vbWJyZX0pKVxuICAgIH0pXG4gIH1cbn1cbiJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "pictogramSearches.js"
+      ],
+      "names": [
+        "PictogramSearches",
+        "require",
+        "module",
+        "exports",
+        "show",
+        "req",
+        "res",
+        "searchText",
+        "params",
+        "list",
+        "err",
+        "regs",
+        "status",
+        "json",
+        "message",
+        "map",
+        "reg",
+        "nombre"
+      ],
+      "mappings": ";;AAAA,IAAIA,oBAAoBC,QAAQ,6BAAR,CAAxB;AACA;AACAC,OAAOC,OAAP,GAAiB;AACfC,QAAM,cAASC,GAAT,EAAcC,GAAd,EAAmB;AACvB,QAAIC,aAAaF,IAAIG,MAAJ,CAAWD,UAA5B;AACA;AACAP,sBAAkBS,IAAlB,CAAuBF,UAAvB,EAAmC,UAASG,GAAT,EAAcC,IAAd,EAAmB;AACpD,UAAGD,GAAH,EAAQ;AACN,eAAOJ,IAAIM,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS;AADiB,SAArB,CAAP;AAGD;AACD,UAAG,CAACH,IAAJ,EAAU;AACR,eAAOL,IAAIM,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAsB;AAC3BC,mBAAS;AADkB,SAAtB,CAAP;AAGD;AACD,aAAOR,IAAIO,IAAJ,CAASF,KAAKI,GAAL,CAAS,UAASC,GAAT,EAAc;AAAC,eAAOA,IAAIC,MAAX;AAAkB,OAA1C,CAAT,CAAP;AACD,KAZD;AAaD;AAjBc,CAAjB",
+      "file": "pictogramSearches.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var PictogramSearches = require('../models/PictogramSearches')\n//based on http://stackoverflow.com/questions/28891165/using-weights-for-searching-in-mongoose\nmodule.exports = {\n  show: function(req, res) {\n    var searchText = req.params.searchText\n    // return res.json(searchText)\n    PictogramSearches.list(searchText, function(err, regs){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener el listado'\n        })\n      }\n      if(!regs) {\n        return res.status(404).json( {\n          message: 'No tenemos ese registro'\n        })\n      }\n      return res.json(regs.map(function(reg) {return reg.nombre}))\n    })\n  }\n}\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/models/PictogramSearches.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/PictogramSearches.js",
+      "filenameRelative": "/app/models/PictogramSearches.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "PictogramSearches.js",
+      "sourceFileName": "PictogramSearches.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "PictogramSearches"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar Schema = mongoose.Schema;\n\nvar pictogramSearchSchema = new Schema({\n  searchText: String,\n  lastSearch: { type: Date, default: Date.now },\n  count: Number\n});\n\n// method based on http://stackoverflow.com/questions/28891165/using-weights-for-searching-in-mongoose\npictogramSearchSchema.statics.list = function (textSearch, cb) {\n  // Perform the query\n\n  return this.find({ name: new RegExp(textSearch, 'i') }, cb);\n};\n\nvar PictogramSearch = mongoose.model('PictogramSearch', pictogramSearchSchema);\n\nmodule.exports = PictogramSearch;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlBpY3RvZ3JhbVNlYXJjaGVzLmpzIl0sIm5hbWVzIjpbIm1vbmdvb3NlIiwicmVxdWlyZSIsIlNjaGVtYSIsInBpY3RvZ3JhbVNlYXJjaFNjaGVtYSIsInNlYXJjaFRleHQiLCJTdHJpbmciLCJsYXN0U2VhcmNoIiwidHlwZSIsIkRhdGUiLCJkZWZhdWx0Iiwibm93IiwiY291bnQiLCJOdW1iZXIiLCJzdGF0aWNzIiwibGlzdCIsInRleHRTZWFyY2giLCJjYiIsImZpbmQiLCJuYW1lIiwiUmVnRXhwIiwiUGljdG9ncmFtU2VhcmNoIiwibW9kZWwiLCJtb2R1bGUiLCJleHBvcnRzIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsVUFBUixDQUFmO0FBQ0EsSUFBSUMsU0FBU0YsU0FBU0UsTUFBdEI7O0FBRUEsSUFBSUMsd0JBQXdCLElBQUlELE1BQUosQ0FBVztBQUNyQ0UsY0FBWUMsTUFEeUI7QUFFckNDLGNBQVksRUFBRUMsTUFBT0MsSUFBVCxFQUFlQyxTQUFVRCxLQUFLRSxHQUE5QixFQUZ5QjtBQUdyQ0MsU0FBT0M7QUFIOEIsQ0FBWCxDQUE1Qjs7QUFPQTtBQUNBVCxzQkFBc0JVLE9BQXRCLENBQThCQyxJQUE5QixHQUFxQyxVQUFTQyxVQUFULEVBQXFCQyxFQUFyQixFQUF5QjtBQUM5RDs7QUFFRSxTQUFPLEtBQUtDLElBQUwsQ0FBVSxFQUFFQyxNQUFNLElBQUlDLE1BQUosQ0FBV0osVUFBWCxFQUF1QixHQUF2QixDQUFSLEVBQVYsRUFBaURDLEVBQWpELENBQVA7QUFDRCxDQUpEOztBQVdBLElBQUlJLGtCQUFrQnBCLFNBQVNxQixLQUFULENBQWUsaUJBQWYsRUFBa0NsQixxQkFBbEMsQ0FBdEI7O0FBRUFtQixPQUFPQyxPQUFQLEdBQWlCSCxlQUFqQiIsImZpbGUiOiJQaWN0b2dyYW1TZWFyY2hlcy5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL21vZGVscyIsInNvdXJjZXNDb250ZW50IjpbInZhciBtb25nb29zZSA9IHJlcXVpcmUoJ21vbmdvb3NlJylcbnZhciBTY2hlbWEgPSBtb25nb29zZS5TY2hlbWFcblxudmFyIHBpY3RvZ3JhbVNlYXJjaFNjaGVtYSA9IG5ldyBTY2hlbWEoe1xuICBzZWFyY2hUZXh0OiBTdHJpbmcsIFxuICBsYXN0U2VhcmNoOiB7IHR5cGUgOiBEYXRlLCBkZWZhdWx0IDogRGF0ZS5ub3cgfSxcbiAgY291bnQ6IE51bWJlclxufSlcblxuXG4vLyBtZXRob2QgYmFzZWQgb24gaHR0cDovL3N0YWNrb3ZlcmZsb3cuY29tL3F1ZXN0aW9ucy8yODg5MTE2NS91c2luZy13ZWlnaHRzLWZvci1zZWFyY2hpbmctaW4tbW9uZ29vc2VcbnBpY3RvZ3JhbVNlYXJjaFNjaGVtYS5zdGF0aWNzLmxpc3QgPSBmdW5jdGlvbih0ZXh0U2VhcmNoLCBjYikge1xuLy8gUGVyZm9ybSB0aGUgcXVlcnlcblxuICByZXR1cm4gdGhpcy5maW5kKHsgbmFtZTogbmV3IFJlZ0V4cCh0ZXh0U2VhcmNoLCAnaScpIH0sIGNiKVxufVxuXG5cblxuXG5cblxudmFyIFBpY3RvZ3JhbVNlYXJjaCA9IG1vbmdvb3NlLm1vZGVsKCdQaWN0b2dyYW1TZWFyY2gnLCBwaWN0b2dyYW1TZWFyY2hTY2hlbWEpXG5cbm1vZHVsZS5leHBvcnRzID0gUGljdG9ncmFtU2VhcmNoXG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "PictogramSearches.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "Schema",
+        "pictogramSearchSchema",
+        "searchText",
+        "String",
+        "lastSearch",
+        "type",
+        "Date",
+        "default",
+        "now",
+        "count",
+        "Number",
+        "statics",
+        "list",
+        "textSearch",
+        "cb",
+        "find",
+        "name",
+        "RegExp",
+        "PictogramSearch",
+        "model",
+        "module",
+        "exports"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,UAAR,CAAf;AACA,IAAIC,SAASF,SAASE,MAAtB;;AAEA,IAAIC,wBAAwB,IAAID,MAAJ,CAAW;AACrCE,cAAYC,MADyB;AAErCC,cAAY,EAAEC,MAAOC,IAAT,EAAeC,SAAUD,KAAKE,GAA9B,EAFyB;AAGrCC,SAAOC;AAH8B,CAAX,CAA5B;;AAOA;AACAT,sBAAsBU,OAAtB,CAA8BC,IAA9B,GAAqC,UAASC,UAAT,EAAqBC,EAArB,EAAyB;AAC9D;;AAEE,SAAO,KAAKC,IAAL,CAAU,EAAEC,MAAM,IAAIC,MAAJ,CAAWJ,UAAX,EAAuB,GAAvB,CAAR,EAAV,EAAiDC,EAAjD,CAAP;AACD,CAJD;;AAWA,IAAII,kBAAkBpB,SAASqB,KAAT,CAAe,iBAAf,EAAkClB,qBAAlC,CAAtB;;AAEAmB,OAAOC,OAAP,GAAiBH,eAAjB",
+      "file": "PictogramSearches.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar pictogramSearchSchema = new Schema({\n  searchText: String, \n  lastSearch: { type : Date, default : Date.now },\n  count: Number\n})\n\n\n// method based on http://stackoverflow.com/questions/28891165/using-weights-for-searching-in-mongoose\npictogramSearchSchema.statics.list = function(textSearch, cb) {\n// Perform the query\n\n  return this.find({ name: new RegExp(textSearch, 'i') }, cb)\n}\n\n\n\n\n\n\nvar PictogramSearch = mongoose.model('PictogramSearch', pictogramSearchSchema)\n\nmodule.exports = PictogramSearch\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/sessions.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/sessions.js",
+      "filenameRelative": "/app/controllers/sessions.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "sessions.js",
+      "sourceFileName": "sessions.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "sessions"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar jwt = require('jsonwebtoken');\nvar User = require('../models/User');\nvar config = require('../../config');\n\nfunction createToken(user) {\n  return jwt.sign({ user: user.name, profile: user.profile }, config.jwtSecret, { expiresInMinutes: 60 * 5 });\n}\n\nmodule.exports = {\n  createSession: function createSession(req, res) {\n    var user = req.swagger.params.username.value;\n    console.log('user es :' + user);\n    var password = req.swagger.params.password.value;\n    User.findOne({ username: user }, function (err, user) {\n      if (err) {\n        return res.status(500).json({ error: err.message });\n      }\n      if (!user) {\n        return res.status(404).send({ message: 'User not found' });\n      }\n      console.log(user);\n      if (!user.authenticate(password)) {\n        return res.status(401).send({ message: 'User unauthorized' });\n      }\n      res.status(201).send({ token: createToken(user) });\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNlc3Npb25zLmpzIl0sIm5hbWVzIjpbImp3dCIsInJlcXVpcmUiLCJVc2VyIiwiY29uZmlnIiwiY3JlYXRlVG9rZW4iLCJ1c2VyIiwic2lnbiIsIm5hbWUiLCJwcm9maWxlIiwiand0U2VjcmV0IiwiZXhwaXJlc0luTWludXRlcyIsIm1vZHVsZSIsImV4cG9ydHMiLCJjcmVhdGVTZXNzaW9uIiwicmVxIiwicmVzIiwic3dhZ2dlciIsInBhcmFtcyIsInVzZXJuYW1lIiwidmFsdWUiLCJjb25zb2xlIiwibG9nIiwicGFzc3dvcmQiLCJmaW5kT25lIiwiZXJyIiwic3RhdHVzIiwianNvbiIsImVycm9yIiwibWVzc2FnZSIsInNlbmQiLCJhdXRoZW50aWNhdGUiLCJ0b2tlbiJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFJQSxNQUFNQyxRQUFRLGNBQVIsQ0FBVjtBQUNBLElBQUlDLE9BQU9ELFFBQVEsZ0JBQVIsQ0FBWDtBQUNBLElBQUlFLFNBQVNGLFFBQVEsY0FBUixDQUFiOztBQUVBLFNBQVNHLFdBQVQsQ0FBcUJDLElBQXJCLEVBQTJCO0FBQ3pCLFNBQU9MLElBQUlNLElBQUosQ0FBUyxFQUFFRCxNQUFNQSxLQUFLRSxJQUFiLEVBQW1CQyxTQUFTSCxLQUFLRyxPQUFqQyxFQUFULEVBQXFETCxPQUFPTSxTQUE1RCxFQUF1RSxFQUFFQyxrQkFBa0IsS0FBRyxDQUF2QixFQUF2RSxDQUFQO0FBQ0Q7O0FBRURDLE9BQU9DLE9BQVAsR0FBaUI7QUFDZkMsaUJBQWUsdUJBQVNDLEdBQVQsRUFBY0MsR0FBZCxFQUFtQjtBQUNoQyxRQUFJVixPQUFPUyxJQUFJRSxPQUFKLENBQVlDLE1BQVosQ0FBbUJDLFFBQW5CLENBQTRCQyxLQUF2QztBQUNBQyxZQUFRQyxHQUFSLENBQWEsY0FBY2hCLElBQTNCO0FBQ0EsUUFBSWlCLFdBQVdSLElBQUlFLE9BQUosQ0FBWUMsTUFBWixDQUFtQkssUUFBbkIsQ0FBNEJILEtBQTNDO0FBQ0FqQixTQUFLcUIsT0FBTCxDQUFhLEVBQUNMLFVBQVViLElBQVgsRUFBYixFQUErQixVQUFDbUIsR0FBRCxFQUFNbkIsSUFBTixFQUFlO0FBQzVDLFVBQUdtQixHQUFILEVBQVE7QUFDTixlQUFPVCxJQUFJVSxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUIsRUFBQ0MsT0FBT0gsSUFBSUksT0FBWixFQUFyQixDQUFQO0FBQ0Q7QUFDRCxVQUFJLENBQUN2QixJQUFMLEVBQVc7QUFDVCxlQUFPVSxJQUFJVSxNQUFKLENBQVcsR0FBWCxFQUFnQkksSUFBaEIsQ0FBcUIsRUFBQ0QsU0FBUyxnQkFBVixFQUFyQixDQUFQO0FBQ0Q7QUFDRFIsY0FBUUMsR0FBUixDQUFZaEIsSUFBWjtBQUNBLFVBQUksQ0FBQ0EsS0FBS3lCLFlBQUwsQ0FBa0JSLFFBQWxCLENBQUwsRUFBa0M7QUFDaEMsZUFBT1AsSUFBSVUsTUFBSixDQUFXLEdBQVgsRUFBZ0JJLElBQWhCLENBQXFCLEVBQUNELFNBQVMsbUJBQVYsRUFBckIsQ0FBUDtBQUNEO0FBQ0RiLFVBQUlVLE1BQUosQ0FBVyxHQUFYLEVBQWdCSSxJQUFoQixDQUFxQixFQUFDRSxPQUFPM0IsWUFBWUMsSUFBWixDQUFSLEVBQXJCO0FBQ0QsS0FaRDtBQWFEO0FBbEJjLENBQWpCIiwiZmlsZSI6InNlc3Npb25zLmpzIiwic291cmNlUm9vdCI6Ii9hcHAvY29udHJvbGxlcnMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgand0ID0gcmVxdWlyZSgnanNvbndlYnRva2VuJylcbnZhciBVc2VyID0gcmVxdWlyZSgnLi4vbW9kZWxzL1VzZXInKVxudmFyIGNvbmZpZyA9IHJlcXVpcmUoJy4uLy4uL2NvbmZpZycpXG5cbmZ1bmN0aW9uIGNyZWF0ZVRva2VuKHVzZXIpIHtcbiAgcmV0dXJuIGp3dC5zaWduKHsgdXNlcjogdXNlci5uYW1lLCBwcm9maWxlOiB1c2VyLnByb2ZpbGUgfSwgY29uZmlnLmp3dFNlY3JldCwgeyBleHBpcmVzSW5NaW51dGVzOiA2MCo1IH0pXG59XG5cbm1vZHVsZS5leHBvcnRzID0ge1xuICBjcmVhdGVTZXNzaW9uOiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIHZhciB1c2VyID0gcmVxLnN3YWdnZXIucGFyYW1zLnVzZXJuYW1lLnZhbHVlXG4gICAgY29uc29sZS5sb2cgKCd1c2VyIGVzIDonICsgdXNlcilcbiAgICB2YXIgcGFzc3dvcmQgPSByZXEuc3dhZ2dlci5wYXJhbXMucGFzc3dvcmQudmFsdWVcbiAgICBVc2VyLmZpbmRPbmUoe3VzZXJuYW1lOiB1c2VyfSwgKGVyciwgdXNlcikgPT4ge1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7ZXJyb3I6IGVyci5tZXNzYWdlfSlcbiAgICAgIH1cbiAgICAgIGlmICghdXNlcikge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLnNlbmQoe21lc3NhZ2U6ICdVc2VyIG5vdCBmb3VuZCd9KVxuICAgICAgfVxuICAgICAgY29uc29sZS5sb2codXNlcilcbiAgICAgIGlmICghdXNlci5hdXRoZW50aWNhdGUocGFzc3dvcmQpKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDQwMSkuc2VuZCh7bWVzc2FnZTogJ1VzZXIgdW5hdXRob3JpemVkJ30pXG4gICAgICB9XG4gICAgICByZXMuc3RhdHVzKDIwMSkuc2VuZCh7dG9rZW46IGNyZWF0ZVRva2VuKHVzZXIpfSlcbiAgICB9KVxuICB9XG59ICBcbiJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "sessions.js"
+      ],
+      "names": [
+        "jwt",
+        "require",
+        "User",
+        "config",
+        "createToken",
+        "user",
+        "sign",
+        "name",
+        "profile",
+        "jwtSecret",
+        "expiresInMinutes",
+        "module",
+        "exports",
+        "createSession",
+        "req",
+        "res",
+        "swagger",
+        "params",
+        "username",
+        "value",
+        "console",
+        "log",
+        "password",
+        "findOne",
+        "err",
+        "status",
+        "json",
+        "error",
+        "message",
+        "send",
+        "authenticate",
+        "token"
+      ],
+      "mappings": ";;AAAA,IAAIA,MAAMC,QAAQ,cAAR,CAAV;AACA,IAAIC,OAAOD,QAAQ,gBAAR,CAAX;AACA,IAAIE,SAASF,QAAQ,cAAR,CAAb;;AAEA,SAASG,WAAT,CAAqBC,IAArB,EAA2B;AACzB,SAAOL,IAAIM,IAAJ,CAAS,EAAED,MAAMA,KAAKE,IAAb,EAAmBC,SAASH,KAAKG,OAAjC,EAAT,EAAqDL,OAAOM,SAA5D,EAAuE,EAAEC,kBAAkB,KAAG,CAAvB,EAAvE,CAAP;AACD;;AAEDC,OAAOC,OAAP,GAAiB;AACfC,iBAAe,uBAASC,GAAT,EAAcC,GAAd,EAAmB;AAChC,QAAIV,OAAOS,IAAIE,OAAJ,CAAYC,MAAZ,CAAmBC,QAAnB,CAA4BC,KAAvC;AACAC,YAAQC,GAAR,CAAa,cAAchB,IAA3B;AACA,QAAIiB,WAAWR,IAAIE,OAAJ,CAAYC,MAAZ,CAAmBK,QAAnB,CAA4BH,KAA3C;AACAjB,SAAKqB,OAAL,CAAa,EAACL,UAAUb,IAAX,EAAb,EAA+B,UAACmB,GAAD,EAAMnB,IAAN,EAAe;AAC5C,UAAGmB,GAAH,EAAQ;AACN,eAAOT,IAAIU,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB,EAACC,OAAOH,IAAII,OAAZ,EAArB,CAAP;AACD;AACD,UAAI,CAACvB,IAAL,EAAW;AACT,eAAOU,IAAIU,MAAJ,CAAW,GAAX,EAAgBI,IAAhB,CAAqB,EAACD,SAAS,gBAAV,EAArB,CAAP;AACD;AACDR,cAAQC,GAAR,CAAYhB,IAAZ;AACA,UAAI,CAACA,KAAKyB,YAAL,CAAkBR,QAAlB,CAAL,EAAkC;AAChC,eAAOP,IAAIU,MAAJ,CAAW,GAAX,EAAgBI,IAAhB,CAAqB,EAACD,SAAS,mBAAV,EAArB,CAAP;AACD;AACDb,UAAIU,MAAJ,CAAW,GAAX,EAAgBI,IAAhB,CAAqB,EAACE,OAAO3B,YAAYC,IAAZ,CAAR,EAArB;AACD,KAZD;AAaD;AAlBc,CAAjB",
+      "file": "sessions.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var jwt = require('jsonwebtoken')\nvar User = require('../models/User')\nvar config = require('../../config')\n\nfunction createToken(user) {\n  return jwt.sign({ user: user.name, profile: user.profile }, config.jwtSecret, { expiresInMinutes: 60*5 })\n}\n\nmodule.exports = {\n  createSession: function(req, res) {\n    var user = req.swagger.params.username.value\n    console.log ('user es :' + user)\n    var password = req.swagger.params.password.value\n    User.findOne({username: user}, (err, user) => {\n      if(err) {\n        return res.status(500).json({error: err.message})\n      }\n      if (!user) {\n        return res.status(404).send({message: 'User not found'})\n      }\n      console.log(user)\n      if (!user.authenticate(password)) {\n        return res.status(401).send({message: 'User unauthorized'})\n      }\n      res.status(201).send({token: createToken(user)})\n    })\n  }\n}  \n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/models/User.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/User.js",
+      "filenameRelative": "/app/models/User.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "User.js",
+      "sourceFileName": "User.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "User"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar crypto = require('crypto');\n\nvar Schema = mongoose.Schema;\n\nvar oAuthTypes = ['github', 'twitter', 'facebook', 'google', 'linkedin'];\n\nvar userSchema = new Schema({\n  name: { type: String, default: '' },\n  email: { type: String, default: '' },\n  username: { type: String, default: '' },\n  provider: { type: String, default: '' },\n  locale: { type: String, default: 'en' },\n  hashed_password: { type: String, default: '' },\n  salt: { type: String, default: '' },\n  authToken: { type: String, default: '' },\n  lastlogin: { type: Date, default: Date.now },\n  facebook: {\n    id: String,\n    token: String,\n    email: String,\n    name: String\n  },\n  google: {\n    id: String,\n    token: String,\n    email: String,\n    name: String\n  }\n});\n\nvar validatePresenceOf = function validatePresenceOf(value) {\n  return value && value.length;\n};\n\n/**\n * Virtuals\n */\n\nuserSchema.virtual('password').set(function (password) {\n  this._password = password;\n  this.salt = this.makeSalt();\n  this.hashed_password = this.encryptPassword(password);\n}).get(function () {\n  return this._password;\n});\n\n/**\n * Validations\n */\n\n// the below 5 validations only apply if you are signing up traditionally\n\nuserSchema.path('name').validate(function (name) {\n  if (this.skipValidation()) return true;\n  return name.length;\n}, 'Name cannot be blank');\n\nuserSchema.path('email').validate(function (email) {\n  if (this.skipValidation()) return true;\n  return email.length;\n}, 'Email cannot be blank');\n\nuserSchema.path('email').validate(function (email, fn) {\n  var User = mongoose.model('User');\n  if (this.skipValidation()) fn(true);\n\n  // Check only when it is a new user or when email field is modified\n  if (this.isNew || this.isModified('email')) {\n    User.find({ email: email }).exec(function (err, users) {\n      fn(!err && users.length === 0);\n    });\n  } else fn(true);\n}, 'Email already exists');\n\nuserSchema.path('username').validate(function (username) {\n  if (this.skipValidation()) return true;\n  return username.length;\n}, 'Username cannot be blank');\n\nuserSchema.path('hashed_password').validate(function (hashed_password) {\n  if (this.skipValidation()) return true;\n  return hashed_password.length && this._password.length;\n}, 'Password cannot be blank');\n\n/**\n * Pre-save hook\n */\n\nuserSchema.pre('save', function (next) {\n  if (!this.isNew) return next();\n\n  if (!validatePresenceOf(this.password) && !this.skipValidation()) {\n    next(new Error('Invalid password'));\n  } else {\n    next();\n  }\n});\n\n/**\n * Methods\n */\n\nuserSchema.methods = {\n\n  /**\n   * Authenticate - check if the passwords are the same\n   *\n   * @param {String} plainText\n   * @return {Boolean}\n   * @api public\n   */\n\n  authenticate: function authenticate(plainText) {\n    return this.encryptPassword(plainText) === this.hashed_password;\n  },\n\n  /**\n   * Make salt\n   *\n   * @return {String}\n   * @api public\n   */\n\n  makeSalt: function makeSalt() {\n    return Math.round(new Date().valueOf() * Math.random()) + '';\n  },\n\n  /**\n   * Encrypt password\n   *\n   * @param {String} password\n   * @return {String}\n   * @api public\n   */\n\n  encryptPassword: function encryptPassword(password) {\n    if (!password) return '';\n    try {\n      return crypto.createHmac('sha1', this.salt).update(password).digest('hex');\n    } catch (err) {\n      return '';\n    }\n  },\n\n  /**\n   * Validation is not required if using OAuth\n   */\n\n  skipValidation: function skipValidation() {\n    return ~oAuthTypes.indexOf(this.provider);\n  }\n};\n\n/**\n * Statics\n */\n\nuserSchema.statics = {\n\n  /**\n   * Load\n   *\n   * @param {Object} options\n   * @param {Function} cb\n   * @api private\n   */\n\n  load: function load(options, cb) {\n    options.select = options.select || 'name username';\n    return this.findOne(options.criteria).select(options.select).exec(cb);\n  }\n};\n\nvar User = mongoose.model('User', userSchema, 'users');\n\nmodule.exports = User;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIlVzZXIuanMiXSwibmFtZXMiOlsibW9uZ29vc2UiLCJyZXF1aXJlIiwiY3J5cHRvIiwiU2NoZW1hIiwib0F1dGhUeXBlcyIsInVzZXJTY2hlbWEiLCJuYW1lIiwidHlwZSIsIlN0cmluZyIsImRlZmF1bHQiLCJlbWFpbCIsInVzZXJuYW1lIiwicHJvdmlkZXIiLCJsb2NhbGUiLCJoYXNoZWRfcGFzc3dvcmQiLCJzYWx0IiwiYXV0aFRva2VuIiwibGFzdGxvZ2luIiwiRGF0ZSIsIm5vdyIsImZhY2Vib29rIiwiaWQiLCJ0b2tlbiIsImdvb2dsZSIsInZhbGlkYXRlUHJlc2VuY2VPZiIsInZhbHVlIiwibGVuZ3RoIiwidmlydHVhbCIsInNldCIsInBhc3N3b3JkIiwiX3Bhc3N3b3JkIiwibWFrZVNhbHQiLCJlbmNyeXB0UGFzc3dvcmQiLCJnZXQiLCJwYXRoIiwidmFsaWRhdGUiLCJza2lwVmFsaWRhdGlvbiIsImZuIiwiVXNlciIsIm1vZGVsIiwiaXNOZXciLCJpc01vZGlmaWVkIiwiZmluZCIsImV4ZWMiLCJlcnIiLCJ1c2VycyIsInByZSIsIm5leHQiLCJFcnJvciIsIm1ldGhvZHMiLCJhdXRoZW50aWNhdGUiLCJwbGFpblRleHQiLCJNYXRoIiwicm91bmQiLCJ2YWx1ZU9mIiwicmFuZG9tIiwiY3JlYXRlSG1hYyIsInVwZGF0ZSIsImRpZ2VzdCIsImluZGV4T2YiLCJzdGF0aWNzIiwibG9hZCIsIm9wdGlvbnMiLCJjYiIsInNlbGVjdCIsImZpbmRPbmUiLCJjcml0ZXJpYSIsIm1vZHVsZSIsImV4cG9ydHMiXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBSUEsV0FBV0MsUUFBUSxVQUFSLENBQWY7QUFDQSxJQUFNQyxTQUFTRCxRQUFRLFFBQVIsQ0FBZjs7QUFFQSxJQUFJRSxTQUFTSCxTQUFTRyxNQUF0Qjs7QUFFQSxJQUFNQyxhQUFhLENBQ2pCLFFBRGlCLEVBRWpCLFNBRmlCLEVBR2pCLFVBSGlCLEVBSWpCLFFBSmlCLEVBS2pCLFVBTGlCLENBQW5COztB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Ozs7OztBQVFBdkIsbUJBQWlCLHlCQUFVSCxRQUFWLEVBQW9CO0FBQ25DLFFBQUksQ0FBQ0EsUUFBTCxFQUFlLE9BQU8sRUFBUDtBQUNmLFFBQUk7QUFDRixhQUFPM0IsT0FDSnNELFVBREksQ0FDTyxNQURQLEVBQ2UsS0FBS3pDLElBRHBCLEVBRUowQyxNQUZJLENBRUc1QixRQUZILEVBR0o2QixNQUhJLENBR0csS0FISCxDQUFQO0FBSUQsS0FMRCxDQUtFLE9BQU9kLEdBQVAsRUFBWTtBQUNaLGFBQU8sRUFBUDtBQUNEO0FBQ0YsR0EzQ2tCOztBQTZDbkI7Ozs7QUFJQVIsa0JBQWdCLDBCQUFZO0FBQzFCLFdBQU8sQ0FBQ2hDLFdBQVd1RCxPQUFYLENBQW1CLEtBQUsvQyxRQUF4QixDQUFSO0FBQ0Q7QUFuRGtCLENBQXJCOztBQXNEQTs7OztBQUlBUCxXQUFXdUQsT0FBWCxHQUFxQjs7QUFFbkI7Ozs7Ozs7O0FBUUFDLFFBQU0sY0FBVUMsT0FBVixFQUFtQkMsRUFBbkIsRUFBdUI7QUFDM0JELFlBQVFFLE1BQVIsR0FBaUJGLFFBQVFFLE1BQVIsSUFBa0IsZUFBbkM7QUFDQSxXQUFPLEtBQUtDLE9BQUwsQ0FBYUgsUUFBUUksUUFBckIsRUFDSkYsTUFESSxDQUNHRixRQUFRRSxNQURYLEVBRUpyQixJQUZJLENBRUNvQixFQUZELENBQVA7QUFHRDtBQWZrQixDQUFyQjs7QUFrQkEsSUFBSXpCLE9BQU90QyxTQUFTdUMsS0FBVCxDQUFlLE1BQWYsRUFBdUJsQyxVQUF2QixFQUFtQyxPQUFuQyxDQUFYOztBQUVBOEQsT0FBT0MsT0FBUCxHQUFpQjlCLElBQWpCIiwiZmlsZSI6IlVzZXIuanMiLCJzb3VyY2VSb290IjoiL2FwcC9tb2RlbHMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgbW9uZ29vc2UgPSByZXF1aXJlKCdtb25nb29zZScpXG5jb25zdCBjcnlwdG8gPSByZXF1aXJlKCdjcnlwdG8nKVxuXG52YXIgU2NoZW1hID0gbW9uZ29vc2UuU2NoZW1hXG5cbmNvbnN0IG9BdXRoVHlwZXMgPSBbXG4gICdnaXRodWInLFxuICAndHdpdHRlcicsXG4gICdmYWNlYm9vaycsXG4gICdnb29nbGUnLFxuICAnbGlua2VkaW4nXG5dXG5cbmNvbnN0IHVzZXJTY2hlbWEgPSBuZXcgU2NoZW1hKHtcbiAgbmFtZTogeyB0eXBlOiBTdHJpbmcsIGRlZmF1bHQ6ICcnIH0sXG4gIGVtYWlsOiB7IHR5cGU6IFN0cmluZywgZGVmYXVsdDogJycgfSxcbiAgdXNlcm5hbWU6IHsgdHlwZTogU3RyaW5nLCBkZWZhdWx0OiAnJyB9LFxuICBwcm92aWRlcjogeyB0eXBlOiBTdHJpbmcsIGRlZmF1bHQ6ICcnIH0sXG4gIGxvY2FsZTogeyB0eXBlOiBTdHJpbmcsIGRlZmF1bHQ6ICdlbicgfSxcbiAgaGFzaGVkX3Bhc3N3b3JkOiB7IHR5cGU6IFN0cmluZywgZGVmYXVsdDogJycgfSxcbiAgc2FsdDogeyB0eXBlOiBTdHJpbmcsIGRlZmF1bHQ6ICcnIH0sXG4gIGF1dGhUb2tlbjogeyB0eXBlOiBTdHJpbmcsIGRlZmF1bHQ6ICcnIH0sXG4gIGxhc3Rsb2dpbjogeyB0eXBlIDogRGF0ZSwgZGVmYXVsdCA6IERhdGUubm93IH0sXG4gIGZhY2Vib29rOiB7XG4gICAgaWQgICAgICAgICAgIDogU3RyaW5nLFxuICAgIHRva2VuICAgICAgICA6IFN0cmluZyxcbiAgICBlbWFpbCAgICAgICAgOiBTdHJpbmcsXG4gICAgbmFtZSAgICAgICAgIDogU3RyaW5nXG4gIH0sXG4gIGdvb2dsZToge1xuICAgIGlkICAgICAgICAgICA6IFN0cmluZyxcbiAgICB0b2tlbiAgICAgICAgOiBTdHJpbmcsXG4gICAgZW1haWwgICAgICAgIDogU3RyaW5nLFxuICAgIG5hbWUgICAgICAgICA6IFN0cmluZ1xuICB9XG59KVxuXG5jb25zdCB2YWxpZGF0ZVByZXNlbmNlT2YgPSB2YWx1ZSA9PiB2YWx1ZSAmJiB2YWx1ZS5sZW5ndGhcblxuLyoqXG4gKiBWaXJ0dWFsc1xuICovXG5cbnVzZXJTY2hlbWFcbiAgLnZpcnR1YWwoJ3Bhc3N3b3JkJylcbiAgLnNldChmdW5jdGlvbiAocGFzc3dvcmQpIHtcbiAgICB0aGlzLl9wYXNzd29yZCA9IHBhc3N3b3JkXG4gICAgdGhpcy5zYWx0ID0gdGhpcy5tYWtlU2FsdCgpXG4gICAgdGhpcy5oYXNoZWRfcGFzc3dvcmQgPSB0aGlzLmVuY3J5cHRQYXNzd29yZChwYXNzd29yZClcbiAgfSlcbiAgLmdldChmdW5jdGlvbiAoKSB7XG4gICAgcmV0dXJuIHRoaXMuX3Bhc3N3b3JkXG4gIH0pXG5cbi8qKlxuICogVmFsaWRhdGlvbnNcbiAqL1xuXG4vLyB0aGUgYmVsb3cgNSB2YWxpZGF0aW9ucyBvbmx5IGFwcGx5IGlmIHlvdSBhcmUgc2lnbmluZyB1cCB0cmFkaXRpb25hbGx5XG5cbnVzZXJTY2hlbWEucGF0aCgnbmFtZScpLnZhbGlkYXRlKGZ1bmN0aW9uIChuYW1lKSB7XG4gIGlmICh0aGlzLnNraXBWYWxpZGF0aW9uKCkpIHJldHVybiB0cnVlXG4gIHJldHVybiBuYW1lLmxlbmd0aFxufSwgJ05hbWUgY2Fubm90IGJlIGJsYW5rJylcblxudXNlclNjaGVtYS5wYXRoKCdlbWFpbCcpLnZhbGlkYXRlKGZ1bmN0aW9uIChlbWFpbCkge1xuICBpZiAodGhpcy5za2lwVmFsaWRhdGlvbigpKSByZXR1cm4gdHJ1ZVxuICByZXR1cm4gZW1haWwubGVuZ3RoXG59LCAnRW1haWwgY2Fubm90IGJlIGJsYW5rJylcblxudXNlclNjaGVtYS5wYXRoKCdlbWFpbCcpLnZhbGlkYXRlKGZ1bmN0aW9uIChlbWFpbCwgZm4pIHtcbiAgY29uc3QgVXNlciA9IG1vbmdvb3NlLm1vZGVsKCdVc2VyJylcbiAgaWYgKHRoaXMuc2tpcFZhbGlkYXRpb24oKSkgZm4odHJ1ZSlcblxuICAvLyBDaGVjayBvbmx5IHdoZW4gaXQgaXMgYSBuZXcgdXNlciBvciB3aGVuIGVtYWlsIGZpZWxkIGlzIG1vZGlmaWVkXG4gIGlmICh0aGlzLmlzTmV3IHx8IHRoaXMuaXNNb2RpZmllZCgnZW1haWwnKSkge1xuICAgIFVzZXIuZmluZCh7IGVtYWlsOiBlbWFpbCB9KS5leGVjKGZ1bmN0aW9uIChlcnIsIHVzZXJzKSB7XG4gICAgICBmbighZXJyICYmIHVzZXJzLmxlbmd0aCA9PT0gMClcbiAgICB9KVxuICB9IGVsc2UgZm4odHJ1ZSlcbn0sICdFbWFpbCBhbHJlYWR5IGV4aXN0cycpXG5cbnVzZXJTY2hlbWEucGF0aCgndXNlcm5hbWUnKS52YWxpZGF0ZShmdW5jdGlvbiAodXNlcm5hbWUpIHtcbiAgaWYgKHRoaXMuc2tpcFZhbGlkYXRpb24oKSkgcmV0dXJuIHRydWVcbiAgcmV0dXJuIHVzZXJuYW1lLmxlbmd0aFxufSwgJ1VzZXJuYW1lIGNhbm5vdCBiZSBibGFuaycpXG5cbnVzZXJTY2hlbWEucGF0aCgnaGFzaGVkX3Bhc3N3b3JkJykudmFsaWRhdGUoZnVuY3Rpb24gKGhhc2hlZF9wYXNzd29yZCkge1xuICBpZiAodGhpcy5za2lwVmFsaWRhdGlvbigpKSByZXR1cm4gdHJ1ZVxuICByZXR1cm4gaGFzaGVkX3Bhc3N3b3JkLmxlbmd0aCAmJiB0aGlzLl9wYXNzd29yZC5sZW5ndGhcbn0sICdQYXNzd29yZCBjYW5ub3QgYmUgYmxhbmsnKVxuXG5cbi8qKlxuICogUHJlLXNhdmUgaG9va1xuICovXG5cbnVzZXJTY2hlbWEucHJlKCdzYXZlJywgZnVuY3Rpb24gKG5leHQpIHtcbiAgaWYgKCF0aGlzLmlzTmV3KSByZXR1cm4gbmV4dCgpXG5cbiAgaWYgKCF2YWxpZGF0ZVByZXNlbmNlT2YodGhpcy5wYXNzd29yZCkgJiYgIXRoaXMuc2tpcFZhbGlkYXRpb24oKSkge1xuICAgIG5leHQobmV3IEVycm9yKCdJbnZhbGlkIHBhc3N3b3JkJykpXG4gIH0gZWxzZSB7XG4gICAgbmV4dCgpXG4gIH1cbn0pXG5cbi8qKlxuICogTWV0aG9kc1xuICovXG5cbnVzZXJTY2hlbWEubWV0aG9kcyA9IHtcblxuICAvKipcbiAgICogQXV0aGVudGljYXRlIC0gY2hlY2sgaWYgdGhlIHBhc3N3b3JkcyBhcmUgdGhlIHNhbWVcbiAgICpcbiAgICogQHBhcmFtIHtTdHJpbmd9IHBsYWluVGV4dFxuICAgKiBAcmV0dXJuIHtCb29sZWFufVxuICAgKiBAYXBpIHB1YmxpY1xuICAgKi9cblxuICBhdXRoZW50aWNhdGU6IGZ1bmN0aW9uIChwbGFpblRleHQpIHtcbiAgICByZXR1cm4gdGhpcy5lbmNyeXB0UGFzc3dvcmQocGxhaW5UZXh0KSA9PT0gdGhpcy5oYXNoZWRfcGFzc3dvcmRcbiAgfSxcblxuICAvKipcbiAgICogTWFrZSBzYWx0XG4gICAqXG4gICAqIEByZXR1cm4ge1N0cmluZ31cbiAgICogQGFwaSBwdWJsaWNcbiAgICovXG5cbiAgbWFrZVNhbHQ6IGZ1bmN0aW9uICgpIHtcbiAgICByZXR1cm4gTWF0aC5yb3VuZCgobmV3IERhdGUoKS52YWx1ZU9mKCkgKiBNYXRoLnJhbmRvbSgpKSkgKyAnJ1xuICB9LFxuXG4gIC8qKlxuICAgKiBFbmNyeXB0IHBhc3N3b3JkXG4gICAqXG4gICAqIEBwYXJhbSB7U3RyaW5nfSBwYXNzd29yZFxuICAgKiBAcmV0dXJuIHtTdHJpbmd9XG4gICAqIEBhcGkgcHVibGljXG4gICAqL1xuXG4gIGVuY3J5cHRQYXNzd29yZDogZnVuY3Rpb24gKHBhc3N3b3JkKSB7XG4gICAgaWYgKCFwYXNzd29yZCkgcmV0dXJuICcnXG4gICAgdHJ5IHtcbiAgICAgIHJldHVybiBjcnlwdG9cbiAgICAgICAgLmNyZWF0ZUhtYWMoJ3NoYTEnLCB0aGlzLnNhbHQpXG4gICAgICAgIC51cGRhdGUocGFzc3dvcmQpXG4gICAgICAgIC5kaWdlc3QoJ2hleCcpXG4gICAgfSBjYXRjaCAoZXJyKSB7XG4gICAgICByZXR1cm4gJydcbiAgICB9XG4gIH0sXG5cbiAgLyoqXG4gICAqIFZhbGlkYXRpb24gaXMgbm90IHJlcXVpcmVkIGlmIHVzaW5nIE9BdXRoXG4gICAqL1xuXG4gIHNraXBWYWxpZGF0aW9uOiBmdW5jdGlvbiAoKSB7XG4gICAgcmV0dXJuIH5vQXV0aFR5cGVzLmluZGV4T2YodGhpcy5wcm92aWRlcilcbiAgfVxufVxuXG4vKipcbiAqIFN0YXRpY3NcbiAqL1xuXG51c2VyU2NoZW1hLnN0YXRpY3MgPSB7XG5cbiAgLyoqXG4gICAqIExvYWRcbiAgICpcbiAgICogQHBhcmFtIHtPYmplY3R9IG9wdGlvbnNcbiAgICogQHBhcmFtIHtGdW5jdGlvbn0gY2JcbiAgICogQGFwaSBwcml2YXRlXG4gICAqL1xuXG4gIGxvYWQ6IGZ1bmN0aW9uIChvcHRpb25zLCBjYikge1xuICAgIG9wdGlvbnMuc2VsZWN0ID0gb3B0aW9ucy5zZWxlY3QgfHwgJ25hbWUgdXNlcm5hbWUnXG4gICAgcmV0dXJuIHRoaXMuZmluZE9uZShvcHRpb25zLmNyaXRlcmlhKVxuICAgICAgLnNlbGVjdChvcHRpb25zLnNlbGVjdClcbiAgICAgIC5leGVjKGNiKVxuICB9XG59XG5cbnZhciBVc2VyID0gbW9uZ29vc2UubW9kZWwoJ1VzZXInLCB1c2VyU2NoZW1hLCAndXNlcnMnKVxuXG5tb2R1bGUuZXhwb3J0cyA9IFVzZXJcblxuXG5cblxuIl19",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "User.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "crypto",
+        "Schema",
+        "oAuthTypes",
+        "userSchema",
+        "name",
+        "type",
+        "String",
+        "default",
+        "email",
+        "username",
+        "provider",
+        "locale",
+        "hashed_password",
+        "salt",
+        "authToken",
+        "lastlogin",
+        "Date",
+        "now",
+        "facebook",
+        "id",
+        "token",
+        "google",
+        "validatePresenceOf",
+        "value",
+        "length",
+        "virtual",
+        "set",
+        "password",
+        "_password",
+        "makeSalt",
+        "encryptPassword",
+        "get",
+        "path",
+        "validate",
+        "skipValidation",
+        "fn",
+        "User",
+        "model",
+        "isNew",
+        "isModified",
+        "find",
+        "exec",
+        "err",
+        "users",
+        "pre",
+        "next",
+        "Error",
+        "methods",
+        "authenticate",
+        "plainText",
+        "Math",
+        "round",
+        "valueOf",
+        "random",
+        "createHmac",
+        "update",
+        "digest",
+        "indexOf",
+        "statics",
+        "load",
+        "options",
+        "cb",
+        "select",
+        "findOne",
+        "criteria",
+        "module",
+        "exports"
+      ],
+      "mappings": "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",
+      "file": "User.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nconst crypto = require('crypto')\n\nvar Schema = mongoose.Schema\n\nconst oAuthTypes = [\n  'github',\n  'twitter',\n  'facebook',\n  'google',\n  'linkedin'\n]\n\nconst userSchema = new Schema({\n  name: { type: String, default: '' },\n  email: { type: String, default: '' },\n  username: { type: String, default: '' },\n  provider: { type: String, default: '' },\n  locale: { type: String, default: 'en' },\n  hashed_password: { type: String, default: '' },\n  salt: { type: String, default: '' },\n  authToken: { type: String, default: '' },\n  lastlogin: { type : Date, default : Date.now },\n  facebook: {\n    id           : String,\n    token        : String,\n    email        : String,\n    name         : String\n  },\n  google: {\n    id           : String,\n    token        : String,\n    email        : String,\n    name         : String\n  }\n})\n\nconst validatePresenceOf = value => value && value.length\n\n/**\n * Virtuals\n */\n\nuserSchema\n  .virtual('password')\n  .set(function (password) {\n    this._password = password\n    this.salt = this.makeSalt()\n    this.hashed_password = this.encryptPassword(password)\n  })\n  .get(function () {\n    return this._password\n  })\n\n/**\n * Validations\n */\n\n// the below 5 validations only apply if you are signing up traditionally\n\nuserSchema.path('name').validate(function (name) {\n  if (this.skipValidation()) return true\n  return name.length\n}, 'Name cannot be blank')\n\nuserSchema.path('email').validate(function (email) {\n  if (this.skipValidation()) return true\n  return email.length\n}, 'Email cannot be blank')\n\nuserSchema.path('email').validate(function (email, fn) {\n  const User = mongoose.model('User')\n  if (this.skipValidation()) fn(true)\n\n  // Check only when it is a new user or when email field is modified\n  if (this.isNew || this.isModified('email')) {\n    User.find({ email: email }).exec(function (err, users) {\n      fn(!err && users.length === 0)\n    })\n  } else fn(true)\n}, 'Email already exists')\n\nuserSchema.path('username').validate(function (username) {\n  if (this.skipValidation()) return true\n  return username.length\n}, 'Username cannot be blank')\n\nuserSchema.path('hashed_password').validate(function (hashed_password) {\n  if (this.skipValidation()) return true\n  return hashed_password.length && this._password.length\n}, 'Password cannot be blank')\n\n\n/**\n * Pre-save hook\n */\n\nuserSchema.pre('save', function (next) {\n  if (!this.isNew) return next()\n\n  if (!validatePresenceOf(this.password) && !this.skipValidation()) {\n    next(new Error('Invalid password'))\n  } else {\n    next()\n  }\n})\n\n/**\n * Methods\n */\n\nuserSchema.methods = {\n\n  /**\n   * Authenticate - check if the passwords are the same\n   *\n   * @param {String} plainText\n   * @return {Boolean}\n   * @api public\n   */\n\n  authenticate: function (plainText) {\n    return this.encryptPassword(plainText) === this.hashed_password\n  },\n\n  /**\n   * Make salt\n   *\n   * @return {String}\n   * @api public\n   */\n\n  makeSalt: function () {\n    return Math.round((new Date().valueOf() * Math.random())) + ''\n  },\n\n  /**\n   * Encrypt password\n   *\n   * @param {String} password\n   * @return {String}\n   * @api public\n   */\n\n  encryptPassword: function (password) {\n    if (!password) return ''\n    try {\n      return crypto\n        .createHmac('sha1', this.salt)\n        .update(password)\n        .digest('hex')\n    } catch (err) {\n      return ''\n    }\n  },\n\n  /**\n   * Validation is not required if using OAuth\n   */\n\n  skipValidation: function () {\n    return ~oAuthTypes.indexOf(this.provider)\n  }\n}\n\n/**\n * Statics\n */\n\nuserSchema.statics = {\n\n  /**\n   * Load\n   *\n   * @param {Object} options\n   * @param {Function} cb\n   * @api private\n   */\n\n  load: function (options, cb) {\n    options.select = options.select || 'name username'\n    return this.findOne(options.criteria)\n      .select(options.select)\n      .exec(cb)\n  }\n}\n\nvar User = mongoose.model('User', userSchema, 'users')\n\nmodule.exports = User\n\n\n\n\n"
       ]
     },
     "mtime": 1506701169000

@@ -13,7 +13,7 @@ const config = require('./config')
 const yaml = require('js-yaml')
 const fs = require('fs')
 try {
-  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './api/swagger/swagger.yaml'), 'utf8'))
+  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))
   const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)
   fs.writeFile(path.join(__dirname,'./public/arasaac.json'), swaggerJSON, function (err) {
     if (err) return console.log(err)
@@ -25,8 +25,8 @@ try {
 
 var swaggerConfig = {
   appRoot: __dirname, // required config
-  configDir: path.resolve(__dirname, 'config')
-  // swaggerFile: `${__dirname}/path/to/my/swagger.yaml`  
+  configDir: path.resolve(__dirname, 'config'),
+  swaggerFile: `${__dirname}/swagger/swagger.yaml`  
 }
 
 
