@@ -2,13 +2,13 @@ version: '3'
 
 services:
 
-  arasaac:
+  frontend:
     image: nginx
-    hostname: newarasaac
-    container_name: newarasaac
+    hostname: frontend
+    container_name: frontend
     volumes:
-       - ./arasaac-conf/:/etc/nginx/conf.d:ro
-       - ./arasaac-code/:/usr/share/nginx/html
+       - ./frontend/conf/:/etc/nginx/conf.d:ro
+       - ./frontend/code/:/usr/share/nginx/html
     environment:
       LETSENCRYPT_HOST: "beta.arasaac.org"
       LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
