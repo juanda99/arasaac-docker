@@ -4,6 +4,7 @@ nginx-proxy/certs/*.crt
 nginx-proxy/certs/*.pem
 newarasaac/materials
 newarasaac/watcher/app/*.log
+newarasaac/mongodb/dbdata/*
 !newarasaac/mongodb/dbdata/.gitkeep
 ./**/*.log
 .DS_Store
