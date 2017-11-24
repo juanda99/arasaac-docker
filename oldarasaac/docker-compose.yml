@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+
+  db:
+    hostname: db
+    image: mysql:5.5
+    container_name: db-arasaac
+    volumes:
+      - ./bbdd:/var/lib/mysql
+      - ./dump:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: saac
+      MYSQL_USER: arasaac
+      MYSQL_PASSWORD: password
+    networks:
+      - backend
+
+  phpmyadmin:
+    hostname: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+     - PMA_ARBITRARY=1
+    restart: always
+    volumes:
+     - /sessions
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: saac
+      MYSQL_USER: arasaac
+      MYSQL_PASSWORD: password
+      VIRTUAL_HOST: "phpmyadmin.arasaac.org,www.phpmyadmin.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+      - backend
+
+networks:
+  nginxproxy_frontend:
+    external: true
+  backend:
+    driver: bridge

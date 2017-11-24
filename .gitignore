@@ -19,6 +19,13 @@ newarasaac/watcher/.config
 newarasaac/mongodb/dbdata/*
 !newarasaac/mongodb/dbdata/.gitkeep
 
+# ***** OLDARASAAC *****
+oldarasaac/dump/*
+oldarasaac/bbdd/*
+!oldarasaac/dump/.gitkeep
+!oldarasaac/bbdd/.gitkeep
+
+
 # ***** GENERIC CONFIGURATION *****
 # Environment specific configuration
 .env
