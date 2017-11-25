@@ -5,15 +5,13 @@ services:
   db:
     hostname: db
     image: mysql:5.5
-    container_name: db-arasaac
+    container_name: db
     volumes:
       - ./bbdd:/var/lib/mysql
       - ./dump:/docker-entrypoint-initdb.d
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: saac
-      MYSQL_USER: arasaac
-      MYSQL_PASSWORD: password
+    env_file:
+      - .env
+
     networks:
       - backend
 
@@ -22,16 +20,12 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     environment:
-     - PMA_ARBITRARY=1
+      VIRTUAL_HOST: "phpmyadmin.arasaac.org,www.phpmyadmin.arasaac.org"
+    env_file:
+      - .env
     restart: always
     volumes:
-     - /sessions
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: saac
-      MYSQL_USER: arasaac
-      MYSQL_PASSWORD: password
-      VIRTUAL_HOST: "phpmyadmin.arasaac.org,www.phpmyadmin.arasaac.org"
+      - /sessions
     networks:
       - nginxproxy_frontend
       - backend
