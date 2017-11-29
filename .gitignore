@@ -6,6 +6,7 @@ nginx-proxy/certs/*.pem
 
 # ***** MATERIALS *****
 newarasaac/materials
+newarasaac/.materials
 
 # ***** API *****
 # Runtime configuration for swagger app
@@ -24,7 +25,7 @@ oldarasaac/dump/*
 oldarasaac/bbdd/*
 !oldarasaac/dump/.gitkeep
 !oldarasaac/bbdd/.gitkeep
-
+oldarasaac/data
 
 # ***** GENERIC CONFIGURATION *****
 # Environment specific configuration

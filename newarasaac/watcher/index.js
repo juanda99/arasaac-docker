@@ -1,8 +1,9 @@
+
 // load dependencies
 var chokidar = require('chokidar')
 var fs = require('fs-extra')
 var path = require('path')
-const uuidv4 = require('uuid/v4');
+const uuidv4 = require('uuid/v4')
 var recursive = require('recursive-readdir')
 var tar = require('tar')
 const _ = require ('lodash')
@@ -16,8 +17,9 @@ require('dotenv').config()
 // global variables and constants
 var materialFiles = {}
 var localePattern = /^[A-z]{2,3}$/g
-const INCLUDE = 'include'
-const EXCLUDE = 'exclude'
+const INCLUDE_FILE = "include"
+const EXCLUDE_FILE = "exclude"
+const INCLUDE_DIR = "includedir"
 const SCREENSHOTS_DIR = process.env.SCREENSHOTS_DIR || 'screenshots'
 const MATERIALS = process.env.MATERIALS || '/materials'
 const RESOLUTION = process.env.RESOLUTION || 300
@@ -72,9 +74,11 @@ var watcher = chokidar.watch(MATERIALS, {
 
 logger.info('ARASAAC WATCHER STARTED')
 logger.info(`It will wait ${parseInt(TIME)/1000} seconds on every material before starting processing it`)
-logger.info('Start scanning...')
+logger.info(`Using folder: ${MATERIALS}`)
+logger.info(`Start scanning....`)
 
 process.on('uncaughtException', function (err) {
+  logger.log(err)
   logger.log('error', 'Fatal uncaught exception crashed cluster', err, function (err, level, msg, meta) {
     process.exit(1)
   })
@@ -84,21 +88,23 @@ process.on('uncaughtException', function (err) {
 watcher
   .on('add', (file) => {
     logger.info(`WATCHER - ADDED FILE: ${path.resolve(MATERIALS, file)}`)
-    // addTask(file, INCLUDE)
+    addTask(file, INCLUDE_FILE)
   })
   
   .on('addDir', (dir) => {
-    // console.log(`ADDED DIRECTORY: ${path.resolve(MATERIALS, dir)}`)
+    // only task is to push dir into targetLanguages field if it's a language dir
     logger.info(`ADDED DIRECTORY: ${path.resolve(MATERIALS, dir)}`)
-    // addTask(dir, 'dir')
+    addTask(dir, INCLUDE_DIR)
   })
   .on('change', (file) => {
+    // generate new zip or resize screenshot (same as add task)
     logger.info(`WATCHER - CHANGED FILE: ${path.resolve(MATERIALS, file)}`)
-    // addTask(file, INCLUDE)
+    addTask(file, INCLUDE_FILE)
   })
   .on('unlink', (file) => {
+    // generate new zip or remove screenshot
     logger.info(`WATCHER - REMOVED FILE: ${path.resolve(MATERIALS, file)}`)
-    // addTask(file, EXCLUDE)
+    addTask(file, EXCLUDE_FILE)
   })
   .on('error', error => logger.error(`WATCHER ERROR: ${error}`))
   .on('ready', () => logger.info('Initial scan complete, waiting for changes'))
@@ -114,6 +120,7 @@ const initMaterial = (materialId) => {
   }
 }
 
+// function to get all languages from a directory
 const dirs = p => fs.readdirSync(p).filter(f => fs.statSync(path.join(p, f)).isDirectory() && f.match(/^[A-z]{2,3}$/))
 // list files, not directories, not tgz.
 const listFiles = p => fs.readdirSync(p).filter(f => {
@@ -132,11 +139,11 @@ const addTask = (file, operation) =>{
   // *screenshots*
   if (dir.match(/screenshots$/)|| dir.match(/screenshots\/[A-z]{2,3}$/)) material[`${operation}Screenshots`].push(file)
   // *directories*
-  else if ((operation=='dir') && relativeDir.match(/^[A-z]{2,3}$/)) {
+  else if ((operation==INCLUDE_DIR) && relativeDir.match(/^[A-z]{2,3}$/)) {
     material.languages.add(relativeDir)
     logger.info(`ADD LANGUAGE: ${relativeDir} for material ${materialId}`)
   }
-  else if ((operation=='dir') && !path.basename(file).match(/^[A-z]{2,3}$/)) {
+  else if ((operation==INCLUDE_DIR) && !path.basename(file).match(/^[A-z]{2,3}$/)) {
     logger.warn(`Directory ${file} added, but not executing any action!`)
     return
   // *material files*
@@ -164,7 +171,7 @@ var operateDebounced = _.wrap(
 sync = async (material) => {
   // remove files from screenshosts_300
   material.excludeScreenshots.map((file) => {
-    file.replace('screenshots', `_${RESOLUTION}`)
+    file.replace('screenshots', `screenshots_${RESOLUTION}`)
     // delete the file from screenshots)
     fs.remove(path.resolve(MATERIALS, file), err => {
       if (err) logger.error(err)

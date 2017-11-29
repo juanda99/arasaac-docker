@@ -11,7 +11,8 @@ services:
       - ./dump:/docker-entrypoint-initdb.d
     env_file:
       - .env
-
+    ports:
+      - 3306:3306
     networks:
       - backend
 
@@ -24,11 +25,30 @@ services:
     env_file:
       - .env
     restart: always
+    depends_on:
+      - db
     volumes:
       - /sessions
     networks:
       - nginxproxy_frontend
       - backend
+
+  migration:
+    hostname: migration
+    container_name: migration
+    build: 
+      context: .
+      dockerfile: python-dockerfile.yml
+    working_dir: /app
+    command: ./start.sh
+    env_file:
+      - .env
+    networks:
+      - backend
+    depends_on:
+      - db
+    volumes:
+      - "./data:/app/data"
 
 networks:
   nginxproxy_frontend:
