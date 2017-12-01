@@ -52,7 +52,10 @@ module.exports = {
         // if no items, return empty array
         if (materials.length===0) return res.status(404).json([]) //send http code 404!!!
         await Promise.all(
-          materials.map( (material) => getFiles(material)) // not async&await as we want to get all material images in parallel
+          materials.map( (material) => {
+            initMaterial(material)
+            getFiles(material) // not async&await as we want to get all material images in parallel
+          }) 
         )
         console.log(materials)
         return res.json(materials)

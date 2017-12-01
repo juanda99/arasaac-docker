@@ -239,7 +239,7 @@ definitions:
           type: string
   Material:
     required:
-      - author
+      - authors
       - desc
       - files
       - title
@@ -254,7 +254,7 @@ definitions:
         type: array
         items: 
           type: integer
-      author:
+      authors:
         type: array
         items: 
           type: object
@@ -266,17 +266,13 @@ definitions:
       downloads:
         type: number
       file:
-        type: string
+        type: object
       files:
-        type: array
-        items: 
-          type: string
+        type: object
       idMaterial:
         type: integer
-      images:
-        type: array
-        items:
-          type: string
+      screenshots:
+        type: object
       lang:
         type: string
       language:

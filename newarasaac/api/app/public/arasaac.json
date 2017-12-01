@@ -409,7 +409,7 @@
         },
         "Material": {
             "required": [
-                "author",
+                "authors",
                 "desc",
                 "files",
                 "title"
@@ -430,7 +430,7 @@
                         "type": "integer"
                     }
                 },
-                "author": {
+                "authors": {
                     "type": "array",
                     "items": {
                         "type": "object"
@@ -447,22 +447,16 @@
                     "type": "number"
                 },
                 "file": {
-                    "type": "string"
+                    "type": "object"
                 },
                 "files": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                    "type": "object"
                 },
                 "idMaterial": {
                     "type": "integer"
                 },
-                "images": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "screenshots": {
+                    "type": "object"
                 },
                 "lang": {
                     "type": "string"
