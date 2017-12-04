@@ -28,7 +28,6 @@ module.exports = {
         })
       }
       // getImages(material, ()=>(res.json(material)))
-      initMaterial(material)
       const response =  await getFiles(material)
       return res.json(response)
     })
@@ -48,17 +47,13 @@ module.exports = {
             message: 'Error buscando el material',
             error: err
           })
-        }
+        } 
         // if no items, return empty array
         if (materials.length===0) return res.status(404).json([]) //send http code 404!!!
-        await Promise.all(
-          materials.map( (material) => {
-            initMaterial(material)
-            getFiles(material) // not async&await as we want to get all material images in parallel
-          }) 
+        const response = await Promise.all(
+          materials.map( async (material) => (await getFiles(material))) // not async&await as we want to get all material images in parallel
         )
-        console.log(materials)
-        return res.json(materials)
+        return res.json(response)
       })
   },
   listMaterials: function(req, res) {
@@ -162,11 +157,13 @@ function isNumeric(n) {
 const initMaterial = (material) => {
   material.commonFiles=[]
   material.screenshots={}
+  material.commonScreenshots=[]
   material.files={}
   material.file={}
 }
 
 const getFiles = (material) => {
+  initMaterial(material)
   return new Promise ((resolve) => {
     let materialLocales=[material.lang]
     let baseDir = `${config.materialsDir}${path.sep}${material.idMaterial}${path.sep}`
