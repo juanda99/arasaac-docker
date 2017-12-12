@@ -117,7 +117,7 @@ def transformarMateriales():
        # newMaterial['recomendado'] = False
        # newMaterial['etiquetas'] = []
        # newMaterial['fechaAlta'] = material['fecha_alta']
-        newMaterial['file'] = str(material['id_material']) + ".zip"
+       # newMaterial['file'] = str(material['id_material']) + ".zip"
        # newMaterial['fechaActualizacion']=None
         newMaterial['language'] = str(mongoLanguage[material['material_idiomas'][0]])
         newMaterial['lang'] = str(idiomas[material['material_idiomas'][0]])
