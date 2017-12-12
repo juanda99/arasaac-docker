@@ -3,6 +3,7 @@
 // Otra que lee los datos en la bbdd
 // mandar json cuandto todo acabe:
 // https://stackoverflow.com/questions/2727167/how-do-you-get-a-list-of-the-names-of-all-files-present-in-a-directory-in-node-j/37532027#37532027
+
 var Materials = require('../models/Materials')
 const config = require('../config')
 var recursive = require('recursive-readdir')
@@ -76,7 +77,7 @@ module.exports = {
           error: err
         })
       }
-      if(!cerveza) {
+      if(!material) {
         return res.status(404).json( {
           message: 'No tenemos este material',
           err
@@ -180,7 +181,7 @@ const getFiles = (material) => {
           let subdir = path.dirname(relativeFile).split(path.sep).pop()
           if (dir==='.'){
             //if file is tar.gz, put it inside file json  {es: xxx-es.tgz, fr: xxx.fr.tgz...}
-            let filePattern = new RegExp(`^index-[A-z]{2,3}-[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}.tgz$`, 'i')
+            let filePattern = new RegExp('^index-[A-z]{2,3}-[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}.tgz$', 'i')
             if (filePattern.test(fileName)) {
               let fileLocale = fileName.split('-')[1]
               material.file[fileLocale]=fileName
