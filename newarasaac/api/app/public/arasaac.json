@@ -146,6 +146,14 @@
                 "cr",
                 "val"
             ]
+        },
+        "Days": {
+            "name": "days",
+            "description": "Material identifier",
+            "type": "integer",
+            "in": "path",
+            "required": true,
+            "default": 30
         }
     },
     "paths": {
@@ -183,6 +191,32 @@
                 "parameters": [
                     {
                         "$ref": "#/parameters/IdMaterial"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/GetMaterialResponse"
+                        }
+                    },
+                    "default": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/materials/days/{days}": {
+            "x-swagger-router-controller": "materials",
+            "get": {
+                "operationId": "getNewMaterials",
+                "description": "Obtain materials.",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Days"
                     }
                 ],
                 "responses": {

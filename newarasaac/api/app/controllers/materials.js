@@ -57,6 +57,29 @@ module.exports = {
         return res.json(response)
       })
   },
+  getNewMaterials: (req, res) => {
+    let days = req.swagger.params.days.value
+    let startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
+    Materials
+      .find({lastUpdate: {$gt: startDate}})
+      .sort({lastUpdate: -1})
+      .lean()
+      .exec(async(err, materials) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error buscando el material',
+            error: err
+          })
+        }
+        // if no items, return empty array
+        if (materials.length === 0) return res.status(404).json([]) //send http code 404!!!
+        const response = await Promise.all(
+          materials.map(async(material) => (await getFiles(material))) // not async&await as we want to get all material images in parallel
+        )
+        return res.json(response)
+      })
+  },
   listMaterials: function(req, res) {
     Materials.find(function(err, materials){
       if(err) {

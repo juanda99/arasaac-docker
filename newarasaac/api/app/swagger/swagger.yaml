@@ -70,6 +70,13 @@ parameters:
     in: path
     required: true
     enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "ga", "br", "cr", "val"]
+  Days:
+    name: days
+    description: Material identifier
+    type: integer
+    in: path
+    required: true
+    default: 30
 paths:
   /keywords/{language}:
     # our controller name
@@ -98,6 +105,24 @@ paths:
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/IdMaterial'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetMaterialResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /materials/days/{days}:
+    x-swagger-router-controller: materials
+    get:
+      operationId: getNewMaterials
+      description: Obtain materials.
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Days'
       responses:
         "200":
           description: Success
