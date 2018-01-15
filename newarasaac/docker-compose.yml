@@ -35,7 +35,7 @@ services:
     build:
       context: ./api
       dockerfile: api-dockerfile.yml
-    command: yarn start
+    command: yarn debug
     depends_on:
       - mongodb
     volumes:

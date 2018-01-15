@@ -1327,5 +1327,1089 @@
       ]
     },
     "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/cervezasController.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/cervezasController.js",
+      "filenameRelative": "/app/controllers/cervezasController.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "cervezasController.js",
+      "sourceFileName": "cervezasController.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "cervezasController"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar Cervezas = require('../models/Cervezas');\nmodule.exports = {\n  // https://docs.mongodb.com/v3.0/reference/operator/query/text/\n  search: function search(req, res) {\n    var q = req.query.q;\n    Cervezas.find({ $text: { $search: q } }, function (err, cervezas) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error en la búsqueda'\n        });\n      }\n      return res.json(cervezas);\n    });\n  },\n  list: function list(req, res) {\n    Cervezas.find(function (err, cervezas) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error obteniendo la cerveza'\n        });\n      }\n      return res.json(cervezas);\n    });\n  },\n  show: function show(req, res) {\n    var id = req.params.id;\n    Cervezas.findOne({ _id: id }, function (err, cerveza) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener la cerveza'\n        });\n      }\n      if (!cerveza) {\n        return res.status(404).json({\n          message: 'No tenemos esta cerveza'\n        });\n      }\n      return res.json(cerveza);\n    });\n  },\n  create: function create(req, res) {\n    var cerveza = new Cervezas(req.body);\n    cerveza.save(function (err, cerveza) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Error al guardar la cerveza',\n          error: err\n        });\n      }\n      return res.status(201).json({\n        message: 'saved',\n        _id: cerveza._id\n      });\n    });\n  },\n  update: function update(req, res) {\n    var id = req.params.id;\n    Cervezas.findOne({ _id: id }, function (err, cerveza) {\n      if (err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al guardar la cerveza',\n          error: err\n        });\n      }\n      if (!cerveza) {\n        return res.status(404).json({\n          message: 'No hemos encontrado la cerveza'\n        });\n      }\n      cerveza.Nombre = req.body.nombre;\n      cerveza.Descripción = req.body.descripcion;\n      cerveza.Graduacion = req.body.graduacion;\n      cerveza.Envase = req.body.envase;\n      cerveza.Precio = req.body.precio;\n      cerveza.save(function (err, cerveza) {\n        if (err) {\n          return res.status(500).json({\n            message: 'Error al guardar la cerveza'\n          });\n        }\n        if (!cerveza) {\n          return res.status(404).json({\n            message: 'No hemos encontrado la cerveza'\n          });\n        }\n        return res.json(cerveza);\n      });\n    });\n  },\n  remove: function remove(req, res) {\n    var id = req.params.id;\n    Cervezas.findByIdAndRemove(id, function (err, cerveza) {\n      if (err) {\n        return res.json(500, {\n          message: 'No hemos encontrado la cerveza'\n        });\n      }\n      return res.json(cerveza);\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNlcnZlemFzQ29udHJvbGxlci5qcyJdLCJuYW1lcyI6WyJDZXJ2ZXphcyIsInJlcXVpcmUiLCJtb2R1bGUiLCJleHBvcnRzIiwic2VhcmNoIiwicmVxIiwicmVzIiwicSIsInF1ZXJ5IiwiZmluZCIsIiR0ZXh0IiwiJHNlYXJjaCIsImVyciIsImNlcnZlemFzIiwic3RhdHVzIiwianNvbiIsIm1lc3NhZ2UiLCJsaXN0Iiwic2hvdyIsImlkIiwicGFyYW1zIiwiZmluZE9uZSIsIl9pZCIsImNlcnZlemEiLCJjcmVhdGUiLCJib2R5Iiwic2F2ZSIsImVycm9yIiwidXBkYXRlIiwiTm9tYnJlIiwibm9tYnJlIiwiRGVzY3JpcGNpw7NuIiwiZGVzY3JpcGNpb24iLCJHcmFkdWFjaW9uIiwiZ3JhZHVhY2lvbiIsIkVudmFzZSIsImVudmFzZSIsIlByZWNpbyIsInByZWNpbyIsInJlbW92ZSIsImZpbmRCeUlkQW5kUmVtb3ZlIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsb0JBQVIsQ0FBZjtBQUNBQyxPQUFPQyxPQUFQLEdBQWlCO0FBQ2Y7QUFDQUMsVUFBUSxnQkFBVUMsR0FBVixFQUFlQyxHQUFmLEVBQW9CO0FBQzFCLFFBQUlDLElBQUlGLElBQUlHLEtBQUosQ0FBVUQsQ0FBbEI7QUFDQVAsYUFBU1MsSUFBVCxDQUFjLEVBQUVDLE9BQU8sRUFBRUMsU0FBU0osQ0FBWCxFQUFULEVBQWQsRUFBeUMsVUFBU0ssR0FBVCxFQUFjQyxRQUFkLEVBQXdCO0FBQy9ELFVBQUdELEdBQUgsRUFBUTtBQUNOLGVBQU9OLElBQUlRLE1BQUosQ0FBVyxHQUFYLEVBQWdCQyxJQUFoQixDQUFxQjtBQUMxQkMsbUJBQVM7QUFEaUIsU0FBckIsQ0FBUDtBQUdEO0FBQ0QsYUFBT1YsSUFBSVMsSUFBSixDQUFTRixRQUFULENBQVA7QUFDRCxLQVBEO0FBUUQsR0FaYztBQWFmSSxRQUFNLGNBQVNaLEdBQVQsRUFBY0MsR0FBZCxFQUFtQjtBQUN2Qk4sYUFBU1Ms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LEdBQVgsRUFBZ0JDLElBQWhCLENBQXFCO0FBQzFCQyxxQkFBUztBQURpQixXQUFyQixDQUFQO0FBR0Q7QUFDRCxZQUFHLENBQUNPLE9BQUosRUFBYTtBQUNYLGlCQUFPakIsSUFBSVEsTUFBSixDQUFXLEdBQVgsRUFBZ0JDLElBQWhCLENBQXFCO0FBQzFCQyxxQkFBUztBQURpQixXQUFyQixDQUFQO0FBR0Q7QUFDRCxlQUFPVixJQUFJUyxJQUFKLENBQVNRLE9BQVQsQ0FBUDtBQUNELE9BWkQ7QUFhRCxLQTlCRDtBQStCRCxHQXZGYztBQXdGZmdCLFVBQVEsZ0JBQVNsQyxHQUFULEVBQWNDLEdBQWQsRUFBbUI7QUFDekIsUUFBSWEsS0FBS2QsSUFBSWUsTUFBSixDQUFXRCxFQUFwQjtBQUNBbkIsYUFBU3dDLGlCQUFULENBQTJCckIsRUFBM0IsRUFBK0IsVUFBU1AsR0FBVCxFQUFjVyxPQUFkLEVBQXNCO0FBQ25ELFVBQUdYLEdBQUgsRUFBUTtBQUNOLGVBQU9OLElBQUlTLElBQUosQ0FBUyxHQUFULEVBQWM7QUFDbkJDLG1CQUFTO0FBRFUsU0FBZCxDQUFQO0FBR0Q7QUFDRCxhQUFPVixJQUFJUyxJQUFKLENBQVNRLE9BQVQsQ0FBUDtBQUNELEtBUEQ7QUFRRDtBQWxHYyxDQUFqQiIsImZpbGUiOiJjZXJ2ZXphc0NvbnRyb2xsZXIuanMiLCJzb3VyY2VSb290IjoiL2FwcC9jb250cm9sbGVycyIsInNvdXJjZXNDb250ZW50IjpbInZhciBDZXJ2ZXphcyA9IHJlcXVpcmUoJy4uL21vZGVscy9DZXJ2ZXphcycpXG5tb2R1bGUuZXhwb3J0cyA9IHtcbiAgLy8gaHR0cHM6Ly9kb2NzLm1vbmdvZGIuY29tL3YzLjAvcmVmZXJlbmNlL29wZXJhdG9yL3F1ZXJ5L3RleHQvXG4gIHNlYXJjaDogZnVuY3Rpb24gKHJlcSwgcmVzKSB7XG4gICAgdmFyIHEgPSByZXEucXVlcnkucVxuICAgIENlcnZlemFzLmZpbmQoeyAkdGV4dDogeyAkc2VhcmNoOiBxIH0gfSwgZnVuY3Rpb24oZXJyLCBjZXJ2ZXphcykge1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ0Vycm9yIGVuIGxhIGLDunNxdWVkYSdcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuanNvbihjZXJ2ZXphcylcbiAgICB9KVxuICB9LFxuICBsaXN0OiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIENlcnZlemFzLmZpbmQoZnVuY3Rpb24oZXJyLCBjZXJ2ZXphcyl7XG4gICAgICBpZihlcnIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHtcbiAgICAgICAgICBtZXNzYWdlOiAnRXJyb3Igb2J0ZW5pZW5kbyBsYSBjZXJ2ZXphJ1xuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgcmV0dXJuIHJlcy5qc29uKGNlcnZlemFzKVxuICAgIH0pXG4gIH0sXG4gIHNob3c6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIGlkID0gcmVxLnBhcmFtcy5pZFxuICAgIENlcnZlemFzLmZpbmRPbmUoe19pZDogaWR9LCBmdW5jdGlvbihlcnIsIGNlcnZlemEpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ1NlIGhhIHByb2R1Y2lkbyB1biBlcnJvciBhbCBvYnRlbmVyIGxhIGNlcnZlemEnXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighY2VydmV6YSkge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oIHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gdGVuZW1vcyBlc3RhIGNlcnZlemEnXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICByZXR1cm4gcmVzLmpzb24oY2VydmV6YSlcbiAgICB9KVxuICB9LFxuICBjcmVhdGU6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIGNlcnZlemEgPSBuZXcgQ2VydmV6YXMgKHJlcS5ib2R5KVxuICAgIGNlcnZlemEuc2F2ZShmdW5jdGlvbihlcnIsIGNlcnZlemEpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbigge1xuICAgICAgICAgIG1lc3NhZ2U6ICdFcnJvciBhbCBndWFyZGFyIGxhIGNlcnZlemEnLFxuICAgICAgICAgIGVycm9yOiBlcnJcbiAgICAgICAgfSlcbiAgICAgIH1cbiAgICAgIHJldHVybiByZXMuc3RhdHVzKDIwMSkuanNvbih7XG4gICAgICAgIG1lc3NhZ2U6ICdzYXZlZCcsXG4gICAgICAgIF9pZDogY2VydmV6YS5faWRcbiAgICAgIH0pXG4gICAgfSlcbiAgfSxcbiAgdXBkYXRlOiBmdW5jdGlvbihyZXEsIHJlcykge1xuICAgIHZhciBpZCA9IHJlcS5wYXJhbXMuaWRcbiAgICBDZXJ2ZXphcy5maW5kT25lKHtfaWQ6IGlkfSwgZnVuY3Rpb24oZXJyLCBjZXJ2ZXphKXtcbiAgICAgIGlmKGVycikge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg1MDApLmpzb24oe1xuICAgICAgICAgIG1lc3NhZ2U6ICdTZSBoYSBwcm9kdWNpZG8gdW4gZXJyb3IgYWwgZ3VhcmRhciBsYSBjZXJ2ZXphJyxcbiAgICAgICAgICBlcnJvcjogZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBpZighY2VydmV6YSkge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oe1xuICAgICAgICAgIG1lc3NhZ2U6ICdObyBoZW1vcyBlbmNvbnRyYWRvIGxhIGNlcnZlemEnXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICBjZXJ2ZXphLk5vbWJyZSA9IHJlcS5ib2R5Lm5vbWJyZVxuICAgICAgY2VydmV6YS5EZXNjcmlwY2nDs24gPSAgcmVxLmJvZHkuZGVzY3JpcGNpb25cbiAgICAgIGNlcnZlemEuR3JhZHVhY2lvbiA9IHJlcS5ib2R5LmdyYWR1YWNpb25cbiAgICAgIGNlcnZlemEuRW52YXNlID0gcmVxLmJvZHkuZW52YXNlXG4gICAgICBjZXJ2ZXphLlByZWNpbyA9IHJlcS5ib2R5LnByZWNpb1xuICAgICAgY2VydmV6YS5zYXZlKGZ1bmN0aW9uKGVyciwgY2VydmV6YSl7XG4gICAgICAgIGlmKGVycikge1xuICAgICAgICAgIHJldHVybiByZXMuc3RhdHVzKDUwMCkuanNvbih7XG4gICAgICAgICAgICBtZXNzYWdlOiAnRXJyb3IgYWwgZ3VhcmRhciBsYSBjZXJ2ZXphJ1xuICAgICAgICAgIH0pXG4gICAgICAgIH1cbiAgICAgICAgaWYoIWNlcnZlemEpIHtcbiAgICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDQpLmpzb24oe1xuICAgICAgICAgICAgbWVzc2FnZTogJ05vIGhlbW9zIGVuY29udHJhZG8gbGEgY2VydmV6YSdcbiAgICAgICAgICB9KVxuICAgICAgICB9XG4gICAgICAgIHJldHVybiByZXMuanNvbihjZXJ2ZXphKVxuICAgICAgfSlcbiAgICB9KVxuICB9LFxuICByZW1vdmU6IGZ1bmN0aW9uKHJlcSwgcmVzKSB7XG4gICAgdmFyIGlkID0gcmVxLnBhcmFtcy5pZFxuICAgIENlcnZlemFzLmZpbmRCeUlkQW5kUmVtb3ZlKGlkLCBmdW5jdGlvbihlcnIsIGNlcnZlemEpe1xuICAgICAgaWYoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuanNvbig1MDAsIHtcbiAgICAgICAgICBtZXNzYWdlOiAnTm8gaGVtb3MgZW5jb250cmFkbyBsYSBjZXJ2ZXphJ1xuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgcmV0dXJuIHJlcy5qc29uKGNlcnZlemEpXG4gICAgfSlcbiAgfVxufSJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "cervezasController.js"
+      ],
+      "names": [
+        "Cervezas",
+        "require",
+        "module",
+        "exports",
+        "search",
+        "req",
+        "res",
+        "q",
+        "query",
+        "find",
+        "$text",
+        "$search",
+        "err",
+        "cervezas",
+        "status",
+        "json",
+        "message",
+        "list",
+        "show",
+        "id",
+        "params",
+        "findOne",
+        "_id",
+        "cerveza",
+        "create",
+        "body",
+        "save",
+        "error",
+        "update",
+        "Nombre",
+        "nombre",
+        "Descripción",
+        "descripcion",
+        "Graduacion",
+        "graduacion",
+        "Envase",
+        "envase",
+        "Precio",
+        "precio",
+        "remove",
+        "findByIdAndRemove"
+      ],
+      "mappings": "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",
+      "file": "cervezasController.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var Cervezas = require('../models/Cervezas')\nmodule.exports = {\n  // https://docs.mongodb.com/v3.0/reference/operator/query/text/\n  search: function (req, res) {\n    var q = req.query.q\n    Cervezas.find({ $text: { $search: q } }, function(err, cervezas) {\n      if(err) {\n        return res.status(500).json({\n          message: 'Error en la búsqueda'\n        })\n      }\n      return res.json(cervezas)\n    })\n  },\n  list: function(req, res) {\n    Cervezas.find(function(err, cervezas){\n      if(err) {\n        return res.status(500).json({\n          message: 'Error obteniendo la cerveza'\n        })\n      }\n      return res.json(cervezas)\n    })\n  },\n  show: function(req, res) {\n    var id = req.params.id\n    Cervezas.findOne({_id: id}, function(err, cerveza){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al obtener la cerveza'\n        })\n      }\n      if(!cerveza) {\n        return res.status(404).json( {\n          message: 'No tenemos esta cerveza'\n        })\n      }\n      return res.json(cerveza)\n    })\n  },\n  create: function(req, res) {\n    var cerveza = new Cervezas (req.body)\n    cerveza.save(function(err, cerveza){\n      if(err) {\n        return res.status(500).json( {\n          message: 'Error al guardar la cerveza',\n          error: err\n        })\n      }\n      return res.status(201).json({\n        message: 'saved',\n        _id: cerveza._id\n      })\n    })\n  },\n  update: function(req, res) {\n    var id = req.params.id\n    Cervezas.findOne({_id: id}, function(err, cerveza){\n      if(err) {\n        return res.status(500).json({\n          message: 'Se ha producido un error al guardar la cerveza',\n          error: err\n        })\n      }\n      if(!cerveza) {\n        return res.status(404).json({\n          message: 'No hemos encontrado la cerveza'\n        })\n      }\n      cerveza.Nombre = req.body.nombre\n      cerveza.Descripción =  req.body.descripcion\n      cerveza.Graduacion = req.body.graduacion\n      cerveza.Envase = req.body.envase\n      cerveza.Precio = req.body.precio\n      cerveza.save(function(err, cerveza){\n        if(err) {\n          return res.status(500).json({\n            message: 'Error al guardar la cerveza'\n          })\n        }\n        if(!cerveza) {\n          return res.status(404).json({\n            message: 'No hemos encontrado la cerveza'\n          })\n        }\n        return res.json(cerveza)\n      })\n    })\n  },\n  remove: function(req, res) {\n    var id = req.params.id\n    Cervezas.findByIdAndRemove(id, function(err, cerveza){\n      if(err) {\n        return res.json(500, {\n          message: 'No hemos encontrado la cerveza'\n        })\n      }\n      return res.json(cerveza)\n    })\n  }\n}"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/models/Cervezas.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/Cervezas.js",
+      "filenameRelative": "/app/models/Cervezas.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "Cervezas.js",
+      "sourceFileName": "Cervezas.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "Cervezas"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar Schema = mongoose.Schema;\n\nvar cervezaSchema = new Schema({\n  Nombre: String,\n  Descripción: String,\n  Graduacion: String,\n  Envase: String,\n  Precio: String\n});\n\nvar Cerveza = mongoose.model('Cerveza', cervezaSchema);\n\n/*\n\nEsto da error en update y create:\ncervezaSchema.pre('save', function (next) {\n  var self = this\n  Cerveza.count({cerveza: self.name}, function (err, count) {\n    if (count>0){\n      next(new Error('¡Ya existe esta cerveza!'))\n    }else{                \n      next()\n    }\n  })\n}) \n\n*/\n\nmodule.exports = Cerveza;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIkNlcnZlemFzLmpzIl0sIm5hbWVzIjpbIm1vbmdvb3NlIiwicmVxdWlyZSIsIlNjaGVtYSIsImNlcnZlemFTY2hlbWEiLCJOb21icmUiLCJTdHJpbmciLCJEZXNjcmlwY2nDs24iLCJHcmFkdWFjaW9uIiwiRW52YXNlIiwiUHJlY2lvIiwiQ2VydmV6YSIsIm1vZGVsIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFJQSxXQUFXQyxRQUFRLFVBQVIsQ0FBZjtBQUNBLElBQUlDLFNBQVNGLFNBQVNFLE1BQXRCOztBQUVBLElBQUlDLGdCQUFnQixJQUFJRCxNQUFKLENBQVc7QUFDN0JFLFVBQVFDLE1BRHFCO0FBRTdCQyxlQUFhRCxNQUZnQjtBQUc3QkUsY0FBWUYsTUFIaUI7QUFJN0JHLFVBQVFILE1BSnFCO0FBSzdCSSxVQUFRSjtBQUxxQixDQUFYLENBQXBCOztBQVFBLElBQUlLLFVBQVVWLFNBQVNXLEtBQVQsQ0FBZSxTQUFmLEVBQTBCUixhQUExQixDQUFkOztBQUVBOzs7Ozs7Ozs7Ozs7Ozs7O0FBZ0JBUyxPQUFPQyxPQUFQLEdBQWlCSCxPQUFqQiIsImZpbGUiOiJDZXJ2ZXphcy5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL21vZGVscyIsInNvdXJjZXNDb250ZW50IjpbInZhciBtb25nb29zZSA9IHJlcXVpcmUoJ21vbmdvb3NlJylcbnZhciBTY2hlbWEgPSBtb25nb29zZS5TY2hlbWFcblxudmFyIGNlcnZlemFTY2hlbWEgPSBuZXcgU2NoZW1hKHtcbiAgTm9tYnJlOiBTdHJpbmcsIFxuICBEZXNjcmlwY2nDs246IFN0cmluZywgXG4gIEdyYWR1YWNpb246IFN0cmluZyxcbiAgRW52YXNlOiBTdHJpbmcsXG4gIFByZWNpbzogU3RyaW5nIFxufSlcblxudmFyIENlcnZlemEgPSBtb25nb29zZS5tb2RlbCgnQ2VydmV6YScsIGNlcnZlemFTY2hlbWEpXG5cbi8qXG5cbkVzdG8gZGEgZXJyb3IgZW4gdXBkYXRlIHkgY3JlYXRlOlxuY2VydmV6YVNjaGVtYS5wcmUoJ3NhdmUnLCBmdW5jdGlvbiAobmV4dCkge1xuICB2YXIgc2VsZiA9IHRoaXNcbiAgQ2VydmV6YS5jb3VudCh7Y2VydmV6YTogc2VsZi5uYW1lfSwgZnVuY3Rpb24gKGVyciwgY291bnQpIHtcbiAgICBpZiAoY291bnQ+MCl7XG4gICAgICBuZXh0KG5ldyBFcnJvcignwqFZYSBleGlzdGUgZXN0YSBjZXJ2ZXphIScpKVxuICAgIH1lbHNleyAgICAgICAgICAgICAgICBcbiAgICAgIG5leHQoKVxuICAgIH1cbiAgfSlcbn0pIFxuXG4qL1xuXG5tb2R1bGUuZXhwb3J0cyA9IENlcnZlemFcbiJdfQ==",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "Cervezas.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "Schema",
+        "cervezaSchema",
+        "Nombre",
+        "String",
+        "Descripción",
+        "Graduacion",
+        "Envase",
+        "Precio",
+        "Cerveza",
+        "model",
+        "module",
+        "exports"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,UAAR,CAAf;AACA,IAAIC,SAASF,SAASE,MAAtB;;AAEA,IAAIC,gBAAgB,IAAID,MAAJ,CAAW;AAC7BE,UAAQC,MADqB;AAE7BC,eAAaD,MAFgB;AAG7BE,cAAYF,MAHiB;AAI7BG,UAAQH,MAJqB;AAK7BI,UAAQJ;AALqB,CAAX,CAApB;;AAQA,IAAIK,UAAUV,SAASW,KAAT,CAAe,SAAf,EAA0BR,aAA1B,CAAd;;AAEA;;;;;;;;;;;;;;;;AAgBAS,OAAOC,OAAP,GAAiBH,OAAjB",
+      "file": "Cervezas.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar cervezaSchema = new Schema({\n  Nombre: String, \n  Descripción: String, \n  Graduacion: String,\n  Envase: String,\n  Precio: String \n})\n\nvar Cerveza = mongoose.model('Cerveza', cervezaSchema)\n\n/*\n\nEsto da error en update y create:\ncervezaSchema.pre('save', function (next) {\n  var self = this\n  Cerveza.count({cerveza: self.name}, function (err, count) {\n    if (count>0){\n      next(new Error('¡Ya existe esta cerveza!'))\n    }else{                \n      next()\n    }\n  })\n}) \n\n*/\n\nmodule.exports = Cerveza\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/hello_world.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/hello_world.js",
+      "filenameRelative": "/app/controllers/hello_world.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "hello_world.js",
+      "sourceFileName": "hello_world.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "hello_world"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar util = require('util');\n\n/*\n  In the starter/skeleton project the 'get' operation on the '/hello' path has an operationId named 'hello'.  Here,\n  we specify that in the exports of this module that 'hello' maps to the function named 'hello'\n */\nmodule.exports = {\n  hello: hello\n};\n\n/*\n  Functions in a127 controllers used for operations should take two parameters:\n\n  Param 1: a handle to the request object\n  Param 2: a handle to the response object\n */\nfunction hello(req, res) {\n  // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}\n  var name = req.swagger.params.name.value || 'stranger';\n  var hello = util.format('Hello, %s!', name);\n\n  // this sends back a JSON response which is a single string\n  res.json(hello);\n}\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlbGxvX3dvcmxkLmpzIl0sIm5hbWVzIjpbInV0aWwiLCJyZXF1aXJlIiwibW9kdWxlIiwiZXhwb3J0cyIsImhlbGxvIiwicmVxIiwicmVzIiwibmFtZSIsInN3YWdnZXIiLCJwYXJhbXMiLCJ2YWx1ZSIsImZvcm1hdCIsImpzb24iXSwibWFwcGluZ3MiOiJBQUFBOztBQUVBLElBQUlBLE9BQU9DLFFBQVEsTUFBUixDQUFYOztBQUVBOzs7O0FBSUFDLE9BQU9DLE9BQVAsR0FBaUI7QUFDZkMsU0FBT0E7QUFEUSxDQUFqQjs7QUFJQTs7Ozs7O0FBTUEsU0FBU0EsS0FBVCxDQUFlQyxHQUFmLEVBQW9CQyxHQUFwQixFQUF5QjtBQUN2QjtBQUNBLE1BQUlDLE9BQU9GLElBQUlHLE9BQUosQ0FBWUMsTUFBWixDQUFtQkYsSUFBbkIsQ0FBd0JHLEtBQXhCLElBQWlDLFVBQTVDO0FBQ0EsTUFBSU4sUUFBUUosS0FBS1csTUFBTCxDQUFZLFlBQVosRUFBMEJKLElBQTFCLENBQVo7O0FBRUE7QUFDQUQsTUFBSU0sSUFBSixDQUFTUixLQUFUO0FBQ0QiLCJmaWxlIjoiaGVsbG9fd29ybGQuanMiLCJzb3VyY2VSb290IjoiL2FwcC9jb250cm9sbGVycyIsInNvdXJjZXNDb250ZW50IjpbIid1c2Ugc3RyaWN0J1xuXG52YXIgdXRpbCA9IHJlcXVpcmUoJ3V0aWwnKVxuXG4vKlxuICBJbiB0aGUgc3RhcnRlci9za2VsZXRvbiBwcm9qZWN0IHRoZSAnZ2V0JyBvcGVyYXRpb24gb24gdGhlICcvaGVsbG8nIHBhdGggaGFzIGFuIG9wZXJhdGlvbklkIG5hbWVkICdoZWxsbycuICBIZXJlLFxuICB3ZSBzcGVjaWZ5IHRoYXQgaW4gdGhlIGV4cG9ydHMgb2YgdGhpcyBtb2R1bGUgdGhhdCAnaGVsbG8nIG1hcHMgdG8gdGhlIGZ1bmN0aW9uIG5hbWVkICdoZWxsbydcbiAqL1xubW9kdWxlLmV4cG9ydHMgPSB7XG4gIGhlbGxvOiBoZWxsb1xufVxuXG4vKlxuICBGdW5jdGlvbnMgaW4gYTEyNyBjb250cm9sbGVycyB1c2VkIGZvciBvcGVyYXRpb25zIHNob3VsZCB0YWtlIHR3byBwYXJhbWV0ZXJzOlxuXG4gIFBhcmFtIDE6IGEgaGFuZGxlIHRvIHRoZSByZXF1ZXN0IG9iamVjdFxuICBQYXJhbSAyOiBhIGhhbmRsZSB0byB0aGUgcmVzcG9uc2Ugb2JqZWN0XG4gKi9cbmZ1bmN0aW9uIGhlbGxvKHJlcSwgcmVzKSB7XG4gIC8vIHZhcmlhYmxlcyBkZWZpbmVkIGluIHRoZSBTd2FnZ2VyIGRvY3VtZW50IGNhbiBiZSByZWZlcmVuY2VkIHVzaW5nIHJlcS5zd2FnZ2VyLnBhcmFtcy57cGFyYW1ldGVyX25hbWV9XG4gIHZhciBuYW1lID0gcmVxLnN3YWdnZXIucGFyYW1zLm5hbWUudmFsdWUgfHwgJ3N0cmFuZ2VyJ1xuICB2YXIgaGVsbG8gPSB1dGlsLmZvcm1hdCgnSGVsbG8sICVzIScsIG5hbWUpXG5cbiAgLy8gdGhpcyBzZW5kcyBiYWNrIGEgSlNPTiByZXNwb25zZSB3aGljaCBpcyBhIHNpbmdsZSBzdHJpbmdcbiAgcmVzLmpzb24oaGVsbG8pXG59XG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "hello_world.js"
+      ],
+      "names": [
+        "util",
+        "require",
+        "module",
+        "exports",
+        "hello",
+        "req",
+        "res",
+        "name",
+        "swagger",
+        "params",
+        "value",
+        "format",
+        "json"
+      ],
+      "mappings": "AAAA;;AAEA,IAAIA,OAAOC,QAAQ,MAAR,CAAX;;AAEA;;;;AAIAC,OAAOC,OAAP,GAAiB;AACfC,SAAOA;AADQ,CAAjB;;AAIA;;;;;;AAMA,SAASA,KAAT,CAAeC,GAAf,EAAoBC,GAApB,EAAyB;AACvB;AACA,MAAIC,OAAOF,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBF,IAAnB,CAAwBG,KAAxB,IAAiC,UAA5C;AACA,MAAIN,QAAQJ,KAAKW,MAAL,CAAY,YAAZ,EAA0BJ,IAA1B,CAAZ;;AAEA;AACAD,MAAIM,IAAJ,CAASR,KAAT;AACD",
+      "file": "hello_world.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "'use strict'\n\nvar util = require('util')\n\n/*\n  In the starter/skeleton project the 'get' operation on the '/hello' path has an operationId named 'hello'.  Here,\n  we specify that in the exports of this module that 'hello' maps to the function named 'hello'\n */\nmodule.exports = {\n  hello: hello\n}\n\n/*\n  Functions in a127 controllers used for operations should take two parameters:\n\n  Param 1: a handle to the request object\n  Param 2: a handle to the response object\n */\nfunction hello(req, res) {\n  // variables defined in the Swagger document can be referenced using req.swagger.params.{parameter_name}\n  var name = req.swagger.params.name.value || 'stranger'\n  var hello = util.format('Hello, %s!', name)\n\n  // this sends back a JSON response which is a single string\n  res.json(hello)\n}\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/controllers/keywords.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/keywords.js",
+      "filenameRelative": "/app/controllers/keywords.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "keywords.js",
+      "sourceFileName": "keywords.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "keywords"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar Keywords = require('../models/Keyword');\nmodule.exports = {\n  getAll: function getAll(req, res) {\n    var language = req.swagger.params.language.value;\n    Keywords.findOne({ language: language }, function (err, keywords) {\n      if (err) {\n        return res.status(500).json({ error: err.message });\n      }\n      console.log(keywords);\n      return res.json(keywords);\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImtleXdvcmRzLmpzIl0sIm5hbWVzIjpbIktleXdvcmRzIiwicmVxdWlyZSIsIm1vZHVsZSIsImV4cG9ydHMiLCJnZXRBbGwiLCJyZXEiLCJyZXMiLCJsYW5ndWFnZSIsInN3YWdnZXIiLCJwYXJhbXMiLCJ2YWx1ZSIsImZpbmRPbmUiLCJlcnIiLCJrZXl3b3JkcyIsInN0YXR1cyIsImpzb24iLCJlcnJvciIsIm1lc3NhZ2UiLCJjb25zb2xlIiwibG9nIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsbUJBQVIsQ0FBZjtBQUNBQyxPQUFPQyxPQUFQLEdBQWlCO0FBQ2ZDLFVBQVEsZ0JBQVNDLEdBQVQsRUFBY0MsR0FBZCxFQUFtQjtBQUN6QixRQUFJQyxXQUFXRixJQUFJRyxPQUFKLENBQVlDLE1BQVosQ0FBbUJGLFFBQW5CLENBQTRCRyxLQUEzQztBQUNBVixhQUFTVyxPQUFULENBQWlCLEVBQUNKLGtCQUFELEVBQWpCLEVBQTZCLFVBQUNLLEdBQUQsRUFBTUMsUUFBTixFQUFtQjtBQUM5QyxVQUFHRCxHQUFILEVBQVE7QUFDTixlQUFPTixJQUFJUSxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUIsRUFBQ0MsT0FBT0osSUFBSUssT0FBWixFQUFyQixDQUFQO0FBQ0Q7QUFDREMsY0FBUUMsR0FBUixDQUFZTixRQUFaO0FBQ0EsYUFBT1AsSUFBSVMsSUFBSixDQUFTRixRQUFULENBQVA7QUFDRCxLQU5EO0FBT0Q7QUFWYyxDQUFqQiIsImZpbGUiOiJrZXl3b3Jkcy5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL2NvbnRyb2xsZXJzIiwic291cmNlc0NvbnRlbnQiOlsidmFyIEtleXdvcmRzID0gcmVxdWlyZSgnLi4vbW9kZWxzL0tleXdvcmQnKVxubW9kdWxlLmV4cG9ydHMgPSB7XG4gIGdldEFsbDogZnVuY3Rpb24ocmVxLCByZXMpIHtcbiAgICB2YXIgbGFuZ3VhZ2UgPSByZXEuc3dhZ2dlci5wYXJhbXMubGFuZ3VhZ2UudmFsdWVcbiAgICBLZXl3b3Jkcy5maW5kT25lKHtsYW5ndWFnZX0sIChlcnIsIGtleXdvcmRzKSA9PiB7XG4gICAgICBpZihlcnIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNTAwKS5qc29uKHtlcnJvcjogZXJyLm1lc3NhZ2V9KVxuICAgICAgfVxuICAgICAgY29uc29sZS5sb2coa2V5d29yZHMpXG4gICAgICByZXR1cm4gcmVzLmpzb24oa2V5d29yZHMpXG4gICAgfSlcbiAgfVxufVxuIl19",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "keywords.js"
+      ],
+      "names": [
+        "Keywords",
+        "require",
+        "module",
+        "exports",
+        "getAll",
+        "req",
+        "res",
+        "language",
+        "swagger",
+        "params",
+        "value",
+        "findOne",
+        "err",
+        "keywords",
+        "status",
+        "json",
+        "error",
+        "message",
+        "console",
+        "log"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,mBAAR,CAAf;AACAC,OAAOC,OAAP,GAAiB;AACfC,UAAQ,gBAASC,GAAT,EAAcC,GAAd,EAAmB;AACzB,QAAIC,WAAWF,IAAIG,OAAJ,CAAYC,MAAZ,CAAmBF,QAAnB,CAA4BG,KAA3C;AACAV,aAASW,OAAT,CAAiB,EAACJ,kBAAD,EAAjB,EAA6B,UAACK,GAAD,EAAMC,QAAN,EAAmB;AAC9C,UAAGD,GAAH,EAAQ;AACN,eAAON,IAAIQ,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB,EAACC,OAAOJ,IAAIK,OAAZ,EAArB,CAAP;AACD;AACDC,cAAQC,GAAR,CAAYN,QAAZ;AACA,aAAOP,IAAIS,IAAJ,CAASF,QAAT,CAAP;AACD,KAND;AAOD;AAVc,CAAjB",
+      "file": "keywords.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var Keywords = require('../models/Keyword')\nmodule.exports = {\n  getAll: function(req, res) {\n    var language = req.swagger.params.language.value\n    Keywords.findOne({language}, (err, keywords) => {\n      if(err) {\n        return res.status(500).json({error: err.message})\n      }\n      console.log(keywords)\n      return res.json(keywords)\n    })\n  }\n}\n"
+      ]
+    },
+    "mtime": 1506701169000
+  },
+  "{\"filename\":\"/app/models/Keyword.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [],
+      "marked": [],
+      "modules": {
+        "imports": [],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/models/Keyword.js",
+      "filenameRelative": "/app/models/Keyword.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "Keyword.js",
+      "sourceFileName": "Keyword.js",
+      "sourceRoot": "/app/models",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/models",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "Keyword"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar mongoose = require('mongoose');\nvar Schema = mongoose.Schema;\n\nvar keywordSchema = new Schema({\n  locale: String,\n  keyword: String\n});\n\nvar Keyword = mongoose.model('Keyword', keywordSchema, 'keywords');\n\nmodule.exports = Keyword;\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIktleXdvcmQuanMiXSwibmFtZXMiOlsibW9uZ29vc2UiLCJyZXF1aXJlIiwiU2NoZW1hIiwia2V5d29yZFNjaGVtYSIsImxvY2FsZSIsIlN0cmluZyIsImtleXdvcmQiLCJLZXl3b3JkIiwibW9kZWwiLCJtb2R1bGUiLCJleHBvcnRzIl0sIm1hcHBpbmdzIjoiOztBQUFBLElBQUlBLFdBQVdDLFFBQVEsVUFBUixDQUFmO0FBQ0EsSUFBSUMsU0FBU0YsU0FBU0UsTUFBdEI7O0FBRUEsSUFBSUMsZ0JBQWdCLElBQUlELE1BQUosQ0FBVztBQUM3QkUsVUFBUUMsTUFEcUI7QUFFN0JDLFdBQVNEO0FBRm9CLENBQVgsQ0FBcEI7O0FBS0EsSUFBSUUsVUFBVVAsU0FBU1EsS0FBVCxDQUFlLFNBQWYsRUFBMEJMLGFBQTFCLEVBQXlDLFVBQXpDLENBQWQ7O0FBRUFNLE9BQU9DLE9BQVAsR0FBaUJILE9BQWpCIiwiZmlsZSI6IktleXdvcmQuanMiLCJzb3VyY2VSb290IjoiL2FwcC9tb2RlbHMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgbW9uZ29vc2UgPSByZXF1aXJlKCdtb25nb29zZScpXG52YXIgU2NoZW1hID0gbW9uZ29vc2UuU2NoZW1hXG5cbnZhciBrZXl3b3JkU2NoZW1hID0gbmV3IFNjaGVtYSh7XG4gIGxvY2FsZTogU3RyaW5nLCBcbiAga2V5d29yZDogU3RyaW5nXG59KVxuXG52YXIgS2V5d29yZCA9IG1vbmdvb3NlLm1vZGVsKCdLZXl3b3JkJywga2V5d29yZFNjaGVtYSwgJ2tleXdvcmRzJylcblxubW9kdWxlLmV4cG9ydHMgPSBLZXl3b3JkXG4iXX0=",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "Keyword.js"
+      ],
+      "names": [
+        "mongoose",
+        "require",
+        "Schema",
+        "keywordSchema",
+        "locale",
+        "String",
+        "keyword",
+        "Keyword",
+        "model",
+        "module",
+        "exports"
+      ],
+      "mappings": ";;AAAA,IAAIA,WAAWC,QAAQ,UAAR,CAAf;AACA,IAAIC,SAASF,SAASE,MAAtB;;AAEA,IAAIC,gBAAgB,IAAID,MAAJ,CAAW;AAC7BE,UAAQC,MADqB;AAE7BC,WAASD;AAFoB,CAAX,CAApB;;AAKA,IAAIE,UAAUP,SAASQ,KAAT,CAAe,SAAf,EAA0BL,aAA1B,EAAyC,UAAzC,CAAd;;AAEAM,OAAOC,OAAP,GAAiBH,OAAjB",
+      "file": "Keyword.js",
+      "sourceRoot": "/app/models",
+      "sourcesContent": [
+        "var mongoose = require('mongoose')\nvar Schema = mongoose.Schema\n\nvar keywordSchema = new Schema({\n  locale: String, \n  keyword: String\n})\n\nvar Keyword = mongoose.model('Keyword', keywordSchema, 'keywords')\n\nmodule.exports = Keyword\n"
+      ]
+    },
+    "mtime": 1506701169000
   }
 }
