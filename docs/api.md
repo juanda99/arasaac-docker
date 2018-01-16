@@ -1,8 +1,8 @@
-# Arasaac API
+
+# ARASAAC API
 These are the docs about how to test & code our API. 
 
 If you need to use our API, you should use previous API (we can send you docs through email arasaac@gmail.com)
-
 
 ## Ingredients for the API
 <dl>
@@ -24,38 +24,12 @@ If you need to use our API, you should use previous API (we can send you docs th
 </dl>
 
 
-
-## Quick start
-
-### Run the API Server
-Using docker-compose, [see how to install](https://docs.docker.com/compose/install/)
-```
-git clone https://github.com/juanda99/api-arasaac
-cd api-arasaac
-docker-compose build --no-cache # in case of changes
-docker-compose up -d
-```
-- Now you can access the API:
-  - Api docs: http://localhost:8002
-  - Check the api: http://localhost:8001/api
-
-- Without docker you should install all the packages
-We are using yarn, [see how to install](https://yarnpkg.com/lang/en/docs/install/)
-```
-git clone https://github.com/juanda99/api-arasaac
-cd api-arasaac/app
-yarn install
-yarn start
-```
-
-
-
 ## How to read the API documentation
 
 - We use [Swagger](https://swagger.io/) to generate our API docs
 - JSON config file: https://api.arasaac.org/arasaac.json
 - You can test our API using swagger-ui: 
-  - Testing locally: http://localhost:3000/developers/api
+  - Testing locally using [Arasaac frontend](http://github.com/juanda99/arasaac-frontend): http://localhost:3000/developers/api
   - Testing from our server: https://beta.arasaac.org/developers/api
 
 
