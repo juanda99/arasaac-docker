@@ -11,7 +11,7 @@ WORKDIR /app
 ENV HOME=/app
 
 # Install dependencies
-COPY ./app/package.json ./app/yarn.lock $HOME/
+COPY package.json yarn.lock $HOME/
 RUN yarn install
 
 EXPOSE $PORT

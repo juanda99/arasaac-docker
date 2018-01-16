@@ -84,7 +84,10 @@ module.exports = {
         "id-blacklist": "error",
         "id-length": "off",
         "id-match": "error",
-        "indent": "off",
+        "indent": [
+            "error",
+            2
+        ],
         "indent-legacy": "off",
         "init-declarations": "error",
         "jsx-quotes": "error",
@@ -118,6 +121,7 @@ module.exports = {
         "no-caller": "error",
         "no-catch-shadow": "error",
         "no-confusing-arrow": "error",
+        "no-console": 0,
         "no-continue": "error",
         "no-div-regex": "error",
         "no-duplicate-imports": "error",
@@ -249,7 +253,7 @@ module.exports = {
         "semi-spacing": "error",
         "semi-style": [
             "error",
-            "last"
+            "never"
         ],
         "sort-imports": "error",
         "sort-keys": "off",
