@@ -17,7 +17,7 @@ Arasaac project installation repo, based on two other repos:
 - **frontend**: nginx service for all our javascript.
   - **code**: Our client code, based on React. Source repo is https://github.com/juanda99/arasaac-frontend and code is generated running ``` npm run build``` periodically. 
   - **conf**: nginx configuration
-- [**api**](./api.md): Our backend code based on node.js, express, swagger-ui and mongodb.
+- [**api**](./doc/api.md): Our backend code based on node.js, express, swagger-ui and mongodb.
 - **watcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and create zip files, compress images...
 - **mongo**: mongodb service
 - **materials**: nginx service that serve materials (located in materials folder). TODO: get pictos
