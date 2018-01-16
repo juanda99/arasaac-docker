@@ -59,6 +59,7 @@ module.exports = {
     })
   },
   createUser: function(req, res) {
+    console.log(req.body)
     var user = new TempUser (req.body)
     // console.log (req.body)
     console.log(user)

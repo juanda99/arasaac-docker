@@ -1,18 +1,7 @@
-# API for new Arasaac Project
+# Arasaac API
+These are the docs about how to test & code our API. 
 
-These are the docs about how to test & code our API. Just for developers!
-
-
-
-<div align="center">
-<p><strong>WIP!!!!!</strong></p>
-  <img width=200 src="https://cdn.rawgit.com/juanda99/arasaac-frontend/master/app/components/Welcome/arasaac-logo.svg" alt="Arasaac logo" align="center" />
-</div>
-<br />
-
-<div align="center"><strong>Arasaac API</strong></div>
-<div align="center">We're using it in <a href="https://github.com/juanda99/arasaac-frontend"> our new Arasaac website project</a></div>
-
+If you need to use our API, you should use previous API (we can send you docs through email arasaac@gmail.com)
 
 
 ## Ingredients for the API
@@ -75,8 +64,8 @@ yarn start
 ## Add new endpoints
 - Through the swagger editor, using the command line:
 ```
-cd app
-swagger project edit
+cd newarasaac/api
+npm run edit
 ```
 
 

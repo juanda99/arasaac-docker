@@ -11,7 +11,7 @@
     "port": 9229,
     "address": "localhost",
     "sourceMaps": true,
-    "localRoot": "${workspaceFolder}/app",
+    "localRoot": "${workspaceFolder}",
     "remoteRoot": "/app",
     "protocol": "inspector"
   },
