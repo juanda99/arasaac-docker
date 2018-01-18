@@ -41,7 +41,7 @@ services:
     volumes:
     - ./api:/app
     - ./materials:/app/materials
-    - /api/node_modules
+    - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"

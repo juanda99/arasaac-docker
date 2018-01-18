@@ -17,40 +17,25 @@ const userSchema = new Schema({
   username: { type: String, default: '' },
   provider: { type: String, default: '' },
   locale: { type: String, default: 'en' },
-  hashed_password: { type: String, default: '' },
-  salt: { type: String, default: '' },
+  password: { type: String, default: '' },
   authToken: { type: String, default: '' },
   lastlogin: { type : Date, default : Date.now },
   facebook: {
-    id           : String,
-    token        : String,
-    email        : String,
-    name         : String
+    id: String,
+    token: String,
+    email: String,
+    name: String
   },
   google: {
-    id           : String,
-    token        : String,
-    email        : String,
-    name         : String
+    id: String,
+    token: String,
+    email: String,
+    name: String
   }
 })
 
 const validatePresenceOf = value => value && value.length
 
-/**
- * Virtuals
- */
-
-userSchema
-  .virtual('password')
-  .set(function (password) {
-    this._password = password
-    this.salt = this.makeSalt()
-    this.hashed_password = this.encryptPassword(password)
-  })
-  .get(function () {
-    return this._password
-  })
 
 /**
  * Validations
@@ -85,9 +70,9 @@ userSchema.path('username').validate(function (username) {
   return username.length
 }, 'Username cannot be blank')
 
-userSchema.path('hashed_password').validate(function (hashed_password) {
+userSchema.path('password').validate(function (password) {
   if (this.skipValidation()) return true
-  return hashed_password.length && this._password.length
+  return password.length
 }, 'Password cannot be blank')
 
 
@@ -188,7 +173,3 @@ userSchema.statics = {
 var User = mongoose.model('User', userSchema, 'users')
 
 module.exports = User
-
-
-
-

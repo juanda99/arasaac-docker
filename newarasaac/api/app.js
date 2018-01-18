@@ -6,6 +6,11 @@ var app = express()
 const morgan = require('morgan')
 // const swaggerUi = require('swagger-ui-express')
 
+
+// private conf and envirnoment specific
+// see .env file, must rename .env-sample to .env
+require('dotenv').config()
+
 const config = require('./config')
 // const errorhandler = require('errorhandler')  
 
@@ -13,6 +18,7 @@ const config = require('./config')
 const yaml = require('js-yaml')
 const fs = require('fs')
 try {
+  // eslint-disable-next-line
   var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))
   const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)
   fs.writeFile(path.join(__dirname,'./public/arasaac.json'), swaggerJSON, function (err) {

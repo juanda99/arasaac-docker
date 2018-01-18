@@ -15,8 +15,7 @@
         "application/json"
     ],
     "produces": [
-        "application/json",
-        "text/html"
+        "application/json"
     ],
     "parameters": {
         "IdMaterial": {
@@ -312,34 +311,63 @@
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Success",
+                    "201": {
+                        "description": "User created. Email verification sended.",
                         "schema": {
-                            "$ref": "#/definitions/SuccessResponse"
+                            "type": "object",
+                            "required": [
+                                "message",
+                                "_id"
+                            ],
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "_id": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
-                    "default": {
-                        "description": "Error",
+                    "409": {
+                        "description": "User already created. Needs email verification.",
                         "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
+                            "type": "object",
+                            "required": [
+                                "message"
+                            ],
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorMessage"
                         }
                     }
                 }
             },
             "get": {
-                "operationId": "getUser",
-                "description": "Obtain a user data",
+                "operationId": "getUsers",
+                "description": "Obtain users general data",
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "List of verified users",
                         "schema": {
-                            "$ref": "#/definitions/GetKeywordsResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/User"
+                            }
                         }
                     },
                     "default": {
-                        "description": "Error",
+                        "description": "Unexpected error",
                         "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
+                            "$ref": "#/definitions/ErrorMessage"
                         }
                     }
                 }
@@ -349,27 +377,68 @@
             "x-swagger-router-controller": "users",
             "post": {
                 "operationId": "activateUser",
-                "description": "Create a new user",
+                "description": "Activate a new user",
                 "parameters": [
                     {
-                        "name": "url",
                         "in": "path",
+                        "name": "url",
                         "description": "Random generated key for user activation",
                         "required": true,
                         "type": "string"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "Success",
+                    "201": {
+                        "description": "Permanent user created.",
                         "schema": {
-                            "$ref": "#/definitions/GetKeywordsResponse"
+                            "type": "object",
+                            "required": [
+                                "message",
+                                "_id",
+                                "name",
+                                "email",
+                                "username"
+                            ],
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                },
+                                "_id": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "username": {
+                                    "type": "string"
+                                },
+                                "locale": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
-                    "default": {
-                        "description": "Error",
+                    "404": {
+                        "description": "Temporal user not found or expired.",
                         "schema": {
-                            "$ref": "#/definitions/ErrorResponse"
+                            "type": "object",
+                            "required": [
+                                "message"
+                            ],
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Unexpected Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorMessage"
                         }
                     }
                 }
@@ -532,13 +601,48 @@
                 }
             }
         },
-        "GetKeywordsResponse": {
+        "User": {
             "required": [
-                "keywords"
+                "email",
+                "name",
+                "username",
+                "locale"
             ],
             "properties": {
-                "keywords": {
-                    "type": "object"
+                "_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "lastlogin": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string",
+                    "description": "Two letters code"
+                }
+            }
+        },
+        "Users": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/User"
+            }
+        },
+        "ErrorMessage": {
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },

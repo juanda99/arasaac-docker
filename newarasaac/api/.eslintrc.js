@@ -73,7 +73,8 @@ module.exports = {
         ],
         "func-style": [
             "error",
-            "declaration"
+            "declaration",
+            { "allowArrowFunctions": true }
         ],
         "function-paren-newline": "error",
         "generator-star-spacing": "error",
@@ -104,8 +105,6 @@ module.exports = {
         "max-len": "off",
         "max-lines": "error",
         "max-nested-callbacks": "error",
-        "max-params": "error",
-        "max-statements": "error",
         "max-statements-per-line": "off",
         "multiline-ternary": "error",
         "new-cap": "error",
@@ -169,7 +168,6 @@ module.exports = {
         "no-param-reassign": "error",
         "no-path-concat": "error",
         "no-plusplus": "error",
-        "no-process-env": "error",
         "no-process-exit": "error",
         "no-proto": "error",
         "no-prototype-builtins": "error",
@@ -249,12 +247,8 @@ module.exports = {
         "require-await": "error",
         "require-jsdoc": "off",
         "rest-spread-spacing": "error",
-        "semi": "off",
+        "semi": ["error", "never"],
         "semi-spacing": "error",
-        "semi-style": [
-            "error",
-            "never"
-        ],
         "sort-imports": "error",
         "sort-keys": "off",
         "sort-vars": "error",
