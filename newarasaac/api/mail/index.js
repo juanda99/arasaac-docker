@@ -2,7 +2,7 @@
 var User = require('../models/User')
 var mongoose = require('mongoose')
 var nev = require('email-verification')(mongoose)
-var bcrypt = require('bcryptjs')
+var bcrypt = require('bcryptjs') 
 
 module.exports = function (locale) {
 

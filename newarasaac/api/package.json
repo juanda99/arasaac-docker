@@ -19,6 +19,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.15.0",
     "connect-flash": "^0.1.1",
+    "cors": "^2.8.4",
     "dotenv": "^4.0.0",
     "email-verification": "^0.4.6",
     "express": "^4.12.3",
@@ -32,7 +33,7 @@
     "passport-local": "^1.0.0",
     "passport-twitter": "^1.0.4",
     "recursive-readdir": "^2.2.1",
-    "swagger-express-mw": "0.1.0",
+    "swagger-express-mw": "^0.7.0",
     "yamljs": "^0.2.8"
   },
   "devDependencies": {
