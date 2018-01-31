@@ -34,7 +34,7 @@ services:
     container_name: api
     build:
       context: ./api
-      dockerfile: api-dockerfile.yml
+      dockerfile: dockerfile.yml
     command: yarn debug
     depends_on:
       - mongodb
@@ -54,17 +54,16 @@ services:
       - "9229:9229"
   
   auth:
-    hostname: api
-    container_name: api
+    hostname: auth
+    container_name: auth
     build:
-      context: ./api
-      dockerfile: api-dockerfile.yml
-    command: yarn debug
+      context: ./auth
+      dockerfile: dockerfile.yml
+    command: npm start
     depends_on:
       - mongodb
     volumes:
-    - ./api:/app
-    - ./materials:/app/materials
+    - ./auth:/app
     - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"

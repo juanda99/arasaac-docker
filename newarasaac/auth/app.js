@@ -102,7 +102,7 @@ const options = {
 };
 
 // Create our HTTPS server listening on port 3000.
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 80
 app.listen(port)
 // https.createServer(options, app).listen(3000);
 console.log('OAuth 2.0 Authorization Server started on port' + port);
