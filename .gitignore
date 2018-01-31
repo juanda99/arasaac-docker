@@ -14,6 +14,13 @@ newarasaac/.materials
 newarasaac/api/config/runtime.yaml
 newarasaac/api/.config
 
+# ***** AUTH *****
+newarasaac/auth/certs/**/
+newarasaac/auth/certs/*.key
+newarasaac/auth/certs/*.crt
+newarasaac/auth/certs/*.csr
+newarasaac/auth/certs/*.pem
+
 # ***** WATCHER *****
 newarasaac/watcher/.config
 

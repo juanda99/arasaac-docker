@@ -40,7 +40,7 @@ SwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {
   // install middleware
   swaggerExpress.register(app)
 
-  const port = process.env.PORT
+  const port = process.env.PORT || 80
   app.listen(port)
   console.log('App running on port ' + port)
 

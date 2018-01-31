@@ -53,6 +53,30 @@ services:
     ports:
       - "9229:9229"
   
+  auth:
+    hostname: api
+    container_name: api
+    build:
+      context: ./api
+      dockerfile: api-dockerfile.yml
+    command: yarn debug
+    depends_on:
+      - mongodb
+    volumes:
+    - ./api:/app
+    - ./materials:/app/materials
+    - /app/node_modules
+    environment:
+      LETSENCRYPT_HOST: "auth.arasaac.org"
+      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      VIRTUAL_HOST: "auth.arasaac.org"
+      NODE_ENV: "production"
+    networks:
+      - nginxproxy_frontend
+      - backend
+    ports:
+      - "9228:9229"
+  
   watcher:
     hostname: watcher
     container_name: watcher
