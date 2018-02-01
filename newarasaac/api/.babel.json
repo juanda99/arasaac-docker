@@ -4621,10 +4621,130 @@
   },
   "{\"filename\":\"/app/app.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
     "metadata": {
-      "usedHelpers": [],
+      "usedHelpers": [
+        "interopRequireDefault"
+      ],
       "marked": [],
       "modules": {
-        "imports": [],
+        "imports": [
+          {
+            "source": "swagger-express-mw",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "SwaggerExpress"
+              }
+            ]
+          },
+          {
+            "source": "path",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "path"
+              }
+            ]
+          },
+          {
+            "source": "express",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "express"
+              }
+            ]
+          },
+          {
+            "source": "cors",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "cors"
+              }
+            ]
+          },
+          {
+            "source": "morgan",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "morgan"
+              }
+            ]
+          },
+          {
+            "source": "./config",
+            "imported": [
+              "port"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "port",
+                "local": "port"
+              }
+            ]
+          },
+          {
+            "source": "js-yaml",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "yaml"
+              }
+            ]
+          },
+          {
+            "source": "fs",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "fs"
+              }
+            ]
+          },
+          {
+            "source": "passport",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "passport"
+              }
+            ]
+          }
+        ],
         "exports": {
           "exported": [],
           "specifiers": []
@@ -4798,7 +4918,7 @@
       "basename": "app"
     },
     "ignored": false,
-    "code": "'use strict';\n\nvar SwaggerExpress = require('swagger-express-mw');\n// var swaggerTools = require('swagger-tools')\nvar path = require('path');\nvar express = require('express');\nvar cors = require('cors');\nvar app = express();\nvar morgan = require('morgan');\nvar auth = require('./helpers/auth');\n\n// private conf and envirnoment specific\n// see .env file, must rename .env-sample to .env\nrequire('dotenv').config();\n\nvar config = require('./config');\nvar yaml = require('js-yaml');\nvar fs = require('fs');\nvar swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'));\n\nvar swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config'),\n  swaggerFile: __dirname + '/swagger/swagger.yaml'\n};\n\n/*bbdd configuration in its own file*/\nrequire('./db');\n\napp.use(cors());\napp.set('etag', false);\napp.use(morgan('dev'));\napp.use(express.static('./public'));\n\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) {\n    throw err;\n  }\n  // install middleware\n  swaggerExpress.register(app);\n\n  var port = process.env.PORT;\n  app.listen(port);\n  console.log('App running on port ' + port);\n});\n\nmodule.exports = app; // for testing\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcyJdLCJuYW1lcyI6WyJTd2FnZ2VyRXhwcmVzcyIsInJlcXVpcmUiLCJwYXRoIiwiZXhwcmVzcyIsImNvcnMiLCJhcHAiLCJtb3JnYW4iLCJhdXRoIiwiY29uZmlnIiwieWFtbCIsImZzIiwic3dhZ2dlckRvY3VtZW50Iiwic2FmZUxvYWQiLCJyZWFkRmlsZVN5bmMiLCJqb2luIiwiX19kaXJuYW1lIiwic3dhZ2dlckNvbmZpZyIsImFwcFJvb3QiLCJjb25maWdEaXIiLCJyZXNvbHZlIiwic3dhZ2dlckZpbGUiLCJ1c2UiLCJzZXQiLCJzdGF0aWMiLCJjcmVhdGUiLCJlcnIiLCJzd2FnZ2VyRXhwcmVzcyIsInJlZ2lzdGVyIiwicG9ydCIsInByb2Nlc3MiLCJlbnYiLCJQT1JUIiwibGlzdGVuIiwiY29uc29sZSIsImxvZyIsIm1vZHVsZSIsImV4cG9ydHMiXSwibWFwcGluZ3MiOiI7O0FBQUEsSUFBTUEsaUJBQWlCQyxRQUFRLG9CQUFSLENBQXZCO0FBQ0E7QUFDQSxJQUFNQyxPQUFPRCxRQUFRLE1BQVIsQ0FBYjtBQUNBLElBQUlFLFVBQVVGLFFBQVEsU0FBUixDQUFkO0FBQ0EsSUFBSUcsT0FBT0gsUUFBUSxNQUFSLENBQVg7QUFDQSxJQUFJSSxNQUFNRixTQUFWO0FBQ0EsSUFBTUcsU0FBU0wsUUFBUSxRQUFSLENBQWY7QUFDQSxJQUFJTSxPQUFPTixRQUFRLGdCQUFSLENBQVg7O0FBRUE7QUFDQTtBQUNBQSxRQUFRLFFBQVIsRUFBa0JPLE1BQWxCOztBQUVBLElBQU1BLFNBQVNQLFFBQVEsVUFBUixDQUFmO0FBQ0EsSUFBTVEsT0FBT1IsUUFBUSxTQUFSLENBQWI7QUFDQSxJQUFNUyxLQUFLVCxRQUFRLElBQVIsQ0FBWDtBQUNBLElBQU1VLGtCQUFrQkYsS0FBS0csUUFBTCxDQUFjRixHQUFHRyxZQUFILENBQWdCWCxLQUFLWSxJQUFMLENBQVVDLFNBQVYsRUFBcUIsd0JBQXJCLENBQWhCLEVBQWdFLE1BQWhFLENBQWQsQ0FBeEI7O0FBRUEsSUFBTUMsZ0JBQWdCO0FBQ3BCQyxXQUFTRixTQURXLEVBQ0E7QUFDcEJHLGFBQVdoQixLQUFLaUIsT0FBTCxDQUFhSixTQUFiLEVBQXdCLFFBQXhCLENBRlM7QUFHcEJLLGVBQWdCTCxTQUFoQjtBQUhvQixDQUF0Qjs7QUFPQTtBQUNBZCxRQUFRLE1BQVI7O0FBRUFJLElBQUlnQixHQUFKLENBQVFqQixNQUFSO0FBQ0FDLElBQUlpQixHQUFKLENBQVEsTUFBUixFQUFnQixLQUFoQjtBQUNBakIsSUFBSWdCLEdBQUosQ0FBUWYsT0FBTyxLQUFQLENBQVI7QUFDQUQsSUFBSWdCLEdBQUosQ0FBUWxCLFFBQVFvQixNQUFSLENBQWUsVUFBZixDQUFSOztBQUlBOztBQUVBdkIsZUFBZXdCLE1BQWYsQ0FBc0JSLGFBQXRCLEVBQXFDLFVBQVVTLEdBQVYsRUFBZUMsY0FBZixFQUErQjtBQUNsRSxNQUFJRCxHQUFKLEVBQVM7QUFBQyxVQUFNQSxHQUFOO0FBQVU7QUFDcEI7QUFDQUMsaUJBQWVDLFFBQWYsQ0FBd0J0QixHQUF4Qjs7QUFFQSxNQUFNdUIsT0FBT0MsUUFBUUMsR0FBUixDQUFZQyxJQUF6QjtBQUNBMUIsTUFBSTJCLE1BQUosQ0FBV0osSUFBWDtBQUNBSyxVQUFRQyxHQUFSLENBQVkseUJBQXlCTixJQUFyQztBQUVELENBVEQ7O0FBWUFPLE9BQU9DLE9BQVAsR0FBaUIvQixHQUFqQixDLENBQXFCIiwiZmlsZSI6ImFwcC5qcyIsInNvdXJjZVJvb3QiOiIvYXBwIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgU3dhZ2dlckV4cHJlc3MgPSByZXF1aXJlKCdzd2FnZ2VyLWV4cHJlc3MtbXcnKVxuLy8gdmFyIHN3YWdnZXJUb29scyA9IHJlcXVpcmUoJ3N3YWdnZXItdG9vbHMnKVxuY29uc3QgcGF0aCA9IHJlcXVpcmUoJ3BhdGgnKVxudmFyIGV4cHJlc3MgPSByZXF1aXJlKCdleHByZXNzJylcbnZhciBjb3JzID0gcmVxdWlyZSgnY29ycycpXG52YXIgYXBwID0gZXhwcmVzcygpXG5jb25zdCBtb3JnYW4gPSByZXF1aXJlKCdtb3JnYW4nKVxudmFyIGF1dGggPSByZXF1aXJlKCcuL2hlbHBlcnMvYXV0aCcpIFxuXG4vLyBwcml2YXRlIGNvbmYgYW5kIGVudmlybm9tZW50IHNwZWNpZmljXG4vLyBzZWUgLmVudiBmaWxlLCBtdXN0IHJlbmFtZSAuZW52LXNhbXBsZSB0byAuZW52XG5yZXF1aXJlKCdkb3RlbnYnKS5jb25maWcoKVxuXG5jb25zdCBjb25maWcgPSByZXF1aXJlKCcuL2NvbmZpZycpXG5jb25zdCB5YW1sID0gcmVxdWlyZSgnanMteWFtbCcpXG5jb25zdCBmcyA9IHJlcXVpcmUoJ2ZzJylcbmNvbnN0IHN3YWdnZXJEb2N1bWVudCA9IHlhbWwuc2FmZUxvYWQoZnMucmVhZEZpbGVTeW5jKHBhdGguam9pbihfX2Rpcm5hbWUsICcuL3N3YWdnZXIvc3dhZ2dlci55YW1sJyksICd1dGY4JykpXG5cbmNvbnN0IHN3YWdnZXJDb25maWcgPSB7XG4gIGFwcFJvb3Q6IF9fZGlybmFtZSwgLy8gcmVxdWlyZWQgY29uZmlnXG4gIGNvbmZpZ0RpcjogcGF0aC5yZXNvbHZlKF9fZGlybmFtZSwgJ2NvbmZpZycpLFxuICBzd2FnZ2VyRmlsZTogYCR7X19kaXJuYW1lfS9zd2FnZ2VyL3N3YWdnZXIueWFtbGAgXG59XG5cblxuLypiYmRkIGNvbmZpZ3VyYXRpb24gaW4gaXRzIG93biBmaWxlKi9cbnJlcXVpcmUoJy4vZGInKVxuXG5hcHAudXNlKGNvcnMoKSlcbmFwcC5zZXQoJ2V0YWcnLCBmYWxzZSlcbmFwcC51c2UobW9yZ2FuKCdkZXYnKSlcbmFwcC51c2UoZXhwcmVzcy5zdGF0aWMoJy4vcHVibGljJykpXG5cblxuXG4vLyBhcHAudXNlKCcvYXBpLWRvY3MnLCBzd2FnZ2VyVWkuc2VydmUsIHN3YWdnZXJVaS5zZXR1cChzd2FnZ2VyRG9jdW1lbnQpKVxuXG5Td2FnZ2VyRXhwcmVzcy5jcmVhdGUoc3dhZ2dlckNvbmZpZywgZnVuY3Rpb24gKGVyciwgc3dhZ2dlckV4cHJlc3MpIHtcbiAgaWYgKGVycikge3Rocm93IGVycn1cbiAgLy8gaW5zdGFsbCBtaWRkbGV3YXJlXG4gIHN3YWdnZXJFeHByZXNzLnJlZ2lzdGVyKGFwcClcblxuICBjb25zdCBwb3J0ID0gcHJvY2Vzcy5lbnYuUE9SVFxuICBhcHAubGlzdGVuKHBvcnQpXG4gIGNvbnNvbGUubG9nKCdBcHAgcnVubmluZyBvbiBwb3J0ICcgKyBwb3J0KVxuXG59KVxuXG5cbm1vZHVsZS5leHBvcnRzID0gYXBwIC8vIGZvciB0ZXN0aW5nXG4iXX0=",
+    "code": "'use strict';\n\nvar _swaggerExpressMw = require('swagger-express-mw');\n\nvar _swaggerExpressMw2 = _interopRequireDefault(_swaggerExpressMw);\n\nvar _path = require('path');\n\nvar _path2 = _interopRequireDefault(_path);\n\nvar _express = require('express');\n\nvar _express2 = _interopRequireDefault(_express);\n\nvar _cors = require('cors');\n\nvar _cors2 = _interopRequireDefault(_cors);\n\nvar _morgan = require('morgan');\n\nvar _morgan2 = _interopRequireDefault(_morgan);\n\nvar _config = require('./config');\n\nvar _jsYaml = require('js-yaml');\n\nvar _jsYaml2 = _interopRequireDefault(_jsYaml);\n\nvar _fs = require('fs');\n\nvar _fs2 = _interopRequireDefault(_fs);\n\nvar _passport = require('passport');\n\nvar _passport2 = _interopRequireDefault(_passport);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar app = (0, _express2.default)();\n\n\n// generate json for swagger-ui\ntry {\n  // eslint-disable-next-line\n  var swaggerDocument = _jsYaml2.default.safeLoad(_fs2.default.readFileSync(_path2.default.join(__dirname, './swagger/swagger.yaml'), 'utf8'));\n  var swaggerJSON = JSON.stringify(swaggerDocument, null, 4);\n  _fs2.default.writeFile(_path2.default.join(__dirname, './public/arasaac.json'), swaggerJSON, function (err) {\n    if (err) return console.log(err);\n    console.log('arasaac.json file generated');\n  });\n} catch (e) {\n  console.log(e);\n}\n\nvar swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: _path2.default.resolve(__dirname, 'config'),\n  swaggerFile: __dirname + '/swagger/swagger.yaml'\n};\n\n/*bbdd configuration in its own file*/\nrequire('./db');\napp.use(_passport2.default.initialize());\napp.use((0, _cors2.default)());\napp.set('etag', false);\napp.use((0, _morgan2.default)('dev'));\napp.use(_express2.default.static('./public'));\n\n// we serve swagger-ui from our frontend, but it could be done from here, enabling next line\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\n_swaggerExpressMw2.default.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) {\n    throw err;\n  }\n  swaggerExpress.register(app);\n  app.listen(_config.port);\n  console.log('App running on port ' + _config.port);\n});\n\nmodule.exports = app; // for testing\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5qcyJdLCJuYW1lcyI6WyJhcHAiLCJzd2FnZ2VyRG9jdW1lbnQiLCJzYWZlTG9hZCIsInJlYWRGaWxlU3luYyIsImpvaW4iLCJfX2Rpcm5hbWUiLCJzd2FnZ2VySlNPTiIsIkpTT04iLCJzdHJpbmdpZnkiLCJ3cml0ZUZpbGUiLCJlcnIiLCJjb25zb2xlIiwibG9nIiwiZSIsInN3YWdnZXJDb25maWciLCJhcHBSb290IiwiY29uZmlnRGlyIiwicmVzb2x2ZSIsInN3YWdnZXJGaWxlIiwicmVxdWlyZSIsInVzZSIsImluaXRpYWxpemUiLCJzZXQiLCJzdGF0aWMiLCJjcmVhdGUiLCJzd2FnZ2VyRXhwcmVzcyIsInJlZ2lzdGVyIiwibGlzdGVuIiwibW9kdWxlIiwiZXhwb3J0cyJdLCJtYXBwaW5ncyI6Ijs7QUFBQTs7OztBQUNBOzs7O0FBQ0E7Ozs7QUFDQTs7OztBQUVBOzs7O0FBQ0E7O0FBQ0E7Ozs7QUFDQTs7OztBQUNBOzs7Ozs7QUFMQSxJQUFJQSxNQUFNLHdCQUFWOzs7QUFPQTtBQUNBLElBQUk7QUFDRjtBQUNBLE1BQUlDLGtCQUFrQixpQkFBS0MsUUFBTCxDQUFjLGFBQUdDLFlBQUgsQ0FBZ0IsZUFBS0MsSUFBTCxDQUFVQyxTQUFWLEVBQXFCLHdCQUFyQixDQUFoQixFQUFnRSxNQUFoRSxDQUFkLENBQXRCO0FBQ0EsTUFBTUMsY0FBY0MsS0FBS0MsU0FBTCxDQUFlUCxlQUFmLEVBQWdDLElBQWhDLEVBQXNDLENBQXRDLENBQXBCO0FBQ0EsZUFBR1EsU0FBSCxDQUFhLGVBQUtMLElBQUwsQ0FBVUMsU0FBVixFQUFxQix1QkFBckIsQ0FBYixFQUE0REMsV0FBNUQsRUFBeUUsVUFBVUksR0FBVixFQUFlO0FBQ3RGLFFBQUlBLEdBQUosRUFBUyxPQUFPQyxRQUFRQyxHQUFSLENBQVlGLEdBQVosQ0FBUDtBQUNUQyxZQUFRQyxHQUFSLENBQVksNkJBQVo7QUFDRCxHQUhEO0FBSUQsQ0FSRCxDQVFFLE9BQU9DLENBQVAsRUFBVTtBQUNWRixVQUFRQyxHQUFSLENBQVlDLENBQVo7QUFDRDs7QUFFRCxJQUFNQyxnQkFBZ0I7QUFDcEJDLFdBQVNWLFNBRFcsRUFDQTtBQUNwQlcsYUFBVyxlQUFLQyxPQUFMLENBQWFaLFNBQWIsRUFBd0IsUUFBeEIsQ0FGUztBQUdwQmEsZUFBZ0JiLFNBQWhCO0FBSG9CLENBQXRCOztBQU9BO0FBQ0FjLFFBQVEsTUFBUjtBQUNBbkIsSUFBSW9CLEdBQUosQ0FBUSxtQkFBU0MsVUFBVCxFQUFSO0FBQ0FyQixJQUFJb0IsR0FBSixDQUFRLHFCQUFSO0FBQ0FwQixJQUFJc0IsR0FBSixDQUFRLE1BQVIsRUFBZ0IsS0FBaEI7QUFDQXRCLElBQUlvQixHQUFKLENBQVEsc0JBQU8sS0FBUCxDQUFSO0FBQ0FwQixJQUFJb0IsR0FBSixDQUFRLGtCQUFRRyxNQUFSLENBQWUsVUFBZixDQUFSOztBQUdBO0FBQ0E7O0FBRUEsMkJBQWVDLE1BQWYsQ0FBc0JWLGFBQXRCLEVBQXFDLFVBQVVKLEdBQVYsRUFBZWUsY0FBZixFQUErQjtBQUNsRSxNQUFJZixHQUFKLEVBQVM7QUFBQyxVQUFNQSxHQUFOO0FBQVU7QUFDcEJlLGlCQUFlQyxRQUFmLENBQXdCMUIsR0FBeEI7QUFDQUEsTUFBSTJCLE1BQUo7QUFDQWhCLFVBQVFDLEdBQVIsQ0FBWSxxQ0FBWjtBQUVELENBTkQ7O0FBUUFnQixPQUFPQyxPQUFQLEdBQWlCN0IsR0FBakIsQyxDQUFxQiIsImZpbGUiOiJhcHAuanMiLCJzb3VyY2VSb290IjoiL2FwcCIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBTd2FnZ2VyRXhwcmVzcyBmcm9tICdzd2FnZ2VyLWV4cHJlc3MtbXcnXG5pbXBvcnQgcGF0aCBmcm9tICdwYXRoJ1xuaW1wb3J0IGV4cHJlc3MgZnJvbSAnZXhwcmVzcydcbmltcG9ydCBjb3JzIGZyb20gJ2NvcnMnXG52YXIgYXBwID0gZXhwcmVzcygpXG5pbXBvcnQgbW9yZ2FuIGZyb20gJ21vcmdhbidcbmltcG9ydCB7IHBvcnQgfSBmcm9tICcuL2NvbmZpZydcbmltcG9ydCB5YW1sIGZyb20gJ2pzLXlhbWwnXG5pbXBvcnQgZnMgZnJvbSAnZnMnXG5pbXBvcnQgcGFzc3BvcnQgZnJvbSAncGFzc3BvcnQnXG5cbi8vIGdlbmVyYXRlIGpzb24gZm9yIHN3YWdnZXItdWlcbnRyeSB7XG4gIC8vIGVzbGludC1kaXNhYmxlLW5leHQtbGluZVxuICB2YXIgc3dhZ2dlckRvY3VtZW50ID0geWFtbC5zYWZlTG9hZChmcy5yZWFkRmlsZVN5bmMocGF0aC5qb2luKF9fZGlybmFtZSwgJy4vc3dhZ2dlci9zd2FnZ2VyLnlhbWwnKSwgJ3V0ZjgnKSlcbiAgY29uc3Qgc3dhZ2dlckpTT04gPSBKU09OLnN0cmluZ2lmeShzd2FnZ2VyRG9jdW1lbnQsIG51bGwsIDQpXG4gIGZzLndyaXRlRmlsZShwYXRoLmpvaW4oX19kaXJuYW1lLCAnLi9wdWJsaWMvYXJhc2FhYy5qc29uJyksIHN3YWdnZXJKU09OLCBmdW5jdGlvbiAoZXJyKSB7XG4gICAgaWYgKGVycikgcmV0dXJuIGNvbnNvbGUubG9nKGVycilcbiAgICBjb25zb2xlLmxvZygnYXJhc2FhYy5qc29uIGZpbGUgZ2VuZXJhdGVkJylcbiAgfSlcbn0gY2F0Y2ggKGUpIHtcbiAgY29uc29sZS5sb2coZSlcbn1cblxuY29uc3Qgc3dhZ2dlckNvbmZpZyA9IHtcbiAgYXBwUm9vdDogX19kaXJuYW1lLCAvLyByZXF1aXJlZCBjb25maWdcbiAgY29uZmlnRGlyOiBwYXRoLnJlc29sdmUoX19kaXJuYW1lLCAnY29uZmlnJyksXG4gIHN3YWdnZXJGaWxlOiBgJHtfX2Rpcm5hbWV9L3N3YWdnZXIvc3dhZ2dlci55YW1sYCBcbn1cblxuXG4vKmJiZGQgY29uZmlndXJhdGlvbiBpbiBpdHMgb3duIGZpbGUqL1xucmVxdWlyZSgnLi9kYicpXG5hcHAudXNlKHBhc3Nwb3J0LmluaXRpYWxpemUoKSk7XG5hcHAudXNlKGNvcnMoKSlcbmFwcC5zZXQoJ2V0YWcnLCBmYWxzZSlcbmFwcC51c2UobW9yZ2FuKCdkZXYnKSlcbmFwcC51c2UoZXhwcmVzcy5zdGF0aWMoJy4vcHVibGljJykpXG5cblxuLy8gd2Ugc2VydmUgc3dhZ2dlci11aSBmcm9tIG91ciBmcm9udGVuZCwgYnV0IGl0IGNvdWxkIGJlIGRvbmUgZnJvbSBoZXJlLCBlbmFibGluZyBuZXh0IGxpbmVcbi8vIGFwcC51c2UoJy9hcGktZG9jcycsIHN3YWdnZXJVaS5zZXJ2ZSwgc3dhZ2dlclVpLnNldHVwKHN3YWdnZXJEb2N1bWVudCkpXG5cblN3YWdnZXJFeHByZXNzLmNyZWF0ZShzd2FnZ2VyQ29uZmlnLCBmdW5jdGlvbiAoZXJyLCBzd2FnZ2VyRXhwcmVzcykge1xuICBpZiAoZXJyKSB7dGhyb3cgZXJyfVxuICBzd2FnZ2VyRXhwcmVzcy5yZWdpc3RlcihhcHApXG4gIGFwcC5saXN0ZW4ocG9ydClcbiAgY29uc29sZS5sb2coJ0FwcCBydW5uaW5nIG9uIHBvcnQgJyArIHBvcnQpXG5cbn0pXG5cbm1vZHVsZS5leHBvcnRzID0gYXBwIC8vIGZvciB0ZXN0aW5nXG4iXX0=",
     "ast": null,
     "map": {
       "version": 3,
@@ -4806,52 +4926,45 @@
         "app.js"
       ],
       "names": [
-        "SwaggerExpress",
-        "require",
-        "path",
-        "express",
-        "cors",
         "app",
-        "morgan",
-        "auth",
-        "config",
-        "yaml",
-        "fs",
         "swaggerDocument",
         "safeLoad",
         "readFileSync",
         "join",
         "__dirname",
+        "swaggerJSON",
+        "JSON",
+        "stringify",
+        "writeFile",
+        "err",
+        "console",
+        "log",
+        "e",
         "swaggerConfig",
         "appRoot",
         "configDir",
         "resolve",
         "swaggerFile",
+        "require",
         "use",
+        "initialize",
         "set",
         "static",
         "create",
-        "err",
         "swaggerExpress",
         "register",
-        "port",
-        "process",
-        "env",
-        "PORT",
         "listen",
-        "console",
-        "log",
         "module",
         "exports"
       ],
-      "mappings": ";;AAAA,IAAMA,iBAAiBC,QAAQ,oBAAR,CAAvB;AACA;AACA,IAAMC,OAAOD,QAAQ,MAAR,CAAb;AACA,IAAIE,UAAUF,QAAQ,SAAR,CAAd;AACA,IAAIG,OAAOH,QAAQ,MAAR,CAAX;AACA,IAAII,MAAMF,SAAV;AACA,IAAMG,SAASL,QAAQ,QAAR,CAAf;AACA,IAAIM,OAAON,QAAQ,gBAAR,CAAX;;AAEA;AACA;AACAA,QAAQ,QAAR,EAAkBO,MAAlB;;AAEA,IAAMA,SAASP,QAAQ,UAAR,CAAf;AACA,IAAMQ,OAAOR,QAAQ,SAAR,CAAb;AACA,IAAMS,KAAKT,QAAQ,IAAR,CAAX;AACA,IAAMU,kBAAkBF,KAAKG,QAAL,CAAcF,GAAGG,YAAH,CAAgBX,KAAKY,IAAL,CAAUC,SAAV,EAAqB,wBAArB,CAAhB,EAAgE,MAAhE,CAAd,CAAxB;;AAEA,IAAMC,gBAAgB;AACpBC,WAASF,SADW,EACA;AACpBG,aAAWhB,KAAKiB,OAAL,CAAaJ,SAAb,EAAwB,QAAxB,CAFS;AAGpBK,eAAgBL,SAAhB;AAHoB,CAAtB;;AAOA;AACAd,QAAQ,MAAR;;AAEAI,IAAIgB,GAAJ,CAAQjB,MAAR;AACAC,IAAIiB,GAAJ,CAAQ,MAAR,EAAgB,KAAhB;AACAjB,IAAIgB,GAAJ,CAAQf,OAAO,KAAP,CAAR;AACAD,IAAIgB,GAAJ,CAAQlB,QAAQoB,MAAR,CAAe,UAAf,CAAR;;AAIA;;AAEAvB,eAAewB,MAAf,CAAsBR,aAAtB,EAAqC,UAAUS,GAAV,EAAeC,cAAf,EAA+B;AAClE,MAAID,GAAJ,EAAS;AAAC,UAAMA,GAAN;AAAU;AACpB;AACAC,iBAAeC,QAAf,CAAwBtB,GAAxB;;AAEA,MAAMuB,OAAOC,QAAQC,GAAR,CAAYC,IAAzB;AACA1B,MAAI2B,MAAJ,CAAWJ,IAAX;AACAK,UAAQC,GAAR,CAAY,yBAAyBN,IAArC;AAED,CATD;;AAYAO,OAAOC,OAAP,GAAiB/B,GAAjB,C,CAAqB",
+      "mappings": ";;AAAA;;;;AACA;;;;AACA;;;;AACA;;;;AAEA;;;;AACA;;AACA;;;;AACA;;;;AACA;;;;;;AALA,IAAIA,MAAM,wBAAV;;;AAOA;AACA,IAAI;AACF;AACA,MAAIC,kBAAkB,iBAAKC,QAAL,CAAc,aAAGC,YAAH,CAAgB,eAAKC,IAAL,CAAUC,SAAV,EAAqB,wBAArB,CAAhB,EAAgE,MAAhE,CAAd,CAAtB;AACA,MAAMC,cAAcC,KAAKC,SAAL,CAAeP,eAAf,EAAgC,IAAhC,EAAsC,CAAtC,CAApB;AACA,eAAGQ,SAAH,CAAa,eAAKL,IAAL,CAAUC,SAAV,EAAqB,uBAArB,CAAb,EAA4DC,WAA5D,EAAyE,UAAUI,GAAV,EAAe;AACtF,QAAIA,GAAJ,EAAS,OAAOC,QAAQC,GAAR,CAAYF,GAAZ,CAAP;AACTC,YAAQC,GAAR,CAAY,6BAAZ;AACD,GAHD;AAID,CARD,CAQE,OAAOC,CAAP,EAAU;AACVF,UAAQC,GAAR,CAAYC,CAAZ;AACD;;AAED,IAAMC,gBAAgB;AACpBC,WAASV,SADW,EACA;AACpBW,aAAW,eAAKC,OAAL,CAAaZ,SAAb,EAAwB,QAAxB,CAFS;AAGpBa,eAAgBb,SAAhB;AAHoB,CAAtB;;AAOA;AACAc,QAAQ,MAAR;AACAnB,IAAIoB,GAAJ,CAAQ,mBAASC,UAAT,EAAR;AACArB,IAAIoB,GAAJ,CAAQ,qBAAR;AACApB,IAAIsB,GAAJ,CAAQ,MAAR,EAAgB,KAAhB;AACAtB,IAAIoB,GAAJ,CAAQ,sBAAO,KAAP,CAAR;AACApB,IAAIoB,GAAJ,CAAQ,kBAAQG,MAAR,CAAe,UAAf,CAAR;;AAGA;AACA;;AAEA,2BAAeC,MAAf,CAAsBV,aAAtB,EAAqC,UAAUJ,GAAV,EAAee,cAAf,EAA+B;AAClE,MAAIf,GAAJ,EAAS;AAAC,UAAMA,GAAN;AAAU;AACpBe,iBAAeC,QAAf,CAAwB1B,GAAxB;AACAA,MAAI2B,MAAJ;AACAhB,UAAQC,GAAR,CAAY,qCAAZ;AAED,CAND;;AAQAgB,OAAOC,OAAP,GAAiB7B,GAAjB,C,CAAqB",
       "file": "app.js",
       "sourceRoot": "/app",
       "sourcesContent": [
-        "const SwaggerExpress = require('swagger-express-mw')\n// var swaggerTools = require('swagger-tools')\nconst path = require('path')\nvar express = require('express')\nvar cors = require('cors')\nvar app = express()\nconst morgan = require('morgan')\nvar auth = require('./helpers/auth') \n\n// private conf and envirnoment specific\n// see .env file, must rename .env-sample to .env\nrequire('dotenv').config()\n\nconst config = require('./config')\nconst yaml = require('js-yaml')\nconst fs = require('fs')\nconst swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))\n\nconst swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config'),\n  swaggerFile: `${__dirname}/swagger/swagger.yaml` \n}\n\n\n/*bbdd configuration in its own file*/\nrequire('./db')\n\napp.use(cors())\napp.set('etag', false)\napp.use(morgan('dev'))\napp.use(express.static('./public'))\n\n\n\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) {throw err}\n  // install middleware\n  swaggerExpress.register(app)\n\n  const port = process.env.PORT\n  app.listen(port)\n  console.log('App running on port ' + port)\n\n})\n\n\nmodule.exports = app // for testing\n"
+        "import SwaggerExpress from 'swagger-express-mw'\nimport path from 'path'\nimport express from 'express'\nimport cors from 'cors'\nvar app = express()\nimport morgan from 'morgan'\nimport { port } from './config'\nimport yaml from 'js-yaml'\nimport fs from 'fs'\nimport passport from 'passport'\n\n// generate json for swagger-ui\ntry {\n  // eslint-disable-next-line\n  var swaggerDocument = yaml.safeLoad(fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))\n  const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)\n  fs.writeFile(path.join(__dirname, './public/arasaac.json'), swaggerJSON, function (err) {\n    if (err) return console.log(err)\n    console.log('arasaac.json file generated')\n  })\n} catch (e) {\n  console.log(e)\n}\n\nconst swaggerConfig = {\n  appRoot: __dirname, // required config\n  configDir: path.resolve(__dirname, 'config'),\n  swaggerFile: `${__dirname}/swagger/swagger.yaml` \n}\n\n\n/*bbdd configuration in its own file*/\nrequire('./db')\napp.use(passport.initialize());\napp.use(cors())\napp.set('etag', false)\napp.use(morgan('dev'))\napp.use(express.static('./public'))\n\n\n// we serve swagger-ui from our frontend, but it could be done from here, enabling next line\n// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))\n\nSwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {\n  if (err) {throw err}\n  swaggerExpress.register(app)\n  app.listen(port)\n  console.log('App running on port ' + port)\n\n})\n\nmodule.exports = app // for testing\n"
       ]
     },
-    "mtime": 1516485499000
+    "mtime": 1517047965000
   },
   "{\"filename\":\"/app/config/index.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/config\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
     "metadata": {
@@ -5032,7 +5145,7 @@
       "basename": "index"
     },
     "ignored": false,
-    "code": "'use strict';\n\nvar development = require('./env/development');\nvar path = require('path');\nvar test = require('./env/test');\nvar production = require('./env/production');\n\nvar defaults = {\n  port: process.env.PORT || 8100,\n  materialsDir: path.join(process.cwd(), 'materials')\n};\n\n/**\n * Expose\n */\n\nmodule.exports = {\n  development: Object.assign({}, defaults, development),\n  test: Object.assign({}, defaults, test),\n  production: Object.assign({}, defaults, production)\n}[process.env.NODE_ENV || 'development'];\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbImRldmVsb3BtZW50IiwicmVxdWlyZSIsInBhdGgiLCJ0ZXN0IiwicHJvZHVjdGlvbiIsImRlZmF1bHRzIiwicG9ydCIsInByb2Nlc3MiLCJlbnYiLCJQT1JUIiwibWF0ZXJpYWxzRGlyIiwiam9pbiIsImN3ZCIsIm1vZHVsZSIsImV4cG9ydHMiLCJPYmplY3QiLCJhc3NpZ24iLCJOT0RFX0VOViJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFNQSxjQUFjQyxRQUFRLG1CQUFSLENBQXBCO0FBQ0EsSUFBTUMsT0FBT0QsUUFBUSxNQUFSLENBQWI7QUFDQSxJQUFNRSxPQUFPRixRQUFRLFlBQVIsQ0FBYjtBQUNBLElBQU1HLGFBQWFILFFBQVEsa0JBQVIsQ0FBbkI7O0FBRUEsSUFBTUksV0FBVztBQUNmQyxRQUFNQyxRQUFRQyxHQUFSLENBQVlDLElBQVosSUFBb0IsSUFEWDtBQUVmQyxnQkFBY1IsS0FBS1MsSUFBTCxDQUFVSixRQUFRSyxHQUFSLEVBQVYsRUFBeUIsV0FBekI7QUFGQyxDQUFqQjs7QUFLQTs7OztBQUlBQyxPQUFPQyxPQUFQLEdBQWlCO0FBQ2ZkLGVBQWFlLE9BQU9DLE1BQVAsQ0FBYyxFQUFkLEVBQWtCWCxRQUFsQixFQUE0QkwsV0FBNUIsQ0FERTtBQUVmRyxRQUFNWSxPQUFPQyxNQUFQLENBQWMsRUFBZCxFQUFrQlgsUUFBbEIsRUFBNEJGLElBQTVCLENBRlM7QUFHZkMsY0FBWVcsT0FBT0MsTUFBUCxDQUFjLEVBQWQsRUFBa0JYLFFBQWxCLEVBQTRCRCxVQUE1QjtBQUhHLEVBSWZHLFFBQVFDLEdBQVIsQ0FBWVMsUUFBWixJQUF3QixhQUpULENBQWpCIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlUm9vdCI6Ii9hcHAvY29uZmlnIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgZGV2ZWxvcG1lbnQgPSByZXF1aXJlKCcuL2Vudi9kZXZlbG9wbWVudCcpXG5jb25zdCBwYXRoID0gcmVxdWlyZSgncGF0aCcpXG5jb25zdCB0ZXN0ID0gcmVxdWlyZSgnLi9lbnYvdGVzdCcpXG5jb25zdCBwcm9kdWN0aW9uID0gcmVxdWlyZSgnLi9lbnYvcHJvZHVjdGlvbicpXG5cbmNvbnN0IGRlZmF1bHRzID0ge1xuICBwb3J0OiBwcm9jZXNzLmVudi5QT1JUIHx8IDgxMDAsXG4gIG1hdGVyaWFsc0RpcjogcGF0aC5qb2luKHByb2Nlc3MuY3dkKCksICdtYXRlcmlhbHMnKVxufVxuXG4vKipcbiAqIEV4cG9zZVxuICovXG5cbm1vZHVsZS5leHBvcnRzID0ge1xuICBkZXZlbG9wbWVudDogT2JqZWN0LmFzc2lnbih7fSwgZGVmYXVsdHMsIGRldmVsb3BtZW50KSxcbiAgdGVzdDogT2JqZWN0LmFzc2lnbih7fSwgZGVmYXVsdHMsIHRlc3QpLFxuICBwcm9kdWN0aW9uOiBPYmplY3QuYXNzaWduKHt9LCBkZWZhdWx0cywgcHJvZHVjdGlvbilcbn1bcHJvY2Vzcy5lbnYuTk9ERV9FTlYgfHwgJ2RldmVsb3BtZW50J11cbiJdfQ==",
+    "code": "'use strict';\n\nvar development = require('./env/development');\nvar path = require('path');\nvar test = require('./env/test');\nvar production = require('./env/production');\nvar dotenv = require('dotenv-safe');\n\ndotenv.load();\n\nvar requireProcessEnv = function requireProcessEnv(name) {\n  if (!process.env[name]) {\n    throw new Error('You must set the ' + name + ' environment variable');\n  }\n  return process.env[name];\n};\n\nvar defaults = {\n  port: process.env.PORT || 8100, // port 80 by default, defined in api-dockerfile.yml\n  materialsDir: path.join(process.cwd(), 'materials'),\n  masterKey: requireProcessEnv('MASTER_KEY'),\n  jwtSecret: requireProcessEnv('JWT_SECRET')\n};\n\n/**\n * Expose\n */\n\nmodule.exports = {\n  development: Object.assign({}, defaults, development),\n  test: Object.assign({}, defaults, test),\n  production: Object.assign({}, defaults, production)\n}[process.env.NODE_ENV || 'development'];\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbImRldmVsb3BtZW50IiwicmVxdWlyZSIsInBhdGgiLCJ0ZXN0IiwicHJvZHVjdGlvbiIsImRvdGVudiIsImxvYWQiLCJyZXF1aXJlUHJvY2Vzc0VudiIsInByb2Nlc3MiLCJlbnYiLCJuYW1lIiwiRXJyb3IiLCJkZWZhdWx0cyIsInBvcnQiLCJQT1JUIiwibWF0ZXJpYWxzRGlyIiwiam9pbiIsImN3ZCIsIm1hc3RlcktleSIsImp3dFNlY3JldCIsIm1vZHVsZSIsImV4cG9ydHMiLCJPYmplY3QiLCJhc3NpZ24iLCJOT0RFX0VOViJdLCJtYXBwaW5ncyI6Ijs7QUFBQSxJQUFNQSxjQUFjQyxRQUFRLG1CQUFSLENBQXBCO0FBQ0EsSUFBTUMsT0FBT0QsUUFBUSxNQUFSLENBQWI7QUFDQSxJQUFNRSxPQUFPRixRQUFRLFlBQVIsQ0FBYjtBQUNBLElBQU1HLGFBQWFILFFBQVEsa0JBQVIsQ0FBbkI7QUFDQSxJQUFNSSxTQUFTSixRQUFRLGFBQVIsQ0FBZjs7QUFFQUksT0FBT0MsSUFBUDs7QUFFQSxJQUFNQyxvQkFBb0IsU0FBcEJBLGlCQUFvQixPQUFRO0FBQ2hDLE1BQUksQ0FBQ0MsUUFBUUMsR0FBUixDQUFZQyxJQUFaLENBQUwsRUFBd0I7QUFDdEIsVUFBTSxJQUFJQyxLQUFKLENBQVUsc0JBQXNCRCxJQUF0QixHQUE2Qix1QkFBdkMsQ0FBTjtBQUNEO0FBQ0QsU0FBT0YsUUFBUUMsR0FBUixDQUFZQyxJQUFaLENBQVA7QUFDRCxDQUxEOztBQU9BLElBQU1FLFdBQVc7QUFDZkMsUUFBTUwsUUFBUUMsR0FBUixDQUFZSyxJQUFaLElBQW9CLElBRFgsRUFDaUI7QUFDaENDLGdCQUFjYixLQUFLYyxJQUFMLENBQVVSLFFBQVFTLEdBQVIsRUFBVixFQUF5QixXQUF6QixDQUZDO0FBR2ZDLGFBQVdYLGtCQUFrQixZQUFsQixDQUhJO0FBSWZZLGFBQVdaLGtCQUFrQixZQUFsQjtBQUpJLENBQWpCOztBQVFBOzs7O0FBSUFhLE9BQU9DLE9BQVAsR0FBaUI7QUFDZnJCLGVBQWFzQixPQUFPQyxNQUFQLENBQWMsRUFBZCxFQUFrQlgsUUFBbEIsRUFBNEJaLFdBQTVCLENBREU7QUFFZkcsUUFBTW1CLE9BQU9DLE1BQVAsQ0FBYyxFQUFkLEVBQWtCWCxRQUFsQixFQUE0QlQsSUFBNUIsQ0FGUztBQUdmQyxjQUFZa0IsT0FBT0MsTUFBUCxDQUFjLEVBQWQsRUFBa0JYLFFBQWxCLEVBQTRCUixVQUE1QjtBQUhHLEVBSWZJLFFBQVFDLEdBQVIsQ0FBWWUsUUFBWixJQUF3QixhQUpULENBQWpCIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlUm9vdCI6Ii9hcHAvY29uZmlnIiwic291cmNlc0NvbnRlbnQiOlsiY29uc3QgZGV2ZWxvcG1lbnQgPSByZXF1aXJlKCcuL2Vudi9kZXZlbG9wbWVudCcpXG5jb25zdCBwYXRoID0gcmVxdWlyZSgncGF0aCcpXG5jb25zdCB0ZXN0ID0gcmVxdWlyZSgnLi9lbnYvdGVzdCcpXG5jb25zdCBwcm9kdWN0aW9uID0gcmVxdWlyZSgnLi9lbnYvcHJvZHVjdGlvbicpXG5jb25zdCBkb3RlbnYgPSByZXF1aXJlKCdkb3RlbnYtc2FmZScpXG5cbmRvdGVudi5sb2FkKClcblxuY29uc3QgcmVxdWlyZVByb2Nlc3NFbnYgPSBuYW1lID0+IHtcbiAgaWYgKCFwcm9jZXNzLmVudltuYW1lXSkge1xuICAgIHRocm93IG5ldyBFcnJvcignWW91IG11c3Qgc2V0IHRoZSAnICsgbmFtZSArICcgZW52aXJvbm1lbnQgdmFyaWFibGUnKVxuICB9XG4gIHJldHVybiBwcm9jZXNzLmVudltuYW1lXVxufVxuXG5jb25zdCBkZWZhdWx0cyA9IHtcbiAgcG9ydDogcHJvY2Vzcy5lbnYuUE9SVCB8fCA4MTAwLCAvLyBwb3J0IDgwIGJ5IGRlZmF1bHQsIGRlZmluZWQgaW4gYXBpLWRvY2tlcmZpbGUueW1sXG4gIG1hdGVyaWFsc0RpcjogcGF0aC5qb2luKHByb2Nlc3MuY3dkKCksICdtYXRlcmlhbHMnKSxcbiAgbWFzdGVyS2V5OiByZXF1aXJlUHJvY2Vzc0VudignTUFTVEVSX0tFWScpLFxuICBqd3RTZWNyZXQ6IHJlcXVpcmVQcm9jZXNzRW52KCdKV1RfU0VDUkVUJylcbn1cblxuXG4vKipcbiAqIEV4cG9zZVxuICovXG5cbm1vZHVsZS5leHBvcnRzID0ge1xuICBkZXZlbG9wbWVudDogT2JqZWN0LmFzc2lnbih7fSwgZGVmYXVsdHMsIGRldmVsb3BtZW50KSxcbiAgdGVzdDogT2JqZWN0LmFzc2lnbih7fSwgZGVmYXVsdHMsIHRlc3QpLFxuICBwcm9kdWN0aW9uOiBPYmplY3QuYXNzaWduKHt9LCBkZWZhdWx0cywgcHJvZHVjdGlvbilcbn1bcHJvY2Vzcy5lbnYuTk9ERV9FTlYgfHwgJ2RldmVsb3BtZW50J11cbiJdfQ==",
     "ast": null,
     "map": {
       "version": 3,
@@ -5045,28 +5158,35 @@
         "path",
         "test",
         "production",
-        "defaults",
-        "port",
+        "dotenv",
+        "load",
+        "requireProcessEnv",
         "process",
         "env",
+        "name",
+        "Error",
+        "defaults",
+        "port",
         "PORT",
         "materialsDir",
         "join",
         "cwd",
+        "masterKey",
+        "jwtSecret",
         "module",
         "exports",
         "Object",
         "assign",
         "NODE_ENV"
       ],
-      "mappings": ";;AAAA,IAAMA,cAAcC,QAAQ,mBAAR,CAApB;AACA,IAAMC,OAAOD,QAAQ,MAAR,CAAb;AACA,IAAME,OAAOF,QAAQ,YAAR,CAAb;AACA,IAAMG,aAAaH,QAAQ,kBAAR,CAAnB;;AAEA,IAAMI,WAAW;AACfC,QAAMC,QAAQC,GAAR,CAAYC,IAAZ,IAAoB,IADX;AAEfC,gBAAcR,KAAKS,IAAL,CAAUJ,QAAQK,GAAR,EAAV,EAAyB,WAAzB;AAFC,CAAjB;;AAKA;;;;AAIAC,OAAOC,OAAP,GAAiB;AACfd,eAAae,OAAOC,MAAP,CAAc,EAAd,EAAkBX,QAAlB,EAA4BL,WAA5B,CADE;AAEfG,QAAMY,OAAOC,MAAP,CAAc,EAAd,EAAkBX,QAAlB,EAA4BF,IAA5B,CAFS;AAGfC,cAAYW,OAAOC,MAAP,CAAc,EAAd,EAAkBX,QAAlB,EAA4BD,UAA5B;AAHG,EAIfG,QAAQC,GAAR,CAAYS,QAAZ,IAAwB,aAJT,CAAjB",
+      "mappings": ";;AAAA,IAAMA,cAAcC,QAAQ,mBAAR,CAApB;AACA,IAAMC,OAAOD,QAAQ,MAAR,CAAb;AACA,IAAME,OAAOF,QAAQ,YAAR,CAAb;AACA,IAAMG,aAAaH,QAAQ,kBAAR,CAAnB;AACA,IAAMI,SAASJ,QAAQ,aAAR,CAAf;;AAEAI,OAAOC,IAAP;;AAEA,IAAMC,oBAAoB,SAApBA,iBAAoB,OAAQ;AAChC,MAAI,CAACC,QAAQC,GAAR,CAAYC,IAAZ,CAAL,EAAwB;AACtB,UAAM,IAAIC,KAAJ,CAAU,sBAAsBD,IAAtB,GAA6B,uBAAvC,CAAN;AACD;AACD,SAAOF,QAAQC,GAAR,CAAYC,IAAZ,CAAP;AACD,CALD;;AAOA,IAAME,WAAW;AACfC,QAAML,QAAQC,GAAR,CAAYK,IAAZ,IAAoB,IADX,EACiB;AAChCC,gBAAcb,KAAKc,IAAL,CAAUR,QAAQS,GAAR,EAAV,EAAyB,WAAzB,CAFC;AAGfC,aAAWX,kBAAkB,YAAlB,CAHI;AAIfY,aAAWZ,kBAAkB,YAAlB;AAJI,CAAjB;;AAQA;;;;AAIAa,OAAOC,OAAP,GAAiB;AACfrB,eAAasB,OAAOC,MAAP,CAAc,EAAd,EAAkBX,QAAlB,EAA4BZ,WAA5B,CADE;AAEfG,QAAMmB,OAAOC,MAAP,CAAc,EAAd,EAAkBX,QAAlB,EAA4BT,IAA5B,CAFS;AAGfC,cAAYkB,OAAOC,MAAP,CAAc,EAAd,EAAkBX,QAAlB,EAA4BR,UAA5B;AAHG,EAIfI,QAAQC,GAAR,CAAYe,QAAZ,IAAwB,aAJT,CAAjB",
       "file": "index.js",
       "sourceRoot": "/app/config",
       "sourcesContent": [
-        "const development = require('./env/development')\nconst path = require('path')\nconst test = require('./env/test')\nconst production = require('./env/production')\n\nconst defaults = {\n  port: process.env.PORT || 8100,\n  materialsDir: path.join(process.cwd(), 'materials')\n}\n\n/**\n * Expose\n */\n\nmodule.exports = {\n  development: Object.assign({}, defaults, development),\n  test: Object.assign({}, defaults, test),\n  production: Object.assign({}, defaults, production)\n}[process.env.NODE_ENV || 'development']\n"
+        "const development = require('./env/development')\nconst path = require('path')\nconst test = require('./env/test')\nconst production = require('./env/production')\nconst dotenv = require('dotenv-safe')\n\ndotenv.load()\n\nconst requireProcessEnv = name => {\n  if (!process.env[name]) {\n    throw new Error('You must set the ' + name + ' environment variable')\n  }\n  return process.env[name]\n}\n\nconst defaults = {\n  port: process.env.PORT || 8100, // port 80 by default, defined in api-dockerfile.yml\n  materialsDir: path.join(process.cwd(), 'materials'),\n  masterKey: requireProcessEnv('MASTER_KEY'),\n  jwtSecret: requireProcessEnv('JWT_SECRET')\n}\n\n\n/**\n * Expose\n */\n\nmodule.exports = {\n  development: Object.assign({}, defaults, development),\n  test: Object.assign({}, defaults, test),\n  production: Object.assign({}, defaults, production)\n}[process.env.NODE_ENV || 'development']\n"
       ]
     },
-    "mtime": 1511352442000
+    "mtime": 1516824395000
   },
   "{\"filename\":\"/app/config/env/development.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/config/env\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
     "metadata": {
@@ -8912,7 +9032,7 @@
       "basename": "index"
     },
     "ignored": false,
-    "code": "'use strict';\n\nvar _typeof = typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; };\n\n/* eslint no-template-curly-in-string: 0 */\nvar User = require('../models/User');\nvar mongoose = require('mongoose');\nvar nev = require('email-verification')(mongoose);\nvar bcrypt = require('bcryptjs');\n\nmodule.exports = function (locale) {\n\n  var myHasher = function myHasher(password, tempUserData, insertTempUser, callback) {\n    bcrypt.genSalt(8, function (err, salt) {\n      bcrypt.hash(password, salt, function (err, hash) {\n        return insertTempUser(hash, tempUserData, callback);\n      });\n    });\n  };\n\n  /* email messages, we may change them depending on locale */\n  var subject = 'Please confirm account';\n  var html = 'Click the following link to confirm your account:</p><p>${URL}</p>';\n  var text = 'Please confirm your account by clicking the following link: ${URL}';\n  if (locale === 'es') {\n    subject = 'Por favor, confirma tu cuenta';\n    html = 'Pulsa el enlace siguiente para confirmar tu cuenta:</p><p>${URL}</p>';\n    text = 'Por favor, confirma tu cuenta pulsando el enlace siguiente: ${URL}';\n  }\n\n  nev.configure({\n    verificationURL: process.env.EMAIL_VERIFICATION_URL,\n    URLLength: 16,\n\n    // mongo-stuff\n    persistentUserModel: User,\n    emailFieldName: 'email',\n    passwordFieldName: 'password',\n    URLFieldName: 'GENERATED_VERIFYING_URL',\n    expirationTime: 86400, //1 day\n\n    // emailing options\n    transportOptions: {\n      service: 'Gmail',\n      auth: {\n        user: process.env.EMAIL_USER,\n        pass: process.env.EMAIL_PASSWORD\n      }\n    },\n    verifyMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: subject,\n      html: html,\n      text: text\n    },\n    shouldSendConfirmation: true,\n    confirmMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: 'Successfully verified!',\n      html: '<p>Your account has been successfully verified.</p>',\n      text: 'Your account has been successfully verified.'\n    },\n    hashingFunction: myHasher\n  }, function (err, options) {\n    if (err) {\n      console.log(err);\n      return;\n    }\n    console.log('configured: ' + ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object'));\n  });\n\n  nev.generateTempUserModel(User, function (err, tempUserModel) {\n    if (err) {\n      console.log(err);\n      return;\n    }\n    console.log('generated temp user model: ' + (typeof tempUserModel === 'function'));\n  });\n  return nev;\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbIlVzZXIiLCJyZXF1aXJlIiwibW9uZ29vc2UiLCJuZXYiLCJiY3J5cHQiLCJtb2R1bGUiLCJleHBvcnRzIiwibG9jYWxlIiwibXlIYXNoZXIiLCJwYXNzd29yZCIsInRlbXBVc2VyRGF0YSIsImluc2VydFRlbXBVc2VyIiwiY2FsbGJhY2siLCJnZW5TYWx0IiwiZXJyIiwic2FsdCIsImhhc2giLCJzdWJqZWN0IiwiaHRtbCIsInRleHQiLCJjb25maWd1cmUiLCJ2ZXJpZmljYXRpb25VUkwiLCJwcm9jZXNzIiwiZW52IiwiRU1BSUxfVkVSSUZJQ0FUSU9OX1VSTCIsIlVSTExlbmd0aCIsInBlcnNpc3RlbnRVc2VyTW9kZWwiLCJlbWFpbEZpZWxkTmFtZSIsInBhc3N3b3JkRmllbGROYW1lIiwiVVJMRmllbGROYW1lIiwiZXhwaXJhdGlvblRpbWUiLCJ0cmFuc3BvcnRPcHRpb25zIiwic2VydmljZSIsImF1dGgiLCJ1c2VyIiwiRU1BSUxfVVNFUiIsInBhc3MiLCJFTUFJTF9QQVNTV09SRCIsInZlcmlmeU1haWxPcHRpb25zIiwiZnJvbSIsIkVNQUlMX0ZST00iLCJzaG91bGRTZW5kQ29uZmlybWF0aW9uIiwiY29uZmlybU1haWxPcHRpb25zIiwiaGFzaGluZ0Z1bmN0aW9uIiwib3B0aW9ucyIsImNvbnNvbGUiLCJsb2ciLCJnZW5lcmF0ZVRlbXBVc2VyTW9kZWwiLCJ0ZW1wVXNlck1vZGVsIl0sIm1hcHBpbmdzIjoiOzs7O0FBQUE7QUFDQSxJQUFJQSxPQUFPQyxRQUFRLGdCQUFSLENBQVg7QUFDQSxJQUFJQyxXQUFXRCxRQUFRLFVBQVIsQ0FBZjtBQUNBLElBQUlFLE1BQU1GLFFBQVEsb0JBQVIsRUFBOEJDLFFBQTlCLENBQVY7QUFDQSxJQUFJRSxTQUFTSCxRQUFRLFVBQVIsQ0FBYjs7QUFFQUksT0FBT0MsT0FBUCxHQUFpQixVQUFVQyxNQUFWLEVBQWtCOztBQUVqQyxNQUFNQyxXQUFXLFNBQVhBLFFBQVcsQ0FBQ0MsUUFBRCxFQUFXQyxZQUFYLEVBQXlCQyxjQUF6QixFQUF5Q0MsUUFBekMsRUFBc0Q7QUFDckVSLFdBQU9TLE9BQVAsQ0FBZSxDQUFmLEVBQWtCLFVBQVVDLEdBQVYsRUFBZUMsSUFBZixFQUFxQjtBQUNyQ1gsYUFBT1ksSUFBUCxDQUFZUCxRQUFaLEVBQXNCTSxJQUF0QixFQUE0QixVQUFVRCxHQUFWLEVBQWVFLElBQWYsRUFBcUI7QUFDL0MsZUFBT0wsZUFBZUssSUFBZixFQUFxQk4sWUFBckIsRUFBbUNFLFFBQW5DLENBQVA7QUFDRCxPQUZEO0FBR0QsS0FKRDtBQUtELEdBTkQ7O0FBUUE7QUFDQSxNQUFJSyxVQUFVLHdCQUFkO0FBQ0EsTUFBSUMsT0FBTyxvRUFBWDtBQUNBLE1BQUlDLE9BQU8sb0VBQVg7QUFDQSxNQUFJWixXQUFTLElBQWIsRUFBbUI7QUFDakJVLGNBQVUsK0JBQVY7QUFDQUMsV0FBTyxzRUFBUDtBQUNBQyxXQUFPLG9FQUFQO0FBQ0Q7O0FBRURoQixNQUFJaUIsU0FBSixDQUFjO0FBQ1pDLHFCQUFpQkMsUUFBUUMsR0FBUixDQUFZQyxzQkFEakI7QUFFWkMsZUFBVyxFQUZDOztBQUlaO0FBQ0FDLHlCQUFxQjFCLElBTFQ7QUFNWjJCLG9CQUFnQixPQU5KO0FBT1pDLHVCQUFtQixVQVBQO0FBUVpDLGtCQUFjLHlCQVJGO0FBU1pDLG9CQUFnQixLQVRKLEVBU1c7O0FBRXZCO0FBQ0FDLHNCQUFrQjtBQUNoQkMsZUFBUyxPQURPO0FBRWhCQyxZQUFNO0FBQ0pDLGNBQU1aLFFBQVFDLEdBQVIsQ0FBWVksVUFEZDtBQUVKQyxjQUFNZCxRQUFRQyxHQUFSLENBQVljO0FBRmQ7QUFGVSxLQVpOO0FBbUJaQyx1QkFBbUI7QUFDakJDLFlBQU1qQixRQUFRQyxHQUFSLENBQVlpQixVQUREO0FBRWpCdkIsZUFBU0EsT0FGUTtBQUdqQkMsWUFBTUEsSUFIVztBQUlqQkMsWUFBTUE7QUFKVyxLQW5CUDtBQXlCWnNCLDRCQUF3QixJQXpCWjtBQTBCWkMsd0JBQW9CO0FBQ2xCSCxZQUFNakIsUUFBUUMsR0FBUixDQUFZaUIsVUFEQTtBQUVsQnZCLGVBQVMsd0JBRlM7QUFHbEJDLFlBQU0scURBSFk7QUFJbEJDLFlBQU07QUFKWSxLQTFCUjtBQWdDWndCLHFCQUFpQm5DO0FBaENMLEdBQWQsRUFpQ0csVUFBVU0sR0FBVixFQUFlOEIsT0FBZixFQUF3QjtBQUN6QixRQUFJOUIsR0FBSixFQUFTO0FBQ1ArQixjQUFRQyxHQUFSLENBQVloQyxHQUFaO0FBQ0E7QUFDRDtBQUNEK0IsWUFBUUMsR0FBUixDQUFZLGtCQUFrQixRQUFPRixPQUFQLHlDQUFPQSxPQUFQLE9BQW1CLFFBQXJDLENBQVo7QUFDRCxHQXZDRDs7QUF5Q0F6QyxNQUFJNEMscUJBQUosQ0FBMEIvQyxJQUExQixFQUFnQyxVQUFVYyxHQUFWLEVBQWVrQyxhQUFmLEVBQThCO0FBQzVELFFBQUlsQyxHQUFKLEVBQVM7QUFDUCtCLGNBQVFDLEdBQVIsQ0FBWWhDLEdBQVo7QUFDQTtBQUNEO0FBQ0QrQixZQUFRQyxHQUFSLENBQVksaUNBQWlDLE9BQU9FLGFBQVAsS0FBeUIsVUFBMUQsQ0FBWjtBQUNELEdBTkQ7QUFPQSxTQUFPN0MsR0FBUDtBQUNELENBckVEIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlUm9vdCI6Ii9hcHAvbWFpbCIsInNvdXJjZXNDb250ZW50IjpbIi8qIGVzbGludCBuby10ZW1wbGF0ZS1jdXJseS1pbi1zdHJpbmc6IDAgKi9cbnZhciBVc2VyID0gcmVxdWlyZSgnLi4vbW9kZWxzL1VzZXInKVxudmFyIG1vbmdvb3NlID0gcmVxdWlyZSgnbW9uZ29vc2UnKVxudmFyIG5ldiA9IHJlcXVpcmUoJ2VtYWlsLXZlcmlmaWNhdGlvbicpKG1vbmdvb3NlKVxudmFyIGJjcnlwdCA9IHJlcXVpcmUoJ2JjcnlwdGpzJylcblxubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbiAobG9jYWxlKSB7XG5cbiAgY29uc3QgbXlIYXNoZXIgPSAocGFzc3dvcmQsIHRlbXBVc2VyRGF0YSwgaW5zZXJ0VGVtcFVzZXIsIGNhbGxiYWNrKSA9PiB7XG4gICAgYmNyeXB0LmdlblNhbHQoOCwgZnVuY3Rpb24gKGVyciwgc2FsdCkge1xuICAgICAgYmNyeXB0Lmhhc2gocGFzc3dvcmQsIHNhbHQsIGZ1bmN0aW9uIChlcnIsIGhhc2gpIHtcbiAgICAgICAgcmV0dXJuIGluc2VydFRlbXBVc2VyKGhhc2gsIHRlbXBVc2VyRGF0YSwgY2FsbGJhY2spXG4gICAgICB9KVxuICAgIH0pXG4gIH1cblxuICAvKiBlbWFpbCBtZXNzYWdlcywgd2UgbWF5IGNoYW5nZSB0aGVtIGRlcGVuZGluZyBvbiBsb2NhbGUgKi9cbiAgdmFyIHN1YmplY3QgPSAnUGxlYXNlIGNvbmZpcm0gYWNjb3VudCdcbiAgdmFyIGh0bWwgPSAnQ2xpY2sgdGhlIGZvbGxvd2luZyBsaW5rIHRvIGNvbmZpcm0geW91ciBhY2NvdW50OjwvcD48cD4ke1VSTH08L3A+J1xuICB2YXIgdGV4dCA9ICdQbGVhc2UgY29uZmlybSB5b3VyIGFjY291bnQgYnkgY2xpY2tpbmcgdGhlIGZvbGxvd2luZyBsaW5rOiAke1VSTH0nXG4gIGlmIChsb2NhbGU9PT0nZXMnKSB7XG4gICAgc3ViamVjdCA9ICdQb3IgZmF2b3IsIGNvbmZpcm1hIHR1IGN1ZW50YSdcbiAgICBodG1sID0gJ1B1bHNhIGVsIGVubGFjZSBzaWd1aWVudGUgcGFyYSBjb25maXJtYXIgdHUgY3VlbnRhOjwvcD48cD4ke1VSTH08L3A+J1xuICAgIHRleHQgPSAnUG9yIGZhdm9yLCBjb25maXJtYSB0dSBjdWVudGEgcHVsc2FuZG8gZWwgZW5sYWNlIHNpZ3VpZW50ZTogJHtVUkx9J1xuICB9XG5cbiAgbmV2LmNvbmZpZ3VyZSh7XG4gICAgdmVyaWZpY2F0aW9uVVJMOiBwcm9jZXNzLmVudi5FTUFJTF9WRVJJRklDQVRJT05fVVJMLFxuICAgIFVSTExlbmd0aDogMTYsXG5cbiAgICAvLyBtb25nby1zdHVmZlxuICAgIHBlcnNpc3RlbnRVc2VyTW9kZWw6IFVzZXIsXG4gICAgZW1haWxGaWVsZE5hbWU6ICdlbWFpbCcsXG4gICAgcGFzc3dvcmRGaWVsZE5hbWU6ICdwYXNzd29yZCcsXG4gICAgVVJMRmllbGROYW1lOiAnR0VORVJBVEVEX1ZFUklGWUlOR19VUkwnLFxuICAgIGV4cGlyYXRpb25UaW1lOiA4NjQwMCwgLy8xIGRheVxuXG4gICAgLy8gZW1haWxpbmcgb3B0aW9uc1xuICAgIHRyYW5zcG9ydE9wdGlvbnM6IHtcbiAgICAgIHNlcnZpY2U6ICdHbWFpbCcsXG4gICAgICBhdXRoOiB7XG4gICAgICAgIHVzZXI6IHByb2Nlc3MuZW52LkVNQUlMX1VTRVIsXG4gICAgICAgIHBhc3M6IHByb2Nlc3MuZW52LkVNQUlMX1BBU1NXT1JEXG4gICAgICB9XG4gICAgfSxcbiAgICB2ZXJpZnlNYWlsT3B0aW9uczoge1xuICAgICAgZnJvbTogcHJvY2Vzcy5lbnYuRU1BSUxfRlJPTSxcbiAgICAgIHN1YmplY3Q6IHN1YmplY3QsXG4gICAgICBodG1sOiBodG1sLCBcbiAgICAgIHRleHQ6IHRleHRcbiAgICB9LFxuICAgIHNob3VsZFNlbmRDb25maXJtYXRpb246IHRydWUsXG4gICAgY29uZmlybU1haWxPcHRpb25zOiB7XG4gICAgICBmcm9tOiBwcm9jZXNzLmVudi5FTUFJTF9GUk9NLFxuICAgICAgc3ViamVjdDogJ1N1Y2Nlc3NmdWxseSB2ZXJpZmllZCEnLFxuICAgICAgaHRtbDogJzxwPllvdXIgYWNjb3VudCBoYXMgYmVlbiBzdWNjZXNzZnVsbHkgdmVyaWZpZWQuPC9wPicsXG4gICAgICB0ZXh0OiAnWW91ciBhY2NvdW50IGhhcyBiZWVuIHN1Y2Nlc3NmdWxseSB2ZXJpZmllZC4nXG4gICAgfSxcbiAgICBoYXNoaW5nRnVuY3Rpb246IG15SGFzaGVyXG4gIH0sIGZ1bmN0aW9uIChlcnIsIG9wdGlvbnMpIHtcbiAgICBpZiAoZXJyKSB7XG4gICAgICBjb25zb2xlLmxvZyhlcnIpXG4gICAgICByZXR1cm5cbiAgICB9XG4gICAgY29uc29sZS5sb2coJ2NvbmZpZ3VyZWQ6ICcgKyAodHlwZW9mIG9wdGlvbnMgPT09ICdvYmplY3QnKSlcbiAgfSlcblxuICBuZXYuZ2VuZXJhdGVUZW1wVXNlck1vZGVsKFVzZXIsIGZ1bmN0aW9uIChlcnIsIHRlbXBVc2VyTW9kZWwpIHtcbiAgICBpZiAoZXJyKSB7XG4gICAgICBjb25zb2xlLmxvZyhlcnIpXG4gICAgICByZXR1cm5cbiAgICB9XG4gICAgY29uc29sZS5sb2coJ2dlbmVyYXRlZCB0ZW1wIHVzZXIgbW9kZWw6ICcgKyAodHlwZW9mIHRlbXBVc2VyTW9kZWwgPT09ICdmdW5jdGlvbicpKVxuICB9KVxuICByZXR1cm4gbmV2XG59XG4iXX0=",
+    "code": "'use strict';\n\nvar _typeof = typeof Symbol === \"function\" && typeof Symbol.iterator === \"symbol\" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === \"function\" && obj.constructor === Symbol && obj !== Symbol.prototype ? \"symbol\" : typeof obj; };\n\n/* eslint no-template-curly-in-string: 0 */\nvar User = require('../models/User');\nvar mongoose = require('mongoose');\nvar nev = require('email-verification')(mongoose);\nvar bcrypt = require('bcryptjs');\n\nmodule.exports = function (locale) {\n\n  var myHasher = function myHasher(password, tempUserData, insertTempUser, callback) {\n    bcrypt.genSalt(8, function (err, salt) {\n      bcrypt.hash(password, salt, function (err, hash) {\n        return insertTempUser(hash, tempUserData, callback);\n      });\n    });\n  };\n\n  /* email messages, we may change them depending on locale */\n  var subject = 'Please confirm account';\n  var html = 'Click the following link to confirm your account:</p><p>${URL}</p>';\n  var text = 'Please confirm your account by clicking the following link: ${URL}';\n  if (locale === 'es') {\n    subject = 'Por favor, confirma tu cuenta';\n    html = 'Pulsa el enlace siguiente para confirmar tu cuenta:</p><p>${URL}</p>';\n    text = 'Por favor, confirma tu cuenta pulsando el enlace siguiente: ${URL}';\n  }\n\n  nev.configure({\n    verificationURL: process.env.EMAIL_VERIFICATION_URL,\n    URLLength: 16,\n\n    // mongo-stuff\n    persistentUserModel: User,\n    emailFieldName: 'email',\n    passwordFieldName: 'password',\n    URLFieldName: 'GENERATED_VERIFYING_URL',\n    expirationTime: 86400, //1 day\n\n    // emailing options\n    transportOptions: {\n      service: 'Gmail',\n      auth: {\n        user: process.env.EMAIL_USER,\n        pass: process.env.EMAIL_PASSWORD\n      }\n    },\n    verifyMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: subject,\n      html: html,\n      text: text\n    },\n    shouldSendConfirmation: true,\n    confirmMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: 'Successfully verified!',\n      html: '<p>Your account has been successfully verified.</p>',\n      text: 'Your account has been successfully verified.'\n    },\n    hashingFunction: myHasher\n  }, function (err, options) {\n    if (err) {\n      console.log(err);\n      return;\n    }\n    console.log('configured: ' + ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object'));\n  });\n\n  nev.generateTempUserModel(User, function (err, tempUserModel) {\n    if (err) {\n      console.log(err);\n      return;\n    }\n    console.log('generated temp user model: ' + (typeof tempUserModel === 'function'));\n  });\n  return nev;\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImluZGV4LmpzIl0sIm5hbWVzIjpbIlVzZXIiLCJyZXF1aXJlIiwibW9uZ29vc2UiLCJuZXYiLCJiY3J5cHQiLCJtb2R1bGUiLCJleHBvcnRzIiwibG9jYWxlIiwibXlIYXNoZXIiLCJwYXNzd29yZCIsInRlbXBVc2VyRGF0YSIsImluc2VydFRlbXBVc2VyIiwiY2FsbGJhY2siLCJnZW5TYWx0IiwiZXJyIiwic2FsdCIsImhhc2giLCJzdWJqZWN0IiwiaHRtbCIsInRleHQiLCJjb25maWd1cmUiLCJ2ZXJpZmljYXRpb25VUkwiLCJwcm9jZXNzIiwiZW52IiwiRU1BSUxfVkVSSUZJQ0FUSU9OX1VSTCIsIlVSTExlbmd0aCIsInBlcnNpc3RlbnRVc2VyTW9kZWwiLCJlbWFpbEZpZWxkTmFtZSIsInBhc3N3b3JkRmllbGROYW1lIiwiVVJMRmllbGROYW1lIiwiZXhwaXJhdGlvblRpbWUiLCJ0cmFuc3BvcnRPcHRpb25zIiwic2VydmljZSIsImF1dGgiLCJ1c2VyIiwiRU1BSUxfVVNFUiIsInBhc3MiLCJFTUFJTF9QQVNTV09SRCIsInZlcmlmeU1haWxPcHRpb25zIiwiZnJvbSIsIkVNQUlMX0ZST00iLCJzaG91bGRTZW5kQ29uZmlybWF0aW9uIiwiY29uZmlybU1haWxPcHRpb25zIiwiaGFzaGluZ0Z1bmN0aW9uIiwib3B0aW9ucyIsImNvbnNvbGUiLCJsb2ciLCJnZW5lcmF0ZVRlbXBVc2VyTW9kZWwiLCJ0ZW1wVXNlck1vZGVsIl0sIm1hcHBpbmdzIjoiOzs7O0FBQUE7QUFDQSxJQUFJQSxPQUFPQyxRQUFRLGdCQUFSLENBQVg7QUFDQSxJQUFJQyxXQUFXRCxRQUFRLFVBQVIsQ0FBZjtBQUNBLElBQUlFLE1BQU1GLFFBQVEsb0JBQVIsRUFBOEJDLFFBQTlCLENBQVY7QUFDQSxJQUFJRSxTQUFTSCxRQUFRLFVBQVIsQ0FBYjs7QUFFQUksT0FBT0MsT0FBUCxHQUFpQixVQUFVQyxNQUFWLEVBQWtCOztBQUVqQyxNQUFNQyxXQUFXLFNBQVhBLFFBQVcsQ0FBQ0MsUUFBRCxFQUFXQyxZQUFYLEVBQXlCQyxjQUF6QixFQUF5Q0MsUUFBekMsRUFBc0Q7QUFDckVSLFdBQU9TLE9BQVAsQ0FBZSxDQUFmLEVBQWtCLFVBQVVDLEdBQVYsRUFBZUMsSUFBZixFQUFxQjtBQUNyQ1gsYUFBT1ksSUFBUCxDQUFZUCxRQUFaLEVBQXNCTSxJQUF0QixFQUE0QixVQUFVRCxHQUFWLEVBQWVFLElBQWYsRUFBcUI7QUFDL0MsZUFBT0wsZUFBZUssSUFBZixFQUFxQk4sWUFBckIsRUFBbUNFLFFBQW5DLENBQVA7QUFDRCxPQUZEO0FBR0QsS0FKRDtBQUtELEdBTkQ7O0FBUUE7QUFDQSxNQUFJSyxVQUFVLHdCQUFkO0FBQ0EsTUFBSUMsT0FBTyxvRUFBWDtBQUNBLE1BQUlDLE9BQU8sb0VBQVg7QUFDQSxNQUFJWixXQUFTLElBQWIsRUFBbUI7QUFDakJVLGNBQVUsK0JBQVY7QUFDQUMsV0FBTyxzRUFBUDtBQUNBQyxXQUFPLG9FQUFQO0FBQ0Q7O0FBRURoQixNQUFJaUIsU0FBSixDQUFjO0FBQ1pDLHFCQUFpQkMsUUFBUUMsR0FBUixDQUFZQyxzQkFEakI7QUFFWkMsZUFBVyxFQUZDOztBQUlaO0FBQ0FDLHlCQUFxQjFCLElBTFQ7QUFNWjJCLG9CQUFnQixPQU5KO0FBT1pDLHVCQUFtQixVQVBQO0FBUVpDLGtCQUFjLHlCQVJGO0FBU1pDLG9CQUFnQixLQVRKLEVBU1c7O0FBRXZCO0FBQ0FDLHNCQUFrQjtBQUNoQkMsZUFBUyxPQURPO0FBRWhCQyxZQUFNO0FBQ0pDLGNBQU1aLFFBQVFDLEdBQVIsQ0FBWVksVUFEZDtBQUVKQyxjQUFNZCxRQUFRQyxHQUFSLENBQVljO0FBRmQ7QUFGVSxLQVpOO0FBbUJaQyx1QkFBbUI7QUFDakJDLFlBQU1qQixRQUFRQyxHQUFSLENBQVlpQixVQUREO0FBRWpCdkIsZUFBU0EsT0FGUTtBQUdqQkMsWUFBTUEsSUFIVztBQUlqQkMsWUFBTUE7QUFKVyxLQW5CUDtBQXlCWnNCLDRCQUF3QixJQXpCWjtBQTBCWkMsd0JBQW9CO0FBQ2xCSCxZQUFNakIsUUFBUUMsR0FBUixDQUFZaUIsVUFEQTtBQUVsQnZCLGVBQVMsd0JBRlM7QUFHbEJDLFlBQU0scURBSFk7QUFJbEJDLFlBQU07QUFKWSxLQTFCUjtBQWdDWndCLHFCQUFpQm5DO0FBaENMLEdBQWQsRUFpQ0csVUFBVU0sR0FBVixFQUFlOEIsT0FBZixFQUF3QjtBQUN6QixRQUFJOUIsR0FBSixFQUFTO0FBQ1ArQixjQUFRQyxHQUFSLENBQVloQyxHQUFaO0FBQ0E7QUFDRDtBQUNEK0IsWUFBUUMsR0FBUixDQUFZLGtCQUFrQixRQUFPRixPQUFQLHlDQUFPQSxPQUFQLE9BQW1CLFFBQXJDLENBQVo7QUFDRCxHQXZDRDs7QUF5Q0F6QyxNQUFJNEMscUJBQUosQ0FBMEIvQyxJQUExQixFQUFnQyxVQUFVYyxHQUFWLEVBQWVrQyxhQUFmLEVBQThCO0FBQzVELFFBQUlsQyxHQUFKLEVBQVM7QUFDUCtCLGNBQVFDLEdBQVIsQ0FBWWhDLEdBQVo7QUFDQTtBQUNEO0FBQ0QrQixZQUFRQyxHQUFSLENBQVksaUNBQWlDLE9BQU9FLGFBQVAsS0FBeUIsVUFBMUQsQ0FBWjtBQUNELEdBTkQ7QUFPQSxTQUFPN0MsR0FBUDtBQUNELENBckVEIiwiZmlsZSI6ImluZGV4LmpzIiwic291cmNlUm9vdCI6Ii9hcHAvbWFpbCIsInNvdXJjZXNDb250ZW50IjpbIi8qIGVzbGludCBuby10ZW1wbGF0ZS1jdXJseS1pbi1zdHJpbmc6IDAgKi9cbnZhciBVc2VyID0gcmVxdWlyZSgnLi4vbW9kZWxzL1VzZXInKVxudmFyIG1vbmdvb3NlID0gcmVxdWlyZSgnbW9uZ29vc2UnKVxudmFyIG5ldiA9IHJlcXVpcmUoJ2VtYWlsLXZlcmlmaWNhdGlvbicpKG1vbmdvb3NlKVxudmFyIGJjcnlwdCA9IHJlcXVpcmUoJ2JjcnlwdGpzJykgXG5cbm1vZHVsZS5leHBvcnRzID0gZnVuY3Rpb24gKGxvY2FsZSkge1xuXG4gIGNvbnN0IG15SGFzaGVyID0gKHBhc3N3b3JkLCB0ZW1wVXNlckRhdGEsIGluc2VydFRlbXBVc2VyLCBjYWxsYmFjaykgPT4ge1xuICAgIGJjcnlwdC5nZW5TYWx0KDgsIGZ1bmN0aW9uIChlcnIsIHNhbHQpIHtcbiAgICAgIGJjcnlwdC5oYXNoKHBhc3N3b3JkLCBzYWx0LCBmdW5jdGlvbiAoZXJyLCBoYXNoKSB7XG4gICAgICAgIHJldHVybiBpbnNlcnRUZW1wVXNlcihoYXNoLCB0ZW1wVXNlckRhdGEsIGNhbGxiYWNrKVxuICAgICAgfSlcbiAgICB9KVxuICB9XG5cbiAgLyogZW1haWwgbWVzc2FnZXMsIHdlIG1heSBjaGFuZ2UgdGhlbSBkZXBlbmRpbmcgb24gbG9jYWxlICovXG4gIHZhciBzdWJqZWN0ID0gJ1BsZWFzZSBjb25maXJtIGFjY291bnQnXG4gIHZhciBodG1sID0gJ0NsaWNrIHRoZSBmb2xsb3dpbmcgbGluayB0byBjb25maXJtIHlvdXIgYWNjb3VudDo8L3A+PHA+JHtVUkx9PC9wPidcbiAgdmFyIHRleHQgPSAnUGxlYXNlIGNvbmZpcm0geW91ciBhY2NvdW50IGJ5IGNsaWNraW5nIHRoZSBmb2xsb3dpbmcgbGluazogJHtVUkx9J1xuICBpZiAobG9jYWxlPT09J2VzJykge1xuICAgIHN1YmplY3QgPSAnUG9yIGZhdm9yLCBjb25maXJtYSB0dSBjdWVudGEnXG4gICAgaHRtbCA9ICdQdWxzYSBlbCBlbmxhY2Ugc2lndWllbnRlIHBhcmEgY29uZmlybWFyIHR1IGN1ZW50YTo8L3A+PHA+JHtVUkx9PC9wPidcbiAgICB0ZXh0ID0gJ1BvciBmYXZvciwgY29uZmlybWEgdHUgY3VlbnRhIHB1bHNhbmRvIGVsIGVubGFjZSBzaWd1aWVudGU6ICR7VVJMfSdcbiAgfVxuXG4gIG5ldi5jb25maWd1cmUoe1xuICAgIHZlcmlmaWNhdGlvblVSTDogcHJvY2Vzcy5lbnYuRU1BSUxfVkVSSUZJQ0FUSU9OX1VSTCxcbiAgICBVUkxMZW5ndGg6IDE2LFxuXG4gICAgLy8gbW9uZ28tc3R1ZmZcbiAgICBwZXJzaXN0ZW50VXNlck1vZGVsOiBVc2VyLFxuICAgIGVtYWlsRmllbGROYW1lOiAnZW1haWwnLFxuICAgIHBhc3N3b3JkRmllbGROYW1lOiAncGFzc3dvcmQnLFxuICAgIFVSTEZpZWxkTmFtZTogJ0dFTkVSQVRFRF9WRVJJRllJTkdfVVJMJyxcbiAgICBleHBpcmF0aW9uVGltZTogODY0MDAsIC8vMSBkYXlcblxuICAgIC8vIGVtYWlsaW5nIG9wdGlvbnNcbiAgICB0cmFuc3BvcnRPcHRpb25zOiB7XG4gICAgICBzZXJ2aWNlOiAnR21haWwnLFxuICAgICAgYXV0aDoge1xuICAgICAgICB1c2VyOiBwcm9jZXNzLmVudi5FTUFJTF9VU0VSLFxuICAgICAgICBwYXNzOiBwcm9jZXNzLmVudi5FTUFJTF9QQVNTV09SRFxuICAgICAgfVxuICAgIH0sXG4gICAgdmVyaWZ5TWFpbE9wdGlvbnM6IHtcbiAgICAgIGZyb206IHByb2Nlc3MuZW52LkVNQUlMX0ZST00sXG4gICAgICBzdWJqZWN0OiBzdWJqZWN0LFxuICAgICAgaHRtbDogaHRtbCwgXG4gICAgICB0ZXh0OiB0ZXh0XG4gICAgfSxcbiAgICBzaG91bGRTZW5kQ29uZmlybWF0aW9uOiB0cnVlLFxuICAgIGNvbmZpcm1NYWlsT3B0aW9uczoge1xuICAgICAgZnJvbTogcHJvY2Vzcy5lbnYuRU1BSUxfRlJPTSxcbiAgICAgIHN1YmplY3Q6ICdTdWNjZXNzZnVsbHkgdmVyaWZpZWQhJyxcbiAgICAgIGh0bWw6ICc8cD5Zb3VyIGFjY291bnQgaGFzIGJlZW4gc3VjY2Vzc2Z1bGx5IHZlcmlmaWVkLjwvcD4nLFxuICAgICAgdGV4dDogJ1lvdXIgYWNjb3VudCBoYXMgYmVlbiBzdWNjZXNzZnVsbHkgdmVyaWZpZWQuJ1xuICAgIH0sXG4gICAgaGFzaGluZ0Z1bmN0aW9uOiBteUhhc2hlclxuICB9LCBmdW5jdGlvbiAoZXJyLCBvcHRpb25zKSB7XG4gICAgaWYgKGVycikge1xuICAgICAgY29uc29sZS5sb2coZXJyKVxuICAgICAgcmV0dXJuXG4gICAgfVxuICAgIGNvbnNvbGUubG9nKCdjb25maWd1cmVkOiAnICsgKHR5cGVvZiBvcHRpb25zID09PSAnb2JqZWN0JykpXG4gIH0pXG5cbiAgbmV2LmdlbmVyYXRlVGVtcFVzZXJNb2RlbChVc2VyLCBmdW5jdGlvbiAoZXJyLCB0ZW1wVXNlck1vZGVsKSB7XG4gICAgaWYgKGVycikge1xuICAgICAgY29uc29sZS5sb2coZXJyKVxuICAgICAgcmV0dXJuXG4gICAgfVxuICAgIGNvbnNvbGUubG9nKCdnZW5lcmF0ZWQgdGVtcCB1c2VyIG1vZGVsOiAnICsgKHR5cGVvZiB0ZW1wVXNlck1vZGVsID09PSAnZnVuY3Rpb24nKSlcbiAgfSlcbiAgcmV0dXJuIG5ldlxufVxuIl19",
     "ast": null,
     "map": {
       "version": 3,
@@ -8974,10 +9094,10 @@
       "file": "index.js",
       "sourceRoot": "/app/mail",
       "sourcesContent": [
-        "/* eslint no-template-curly-in-string: 0 */\nvar User = require('../models/User')\nvar mongoose = require('mongoose')\nvar nev = require('email-verification')(mongoose)\nvar bcrypt = require('bcryptjs')\n\nmodule.exports = function (locale) {\n\n  const myHasher = (password, tempUserData, insertTempUser, callback) => {\n    bcrypt.genSalt(8, function (err, salt) {\n      bcrypt.hash(password, salt, function (err, hash) {\n        return insertTempUser(hash, tempUserData, callback)\n      })\n    })\n  }\n\n  /* email messages, we may change them depending on locale */\n  var subject = 'Please confirm account'\n  var html = 'Click the following link to confirm your account:</p><p>${URL}</p>'\n  var text = 'Please confirm your account by clicking the following link: ${URL}'\n  if (locale==='es') {\n    subject = 'Por favor, confirma tu cuenta'\n    html = 'Pulsa el enlace siguiente para confirmar tu cuenta:</p><p>${URL}</p>'\n    text = 'Por favor, confirma tu cuenta pulsando el enlace siguiente: ${URL}'\n  }\n\n  nev.configure({\n    verificationURL: process.env.EMAIL_VERIFICATION_URL,\n    URLLength: 16,\n\n    // mongo-stuff\n    persistentUserModel: User,\n    emailFieldName: 'email',\n    passwordFieldName: 'password',\n    URLFieldName: 'GENERATED_VERIFYING_URL',\n    expirationTime: 86400, //1 day\n\n    // emailing options\n    transportOptions: {\n      service: 'Gmail',\n      auth: {\n        user: process.env.EMAIL_USER,\n        pass: process.env.EMAIL_PASSWORD\n      }\n    },\n    verifyMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: subject,\n      html: html, \n      text: text\n    },\n    shouldSendConfirmation: true,\n    confirmMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: 'Successfully verified!',\n      html: '<p>Your account has been successfully verified.</p>',\n      text: 'Your account has been successfully verified.'\n    },\n    hashingFunction: myHasher\n  }, function (err, options) {\n    if (err) {\n      console.log(err)\n      return\n    }\n    console.log('configured: ' + (typeof options === 'object'))\n  })\n\n  nev.generateTempUserModel(User, function (err, tempUserModel) {\n    if (err) {\n      console.log(err)\n      return\n    }\n    console.log('generated temp user model: ' + (typeof tempUserModel === 'function'))\n  })\n  return nev\n}\n"
+        "/* eslint no-template-curly-in-string: 0 */\nvar User = require('../models/User')\nvar mongoose = require('mongoose')\nvar nev = require('email-verification')(mongoose)\nvar bcrypt = require('bcryptjs') \n\nmodule.exports = function (locale) {\n\n  const myHasher = (password, tempUserData, insertTempUser, callback) => {\n    bcrypt.genSalt(8, function (err, salt) {\n      bcrypt.hash(password, salt, function (err, hash) {\n        return insertTempUser(hash, tempUserData, callback)\n      })\n    })\n  }\n\n  /* email messages, we may change them depending on locale */\n  var subject = 'Please confirm account'\n  var html = 'Click the following link to confirm your account:</p><p>${URL}</p>'\n  var text = 'Please confirm your account by clicking the following link: ${URL}'\n  if (locale==='es') {\n    subject = 'Por favor, confirma tu cuenta'\n    html = 'Pulsa el enlace siguiente para confirmar tu cuenta:</p><p>${URL}</p>'\n    text = 'Por favor, confirma tu cuenta pulsando el enlace siguiente: ${URL}'\n  }\n\n  nev.configure({\n    verificationURL: process.env.EMAIL_VERIFICATION_URL,\n    URLLength: 16,\n\n    // mongo-stuff\n    persistentUserModel: User,\n    emailFieldName: 'email',\n    passwordFieldName: 'password',\n    URLFieldName: 'GENERATED_VERIFYING_URL',\n    expirationTime: 86400, //1 day\n\n    // emailing options\n    transportOptions: {\n      service: 'Gmail',\n      auth: {\n        user: process.env.EMAIL_USER,\n        pass: process.env.EMAIL_PASSWORD\n      }\n    },\n    verifyMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: subject,\n      html: html, \n      text: text\n    },\n    shouldSendConfirmation: true,\n    confirmMailOptions: {\n      from: process.env.EMAIL_FROM,\n      subject: 'Successfully verified!',\n      html: '<p>Your account has been successfully verified.</p>',\n      text: 'Your account has been successfully verified.'\n    },\n    hashingFunction: myHasher\n  }, function (err, options) {\n    if (err) {\n      console.log(err)\n      return\n    }\n    console.log('configured: ' + (typeof options === 'object'))\n  })\n\n  nev.generateTempUserModel(User, function (err, tempUserModel) {\n    if (err) {\n      console.log(err)\n      return\n    }\n    console.log('generated temp user model: ' + (typeof tempUserModel === 'function'))\n  })\n  return nev\n}\n"
       ]
     },
-    "mtime": 1516300860000
+    "mtime": 1516481829000
   },
   "{\"filename\":\"/app/models/TempUser.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/models\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
     "metadata": {
@@ -9245,10 +9365,26 @@
   },
   "{\"filename\":\"/app/helpers/auth.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/helpers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
     "metadata": {
-      "usedHelpers": [],
+      "usedHelpers": [
+        "interopRequireDefault"
+      ],
       "marked": [],
       "modules": {
-        "imports": [],
+        "imports": [
+          {
+            "source": "passport",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "passport"
+              }
+            ]
+          }
+        ],
         "exports": {
           "exported": [],
           "specifiers": []
@@ -9422,7 +9558,7 @@
       "basename": "auth"
     },
     "ignored": false,
-    "code": "'use strict';\n\nmodule.exports = {\n  Bearer: function checkApiKeySecurity(req, res, next) {\n    console.log(req);\n    if (req.headers.authorization === 'Scott') {\n      next();\n    } else {\n      next(new Error('access denied!'));\n    }\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImF1dGguanMiXSwibmFtZXMiOlsibW9kdWxlIiwiZXhwb3J0cyIsIkJlYXJlciIsImNoZWNrQXBpS2V5U2VjdXJpdHkiLCJyZXEiLCJyZXMiLCJuZXh0IiwiY29uc29sZSIsImxvZyIsImhlYWRlcnMiLCJhdXRob3JpemF0aW9uIiwiRXJyb3IiXSwibWFwcGluZ3MiOiI7O0FBQUFBLE9BQU9DLE9BQVAsR0FBaUI7QUFDZkMsVUFBUSxTQUFTQyxtQkFBVCxDQUE2QkMsR0FBN0IsRUFBa0NDLEdBQWxDLEVBQXVDQyxJQUF2QyxFQUE2QztBQUNuREMsWUFBUUMsR0FBUixDQUFZSixHQUFaO0FBQ0EsUUFBSUEsSUFBSUssT0FBSixDQUFZQyxhQUFaLEtBQThCLE9BQWxDLEVBQTJDO0FBQ3pDSjtBQUNELEtBRkQsTUFFTztBQUNMQSxXQUFLLElBQUlLLEtBQUosQ0FBVSxnQkFBVixDQUFMO0FBQ0Q7QUFDRjtBQVJjLENBQWpCIiwiZmlsZSI6ImF1dGguanMiLCJzb3VyY2VSb290IjoiL2FwcC9oZWxwZXJzIiwic291cmNlc0NvbnRlbnQiOlsibW9kdWxlLmV4cG9ydHMgPSB7XG4gIEJlYXJlcjogZnVuY3Rpb24gY2hlY2tBcGlLZXlTZWN1cml0eShyZXEsIHJlcywgbmV4dCkge1xuICAgIGNvbnNvbGUubG9nKHJlcSlcbiAgICBpZiAocmVxLmhlYWRlcnMuYXV0aG9yaXphdGlvbiA9PT0gJ1Njb3R0Jykge1xuICAgICAgbmV4dCgpO1xuICAgIH0gZWxzZSB7XG4gICAgICBuZXh0KG5ldyBFcnJvcignYWNjZXNzIGRlbmllZCEnKSk7XG4gICAgfVxuICB9XG59OyJdfQ==",
+    "code": "'use strict';\n\nvar _passport = require('passport');\n\nvar _passport2 = _interopRequireDefault(_passport);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar _require = require('passport-local'),\n    LocalStrategy = _require.Strategy;\n\nvar _require2 = require('passport-http'),\n    BasicStrategy = _require2.BasicStrategy;\n\n/**\n * LocalStrategy\n *\n * This strategy is used to authenticate users based on a username and password.\n * Anytime a request is made to authorize an application, we must ensure that\n * a user is logged in before asking them to approve the request.\n */\n\n_passport2.default.use(new BasicStrategy(function (clientId, clientSecret, done) {\n  db.clients.findByClientId(clientId).then(function (client) {\n    return validate.client(client, clientSecret);\n  }).then(function (client) {\n    return done(null, client);\n  }).catch(function () {\n    return done(null, false);\n  });\n}));\n\n_passport2.default.use(new LocalStrategy(function (username, password, done) {\n  console.log(username);\n  console.log(password);\n  done(null, {});\n  /*\n  db.users.findByUsername(username)\n    .then(user => validate.user(user, password))\n    .then(user => done(null, user))\n    .catch(() => done(null, false));\n  */\n}));\n\nmodule.exports = {\n  login: function login(req, res, next) {\n    _passport2.default.authenticate('basic', { session: false });\n  }\n\n  /*\n  {\n  var currentScopes = req.swagger.operation['x-security-scopes']\n  console.log (req)\n  const sendError = () => res.status(403).json({ message: 'Error: Access Denied' })\n   /*\n  //validate the 'Authorization' header. it should have the following format:\n  //'Bearer tokenString'\n  if (token && token.indexOf(\"Bearer \") === 0) {\n    var tokenString = token.split(\" \")[1];\n     jwt.verify(tokenString, sharedSecret, function (\n      verificationError,\n      decodedToken\n    ) {\n      //check if the JWT was verified correctly\n      if (\n        verificationError == null &&\n        Array.isArray(currentScopes) &&\n        decodedToken &&\n        decodedToken.role\n      ) {\n        // check if the role is valid for this endpoint\n        var roleMatch = currentScopes.indexOf(decodedToken.role) !== -1;\n        // check if the issuer matches\n        var issuerMatch = decodedToken.iss == issuer;\n         // you can add more verification checks for the\n        // token here if necessary, such as checking if\n        // the username belongs to an active user\n         if (roleMatch && issuerMatch) {\n          //add the token to the request so that we\n          //can access it in the endpoint code if necessary\n          req.auth = decodedToken;\n          //if there is no error, just return null in the callback\n          return callback(null);\n        } else {\n          //return the error in the callback if there is one\n          return callback(sendError());\n        }\n      } else {\n        //return the error in the callback if the JWT was not verified\n        return callback(sendError());\n      }\n    });\n  } else {\n    //return the error in the callback if the Authorization header doesn't have the correct format\n    return callback(sendError());\n  }\n   if (req.headers.authorization === 'Scott') {\n    return next()\n  }\n  return next(new Error('access denied!'))\n  }]\n  */\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImF1dGguanMiXSwibmFtZXMiOlsicmVxdWlyZSIsIkxvY2FsU3RyYXRlZ3kiLCJTdHJhdGVneSIsIkJhc2ljU3RyYXRlZ3kiLCJ1c2UiLCJjbGllbnRJZCIsImNsaWVudFNlY3JldCIsImRvbmUiLCJkYiIsImNsaWVudHMiLCJmaW5kQnlDbGllbnRJZCIsInRoZW4iLCJ2YWxpZGF0ZSIsImNsaWVudCIsImNhdGNoIiwidXNlcm5hbWUiLCJwYXNzd29yZCIsImNvbnNvbGUiLCJsb2ciLCJtb2R1bGUiLCJleHBvcnRzIiwibG9naW4iLCJyZXEiLCJyZXMiLCJuZXh0IiwiYXV0aGVudGljYXRlIiwic2Vzc2lvbiJdLCJtYXBwaW5ncyI6Ijs7QUFBQTs7Ozs7O2VBQ29DQSxRQUFRLGdCQUFSLEM7SUFBbEJDLGEsWUFBVkMsUTs7Z0JBQ2tCRixRQUFRLGVBQVIsQztJQUFsQkcsYSxhQUFBQSxhOztBQUdSOzs7Ozs7OztBQVNBLG1CQUFTQyxHQUFULENBQWEsSUFBSUQsYUFBSixDQUFrQixVQUFDRSxRQUFELEVBQVdDLFlBQVgsRUFBeUJDLElBQXpCLEVBQWtDO0FBQy9EQyxLQUFHQyxPQUFILENBQVdDLGNBQVgsQ0FBMEJMLFFBQTFCLEVBQ0dNLElBREgsQ0FDUTtBQUFBLFdBQVVDLFNBQVNDLE1BQVQsQ0FBZ0JBLE1BQWhCLEVBQXdCUCxZQUF4QixDQUFWO0FBQUEsR0FEUixFQUVHSyxJQUZILENBRVE7QUFBQSxXQUFVSixLQUFLLElBQUwsRUFBV00sTUFBWCxDQUFWO0FBQUEsR0FGUixFQUdHQyxLQUhILENBR1M7QUFBQSxXQUFNUCxLQUFLLElBQUwsRUFBVyxLQUFYLENBQU47QUFBQSxHQUhUO0FBSUQsQ0FMWSxDQUFiOztBQU9BLG1CQUFTSCxHQUFULENBQWEsSUFBSUgsYUFBSixDQUFrQixVQUFDYyxRQUFELEVBQVdDLFFBQVgsRUFBcUJULElBQXJCLEVBQThCO0FBQzNEVSxVQUFRQyxHQUFSLENBQVlILFFBQVo7QUFDQUUsVUFBUUMsR0FBUixDQUFZRixRQUFaO0FBQ0FULE9BQU0sSUFBTixFQUFZLEVBQVo7QUFDQTs7Ozs7O0FBTUQsQ0FWWSxDQUFiOztBQVlBWSxPQUFPQyxPQUFQLEdBQWlCO0FBQ2ZDLFNBQU8sZUFBQ0MsR0FBRCxFQUFNQyxHQUFOLEVBQVdDLElBQVgsRUFBb0I7QUFDekIsdUJBQVNDLFlBQVQsQ0FBc0IsT0FBdEIsRUFBK0IsRUFBRUMsU0FBUyxLQUFYLEVBQS9CO0FBQ0Q7O0FBR0M7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBTmEsQ0FBakIiLCJmaWxlIjoiYXV0aC5qcyIsInNvdXJjZVJvb3QiOiIvYXBwL2hlbHBlcnMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgcGFzc3BvcnQgZnJvbSAncGFzc3BvcnQnXG5jb25zdCB7IFN0cmF0ZWd5OiBMb2NhbFN0cmF0ZWd5IH0gPSByZXF1aXJlKCdwYXNzcG9ydC1sb2NhbCcpXG5jb25zdCB7IEJhc2ljU3RyYXRlZ3kgfSA9IHJlcXVpcmUoJ3Bhc3Nwb3J0LWh0dHAnKTtcblxuXG4vKipcbiAqIExvY2FsU3RyYXRlZ3lcbiAqXG4gKiBUaGlzIHN0cmF0ZWd5IGlzIHVzZWQgdG8gYXV0aGVudGljYXRlIHVzZXJzIGJhc2VkIG9uIGEgdXNlcm5hbWUgYW5kIHBhc3N3b3JkLlxuICogQW55dGltZSBhIHJlcXVlc3QgaXMgbWFkZSB0byBhdXRob3JpemUgYW4gYXBwbGljYXRpb24sIHdlIG11c3QgZW5zdXJlIHRoYXRcbiAqIGEgdXNlciBpcyBsb2dnZWQgaW4gYmVmb3JlIGFza2luZyB0aGVtIHRvIGFwcHJvdmUgdGhlIHJlcXVlc3QuXG4gKi9cblxuIFxucGFzc3BvcnQudXNlKG5ldyBCYXNpY1N0cmF0ZWd5KChjbGllbnRJZCwgY2xpZW50U2VjcmV0LCBkb25lKSA9PiB7XG4gIGRiLmNsaWVudHMuZmluZEJ5Q2xpZW50SWQoY2xpZW50SWQpXG4gICAgLnRoZW4oY2xpZW50ID0+IHZhbGlkYXRlLmNsaWVudChjbGllbnQsIGNsaWVudFNlY3JldCkpXG4gICAgLnRoZW4oY2xpZW50ID0+IGRvbmUobnVsbCwgY2xpZW50KSlcbiAgICAuY2F0Y2goKCkgPT4gZG9uZShudWxsLCBmYWxzZSkpO1xufSkpO1xuXG5wYXNzcG9ydC51c2UobmV3IExvY2FsU3RyYXRlZ3koKHVzZXJuYW1lLCBwYXNzd29yZCwgZG9uZSkgPT4ge1xuICBjb25zb2xlLmxvZyh1c2VybmFtZSlcbiAgY29uc29sZS5sb2cocGFzc3dvcmQpXG4gIGRvbmUgKG51bGwsIHt9KVxuICAvKlxuICBkYi51c2Vycy5maW5kQnlVc2VybmFtZSh1c2VybmFtZSlcbiAgICAudGhlbih1c2VyID0+IHZhbGlkYXRlLnVzZXIodXNlciwgcGFzc3dvcmQpKVxuICAgIC50aGVuKHVzZXIgPT4gZG9uZShudWxsLCB1c2VyKSlcbiAgICAuY2F0Y2goKCkgPT4gZG9uZShudWxsLCBmYWxzZSkpO1xuICAqL1xufSkpO1xuXG5tb2R1bGUuZXhwb3J0cyA9IHtcbiAgbG9naW46IChyZXEsIHJlcywgbmV4dCkgPT4ge1xuICAgIHBhc3Nwb3J0LmF1dGhlbnRpY2F0ZSgnYmFzaWMnLCB7IHNlc3Npb246IGZhbHNlIH0pXG4gIH1cblxuXG4gICAgLypcbiAgICB7XG4gICAgdmFyIGN1cnJlbnRTY29wZXMgPSByZXEuc3dhZ2dlci5vcGVyYXRpb25bJ3gtc2VjdXJpdHktc2NvcGVzJ11cbiAgICBjb25zb2xlLmxvZyAocmVxKVxuICAgIGNvbnN0IHNlbmRFcnJvciA9ICgpID0+IHJlcy5zdGF0dXMoNDAzKS5qc29uKHsgbWVzc2FnZTogJ0Vycm9yOiBBY2Nlc3MgRGVuaWVkJyB9KVxuXG4gICAgLypcbiAgICAvL3ZhbGlkYXRlIHRoZSAnQXV0aG9yaXphdGlvbicgaGVhZGVyLiBpdCBzaG91bGQgaGF2ZSB0aGUgZm9sbG93aW5nIGZvcm1hdDpcbiAgICAvLydCZWFyZXIgdG9rZW5TdHJpbmcnXG4gICAgaWYgKHRva2VuICYmIHRva2VuLmluZGV4T2YoXCJCZWFyZXIgXCIpID09PSAwKSB7XG4gICAgICB2YXIgdG9rZW5TdHJpbmcgPSB0b2tlbi5zcGxpdChcIiBcIilbMV07XG5cbiAgICAgIGp3dC52ZXJpZnkodG9rZW5TdHJpbmcsIHNoYXJlZFNlY3JldCwgZnVuY3Rpb24gKFxuICAgICAgICB2ZXJpZmljYXRpb25FcnJvcixcbiAgICAgICAgZGVjb2RlZFRva2VuXG4gICAgICApIHtcbiAgICAgICAgLy9jaGVjayBpZiB0aGUgSldUIHdhcyB2ZXJpZmllZCBjb3JyZWN0bHlcbiAgICAgICAgaWYgKFxuICAgICAgICAgIHZlcmlmaWNhdGlvbkVycm9yID09IG51bGwgJiZcbiAgICAgICAgICBBcnJheS5pc0FycmF5KGN1cnJlbnRTY29wZXMpICYmXG4gICAgICAgICAgZGVjb2RlZFRva2VuICYmXG4gICAgICAgICAgZGVjb2RlZFRva2VuLnJvbGVcbiAgICAgICAgKSB7XG4gICAgICAgICAgLy8gY2hlY2sgaWYgdGhlIHJvbGUgaXMgdmFsaWQgZm9yIHRoaXMgZW5kcG9pbnRcbiAgICAgICAgICB2YXIgcm9sZU1hdGNoID0gY3VycmVudFNjb3Blcy5pbmRleE9mKGRlY29kZWRUb2tlbi5yb2xlKSAhPT0gLTE7XG4gICAgICAgICAgLy8gY2hlY2sgaWYgdGhlIGlzc3VlciBtYXRjaGVzXG4gICAgICAgICAgdmFyIGlzc3Vlck1hdGNoID0gZGVjb2RlZFRva2VuLmlzcyA9PSBpc3N1ZXI7XG5cbiAgICAgICAgICAvLyB5b3UgY2FuIGFkZCBtb3JlIHZlcmlmaWNhdGlvbiBjaGVja3MgZm9yIHRoZVxuICAgICAgICAgIC8vIHRva2VuIGhlcmUgaWYgbmVjZXNzYXJ5LCBzdWNoIGFzIGNoZWNraW5nIGlmXG4gICAgICAgICAgLy8gdGhlIHVzZXJuYW1lIGJlbG9uZ3MgdG8gYW4gYWN0aXZlIHVzZXJcblxuICAgICAgICAgIGlmIChyb2xlTWF0Y2ggJiYgaXNzdWVyTWF0Y2gpIHtcbiAgICAgICAgICAgIC8vYWRkIHRoZSB0b2tlbiB0byB0aGUgcmVxdWVzdCBzbyB0aGF0IHdlXG4gICAgICAgICAgICAvL2NhbiBhY2Nlc3MgaXQgaW4gdGhlIGVuZHBvaW50IGNvZGUgaWYgbmVjZXNzYXJ5XG4gICAgICAgICAgICByZXEuYXV0aCA9IGRlY29kZWRUb2tlbjtcbiAgICAgICAgICAgIC8vaWYgdGhlcmUgaXMgbm8gZXJyb3IsIGp1c3QgcmV0dXJuIG51bGwgaW4gdGhlIGNhbGxiYWNrXG4gICAgICAgICAgICByZXR1cm4gY2FsbGJhY2sobnVsbCk7XG4gICAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICAgIC8vcmV0dXJuIHRoZSBlcnJvciBpbiB0aGUgY2FsbGJhY2sgaWYgdGhlcmUgaXMgb25lXG4gICAgICAgICAgICByZXR1cm4gY2FsbGJhY2soc2VuZEVycm9yKCkpO1xuICAgICAgICAgIH1cbiAgICAgICAgfSBlbHNlIHtcbiAgICAgICAgICAvL3JldHVybiB0aGUgZXJyb3IgaW4gdGhlIGNhbGxiYWNrIGlmIHRoZSBKV1Qgd2FzIG5vdCB2ZXJpZmllZFxuICAgICAgICAgIHJldHVybiBjYWxsYmFjayhzZW5kRXJyb3IoKSk7XG4gICAgICAgIH1cbiAgICAgIH0pO1xuICAgIH0gZWxzZSB7XG4gICAgICAvL3JldHVybiB0aGUgZXJyb3IgaW4gdGhlIGNhbGxiYWNrIGlmIHRoZSBBdXRob3JpemF0aW9uIGhlYWRlciBkb2Vzbid0IGhhdmUgdGhlIGNvcnJlY3QgZm9ybWF0XG4gICAgICByZXR1cm4gY2FsbGJhY2soc2VuZEVycm9yKCkpO1xuICAgIH1cblxuICAgIGlmIChyZXEuaGVhZGVycy5hdXRob3JpemF0aW9uID09PSAnU2NvdHQnKSB7XG4gICAgICByZXR1cm4gbmV4dCgpXG4gICAgfVxuICAgIHJldHVybiBuZXh0KG5ldyBFcnJvcignYWNjZXNzIGRlbmllZCEnKSlcbiAgfV1cbiAgKi9cbn1cbiJdfQ==",
     "ast": null,
     "map": {
       "version": 3,
@@ -9430,26 +9566,284 @@
         "auth.js"
       ],
       "names": [
+        "require",
+        "LocalStrategy",
+        "Strategy",
+        "BasicStrategy",
+        "use",
+        "clientId",
+        "clientSecret",
+        "done",
+        "db",
+        "clients",
+        "findByClientId",
+        "then",
+        "validate",
+        "client",
+        "catch",
+        "username",
+        "password",
+        "console",
+        "log",
         "module",
         "exports",
-        "Bearer",
-        "checkApiKeySecurity",
+        "login",
         "req",
         "res",
         "next",
-        "console",
-        "log",
-        "headers",
-        "authorization",
-        "Error"
+        "authenticate",
+        "session"
       ],
-      "mappings": ";;AAAAA,OAAOC,OAAP,GAAiB;AACfC,UAAQ,SAASC,mBAAT,CAA6BC,GAA7B,EAAkCC,GAAlC,EAAuCC,IAAvC,EAA6C;AACnDC,YAAQC,GAAR,CAAYJ,GAAZ;AACA,QAAIA,IAAIK,OAAJ,CAAYC,aAAZ,KAA8B,OAAlC,EAA2C;AACzCJ;AACD,KAFD,MAEO;AACLA,WAAK,IAAIK,KAAJ,CAAU,gBAAV,CAAL;AACD;AACF;AARc,CAAjB",
+      "mappings": ";;AAAA;;;;;;eACoCA,QAAQ,gBAAR,C;IAAlBC,a,YAAVC,Q;;gBACkBF,QAAQ,eAAR,C;IAAlBG,a,aAAAA,a;;AAGR;;;;;;;;AASA,mBAASC,GAAT,CAAa,IAAID,aAAJ,CAAkB,UAACE,QAAD,EAAWC,YAAX,EAAyBC,IAAzB,EAAkC;AAC/DC,KAAGC,OAAH,CAAWC,cAAX,CAA0BL,QAA1B,EACGM,IADH,CACQ;AAAA,WAAUC,SAASC,MAAT,CAAgBA,MAAhB,EAAwBP,YAAxB,CAAV;AAAA,GADR,EAEGK,IAFH,CAEQ;AAAA,WAAUJ,KAAK,IAAL,EAAWM,MAAX,CAAV;AAAA,GAFR,EAGGC,KAHH,CAGS;AAAA,WAAMP,KAAK,IAAL,EAAW,KAAX,CAAN;AAAA,GAHT;AAID,CALY,CAAb;;AAOA,mBAASH,GAAT,CAAa,IAAIH,aAAJ,CAAkB,UAACc,QAAD,EAAWC,QAAX,EAAqBT,IAArB,EAA8B;AAC3DU,UAAQC,GAAR,CAAYH,QAAZ;AACAE,UAAQC,GAAR,CAAYF,QAAZ;AACAT,OAAM,IAAN,EAAY,EAAZ;AACA;;;;;;AAMD,CAVY,CAAb;;AAYAY,OAAOC,OAAP,GAAiB;AACfC,SAAO,eAACC,GAAD,EAAMC,GAAN,EAAWC,IAAX,EAAoB;AACzB,uBAASC,YAAT,CAAsB,OAAtB,EAA+B,EAAEC,SAAS,KAAX,EAA/B;AACD;;AAGC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AANa,CAAjB",
       "file": "auth.js",
       "sourceRoot": "/app/helpers",
       "sourcesContent": [
-        "module.exports = {\n  Bearer: function checkApiKeySecurity(req, res, next) {\n    console.log(req)\n    if (req.headers.authorization === 'Scott') {\n      next();\n    } else {\n      next(new Error('access denied!'));\n    }\n  }\n};"
+        "import passport from 'passport'\nconst { Strategy: LocalStrategy } = require('passport-local')\nconst { BasicStrategy } = require('passport-http');\n\n\n/**\n * LocalStrategy\n *\n * This strategy is used to authenticate users based on a username and password.\n * Anytime a request is made to authorize an application, we must ensure that\n * a user is logged in before asking them to approve the request.\n */\n\n \npassport.use(new BasicStrategy((clientId, clientSecret, done) => {\n  db.clients.findByClientId(clientId)\n    .then(client => validate.client(client, clientSecret))\n    .then(client => done(null, client))\n    .catch(() => done(null, false));\n}));\n\npassport.use(new LocalStrategy((username, password, done) => {\n  console.log(username)\n  console.log(password)\n  done (null, {})\n  /*\n  db.users.findByUsername(username)\n    .then(user => validate.user(user, password))\n    .then(user => done(null, user))\n    .catch(() => done(null, false));\n  */\n}));\n\nmodule.exports = {\n  login: (req, res, next) => {\n    passport.authenticate('basic', { session: false })\n  }\n\n\n    /*\n    {\n    var currentScopes = req.swagger.operation['x-security-scopes']\n    console.log (req)\n    const sendError = () => res.status(403).json({ message: 'Error: Access Denied' })\n\n    /*\n    //validate the 'Authorization' header. it should have the following format:\n    //'Bearer tokenString'\n    if (token && token.indexOf(\"Bearer \") === 0) {\n      var tokenString = token.split(\" \")[1];\n\n      jwt.verify(tokenString, sharedSecret, function (\n        verificationError,\n        decodedToken\n      ) {\n        //check if the JWT was verified correctly\n        if (\n          verificationError == null &&\n          Array.isArray(currentScopes) &&\n          decodedToken &&\n          decodedToken.role\n        ) {\n          // check if the role is valid for this endpoint\n          var roleMatch = currentScopes.indexOf(decodedToken.role) !== -1;\n          // check if the issuer matches\n          var issuerMatch = decodedToken.iss == issuer;\n\n          // you can add more verification checks for the\n          // token here if necessary, such as checking if\n          // the username belongs to an active user\n\n          if (roleMatch && issuerMatch) {\n            //add the token to the request so that we\n            //can access it in the endpoint code if necessary\n            req.auth = decodedToken;\n            //if there is no error, just return null in the callback\n            return callback(null);\n          } else {\n            //return the error in the callback if there is one\n            return callback(sendError());\n          }\n        } else {\n          //return the error in the callback if the JWT was not verified\n          return callback(sendError());\n        }\n      });\n    } else {\n      //return the error in the callback if the Authorization header doesn't have the correct format\n      return callback(sendError());\n    }\n\n    if (req.headers.authorization === 'Scott') {\n      return next()\n    }\n    return next(new Error('access denied!'))\n  }]\n  */\n}\n"
       ]
     },
-    "mtime": 1516487076000
+    "mtime": 1517047987000
+  },
+  "{\"filename\":\"/app/controllers/auth.js\",\"env\":{},\"retainLines\":false,\"highlightCode\":true,\"suppressDeprecationMessages\":false,\"presets\":[],\"plugins\":[[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],null],[[],{\"loose\":false,\"spec\":false}],[[],null],[[],null],[[],{\"spec\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"loose\":false}],[[],null],[[],null],[[],null],[[],{\"loose\":false}],[[],null],[[],{\"loose\":false}],[[],null],[[],null],[[],{\"loose\":false}],[[],{\"async\":false,\"asyncGenerators\":false}]],\"ignore\":[],\"code\":true,\"metadata\":true,\"ast\":true,\"comments\":true,\"compact\":\"auto\",\"minified\":false,\"sourceRoot\":\"/app/controllers\",\"babelrc\":true,\"sourceType\":\"module\",\"moduleIds\":false,\"passPerPreset\":false,\"parserOpts\":false,\"generatorOpts\":false}:6.24.0:production": {
+    "metadata": {
+      "usedHelpers": [
+        "interopRequireDefault"
+      ],
+      "marked": [],
+      "modules": {
+        "imports": [
+          {
+            "source": "passport",
+            "imported": [
+              "default"
+            ],
+            "specifiers": [
+              {
+                "kind": "named",
+                "imported": "default",
+                "local": "passport"
+              }
+            ]
+          }
+        ],
+        "exports": {
+          "exported": [],
+          "specifiers": []
+        }
+      }
+    },
+    "options": {
+      "filename": "/app/controllers/auth.js",
+      "filenameRelative": "/app/controllers/auth.js",
+      "env": {},
+      "retainLines": false,
+      "highlightCode": true,
+      "suppressDeprecationMessages": false,
+      "presets": [],
+      "plugins": [
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false,
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "spec": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          null
+        ],
+        [
+          [],
+          {
+            "loose": false
+          }
+        ],
+        [
+          [],
+          {
+            "async": false,
+            "asyncGenerators": false
+          }
+        ]
+      ],
+      "ignore": [],
+      "code": true,
+      "metadata": true,
+      "ast": false,
+      "comments": true,
+      "compact": "auto",
+      "minified": false,
+      "sourceMaps": "both",
+      "sourceMapTarget": "auth.js",
+      "sourceFileName": "auth.js",
+      "sourceRoot": "/app/controllers",
+      "babelrc": false,
+      "sourceType": "module",
+      "moduleRoot": "/app/controllers",
+      "moduleIds": false,
+      "passPerPreset": false,
+      "parserOpts": false,
+      "generatorOpts": false,
+      "basename": "auth"
+    },
+    "ignored": false,
+    "code": "'use strict';\n\nvar _passport = require('passport');\n\nvar _passport2 = _interopRequireDefault(_passport);\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar User = require('../models/User');\nvar mailing = require('../mail');\nvar nev = mailing('en');\n\nvar auth = require('../helpers/auth');\n\nmodule.exports = {\n  login: function login(req, res) {\n    console.log('estamos en login....');\n    _passport2.default.authenticate('basic', { session: false });\n    var user = new User(req.body);\n    nev.createTempUser(user, function (err, existingPersistentUser, newTempUser) {\n      if (err) {\n        return res.status(404).json({\n          message: err\n        });\n      }\n      // user already exists in persistent collection\n      if (existingPersistentUser) {\n        return res.status(409).json({\n          message: 'You have already signed up and confirmed your account. Did you forget your password?'\n        });\n      }\n      // new user created\n      if (newTempUser) {\n        console.log(newTempUser);\n        var URL = newTempUser[nev.options.URLFieldName];\n        nev.sendVerificationEmail(newTempUser.email, URL, function (err, info) {\n          if (err) {\n            return res.status(500).json({\n              message: 'ERROR: sending verification email FAILED ' + info\n            });\n          }\n        });\n        return res.status(201).json({\n          message: 'An email has been sent to you. Please check it to verify your account.',\n          _id: newTempUser._id\n        });\n        // user already exists in temporary collection!\n      } else {\n        return res.status(409).json({\n          message: 'You have already signed up. Please check your email to verify your account.'\n        });\n      }\n    });\n  }\n};\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImF1dGguanMiXSwibmFtZXMiOlsiVXNlciIsInJlcXVpcmUiLCJtYWlsaW5nIiwibmV2IiwiYXV0aCIsIm1vZHVsZSIsImV4cG9ydHMiLCJsb2dpbiIsInJlcSIsInJlcyIsImNvbnNvbGUiLCJsb2ciLCJhdXRoZW50aWNhdGUiLCJzZXNzaW9uIiwidXNlciIsImJvZHkiLCJjcmVhdGVUZW1wVXNlciIsImVyciIsImV4aXN0aW5nUGVyc2lzdGVudFVzZXIiLCJuZXdUZW1wVXNlciIsInN0YXR1cyIsImpzb24iLCJtZXNzYWdlIiwiVVJMIiwib3B0aW9ucyIsIlVSTEZpZWxkTmFtZSIsInNlbmRWZXJpZmljYXRpb25FbWFpbCIsImVtYWlsIiwiaW5mbyIsIl9pZCJdLCJtYXBwaW5ncyI6Ijs7QUFHQTs7Ozs7O0FBSEEsSUFBSUEsT0FBT0MsUUFBUSxnQkFBUixDQUFYO0FBQ0EsSUFBSUMsVUFBVUQsUUFBUSxTQUFSLENBQWQ7QUFDQSxJQUFJRSxNQUFNRCxRQUFRLElBQVIsQ0FBVjs7QUFFQSxJQUFJRSxPQUFPSCxRQUFRLGlCQUFSLENBQVg7O0FBR0FJLE9BQU9DLE9BQVAsR0FBaUI7QUFDZkMsU0FBTyxlQUFDQyxHQUFELEVBQU1DLEdBQU4sRUFBYztBQUNuQkMsWUFBUUMsR0FBUixDQUFZLHNCQUFaO0FBQ0EsdUJBQVNDLFlBQVQsQ0FBc0IsT0FBdEIsRUFBK0IsRUFBRUMsU0FBUyxLQUFYLEVBQS9CO0FBQ0EsUUFBSUMsT0FBTyxJQUFJZCxJQUFKLENBQVNRLElBQUlPLElBQWIsQ0FBWDtBQUNBWixRQUFJYSxjQUFKLENBQW1CRixJQUFuQixFQUF5QixVQUFDRyxHQUFELEVBQU1DLHNCQUFOLEVBQThCQyxXQUE5QixFQUE4QztBQUNyRSxVQUFJRixHQUFKLEVBQVM7QUFDUCxlQUFPUixJQUFJVyxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUI7QUFDMUJDLG1CQUFTTDtBQURpQixTQUFyQixDQUFQO0FBR0Q7QUFDRDtBQUNBLFVBQUlDLHNCQUFKLEVBQTRCO0FBQzFCLGVBQU9ULElBQUlXLE1BQUosQ0FBVyxHQUFYLEVBQWdCQyxJQUFoQixDQUFxQjtBQUMxQkMsbUJBQVM7QUFEaUIsU0FBckIsQ0FBUDtBQUdEO0FBQ0Q7QUFDQSxVQUFJSCxXQUFKLEVBQWlCO0FBQ2ZULGdCQUFRQyxHQUFSLENBQVlRLFdBQVo7QUFDQSxZQUFJSSxNQUFNSixZQUFZaEIsSUFBSXFCLE9BQUosQ0FBWUMsWUFBeEIsQ0FBVjtBQUNBdEIsWUFBSXVCLHFCQUFKLENBQTBCUCxZQUFZUSxLQUF0QyxFQUE2Q0osR0FBN0MsRUFBa0QsVUFBVU4sR0FBVixFQUFlVyxJQUFmLEVBQXFCO0FBQ3JFLGNBQUlYLEdBQUosRUFBUztBQUNQLG1CQUFPUixJQUFJVyxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUI7QUFDMUJDLHVCQUFTLDhDQUE4Q007QUFEN0IsYUFBckIsQ0FBUDtBQUdEO0FBQ0YsU0FORDtBQU9BLGVBQU9uQixJQUFJVyxNQUFKLENBQVcsR0FBWCxFQUFnQkMsSUFBaEIsQ0FBcUI7QUFDMUJDLG1CQUFTLHdFQURpQjtBQUUxQk8sZUFBS1YsWUFBWVU7QUFGUyxTQUFyQixDQUFQO0FBSUE7QUFDRCxPQWZELE1BZU87QUFDTCxlQUFPcEIsSUFBSVcsTUFBSixDQUFXLEdBQVgsRUFBZ0JDLElBQWhCLENBQXFCO0FBQzFCQyxtQkFBUztBQURpQixTQUFyQixDQUFQO0FBR0Q7QUFDRixLQWpDRDtBQWtDRDtBQXZDYyxDQUFqQiIsImZpbGUiOiJhdXRoLmpzIiwic291cmNlUm9vdCI6Ii9hcHAvY29udHJvbGxlcnMiLCJzb3VyY2VzQ29udGVudCI6WyJ2YXIgVXNlciA9IHJlcXVpcmUoJy4uL21vZGVscy9Vc2VyJylcbnZhciBtYWlsaW5nID0gcmVxdWlyZSgnLi4vbWFpbCcpXG52YXIgbmV2ID0gbWFpbGluZygnZW4nKVxuaW1wb3J0IHBhc3Nwb3J0IGZyb20gJ3Bhc3Nwb3J0J1xudmFyIGF1dGggPSByZXF1aXJlKCcuLi9oZWxwZXJzL2F1dGgnKVxuXG5cbm1vZHVsZS5leHBvcnRzID0ge1xuICBsb2dpbjogKHJlcSwgcmVzKSA9PiB7XG4gICAgY29uc29sZS5sb2coJ2VzdGFtb3MgZW4gbG9naW4uLi4uJylcbiAgICBwYXNzcG9ydC5hdXRoZW50aWNhdGUoJ2Jhc2ljJywgeyBzZXNzaW9uOiBmYWxzZSB9KVxuICAgIHZhciB1c2VyID0gbmV3IFVzZXIocmVxLmJvZHkpXG4gICAgbmV2LmNyZWF0ZVRlbXBVc2VyKHVzZXIsIChlcnIsIGV4aXN0aW5nUGVyc2lzdGVudFVzZXIsIG5ld1RlbXBVc2VyKSA9PiB7XG4gICAgICBpZiAoZXJyKSB7XG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDQwNCkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogZXJyXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgICAvLyB1c2VyIGFscmVhZHkgZXhpc3RzIGluIHBlcnNpc3RlbnQgY29sbGVjdGlvblxuICAgICAgaWYgKGV4aXN0aW5nUGVyc2lzdGVudFVzZXIpIHtcbiAgICAgICAgcmV0dXJuIHJlcy5zdGF0dXMoNDA5KS5qc29uKHtcbiAgICAgICAgICBtZXNzYWdlOiAnWW91IGhhdmUgYWxyZWFkeSBzaWduZWQgdXAgYW5kIGNvbmZpcm1lZCB5b3VyIGFjY291bnQuIERpZCB5b3UgZm9yZ2V0IHlvdXIgcGFzc3dvcmQ/J1xuICAgICAgICB9KVxuICAgICAgfVxuICAgICAgLy8gbmV3IHVzZXIgY3JlYXRlZFxuICAgICAgaWYgKG5ld1RlbXBVc2VyKSB7XG4gICAgICAgIGNvbnNvbGUubG9nKG5ld1RlbXBVc2VyKVxuICAgICAgICB2YXIgVVJMID0gbmV3VGVtcFVzZXJbbmV2Lm9wdGlvbnMuVVJMRmllbGROYW1lXVxuICAgICAgICBuZXYuc2VuZFZlcmlmaWNhdGlvbkVtYWlsKG5ld1RlbXBVc2VyLmVtYWlsLCBVUkwsIGZ1bmN0aW9uIChlcnIsIGluZm8pIHtcbiAgICAgICAgICBpZiAoZXJyKSB7XG4gICAgICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg1MDApLmpzb24oe1xuICAgICAgICAgICAgICBtZXNzYWdlOiAnRVJST1I6IHNlbmRpbmcgdmVyaWZpY2F0aW9uIGVtYWlsIEZBSUxFRCAnICsgaW5mb1xuICAgICAgICAgICAgfSlcbiAgICAgICAgICB9XG4gICAgICAgIH0pXG4gICAgICAgIHJldHVybiByZXMuc3RhdHVzKDIwMSkuanNvbih7XG4gICAgICAgICAgbWVzc2FnZTogJ0FuIGVtYWlsIGhhcyBiZWVuIHNlbnQgdG8geW91LiBQbGVhc2UgY2hlY2sgaXQgdG8gdmVyaWZ5IHlvdXIgYWNjb3VudC4nLFxuICAgICAgICAgIF9pZDogbmV3VGVtcFVzZXIuX2lkXG4gICAgICAgIH0pXG4gICAgICAgIC8vIHVzZXIgYWxyZWFkeSBleGlzdHMgaW4gdGVtcG9yYXJ5IGNvbGxlY3Rpb24hXG4gICAgICB9IGVsc2Uge1xuICAgICAgICByZXR1cm4gcmVzLnN0YXR1cyg0MDkpLmpzb24oe1xuICAgICAgICAgIG1lc3NhZ2U6ICdZb3UgaGF2ZSBhbHJlYWR5IHNpZ25lZCB1cC4gUGxlYXNlIGNoZWNrIHlvdXIgZW1haWwgdG8gdmVyaWZ5IHlvdXIgYWNjb3VudC4nXG4gICAgICAgIH0pXG4gICAgICB9XG4gICAgfSlcbiAgfVxufVxuIl19",
+    "ast": null,
+    "map": {
+      "version": 3,
+      "sources": [
+        "auth.js"
+      ],
+      "names": [
+        "User",
+        "require",
+        "mailing",
+        "nev",
+        "auth",
+        "module",
+        "exports",
+        "login",
+        "req",
+        "res",
+        "console",
+        "log",
+        "authenticate",
+        "session",
+        "user",
+        "body",
+        "createTempUser",
+        "err",
+        "existingPersistentUser",
+        "newTempUser",
+        "status",
+        "json",
+        "message",
+        "URL",
+        "options",
+        "URLFieldName",
+        "sendVerificationEmail",
+        "email",
+        "info",
+        "_id"
+      ],
+      "mappings": ";;AAGA;;;;;;AAHA,IAAIA,OAAOC,QAAQ,gBAAR,CAAX;AACA,IAAIC,UAAUD,QAAQ,SAAR,CAAd;AACA,IAAIE,MAAMD,QAAQ,IAAR,CAAV;;AAEA,IAAIE,OAAOH,QAAQ,iBAAR,CAAX;;AAGAI,OAAOC,OAAP,GAAiB;AACfC,SAAO,eAACC,GAAD,EAAMC,GAAN,EAAc;AACnBC,YAAQC,GAAR,CAAY,sBAAZ;AACA,uBAASC,YAAT,CAAsB,OAAtB,EAA+B,EAAEC,SAAS,KAAX,EAA/B;AACA,QAAIC,OAAO,IAAId,IAAJ,CAASQ,IAAIO,IAAb,CAAX;AACAZ,QAAIa,cAAJ,CAAmBF,IAAnB,EAAyB,UAACG,GAAD,EAAMC,sBAAN,EAA8BC,WAA9B,EAA8C;AACrE,UAAIF,GAAJ,EAAS;AACP,eAAOR,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAASL;AADiB,SAArB,CAAP;AAGD;AACD;AACA,UAAIC,sBAAJ,EAA4B;AAC1B,eAAOT,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS;AADiB,SAArB,CAAP;AAGD;AACD;AACA,UAAIH,WAAJ,EAAiB;AACfT,gBAAQC,GAAR,CAAYQ,WAAZ;AACA,YAAII,MAAMJ,YAAYhB,IAAIqB,OAAJ,CAAYC,YAAxB,CAAV;AACAtB,YAAIuB,qBAAJ,CAA0BP,YAAYQ,KAAtC,EAA6CJ,GAA7C,EAAkD,UAAUN,GAAV,EAAeW,IAAf,EAAqB;AACrE,cAAIX,GAAJ,EAAS;AACP,mBAAOR,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,uBAAS,8CAA8CM;AAD7B,aAArB,CAAP;AAGD;AACF,SAND;AAOA,eAAOnB,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS,wEADiB;AAE1BO,eAAKV,YAAYU;AAFS,SAArB,CAAP;AAIA;AACD,OAfD,MAeO;AACL,eAAOpB,IAAIW,MAAJ,CAAW,GAAX,EAAgBC,IAAhB,CAAqB;AAC1BC,mBAAS;AADiB,SAArB,CAAP;AAGD;AACF,KAjCD;AAkCD;AAvCc,CAAjB",
+      "file": "auth.js",
+      "sourceRoot": "/app/controllers",
+      "sourcesContent": [
+        "var User = require('../models/User')\nvar mailing = require('../mail')\nvar nev = mailing('en')\nimport passport from 'passport'\nvar auth = require('../helpers/auth')\n\n\nmodule.exports = {\n  login: (req, res) => {\n    console.log('estamos en login....')\n    passport.authenticate('basic', { session: false })\n    var user = new User(req.body)\n    nev.createTempUser(user, (err, existingPersistentUser, newTempUser) => {\n      if (err) {\n        return res.status(404).json({\n          message: err\n        })\n      }\n      // user already exists in persistent collection\n      if (existingPersistentUser) {\n        return res.status(409).json({\n          message: 'You have already signed up and confirmed your account. Did you forget your password?'\n        })\n      }\n      // new user created\n      if (newTempUser) {\n        console.log(newTempUser)\n        var URL = newTempUser[nev.options.URLFieldName]\n        nev.sendVerificationEmail(newTempUser.email, URL, function (err, info) {\n          if (err) {\n            return res.status(500).json({\n              message: 'ERROR: sending verification email FAILED ' + info\n            })\n          }\n        })\n        return res.status(201).json({\n          message: 'An email has been sent to you. Please check it to verify your account.',\n          _id: newTempUser._id\n        })\n        // user already exists in temporary collection!\n      } else {\n        return res.status(409).json({\n          message: 'You have already signed up. Please check your email to verify your account.'\n        })\n      }\n    })\n  }\n}\n"
+      ]
+    },
+    "mtime": 1517050888000
   }
 }
