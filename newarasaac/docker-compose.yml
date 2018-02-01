@@ -34,7 +34,7 @@ services:
     container_name: api
     build:
       context: ./api
-      dockerfile: api-dockerfile.yml
+      dockerfile: dockerfile.yml
     command: yarn debug
     depends_on:
       - mongodb
@@ -52,6 +52,29 @@ services:
       - backend
     ports:
       - "9229:9229"
+  
+  auth:
+    hostname: auth
+    container_name: auth
+    build:
+      context: ./auth
+      dockerfile: dockerfile.yml
+    command: npm start
+    depends_on:
+      - mongodb
+    volumes:
+    - ./auth:/app
+    - /app/node_modules
+    environment:
+      LETSENCRYPT_HOST: "auth.arasaac.org"
+      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      VIRTUAL_HOST: "auth.arasaac.org"
+      NODE_ENV: "production"
+    networks:
+      - nginxproxy_frontend
+      - backend
+    ports:
+      - "9228:9229"
   
   watcher:
     hostname: watcher
