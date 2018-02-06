@@ -9,6 +9,8 @@
 
 const config      = require('./config');
 const db          = require('./db');
+const User = require('./db/users')
+const Client = require('./db/clients')
 const login       = require('connect-ensure-login');
 const oauth2orize = require('oauth2orize');
 const passport    = require('passport');
@@ -25,7 +27,7 @@ const expiresIn = { expires_in : config.token.expiresIn };
  * Grant authorization codes
  *
  * The callback takes the `client` requesting authorization, the `redirectURI`
- * (which is used as a verifier in the subsequent exchange), the authenticated
+ * (which is used as a verifier in the subseq++uent exchange), the authenticated
  * `user` granting access, and their response, which contains approved scope,
  * duration, etc. as parsed by the application.  The application issues a code,
  * which is bound to these values, and will be exchanged for an access token.
@@ -86,9 +88,9 @@ server.exchange(oauth2orize.exchange.code((client, code, redirectURI, done) => {
  * application issues an access token on behalf of the user who authorized the code.
  */
 server.exchange(oauth2orize.exchange.password((client, username, password, scope, done) => {
-  db.users.findByUsername(username)
-  .then(user => validate.user(user, password))
-  .then(user => validate.generateTokens({ scope, userID: user.id, clientID: client.id }))
+  User.findOne({ username: username })
+  .then(user => user ? user.validate(password) : logAndThrow(`User ${username} not found`))
+  .then(user => validate.generateTokens({ scope, userID: user.id, clientID: client.clientId }))
   .then((tokens) => {
     if (tokens === false) {
       return done(null, false);

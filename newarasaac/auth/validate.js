@@ -4,54 +4,10 @@ const config  = require('./config');
 const db      = require('./db');
 const utils   = require('./utils');
 const process = require('process');
-
+const User = require('./db/users')
 /** Validate object to attach all functions to  */
 const validate = Object.create(null);
 
-/** Suppress tracing for things like unit testing */
-const suppressTrace = process.env.OAUTHRECIPES_SURPRESS_TRACE === 'true';
-
-/**
- * Log the message and throw it as an Error
- * @param   {String} msg - Message to log and throw
- * @throws  {Error}  The given message as an error
- * @returns {undefined}
- */
-validate.logAndThrow = (msg) => {
-  if (!suppressTrace) {
-    console.trace(msg);
-  }
-  throw new Error(msg);
-};
-
-/**
- * Given a user and a password this will return the user if it exists and the password matches,
- * otherwise this will throw an error
- * @param   {Object} user     - The user profile
- * @param   {String} password - The user's password
- * @throws  {Error}  If the user does not exist or the password does not match
- * @returns {Object} The user if valid
- */
-validate.user = (user, password) => {
-  validate.userExists(user);
-  if (user.password !== password) {
-    validate.logAndThrow('User password does not match');
-  }
-  return user;
-};
-
-/**
- * Given a user this will return the user if it exists otherwise this will throw an error
- * @param   {Object} user - The user profile
- * @throws  {Error}  If the user does not exist or the password does not match
- * @returns {Object} The user if valid
- */
-validate.userExists = (user) => {
-  if (user == null) {
-    validate.logAndThrow('User does not exist');
-  }
-  return user;
-};
 
 /**
  * Given a client and a client secret this return the client if it exists and its clientSecret
@@ -95,9 +51,8 @@ validate.token = (token, accessToken) => {
 
   // token is a user token
   if (token.userID != null) {
-    return db.users.find(token.userID)
-    .then(user => validate.userExists(user))
-    .then(user => user);
+    return User.findOne({id: token.userID})
+      .then(user => user ? user : logAndThrow(`User ${username} not found`))
   }
   // token is a client token
   return db.clients.find(token.clientID)
@@ -174,8 +129,17 @@ validate.generateRefreshToken = ({ userId, clientID, scope }) => {
  * @returns {Promise}  The resolved refresh token after saved
  */
 validate.generateToken = ({ userID, clientID, scope }) => {
+  console.log('generating token....')
+  console.log(userID)
+  console.log(clientID)
+  console.log(scope)
+
   const token      = utils.createToken({ sub : userID, exp : config.token.expiresIn });
+  console.log(`token: ${token}`)
+  console.log('------------------------')
   const expiration = config.token.calculateExpirationDate();
+  console.log (expiration)
+  console.log('------------------------')
   return db.accessTokens.save(token, expiration, userID, clientID, scope)
   .then(() => token);
 };
@@ -188,6 +152,7 @@ validate.generateToken = ({ userID, clientID, scope }) => {
  * @returns {Promise} The resolved refresh and access tokens as an array
  */
 validate.generateTokens = (authCode) => {
+  console.log('generating tokens....')
   if (validate.isRefreshToken(authCode)) {
     return Promise.all([
       validate.generateToken(authCode),

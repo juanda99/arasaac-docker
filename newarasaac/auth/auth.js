@@ -1,13 +1,15 @@
 'use strict';
 
-const db                                   = require('./db');
+const db = require('./db');
 const User = require ('./db/users')
-const passport                             = require('passport');
-const { Strategy: LocalStrategy }          = require('passport-local');
-const { BasicStrategy }                    = require('passport-http');
+const Client = require('./db/clients')
+const passport = require('passport');
+const { Strategy: LocalStrategy } = require('passport-local');
+const { BasicStrategy } = require('passport-http');
 const { Strategy: ClientPasswordStrategy } = require('passport-oauth2-client-password');
-const { Strategy: BearerStrategy }         = require('passport-http-bearer');
-const validate                             = require('./validate');
+const { Strategy: BearerStrategy } = require('passport-http-bearer');
+const validate = require('./validate');
+const { logAndThrow } = require ('./utils')
 
 /**
  * LocalStrategy
@@ -16,20 +18,15 @@ const validate                             = require('./validate');
  * Anytime a request is made to authorize an application, we must ensure that
  * a user is logged in before asking them to approve the request.
  */
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-)); 
+passport.use(new LocalStrategy((username, password, done) => {
+  User.findOne({ username: username })
+    .then(user =>  user ? user.validate(password): logAndThrow(`User ${username} not found`))
+    .then(user => done(null, user))
+    .catch((error) => {
+      console.log(`Login error: ${error.message}`)
+      done(null, false)
+    })
+}))
 
 /**
  * BasicStrategy & ClientPasswordStrategy
@@ -43,11 +40,32 @@ passport.use(new LocalStrategy(
  * the specification, in practice it is quite common.
  */
 passport.use(new BasicStrategy((clientId, clientSecret, done) => {
-  db.clients.findByClientId(clientId)
-  .then(client => validate.client(client, clientSecret))
-  .then(client => done(null, client))
-  .catch(() => done(null, false));
-}));
+  console.log('enter basic strategy....')
+  Client.findOne({ clientId: clientId })
+    .then(client => client ? client.validate(clientSecret) : logAndThrow(`Client with id ${clientId} not found`))
+    .then(client => done(null, client))
+    .catch((error) => {
+      console.log(`Login error: ${error.message}`)
+      done(null, false)
+    })
+}))
+  /*
+  console.log('enter client login....')
+  Client.findOne({ clientId: clientId }, (err, client) => {
+    if (err) { return done(err) }
+    if (!client) {
+      console.log(`Login: clientId ${clientId} does not exist`)
+      return done(null, false)
+    }
+    if (client.clientSecret !== clientSecret) {
+      console.log(`Login: Client secret does not match for client ${clientId}`)
+      return done(null, false)
+    }
+    console.log(`Login successful: client ${clientId}`)
+    return done(null, client)
+  })
+  */
+
 
 /**
  * Client Password strategy
@@ -57,11 +75,15 @@ passport.use(new BasicStrategy((clientId, clientSecret, done) => {
  * which accepts those credentials and calls done providing a client.
  */
 passport.use(new ClientPasswordStrategy((clientId, clientSecret, done) => {
-  db.clients.findByClientId(clientId)
-  .then(client => validate.client(client, clientSecret))
-  .then(client => done(null, client))
-  .catch(() => done(null, false));
-}));
+  console.log('enter client-password-strategy....');
+  Client.findOne({ clientId: clientId })
+    .then(client => client ? client.validate(clientSecret) : logAndThrow(`Client with id ${clientId} not2 found`))
+    .then(client => done(null, client))
+    .catch((error) => {
+      console.log(`Login error: ${error.message}`)
+      done(null, false)
+    })
+}))
 
 /**
  * BearerStrategy
@@ -99,7 +121,11 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  db.users.find(id)
-  .then(user => done(null, user))
-  .catch(err => done(err));
-});
+  User.findOne({ _id: id }, (err, user) => {
+    if (err) done(err)
+    if (!user) done(null, null)
+    done(null, user)
+  })
+})
+
+

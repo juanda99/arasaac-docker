@@ -1,4 +1,35 @@
-'use strict';
+var mongoose = require('mongoose');
+var bcrypt = require('bcrypt');
+
+var ClientSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true
+  },
+  clientId: {
+    type: Number,
+    unique: true,
+    required: true,
+    trim: true
+  },
+  clientSecret: {
+    type: String,
+    required: true,
+  }
+});
+
+
+ClientSchema.methods = {
+  validate: function (clientSecret) {
+    if (clientSecret === this.clientSecret) return this
+    // if (bcrypt.compareSync(clientSecret, this.clientSecret)) return this
+    logAndThrow(`Wrong secret for client ${this.name}`)
+  }
+}
+
+var Client = mongoose.model('Client', ClientSchema);
 
 /**
  * This is the configuration of the clients that are allowed to connected to your authorization
@@ -52,3 +83,5 @@ exports.find = id => Promise.resolve(clients.find(client => client.id === id));
  */
 exports.findByClientId = clientId =>
   Promise.resolve(clients.find(client => client.clientId === clientId));
+
+module.exports = Client

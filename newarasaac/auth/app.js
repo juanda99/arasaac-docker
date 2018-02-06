@@ -8,7 +8,6 @@ const db             = require('./db');
 const express        = require('express');
 const expressSession = require('express-session');
 const fs             = require('fs');
-const https          = require('https');
 const oauth2         = require('./oauth2');
 const passport       = require('passport');
 const path           = require('path');
@@ -100,6 +99,7 @@ const options = {
   key  : fs.readFileSync(path.join(__dirname, 'certs/privatekey.pem')),
   cert : fs.readFileSync(path.join(__dirname, 'certs/certificate.pem')),
 };
+
 
 // Create our HTTPS server listening on port 3000.
 const port = process.env.PORT || 80

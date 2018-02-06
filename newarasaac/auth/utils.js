@@ -5,6 +5,12 @@ const path = require('path');
 const uuid = require('uuid/v4');
 const jwt  = require('jsonwebtoken');
 
+var PrettyError = require('pretty-error');
+var pe = new PrettyError();
+
+/** Suppress tracing for things like unit testing */
+const DEBUG = process.env.DEBUG === true
+
 /** Private certificate used for signing JSON WebTokens */
 const privateKey = fs.readFileSync(path.join(__dirname, 'certs/privatekey.pem'));
 
@@ -29,7 +35,6 @@ exports.createToken = ({ exp = 3600, sub = '' } = {}) => {
   }, privateKey, {
     algorithm: 'RS256',
   });
-
   return token;
 };
 
@@ -40,3 +45,10 @@ exports.createToken = ({ exp = 3600, sub = '' } = {}) => {
  * @returns {Object} The token decoded and verified
  */
 exports.verifyToken = token => jwt.verify(token, publicKey);
+
+exports.logAndThrow = (msg) => {
+  // if (DEBUG) console.trace(msg)
+  throw new Error(msg)
+}
+
+
