@@ -68,7 +68,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Initialize watcher.
 var watcher = chokidar.watch(MATERIALS, {
   ignored: [/(^|[\/\\])\../, '**/screenshots_*/*', /index-[A-z]{2,3}-(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}.tgz/],
-  // ignoreInitial: true,
+  ignoreInitial: true,
   cwd: MATERIALS
 })
 
