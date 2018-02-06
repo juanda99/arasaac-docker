@@ -1,40 +1,37 @@
 import passport from 'passport'
-const { Strategy: LocalStrategy } = require('passport-local')
-const { BasicStrategy } = require('passport-http');
+import { authorization } from '../config'
+const BearerStrategy = require('passport-http-bearer').Strategy
+const request = require('request')
 
 
 /**
- * LocalStrategy
+ * BearerStrategy
  *
- * This strategy is used to authenticate users based on a username and password.
- * Anytime a request is made to authorize an application, we must ensure that
- * a user is logged in before asking them to approve the request.
+ * This strategy is used to authenticate either users or clients based on an access token
+ * (aka a bearer token).  If a user, they must have previously authorized a client
+ * application, which is issued an access token to make requests on behalf of
+ * the authorizing user.
  */
+passport.use(new BearerStrategy((accessToken, done) => {
 
- 
-passport.use(new BasicStrategy((clientId, clientSecret, done) => {
-  db.clients.findByClientId(clientId)
-    .then(client => validate.client(client, clientSecret))
-    .then(client => done(null, client))
-    .catch(() => done(null, false));
-}));
-
-passport.use(new LocalStrategy((username, password, done) => {
-  console.log('***********************************')
-  console.log(username)
-  console.log(password)
-  done (null, {})
-  /*
-  db.users.findByUsername(username)
-    .then(user => validate.user(user, password))
-    .then(user => done(null, user))
-    .catch(() => done(null, false));
-  */
-}));
+  if (accessToken == null) throw ('No token')
+  const auth_url = authorization.tokeninfoURL + accessToken
+  request.get(auth_url, (error, response, body)=>{
+    if (error || response.statusCode != 200) {
+      console.log(`Invalid accessToken: Status code: ${response.statusCode}. Error desc: ${error}`)
+      done(null, false)
+    }
+    const { expires_in } = JSON.parse(body);
+    // const expirationDate = expires_in ? new Date(Date.now() + (expires_in * 1000)) : null;
+    done(null, accessToken)
+  })
+}))
 
 module.exports = {
+  // curl -v -H "Authorization: Bearer 123456789" endpoint
+  // curl -v http://endpoint/?access_token=123456789  
   login: (req, res, next) => {
-    passport.authenticate('basic', { session: false })
+    passport.authenticate('bearer', { session: false })(req, res, next)
   }
 
 

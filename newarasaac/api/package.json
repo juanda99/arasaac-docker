@@ -31,10 +31,10 @@
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "passport-google-oauth": "^1.0.0",
-    "passport-http": "^0.3.0",
-    "passport-local": "^1.0.0",
+    "passport-http-bearer": "^1.0.1",
     "passport-twitter": "^1.0.4",
     "recursive-readdir": "^2.2.1",
+    "request": "^2.83.0",
     "swagger-express-mw": "^0.7.0",
     "yamljs": "^0.2.8"
   },

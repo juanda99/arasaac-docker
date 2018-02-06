@@ -44,7 +44,6 @@ app.use(express.static('./public'))
 SwaggerExpress.create(swaggerConfig, function (err, swaggerExpress) {
   if (err) {throw err}
   swaggerExpress.register(app)
-  const port = process.env.PORT || 80
   app.listen(port)
   console.log('App running on port ' + port)
 
