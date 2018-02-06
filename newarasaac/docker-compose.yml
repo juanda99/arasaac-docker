@@ -38,6 +38,7 @@ services:
     command: yarn debug
     depends_on:
       - mongodb
+      - auth
     volumes:
     - ./api:/app
     - ./materials:/app/materials
@@ -59,7 +60,7 @@ services:
     build:
       context: ./auth
       dockerfile: dockerfile.yml
-    command: npm start
+    command: npm run debug
     depends_on:
       - mongodb
     volumes:
