@@ -105,11 +105,10 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
       ? user.validate(password)
       : logAndThrow(`User ${username} not found`))
     .then(user => {
-      console.log(user.role)
       if (user.role==='admin') scope = ['read', 'write', 'translate', 'admin']
       else if (user.role==='translator') scope = ['read', 'write', 'translate']
       else scope = ['read', 'write']
-      validate.generateTokens({scope, userID: user.id, clientID: client.clientId})
+      return validate.generateTokens({scope, userID: user.id, clientID: client.clientId})
     })
     .then((tokens) => {
       if (tokens === false) {
@@ -123,7 +122,7 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
       }
       throw new Error('Error exchanging password for tokens');
     })
-    .catch(() => done(null, false));
+    .catch((err) => {console.log(err); done(null, false)});
 }));
 
 /**
