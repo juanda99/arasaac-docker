@@ -81,9 +81,6 @@ module.exports = {
         }
         // if no items, return empty array
         if (users.length === 0) return res.status(404).json([])
-        console.log('******************')
-        console.log(users)
-        console.log('***************************')
         return res.json(users)
       })
   },
