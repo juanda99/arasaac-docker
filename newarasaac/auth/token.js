@@ -1,6 +1,7 @@
 'use strict';
 
 const db       = require('./db');
+const Client = require('./db/clients')
 const validate = require('./validate');
 
 /**
@@ -29,7 +30,7 @@ exports.info = (req, res) =>
   .then(() => db.accessTokens.find(req.query.access_token))
   .then(token => validate.tokenExistsForHttp(token))
   .then(token =>
-    db.clients.find(token.clientID)
+    Client.findOne({ clientId: token.clientID })
     .then(client => validate.clientExistsForHttp(client))
     .then(client => ({ client, token })))
   .then(({ client, token }) => {
@@ -40,6 +41,7 @@ exports.info = (req, res) =>
     res.status(err.status);
     res.json({ error: err.message });
   });
+
 
 /**
  * This endpoint is for revoking a token.  This has the same signature to
