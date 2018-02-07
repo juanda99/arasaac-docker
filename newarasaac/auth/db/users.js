@@ -14,6 +14,11 @@ var UserSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
+  role: {
+    type: String,
+    trim: true,
+    default: 'user'
+  },
   username: {
     type: String,
     unique: true,

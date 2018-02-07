@@ -5,6 +5,7 @@
     "locale" : "es",
     "provider" : "",
     "username" : "juanda",
+    "role": "admin",
     "email" : "juandacorreo@gmail.com",
     "name" : "juanda"
 }]

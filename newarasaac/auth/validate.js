@@ -1,13 +1,12 @@
 'use strict';
 
-const config  = require('./config');
-const db      = require('./db');
-const utils   = require('./utils');
+const config = require('./config');
+const db = require('./db');
+const utils = require('./utils');
 const process = require('process');
 const User = require('./db/users')
 /** Validate object to attach all functions to  */
 const validate = Object.create(null);
-
 
 /**
  * Given a client and a client secret this return the client if it exists and its clientSecret
@@ -51,13 +50,18 @@ validate.token = (token, accessToken) => {
 
   // token is a user token
   if (token.userID != null) {
-    return User.findOne({id: token.userID})
-      .then(user => user ? user : logAndThrow(`User ${username} not found`))
+    return User
+      .findOne({id: token.userID})
+      .then(user => user
+        ? user
+        : logAndThrow(`User ${username} not found`))
   }
   // token is a client token
-  return db.clients.find(token.clientID)
-  .then(client => validate.clientExists(client))
-  .then(client => client);
+  return db
+    .clients
+    .find(token.clientID)
+    .then(client => validate.clientExists(client))
+    .then(client => client);
 };
 
 /**
@@ -106,7 +110,7 @@ validate.authCode = (code, authCode, client, redirectURI) => {
  * @param   {Array}   scope - The scope to check if is a refresh token if it has 'offline_access'
  * @returns {Boolean} true If the scope is offline_access, otherwise false
  */
-validate.isRefreshToken = ({ scope }) => scope != null && scope.indexOf('offline_access') === 0;
+validate.isRefreshToken = ({scope}) => scope != null && scope.indexOf('offline_access') === 0;
 
 /**
  * Given a userId, clientID, and scope this will generate a refresh token, save it, and return it
@@ -115,10 +119,12 @@ validate.isRefreshToken = ({ scope }) => scope != null && scope.indexOf('offline
  * @throws  {Object}  scope    - the scope
  * @returns {Promise} The resolved refresh token after saved
  */
-validate.generateRefreshToken = ({ userId, clientID, scope }) => {
-  const refreshToken = utils.createToken({ sub : userId, exp : config.refreshToken.expiresIn });
-  return db.refreshTokens.save(refreshToken, userId, clientID, scope)
-  .then(() => refreshToken);
+validate.generateRefreshToken = ({userId, clientID, scope}) => {
+  const refreshToken = utils.createToken({sub: userId, exp: config.refreshToken.expiresIn});
+  return db
+    .refreshTokens
+    .save(refreshToken, userId, clientID, scope)
+    .then(() => refreshToken);
 };
 
 /**
@@ -128,20 +134,22 @@ validate.generateRefreshToken = ({ userId, clientID, scope }) => {
  * @param   {scope}    scope    - The scope
  * @returns {Promise}  The resolved refresh token after saved
  */
-validate.generateToken = ({ userID, clientID, scope }) => {
+validate.generateToken = ({userID, clientID, scope}) => {
   console.log('generating token....')
   console.log(userID)
   console.log(clientID)
   console.log(scope)
 
-  const token      = utils.createToken({ sub : userID, exp : config.token.expiresIn });
+  const token = utils.createToken({sub: userID, exp: config.token.expiresIn, scope});
   console.log(`token: ${token}`)
   console.log('------------------------')
-  const expiration = config.token.calculateExpirationDate();
-  console.log (expiration)
-  console.log('------------------------')
-  return db.accessTokens.save(token, expiration, userID, clientID, scope)
-  .then(() => token);
+  const expiration = config
+    .token
+    .calculateExpirationDate();
+  return db
+    .accessTokens
+    .save(token, expiration, userID, clientID, scope)
+    .then(() => token);
 };
 
 /**
@@ -152,11 +160,10 @@ validate.generateToken = ({ userID, clientID, scope }) => {
  * @returns {Promise} The resolved refresh and access tokens as an array
  */
 validate.generateTokens = (authCode) => {
-  console.log('generating tokens....')
   if (validate.isRefreshToken(authCode)) {
     return Promise.all([
       validate.generateToken(authCode),
-      validate.generateRefreshToken(authCode),
+      validate.generateRefreshToken(authCode)
     ]);
   }
   return Promise.all([validate.generateToken(authCode)]);
@@ -168,17 +175,16 @@ validate.generateTokens = (authCode) => {
  * @param   {Object}  token - The token to check
  * @returns {Promise} Resolved with the token if it is a valid token otherwise rejected with error
  */
-validate.tokenForHttp = token =>
-  new Promise((resolve, reject) => {
-    try {
-      utils.verifyToken(token);
-    } catch (err) {
-      const error  = new Error('invalid_token');
-      error.status = 400;
-      reject(error);
-    }
-    resolve(token);
-  });
+validate.tokenForHttp = token => new Promise((resolve, reject) => {
+  try {
+    utils.verifyToken(token);
+  } catch (err) {
+    const error = new Error('invalid_token');
+    error.status = 400;
+    reject(error);
+  }
+  resolve(token);
+});
 
 /**
  * Given a token this will return the token if it is not null. Otherwise this will throw a
@@ -196,7 +202,6 @@ validate.tokenExistsForHttp = (token) => {
   return token;
 };
 
-
 /**
  * Given a client this will return the client if it is not null. Otherwise this will throw a
  * HTTP error.
@@ -206,7 +211,7 @@ validate.tokenExistsForHttp = (token) => {
  */
 validate.clientExistsForHttp = (client) => {
   if (client == null) {
-    const error  = new Error('invalid_token');
+    const error = new Error('invalid_token');
     error.status = 400;
     throw error;
   }
