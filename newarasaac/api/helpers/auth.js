@@ -13,16 +13,11 @@ const request = require('request')
  * the authorizing user.
  */
 passport.use(new BearerStrategy((accessToken, done) => {
-
-  if (accessToken == null) throw ('No token')
-  const auth_url = authorization.tokeninfoURL + accessToken
-  request.get(auth_url, (error, response, body)=>{
-    if (error || response.statusCode != 200) {
-      console.log(`Invalid accessToken: Status code: ${response.statusCode}. Error desc: ${error}`)
-      done(null, false)
-    }
-    const { expires_in } = JSON.parse(body);
-    // const expirationDate = expires_in ? new Date(Date.now() + (expires_in * 1000)) : null;
+  if (accessToken === null) throw new Error('No token')
+  const authUrl = authorization.tokeninfoURL + accessToken
+  request.get(authUrl, (error, response/*, body*/)=>{
+    if (error) done(null, false)
+    else if (response.statusCode !== 200) done(null, false)
     done(null, accessToken)
   })
 }))
@@ -34,8 +29,7 @@ module.exports = {
     passport.authenticate('bearer', { session: false })(req, res, next)
   }
 
-
-    /*
+/*
     {
     var currentScopes = req.swagger.operation['x-security-scopes']
     console.log (req)
