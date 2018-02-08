@@ -38,11 +38,8 @@ exports.find = (token) => {
  * @returns {Promise} resolved with the saved token
  */
 exports.save = (token, expirationDate, userID, clientID, scope) => {
-  console.log ('enter saving tokens...')
   const id = jwt.decode(token).jti;
   tokens[id] = { userID, expirationDate, clientID, scope };
-  console.log('+++++++++++++++++++')
-  console.log(tokens)
   return Promise.resolve(tokens[id]);
 };
 
