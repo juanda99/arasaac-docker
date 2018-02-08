@@ -17,6 +17,10 @@ var ClientSchema = new mongoose.Schema({
   clientSecret: {
     type: String,
     required: true,
+  },
+  trustedClient: {
+    type: Boolean,
+    default: false
   }
 });
 

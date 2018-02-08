@@ -19,6 +19,12 @@ var UserSchema = new mongoose.Schema({
     trim: true,
     default: 'user'
   },
+  /* name is needed for decision screen: Dear <name>.... */
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
   username: {
     type: String,
     unique: true,

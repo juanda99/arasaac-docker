@@ -182,30 +182,25 @@ server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, 
 exports.authorization = [
   login.ensureLoggedIn(),
   server.authorization((clientID, redirectURI, scope, done) => {
-    db
-      .clients
-      .findByClientId(clientID)
-      .then((client) => {
-        if (client) {
-          client.scope = scope; // eslint-disable-line no-param-reassign
-        }
-        // WARNING: For security purposes, it is highly advisable to check that
-        // redirectURI provided by the client matches one registered with the
-        // server.  For simplicity, this example does not. You have been
-        // warned.
-        return done(null, client, redirectURI);
-      })
-      .catch(err => done(err));
+    Client.findOne({ clientId: clientID })
+    .then(client => {
+      if (!client) logAndThrow(`Client with id ${clientId} not found`)
+      client.scope = scope
+      done(null, client, redirectURI)
+    })
+    // WARNING: For security purposes, it is highly advisable to check that
+    // redirectURI provided by the client matches one registered with the
+    // server.  For simplicity, this example does not. You have been
+    // warned.  
+    .catch(err => done(err));
   }),
   (req, res, next) => {
     // Render the decision dialog if the client isn't a trusted client
     // TODO:  Make a mechanism so that if this isn't a trusted client, the user can
     // record that they have consented but also make a mechanism so that if the user
     // revokes access to any of the clients then they will have to re-consent.
-    db
-      .clients
-      .findByClientId(req.query.client_id)
-      .then((client) => {
+    Client.findOne({ clientId: req.query.client_id })
+      .then((client) => { 
         if (client != null && client.trustedClient && client.trustedClient === true) {
           // This is how we short call the decision like the dialog below does
           server.decision({
@@ -271,12 +266,12 @@ exports.token = [
 // simple matter of serializing the client's ID, and deserializing by finding
 // the client by ID from the database.
 
-server.serializeClient((client, done) => done(null, client.id));
+server.serializeClient((client, done) => done(null, client.clientId));
 
 server.deserializeClient((id, done) => {
-  db
-    .clients
-    .find(id)
-    .then(client => done(null, client))
-    .catch(err => done(err));
-});
+  Client.findOne({ clientId: id }, (err, client) => {
+    if (err) done(err)
+    if (!client) done(null, null)
+    done(null, client)
+  })
+})

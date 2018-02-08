@@ -117,11 +117,11 @@ passport.use(new BearerStrategy((accessToken, done) => {
 // the client by ID from the database.
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user.username);
 });
 
 passport.deserializeUser((id, done) => {
-  User.findOne({ _id: id }, (err, user) => {
+  User.findOne({ username: id }, (err, user) => {
     if (err) done(err)
     if (!user) done(null, null)
     done(null, user)
