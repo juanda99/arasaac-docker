@@ -76,6 +76,7 @@ services:
       - backend
     ports:
       - "9228:9229"
+      - "5000:80"
   
   watcher:
     hostname: watcher

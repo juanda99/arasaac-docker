@@ -20,6 +20,9 @@ const validate = require('./validate');
 // create OAuth 2.0 server
 const server = oauth2orize.createServer();
 
+var oauth2orizeFacebook = require('oauth2orize-facebook');
+var oauth2orizeGoogle = require('oauth2orize-google');
+
 // Configured expiresIn
 const expiresIn = {
   expires_in: config.token.expiresIn
@@ -161,6 +164,61 @@ server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, 
     .then(token => done(null, token, null, expiresIn))
     .catch(() => done(null, false));
 }));
+
+
+server.exchange(oauth2orizeFacebook(function (client, profile, scope, cb) {
+
+  console.log (`client: ${client}`)
+  console.log (`profile: ${profile}`)
+  console.log (`scope: ${scope}`)
+
+  // Get access token from client and Facebook profile information. 
+  var accessToken = 'access token';
+ 
+  // Refresh token could be returned if it is supported by your OAuth2 server. 
+  // If not available, just pass `null` as argument. 
+  var refreshToken = 'optional refresh token';
+ 
+  // Additional parameters to return in response. Pass `null` if not available. 
+  var params = {
+    'welcome_to': 'our OAuth2 server',
+    'glad_to': 'meet you'
+  };
+ 
+  cb(null, accessToken, refreshToken, params);
+  // Or just `cb(null, accessToken);` is enough. 
+}));
+
+
+var option = {
+  googleConfig: {
+  /*  grant_type: 'xxx',
+    client_id: 'xxx',
+    client_secret: 'xxx',
+    redirect_uri: 'xxx'  // Unnecessary, default is request origin
+  */
+  }
+}
+server.exchange(oauth2orizeGoogle(option, function (client, profile, scope, cb) {
+  // Get access token from client and Facebook profile information.
+  var accessToken = 'access token';
+
+  // Refresh token could be returned if it is supported by your OAuth2 server.
+  // If not available, just pass `null` as argument.
+  var refreshToken = 'optional refresh token';
+
+  // Additional parameters to return in response. Pass `null` if not available.
+  var params = {
+    'welcome_to': 'our OAuth2 server',
+    'glad_to': 'meet you'
+  };
+
+  cb(null, accessToken, refreshToken, params);
+  // Or just `cb(null, accessToken);` is enough.
+}));
+
+
+
 
 /*
  * User authorization endpoint
