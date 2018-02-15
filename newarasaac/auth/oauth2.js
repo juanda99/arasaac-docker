@@ -16,6 +16,7 @@ const oauth2orize = require('oauth2orize');
 const passport = require('passport');
 const utils = require('./utils');
 const validate = require('./validate');
+var changeHeaderAuthSecret = require('./authHeader');
 
 // create OAuth 2.0 server
 const server = oauth2orize.createServer();
@@ -304,6 +305,7 @@ exports.decision = [
  * authenticate when making requests to this endpoint.
  */
 exports.token = [
+  changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
   passport.authenticate([
     'basic', 'oauth2-client-password'
   ], {session: false}),
