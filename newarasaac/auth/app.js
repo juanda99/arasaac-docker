@@ -14,6 +14,8 @@ const path           = require('path');
 const site           = require('./site');
 const token          = require('./token');
 const user           = require('./user');
+const cors           = require('cors');
+
 
 console.log('Using MemoryStore for the data store');
 console.log('Using MemoryStore for the Session');
@@ -21,6 +23,7 @@ const MemoryStore = expressSession.MemoryStore;
 
 // Express configuration
 const app = express();
+app.use(cors());
 app.set('view engine', 'ejs');
 app.use(cookieParser());
 
