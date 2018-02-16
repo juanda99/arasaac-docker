@@ -2,7 +2,6 @@ FROM node:8.2.1
 
 MAINTAINER juandacorreo@gmail.com
 
-ENV NODE_ENV=development 
 ENV PORT=80
 
 # Set working directory

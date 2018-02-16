@@ -1,7 +1,9 @@
 import passport from 'passport'
 import { authorization } from '../config'
+import { isArray } from 'util';
 const BearerStrategy = require('passport-http-bearer').Strategy
 const request = require('request')
+const jwt = require('jsonwebtoken')
 
 
 /**
@@ -17,17 +19,42 @@ passport.use(new BearerStrategy((accessToken, done) => {
   const authUrl = authorization.tokeninfoURL + accessToken
   request.get(authUrl, (error, response/*, body*/)=>{
     if (error) done(null, false)
-    else if (response.statusCode !== 200) done(null, false)
-    done(null, accessToken)
+    else if (response.statusCode !== 200) {
+      console.log('NOT VALID!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+      done(null, false)
+    }
+    console.log('**********************************************')
+    done(null, accessToken, { scopes: ['profile', 'atest'] })
   })
 }))
+
+
 
 module.exports = {
   // curl -v -H "Authorization: Bearer 123456789" endpoint
   // curl -v http://endpoint/?access_token=123456789  
-  login: (req, res, next) => {
-    passport.authenticate('bearer', { session: false })(req, res, next)
-  }
+  login:  (req, res, next) => {
+    // all scopes defined for login
+    // console.log(req.swagger.operation.securityDefinitions.login.scopes)
+
+    // requirement scope for this endpoint:
+    const scopeRequired=req.swagger.operation.security[0].login
+    console.log(`scopeRequired: ${scopeRequired}`)
+
+    
+    passport.authenticate('bearer', { session: false }, (err, user, info) => {
+      if (err) return res.status(500).send(`Error`)
+      if (!user) return res.status(401).send(`Unauthorized!`)
+      const userScopes = info.scopes
+      if (scopeRequired.some(r=> userScopes.includes(r))) {
+        next()
+      }
+      else {
+        res.status(401).send(`Token valid but not enough priviledges. User scopes: ${userScopes}. Endpoint scopes: ${scopeRequired}`)
+      }
+    })(req, res, next)
+    
+  } 
 
 /*
     {
