@@ -27,10 +27,14 @@ const publicKey = fs.readFileSync(path.join(__dirname, 'certs/certificate.pem'))
  * @param  {String} sub - The subject or identity of the token.
  * @return {String} The JWT Token
  */
-exports.createToken = ({ exp = 3600, sub = '', scope = '[read]' } = {}) => {
+exports.createToken = ({ exp = 3600, sub = '', aud = '', scope = '', name = '', role = '' } = {}) => {
   const token = jwt.sign({
     jti : uuid(),
+    iss: 'auth.arasaac.org',
     sub,
+    aud,
+    role,
+    name,
     exp : Math.floor(Date.now() / 1000) + exp,
     scope
   }, privateKey, {

@@ -29,13 +29,13 @@ const expiresIn = {
  * Grant authorization codes
  *
  * The callback takes the `client` requesting authorization, the `redirectURI`
- * (which is used as a verifier in the subseq++uent exchange), the authenticated
+ * (which is used as a verifier in the subsequent exchange), the authenticated
  * `user` granting access, and their response, which contains approved scope,
  * duration, etc. as parsed by the application.  The application issues a code,
  * which is bound to these values, and will be exchanged for an access token.
  */
 server.grant(oauth2orize.grant.code((client, redirectURI, user, ares, done) => {
-  const code = utils.createToken({sub: user.id, exp: config.codeToken.expiresIn});
+  const code = utils.createToken({sub: user.username, aud: client.name, name: user.username, role: user.role, exp: config.codeToken.expiresIn});
   db
     .authorizationCodes
     .save(code, client.id, redirectURI, user.id, client.scope)
@@ -52,7 +52,8 @@ server.grant(oauth2orize.grant.code((client, redirectURI, user, ares, done) => {
  * which is bound to these values.
  */
 server.grant(oauth2orize.grant.token((client, user, ares, done) => {
-  const token = utils.createToken({sub: user.id, exp: config.token.expiresIn});
+  const scope = getScopes(user)
+  const token = utils.createToken({ sub: user.username, aud: client.name, name: user.username, scope, role: user.role, exp: config.token.expiresIn});
   const expiration = config
     .token
     .calculateExpirationDate();
@@ -91,6 +92,18 @@ server.exchange(oauth2orize.exchange.code((client, code, redirectURI, done) => {
 }));
 
 /**
+ * Get scope (api priviledges) for a user role
+ *
+ * 
+ */
+
+const getScopes = (user) => { 
+  if (user.role === 'admin') return ['read', 'write', 'translate', 'admin']
+  else if (user.role === 'translator') return ['read', 'write', 'translate']
+  else return ['read', 'write']
+}
+
+/**
  * Exchange user id and password for access tokens.
  *
  * The callback accepts the `client`, which is exchanging the user's name and password
@@ -105,9 +118,7 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
       ? user.validate(password)
       : logAndThrow(`User ${username} not found`))
     .then(user => {
-      if (user.role==='admin') scope = ['read', 'write', 'translate', 'admin']
-      else if (user.role==='translator') scope = ['read', 'write', 'translate']
-      else scope = ['read', 'write']
+      const scopes = getScopes(user)
       return validate.generateTokens({scope, userID: user.id, clientID: client.clientId})
     })
     .then((tokens) => {
@@ -133,7 +144,7 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
  * application issues an access token on behalf of the client who authorized the code.
  */
 server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
-  const token = utils.createToken({sub: client.id, exp: config.token.expiresIn});
+  const token = utils.createToken({sub: client.name, aud: client.name, name: client.name, role: 'app', exp: config.token.expiresIn});
   const expiration = config
     .token
     .calculateExpirationDate();
