@@ -40,7 +40,6 @@ passport.use(new LocalStrategy((username, password, done) => {
  * the specification, in practice it is quite common.
  */
 passport.use(new BasicStrategy((clientId, clientSecret, done) => {
-  console.log('enter basic strategy....')
   Client.findOne({ clientId: clientId })
     .then(client => client ? client.validate(clientSecret) : logAndThrow(`Client with id ${clientId} not found`))
     .then(client => done(null, client))
@@ -75,7 +74,6 @@ passport.use(new BasicStrategy((clientId, clientSecret, done) => {
  * which accepts those credentials and calls done providing a client.
  */
 passport.use(new ClientPasswordStrategy((clientId, clientSecret, done) => {
-  console.log('enter client-password-strategy....');
   Client.findOne({ clientId: clientId })
     .then(client => client ? client.validate(clientSecret) : logAndThrow(`Client with id ${clientId} not2 found`))
     .then(client => done(null, client))

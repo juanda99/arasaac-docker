@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
+const { logAndThrow } = require('../utils')
 
 var ClientSchema = new mongoose.Schema({
   name: {

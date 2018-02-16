@@ -14,9 +14,9 @@ const Client = require('./db/clients')
 const login = require('connect-ensure-login');
 const oauth2orize = require('oauth2orize');
 const passport = require('passport');
-const utils = require('./utils');
+const { createToken, logAndThrow } = require('./utils');
 const validate = require('./validate');
-var changeHeaderAuthSecret = require('./authHeader');
+// var changeHeaderAuthSecret = require('./authHeader');
 
 // create OAuth 2.0 server
 const server = oauth2orize.createServer();
@@ -39,7 +39,7 @@ const expiresIn = {
  * which is bound to these values, and will be exchanged for an access token.
  */
 server.grant(oauth2orize.grant.code((client, redirectURI, user, ares, done) => {
-  const code = utils.createToken({sub: user.username, aud: client.name, name: user.username, role: user.role, exp: config.codeToken.expiresIn});
+  const code = createToken({sub: user.username, aud: client.name, name: user.username, role: user.role, exp: config.codeToken.expiresIn});
   db
     .authorizationCodes
     .save(code, client.id, redirectURI, user.id, client.scope)
@@ -57,7 +57,7 @@ server.grant(oauth2orize.grant.code((client, redirectURI, user, ares, done) => {
  */
 server.grant(oauth2orize.grant.token((client, user, ares, done) => {
   const scope = getScopes(user)
-  const token = utils.createToken({ sub: user.username, aud: client.name, name: user.username, scope, role: user.role, exp: config.token.expiresIn});
+  const token = createToken({ sub: user.username, aud: client.name, name: user.username, scope, role: user.role, exp: config.token.expiresIn});
   const expiration = config
     .token
     .calculateExpirationDate();
@@ -148,7 +148,7 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
  * application issues an access token on behalf of the client who authorized the code.
  */
 server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
-  const token = utils.createToken({sub: client.name, aud: client.name, name: client.name, role: 'app', exp: config.token.expiresIn});
+  const token = createToken({sub: client.name, aud: client.name, name: client.name, role: 'app', exp: config.token.expiresIn});
   const expiration = config
     .token
     .calculateExpirationDate();
@@ -316,7 +316,7 @@ exports.decision = [
  * authenticate when making requests to this endpoint.
  */
 exports.token = [
-  changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
+  // changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
   passport.authenticate([
     'basic', 'oauth2-client-password'
   ], {session: false}),
