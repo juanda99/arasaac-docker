@@ -19,7 +19,8 @@ const { logAndThrow } = require ('./utils')
  * a user is logged in before asking them to approve the request.
  */
 passport.use(new LocalStrategy((username, password, done) => {
-  User.findOne({ username: username })
+  console.log(username);
+  User.findOne({ email: username })
     .then(user =>  user ? user.validate(password): logAndThrow(`User ${username} not found`))
     .then(user => done(null, user))
     .catch((error) => {
@@ -115,11 +116,11 @@ passport.use(new BearerStrategy((accessToken, done) => {
 // the client by ID from the database.
 
 passport.serializeUser((user, done) => {
-  done(null, user.username);
+  done(null, user._id);
 });
 
 passport.deserializeUser((id, done) => {
-  User.findOne({ username: id }, (err, user) => {
+  User.findOne({ _id: ObjectId(id) }, (err, user) => {
     if (err) done(err)
     if (!user) done(null, null)
     done(null, user)

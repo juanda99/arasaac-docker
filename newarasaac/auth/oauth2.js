@@ -117,7 +117,7 @@ const getScopes = (user) => {
 server.exchange(oauth2orize.exchange.password((client, username, password, scope, done) => {
   /* this should be use just by our app, other spa should use implicit grant */
   User
-    .findOne({username: username})
+    .findOne({email: username})
     .then(user => user
       ? user.validate(password)
       : logAndThrow(`User ${username} not found`))
