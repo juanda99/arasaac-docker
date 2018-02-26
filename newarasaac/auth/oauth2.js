@@ -123,7 +123,7 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
       : logAndThrow(`User ${username} not found`))
     .then(user => {
       const scope = getScopes(user)
-      return validate.generateTokens({scope, userID: user.id, clientID: client.clientId})
+      return validate.generateTokens({scope, userID: user._id, clientID: client.clientId})
     })
     .then((tokens) => {
       if (tokens === false) {
