@@ -1,7 +1,9 @@
+import jwtDecode from 'jwt-decode'
 var User = require('../models/User')
 var mailing = require('../mail')
 var nev = mailing('en')
 var auth = require('../helpers/auth')
+
 
 
 module.exports = {
@@ -112,26 +114,27 @@ module.exports = {
     })
   },
   getProfile: (req, res) => {
-    console.log(req)
-    console.log(req.headers)
-    /*
-    var id = req.swagger.params.id.value
-    User.findOne({ _id: id }, function (err, users) {
+    //console.log(req)
+    // we obtain the user id from token to get his profile
+    const token = req.headers.authorization.split(' ').pop();
+    console.log(token)
+    const decoded = jwtDecode(token)
+    const id = decoded.sub
+    User.findOne({ _id: id }, {_id: 0, password: 0, authToken: 0}, (err, user) => {
       if (err) {
         return res.status(500).json({
-          message: 'Error getting user. ' + err
+          message: 'Error getting user profile. ' + err
         })
       }
-      if (!users) {
+      if (!user) {
         return res.status(404).json({
           message: 'User does not exist. User Id: ' + id
         })
       }
-      return res.status(200).json(users)
+      return res.status(200).json(user)
     })
-    */
-    return res.status(200).json({username: 'juan'})
   },
+
   updateUser: (req, res) => {
     var id = req.swagger.params.id.value
     User.findOne({ _id: id }, function (err, users) {
