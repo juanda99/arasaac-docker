@@ -111,6 +111,27 @@ module.exports = {
       return res.status(200).json(users)
     })
   },
+  getProfile: (req, res) => {
+    console.log(req)
+    console.log(req.headers)
+    /*
+    var id = req.swagger.params.id.value
+    User.findOne({ _id: id }, function (err, users) {
+      if (err) {
+        return res.status(500).json({
+          message: 'Error getting user. ' + err
+        })
+      }
+      if (!users) {
+        return res.status(404).json({
+          message: 'User does not exist. User Id: ' + id
+        })
+      }
+      return res.status(200).json(users)
+    })
+    */
+    return res.status(200).json({username: 'juan'})
+  },
   updateUser: (req, res) => {
     var id = req.swagger.params.id.value
     User.findOne({ _id: id }, function (err, users) {

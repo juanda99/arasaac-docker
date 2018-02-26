@@ -228,6 +228,36 @@ paths:
           description: Unexpected error
           schema:
             $ref: "#/definitions/ErrorMessage"
+  /users/profile:
+    x-swagger-router-controller: users
+    post:
+      operationId: setProfile
+      description: Update user profile
+      security:
+        - login: [admin, user, translator]
+      parameters:
+        - $ref: '#/parameters/User'
+      responses:
+        204:
+          description: The profile was updated succesfully.
+        500:
+          description: Unexpected Error
+          schema:
+            $ref: "#/definitions/ErrorMessage"
+    get:
+      operationId: getProfile
+      description: Obtain user profile 
+      security:
+        - login: [admin, user, translator]
+      responses:
+        200:
+          description: All user specific data&#58; username, email... and their lists of favorites pictos and materials.
+          schema:
+            $ref: "#/definitions/UserProfile"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: "#/definitions/ErrorMessage"
   /auth/login:
     x-swagger-router-controller: auth
     post:
@@ -413,6 +443,31 @@ definitions:
     items: 
       $ref: "#/definitions/User"
       
+  UserProfile:
+    properties: 
+      email: 
+        type: string
+      name: 
+        type: string
+      username: 
+        type: string
+      lastlogin: 
+        type: string
+      locale: 
+        type: string
+        description: Two letters code
+      role:
+        type: string
+        enum:
+          - admin
+          - translator
+          - user
+      materials:
+        type: object
+      pictos:
+        type: object
+      provider:
+        type: object
   ErrorMessage:
     required:
       - message
