@@ -3,7 +3,8 @@ import { authorization } from '../config'
 import { isArray } from 'util';
 const BearerStrategy = require('passport-http-bearer').Strategy
 const request = require('request')
-const jwt = require('jsonwebtoken')
+// const jwt = require('jsonwebtoken')
+import jwtDecode from 'jwt-decode'
 
 
 /**
@@ -20,11 +21,14 @@ passport.use(new BearerStrategy((accessToken, done) => {
   request.get(authUrl, (error, response/*, body*/)=>{
     if (error) done(null, false)
     else if (response.statusCode !== 200) {
-      console.log('NOT VALID!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+      console.log(response.body.error)
       done(null, false)
     }
-    console.log('**********************************************')
-    done(null, accessToken, { scopes: ['profile', 'atest'] })
+    else {
+      // get scope from token
+      const decoded = jwtDecode(accessToken);
+      done(null, accessToken, { scopes: decoded.scope })
+    }
   })
 }))
 
@@ -39,9 +43,6 @@ module.exports = {
 
     // requirement scope for this endpoint:
     const scopeRequired=req.swagger.operation.security[0].login
-    console.log(`scopeRequired: ${scopeRequired}`)
-
-    
     passport.authenticate('bearer', { session: false }, (err, user, info) => {
       if (err) return res.status(500).send(`Error`)
       if (!user) return res.status(401).send(`Unauthorized!`)
