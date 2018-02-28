@@ -13,6 +13,7 @@
 #   "token_type" : "Bearer"
 # }
 
-token=EAAXZCDefCLp4BAMBe5oS2otpqo6kSJXZAd8GAsGYaLpQgTQQMaC5x2rWBb5pKWs6j0dTGn7BDlgSIDO7swtN2zGmW5eKo6miDmL6Ty5ElIpMj96nIsHZA9NG5sNqU6UthL7NZBuJYTEOKggdt0ZB3SQ9Dl7oqhoGJvf9pMYW42NJTzmTjkkKJEXZCzZAXzZCw5pH4Y2eZByFQgAZDZD
+token=EAAXZCDefCLp4BAImTCp9JzBGgGZB9IxdDTVYDNpDwFtLDWuzFBbO84cUnGznpfFcaorLyqytREbw7RZABTRerGytikNckJLPqM0rNXqJz8kZABhWZBOWkoyYTIpjZC33jqdkOjYhZAfvAPd0jXHUj7wADATtkC65mQf27D1qT7MTWflsN9bZAK6aTfAvpeOnNkerAaUJiL4ZA2QZDZD
 
 curl --insecure --user '12345:12345' 'http://localhost:5000/oauth/token/' --data "grant_type=facebook&token=$token&scope=email,public_profile,public_friends"
+#curl --insecure --user '12345:12345' 'http://localhost:5000/oauth/token/' --data "grant_type=facebook&token=$token&scope=offline_access"

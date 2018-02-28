@@ -1,6 +1,6 @@
 import passport from 'passport'
 import { authorization } from '../config'
-import { isArray } from 'util';
+import { isArray } from 'util'
 const BearerStrategy = require('passport-http-bearer').Strategy
 const request = require('request')
 // const jwt = require('jsonwebtoken')
@@ -26,7 +26,7 @@ passport.use(new BearerStrategy((accessToken, done) => {
     }
     else {
       // get scope from token
-      const decoded = jwtDecode(accessToken);
+      const decoded = jwtDecode(accessToken)
       done(null, accessToken, { scopes: decoded.scope })
     }
   })
@@ -35,7 +35,8 @@ passport.use(new BearerStrategy((accessToken, done) => {
 
 
 module.exports = {
-  login:  (req, res, next) => {
+  login: (req, res, next) => {
+    console.log(req.headers.authorization)
     const scopeRequired=req.swagger.operation.security[0].login
     passport.authenticate('bearer', { session: false }, (err, user, info) => {
       if (err) return res.status(500).send(`Error`)

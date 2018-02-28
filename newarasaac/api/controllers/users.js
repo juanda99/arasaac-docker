@@ -116,10 +116,13 @@ module.exports = {
   getProfile: (req, res) => {
     //console.log(req)
     // we obtain the user id from token to get his profile
-    const token = req.headers.authorization.split(' ').pop();
+    const token = req.headers.authorization.split(' ').pop()
     console.log(token)
     const decoded = jwtDecode(token)
     const id = decoded.sub
+    console.log('xxxxxxxxxxxxxx')
+    console.log(id)
+    console.log('xxxxxxxxxxxxxxxx')
     User.findOne({ _id: id }, {_id: 0, password: 0, authToken: 0}, (err, user) => {
       if (err) {
         return res.status(500).json({
