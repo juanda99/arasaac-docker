@@ -5,14 +5,11 @@ const { logAndThrow } = require('../utils')
 var UserSchema = new mongoose.Schema({
   email: {
     type: String,
-    unique: true,
-    required: true,
     trim: true
   },
   id: {
-    type: Number,
-    unique: true,
-    required: true
+    // just for old data. New values with _id
+    type: Number
   },
   role: {
     type: String,
@@ -25,17 +22,25 @@ var UserSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  username: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true
-  },
   password: {
     type: String,
     required: true
+  },
+  facebook: {
+    id: String,
+    token: String,
+    name: String,
+    email: String
+  },
+  google: {
+    id: String,
+    token: String,
+    name: String,
+    email: String
   }
-})
+},
+{ strict: false } /* so we can insert later providers like facebook or google if needed */
+)
 
 /* Do not declare methods using ES6 arrow functions (=>). Arrow functions explicitly prevent binding this, 
 so your method will not have access to the document */

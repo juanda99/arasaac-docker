@@ -21,7 +21,8 @@ const validate = require('./validate');
 // create OAuth 2.0 server
 const server = oauth2orize.createServer();
 
-var oauth2orizeFacebook = require('oauth2orize-facebook');
+// var oauth2orizeFacebook = require('oauth2orize-facebook');
+var oauth2orizeFacebook = require('./oauth2orize-facebook');
 var oauth2orizeGoogle = require('oauth2orize-google');
 
 // Configured expiresIn
@@ -160,6 +161,7 @@ server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => 
     .catch(err => done(err));
 }));
 
+
 /**
  * Exchange the refresh token for an access token.
  *
@@ -177,28 +179,32 @@ server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, 
     .catch(() => done(null, false));
 }));
 
+server.exchange(oauth2orizeFacebook(function (client, profile, scope, done) {
 
-server.exchange(oauth2orizeFacebook(function (client, profile, scope, cb) {
+  //if user does not exists we create it
+  var query = {'facebook.id': profile.id},
+  update = { lastLogin: Date.now(), 'facebook.name': profile.name, 'facebook.id': profile.id },
+  options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
-  console.log (`client: ${client}`)
-  console.log (`profile: ${profile}`)
-  console.log (`scope: ${scope}`)
-
-  // Get access token from client and Facebook profile information. 
-  var accessToken = 'access token';
- 
-  // Refresh token could be returned if it is supported by your OAuth2 server. 
-  // If not available, just pass `null` as argument. 
-  var refreshToken = 'optional refresh token';
- 
-  // Additional parameters to return in response. Pass `null` if not available. 
-  var params = {
-    'welcome_to': 'our OAuth2 server',
-    'glad_to': 'meet you'
-  };
- 
-  cb(null, accessToken, refreshToken, params);
-  // Or just `cb(null, accessToken);` is enough. 
+  User
+    .findOneAndUpdate(query, update, options)
+    .then(user => {
+      const scope = getScopes(user)
+      return validate.generateTokens({scope, userID: user._id, clientID: client.clientId})
+    })
+    .then((tokens) => {
+      if (tokens === false) {
+        return done(null, false);
+      }
+      if (tokens.length === 1) {
+        return done(null, tokens[0], null, expiresIn);
+      }
+      if (tokens.length === 2) {
+        return done(null, tokens[0], tokens[1], expiresIn);
+      }
+      throw new Error('Error exchanging facebook authcode for tokens');
+    })
+    .catch((err) => {console.log(err); done(null, false)});
 }));
 
 

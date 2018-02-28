@@ -13,4 +13,6 @@
 #   "token_type" : "Bearer"
 # }
 
-curl --insecure --user '12345:12345' 'http://localhost:5000/oauth/token/' --data 'grant_type=facebook&token=EAAXZCDefCLp4BADRZBycr6ipM2kGFykfl4vdgZAAkUxIukvwWufvKPrhDaOesT9fnSkghGoTOF6IiSAUiZBSNJELs9Q6eVNWT2vvYvlRDvyATAbdXPELp24cyTRXGkhnK96frRKuvqxqQIT1os9QA341Qo0NTI7kpBWW9MmCZAVyAZB8T9ZAF5v1izwNWLGbro2ytJRyaNhwgZDZD&scope=email,user_profile,public_friends'
+token=EAAXZCDefCLp4BAMBe5oS2otpqo6kSJXZAd8GAsGYaLpQgTQQMaC5x2rWBb5pKWs6j0dTGn7BDlgSIDO7swtN2zGmW5eKo6miDmL6Ty5ElIpMj96nIsHZA9NG5sNqU6UthL7NZBuJYTEOKggdt0ZB3SQ9Dl7oqhoGJvf9pMYW42NJTzmTjkkKJEXZCzZAXzZCw5pH4Y2eZByFQgAZDZD
+
+curl --insecure --user '12345:12345' 'http://localhost:5000/oauth/token/' --data "grant_type=facebook&token=$token&scope=email,public_profile,public_friends"
