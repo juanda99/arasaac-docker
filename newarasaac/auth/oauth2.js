@@ -183,7 +183,7 @@ server.exchange(oauth2orizeFacebook(function (client, profile, scope, done) {
 
   //if user does not exists we create it
   var query = {'facebook.id': profile.id},
-  update = { lastLogin: Date.now(), 'facebook.name': profile.name, 'facebook.id': profile.id },
+  update = { lastLogin: new Date(), 'facebook.name': profile.name, 'facebook.id': profile.id },
   options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
   User
