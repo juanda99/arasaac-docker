@@ -14,9 +14,9 @@
 #   "token_type" : "Bearer"
 # }
 
-server=https://localhost:3000
-username=bob
-password=secret
+server=https://localhost:5000
+username=juandacorreo@gmail.com
+password=12345
 clientid=trustedClient
 clientsecret=ssh-otherpassword
 
