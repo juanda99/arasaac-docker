@@ -21,7 +21,7 @@ produces:
 securityDefinitions:
   login:
     type: oauth2
-    tokenUrl: https://auth.arasaac.org/api/auth/login
+    tokenUrl: https://auth.arasaac.org/oauth/token
     flow: password
     scopes:
       admin: manage users and material approves user uploads
@@ -77,21 +77,6 @@ parameters:
         locale:
           type: string
           enum: ["da", "nl", "en", "fi", "fr", "de", "hu", "it", "nb", "pt", "ro", "ru", "es", "sv", "tr", "ara", "prs", "pes", "urd", "zhs", "zht", "none"]
-  Credentials:
-    name: credentials
-    in: body
-    description: User data for login
-    required: true
-    schema:
-      type: object
-      required:
-      - username
-      - password
-      properties:
-        username:
-          type: string
-        password:
-          type: string 
   Language:
     name: language
     description: Languages than we currently use for pictograms searches.
@@ -282,22 +267,6 @@ paths:
           description: Unexpected error
           schema:
             $ref: "#/definitions/ErrorMessage"
-  /auth/login:
-    x-swagger-router-controller: auth
-    post:
-      operationId: login
-      description: Obtains a token for the user
-      parameters:
-        - $ref: '#/parameters/Credentials'
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/SuccessResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /users/activate/{url}:
     x-swagger-router-controller: users
     post:
@@ -478,13 +447,6 @@ definitions:
       provider:
         type: object
   ErrorMessage:
-    required:
-      - message
-    properties:
-      message:
-        type: string
-
-  SuccessResponse:
     required:
       - message
     properties:
