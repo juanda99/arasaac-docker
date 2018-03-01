@@ -26,7 +26,8 @@ securityDefinitions:
     scopes:
       admin: manage users and material approves user uploads
       translator: add translations to materials
-      user: search pictos, materials and upload materials
+      read: search pictos and materials
+      write: upload materials
     description:
       For accessing the API a valid JWT token must be passed in all the queries in
      the 'Authorization' header.  
@@ -105,6 +106,13 @@ parameters:
     in: path
     required: true
     default: 30
+tags:
+  - name: materials
+    description: Everything about materiales made with Arasaac pictograms
+  - name: pictograms
+    description: Everything about Arasaac pictograms
+  - name: users
+    description: everything about Arasaac users
 paths:
   /keywords/{language}:
     # our controller name
@@ -112,6 +120,8 @@ paths:
     get:
       operationId: getAll
       description: Obtain a list of keywords for pictogams for an specific language (es, en...)
+      tags:
+      - pictograms
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/Language'
@@ -130,6 +140,8 @@ paths:
     get:
       operationId: getMaterialById
       description: Obtain a material based on its key.
+      tags:
+      - materials
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/IdMaterial'
@@ -148,6 +160,8 @@ paths:
     get:
       operationId: getNewMaterials
       description: Obtain materials.
+      tags:
+      - materials
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/Days'
@@ -166,6 +180,8 @@ paths:
     get:
       operationId: searchMaterials
       description: Obtain a list of materials based on the searchText. It will search inside title and description of each material. Locale is only used for search optimization.
+      tags:
+      - materials
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/Locale'
@@ -185,6 +201,8 @@ paths:
     post:
       operationId: createUser
       description: Create a new user
+      tags:
+      - users
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/User'
@@ -216,9 +234,11 @@ paths:
             $ref: "#/definitions/ErrorMessage"
     get:
       operationId: getUsers
-      description: Obtain users general data 
+      description: Obtain users general data
+      tags:
+      - users
       security:
-        - login: [admin, user, translator]
+        - login: [read, write, admin, translator]
       responses:
         200:
           description: List of verified users
@@ -233,8 +253,10 @@ paths:
     post:
       operationId: setProfile
       description: Update user profile
+      tags:
+      - users
       security:
-        - login: [admin, user, translator]
+        - login: [read, write, admin, translator]
       parameters:
         - $ref: '#/parameters/User'
       responses:
@@ -246,9 +268,11 @@ paths:
             $ref: "#/definitions/ErrorMessage"
     get:
       operationId: getProfile
-      description: Obtain user profile 
+      description: Obtain user profile
+      tags:
+      - users
       security:
-        - login: [admin, user, translator]
+        - login: [read, write, admin, translator]
       responses:
         200:
           description: All user specific data&#58; username, email... and their lists of favorites pictos and materials.
@@ -279,6 +303,8 @@ paths:
     post:
       operationId: activateUser
       description: Activate a new user
+      tags:
+      - users
       # define the type of response for Success "200" and Error
       parameters:
         - in: path
@@ -323,23 +349,6 @@ paths:
           description: Unexpected Error
           schema:
             $ref: "#/definitions/ErrorMessage"
-  /users/signin:
-    x-swagger-router-controller: users
-    post:
-      operationId: signIn
-      description: Authenticate user by email and password
-      # define the type of response for Success "200" and Error
-      parameters:
-        - $ref: '#/parameters/User'
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/SuccessResponse"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
