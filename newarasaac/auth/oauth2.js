@@ -23,7 +23,7 @@ const server = oauth2orize.createServer();
 
 // var oauth2orizeFacebook = require('oauth2orize-facebook');
 var oauth2orizeFacebook = require('./oauth2orize-facebook');
-var oauth2orizeGoogle = require('oauth2orize-google');
+var oauth2orizeGoogle = require('./oauth2orize-google');
 
 // Configured expiresIn
 const expiresIn = {
@@ -182,9 +182,9 @@ server.exchange(oauth2orize.exchange.refreshToken((client, refreshToken, scope, 
 server.exchange(oauth2orizeFacebook(function (client, profile, scope, done) {
 
   //if user does not exists we create it
-  var query = {'facebook.id': profile.id},
-  update = { lastLogin: new Date(), 'facebook.name': profile.name, 'facebook.id': profile.id },
-  options = { upsert: true, new: true, setDefaultsOnInsert: true };
+  const query = {'facebook.id': profile.id}
+  const update = { lastLogin: new Date(), 'facebook.name': profile.name, 'facebook.id': profile.id, 'facebook.picture': `https://graph.facebook.com/${profile.id}/picture?type=large` }
+  const options = { upsert: true, new: true, setDefaultsOnInsert: true }
 
   User
     .findOneAndUpdate(query, update, options)
@@ -210,33 +210,34 @@ server.exchange(oauth2orizeFacebook(function (client, profile, scope, done) {
 
 var option = {
   googleConfig: {
-  /*  grant_type: 'xxx',
-    client_id: 'xxx',
-    client_secret: 'xxx',
-    redirect_uri: 'xxx'  // Unnecessary, default is request origin
-  */
   }
 }
-server.exchange(oauth2orizeGoogle(option, function (client, profile, scope, cb) {
-  // Get access token from client and Facebook profile information.
-  var accessToken = 'access token';
+server.exchange(oauth2orizeGoogle(option, function (client, profile, scope, done) {
+  //if user does not exists we create it
+  const query = {'google.id': profile.id}
+  const update = { lastLogin: new Date(), 'google.name': profile.name, 'google.id': profile.sub, 'google.picture': profile.picture }
+  const options = { upsert: true, new: true, setDefaultsOnInsert: true }
 
-  // Refresh token could be returned if it is supported by your OAuth2 server.
-  // If not available, just pass `null` as argument.
-  var refreshToken = 'optional refresh token';
-
-  // Additional parameters to return in response. Pass `null` if not available.
-  var params = {
-    'welcome_to': 'our OAuth2 server',
-    'glad_to': 'meet you'
-  };
-
-  cb(null, accessToken, refreshToken, params);
-  // Or just `cb(null, accessToken);` is enough.
+  User
+    .findOneAndUpdate(query, update, options)
+    .then(user => {
+      const scope = getScopes(user)
+      return validate.generateTokens({scope, userID: user._id, clientID: client.clientId})
+    })
+    .then((tokens) => {
+      if (tokens === false) {
+        return done(null, false);
+      }
+      if (tokens.length === 1) {
+        return done(null, tokens[0], null, expiresIn);
+      }
+      if (tokens.length === 2) {
+        return done(null, tokens[0], tokens[1], expiresIn);
+      }
+      throw new Error('Error exchanging google authcode for tokens');
+    })
+    .catch((err) => {console.log(err); done(null, false)});
 }));
-
-
-
 
 /*
  * User authorization endpoint
