@@ -37,11 +37,10 @@ module.exports = {
           _id: newTempUser._id
         })
         // user already exists in temporary collection!
-      } else {
-        return res.status(409).json({
-          message: 'You have already signed up. Please check your email to verify your account.'
-        })
-      }
+      } 
+      return res.status(409).json({
+        message: 'You have already signed up. Please check your email to verify your account.'
+      })
     })
   },
   activateUser: (req, res) => {
@@ -75,7 +74,7 @@ module.exports = {
       .find({}, { password: 0, authToken: 0, GENERATED_VERIFYING_URL: 0, __v: 0 })
       .sort({ name: 1 })
       .lean()
-      .exec(async (err, users) => {
+      .exec( (err, users) => {
         if (err) {
           return res.status(500).json({
             message: 'Error getting users list: ' + err
