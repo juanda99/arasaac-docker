@@ -25,6 +25,7 @@
     "express": "^4.12.3",
     "express-jwt": "^5.0.0",
     "express-session": "^1.14.1",
+    "intl-locales-supported": "^1.0.0",
     "jwt-decode": "^2.2.0",
     "mongoose": "^4.4.6",
     "oauth2orize": "^1.11.0",
