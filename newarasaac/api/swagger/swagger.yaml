@@ -63,20 +63,21 @@ parameters:
       required:
       - name
       - email
-      - username
       - password
       properties:
         name:
           type: string
         email:
           type: string
-        username:
-          type: string
         password:
           type: string
         locale:
           type: string
           enum: ["da", "nl", "en", "fi", "fr", "de", "hu", "it", "nb", "pt", "ro", "ru", "es", "sv", "tr", "ara", "prs", "pes", "urd", "zhs", "zht", "none"]
+        company:
+          type: string
+        website:
+          type: string
   Language:
     name: language
     description: Languages than we currently use for pictograms searches.
@@ -399,8 +400,6 @@ definitions:
     required:
       - email
       - name
-      - username
-      - locale
     properties: 
       _id:
         type: string
@@ -408,14 +407,17 @@ definitions:
         type: string
       name: 
         type: string
-      username: 
+      role:
         type: string
       lastlogin: 
+        type: string
+      company:
+        type: string
+      website:
         type: string
       locale: 
         type: string
         description: Two letters code
-
   Users: 
     type: array
     items: 
