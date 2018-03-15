@@ -3,7 +3,7 @@
         "files": [ "Asociacion_Profesiones.zip"], 
         "areas": ["Literatura", "Ciencias Naturales", "Ciencias Sociales" ], 
         "authors": [
-            { "author": "César Canalis Casasús", "email": "ccanalis@gmail.com", "empresa": "Colegio Público de Educación Especial Alborada (Zaragoza)", "_id": 4, "web": "http://prueba.com"}, 
+            { "author": "César Canalis Casasús", "email": "ccanalis@gmail.com", "empresa": "Colegio Público de Educación Especial Alborada (Zaragoza)", "id": 4, "web": "http://prueba.com"}, 
             { "author": "José Manuel Marcos Rodrigo", "email": "jmmarcosrodrigo@gmail.com", "empresa": "Colegio Público de Educación Especial Alborada (Zaragoza)", "id": 5, "web": "http://centros6.pntic.mec.es" }
         ], 
         "desc": "La leche, el agua, el vino y la bebida", 

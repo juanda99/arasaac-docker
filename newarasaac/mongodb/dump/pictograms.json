@@ -1,0 +1,20 @@
+ [
+   {
+    "id": 1234,
+    "keywords": [ 
+      {"keyword": "comida", "locution": 34567, "meaning": "Acto de alimentarse a mediodía", "lse": 17589, "type": "noun", "downloads": 0, "sinonyms": ["manjar", "alimento" ] }, 
+      {"keyword": "cena", "locution": 23657, "meaning": "Acto de alimentarse por la noche", "lse": 17629, "type": "noun", "downloads": 0}
+    ],
+    "status": "publish",
+    "created": ISODate("1927-09-04T04:00:00Z"),
+    "lastUpdate": ISODate("1927-09-04T04:00:00Z"),
+    "license": "MIT",
+    "downloads": 0,
+    "authors": [
+      {"name": "Pepito", "surname": "González",  "email": "prueba@prueba.com", "url": "http://www.marca.es", "company": "DGA"}
+    ], 
+    "tags": ["alimentacion", "plato"]
+  }
+]
+
+

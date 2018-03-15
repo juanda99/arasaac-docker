@@ -40,6 +40,12 @@ parameters:
     type: integer
     in: path
     required: true
+  IdPictogram:
+    name: idPictogram
+    description: Pictogram identifier
+    type: integer
+    in: path
+    required: true
   Locale:
     name: locale
     type: string
@@ -97,6 +103,8 @@ tags:
     description: Everything about materiales made with Arasaac pictograms
   - name: pictograms
     description: Everything about Arasaac pictograms
+  - name: keywords
+    description: words used to classify Arasaac pictograms
   - name: users
     description: everything about Arasaac users
 paths:
@@ -105,9 +113,9 @@ paths:
     x-swagger-router-controller: keywords
     get:
       operationId: getAll
-      description: Obtain a list of keywords for pictogams for an specific language (es, en...)
+      description: Obtain a list of keywords for pictograms for an specific language (es, en...)
       tags:
-      - pictograms
+      - keywords
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/Language'
@@ -116,6 +124,49 @@ paths:
           description: An object with the list of keywords for the specified language.
           schema:
             $ref: '#/definitions/Keywords'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /pictograms/{idPictogram}:
+    x-swagger-router-controller: pictograms
+    get:
+      operationId: getPictogramById
+      description: Obtain a material based on its key.
+      tags:
+      - pictograms
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/IdPictogram'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/GetPictogramResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  
+  /pictograms/{locale}/{searchText}:
+    x-swagger-router-controller: pictograms
+    get:
+      operationId: searchPictograms
+      description: Obtain a list of materials based on the searchText. It will search inside title and description of each material. Locale is only used for search optimization.
+      tags:
+      - pictograms
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Locale'
+        - $ref: '#/parameters/SearchText'
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Pictograms"
         default:
           description: Error
           schema:
@@ -341,6 +392,7 @@ definitions:
       - desc
       - files
       - title
+    type: object
     properties: 
       _id:
         type: string
@@ -393,6 +445,48 @@ definitions:
     items: 
       $ref: "#/definitions/Material"
   GetMaterialResponse:
+    properties:
+      material:
+        type: object
+  Pictogram:
+    required:
+      - keywords
+      - authors
+    type: object
+    properties: 
+      _id:
+        type: string
+      id:
+        type: integer
+      keywords: 
+        type: array
+        items: 
+          type: object
+      status: 
+        type: string
+      lastUpdate:
+        type: string
+        format: date-time
+      created:
+        type: string
+        format: date-time
+      license:
+        type: string
+      downloads:
+        type: integer
+      authors: 
+        type: array
+        items: 
+          type: object
+      tags:
+        type: array
+        items:
+          type: object
+  Pictograms: 
+    type: array
+    items: 
+      $ref: "#/definitions/Pictogram"
+  GetPictogramResponse:
     properties:
       material:
         type: object

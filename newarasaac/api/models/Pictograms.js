@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-var materialSchema = new Schema({
+var pictogramSchema = new Schema({
   Nombre: String, 
   Descripción: String, 
   Graduacion: String,
@@ -9,6 +9,6 @@ var materialSchema = new Schema({
   Precio: String 
 })
 
-var Material = mongoose.model('Material', materialSchema, 'materials')
+var Pictogram = mongoose.model('Pictogram', pictogramSchema, 'pictograms')
 
-module.exports = Material
+module.exports = Pictogram

@@ -35,6 +35,7 @@ module.exports = {
   },
   // Materials.find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}}).sort({score:{$meta:'textScore'}}, function(err, materials) {
   // https://docs.mongodb.com/v3.0/reference/operator/query/text/
+  // more complex search: http://stackoverflow.com/questions/28891165/using-weights-for-searching-in-mongoose
   searchMaterials: (req, res) => {
     var locale = req.swagger.params.locale.value
     var searchText = req.swagger.params.searchText.value
@@ -79,35 +80,6 @@ module.exports = {
         )
         return res.json(response)
       })
-  },
-  listMaterials: function(req, res) {
-    Materials.find(function(err, materials){
-      if(err) {
-        return res.status(500).json({
-          message: 'Error obteniendo los materiales',
-          error: err
-        })
-      }
-      return res.json(materials)
-    })
-  },
-  showMaterials: function(req, res) {
-    var id = req.params.id
-    Materials.findOne({_id: id}, function(err, material){
-      if(err) {
-        return res.status(500).json({
-          message: 'Se ha producido un error al obtener el material',
-          error: err
-        })
-      }
-      if(!material) {
-        return res.status(404).json( {
-          message: 'No tenemos este material',
-          err
-        })
-      }
-      return res.json(material)
-    })
   },
   createMaterials: function(req, res) {
     var material = new Materials (req.body)
@@ -172,13 +144,7 @@ module.exports = {
   }
 }
 
-
-
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
-const initMaterial = (material) => {
+const initMaterial = material => {
   material.commonFiles=[]
   material.screenshots={}
   material.commonScreenshots=[]
@@ -186,20 +152,20 @@ const initMaterial = (material) => {
   material.file={}
 }
 
-const getFiles = (material) => {
+const getFiles = material => {
   initMaterial(material)
-  return new Promise ((resolve) => {
+  return new Promise (resolve => {
     let materialLocales=[material.lang]
     let baseDir = `${config.materialsDir}${path.sep}${material.idMaterial}${path.sep}`
-    material.translations.map((translation)=>materialLocales.push(translation.lang))
+    material.translations.map(translation=>materialLocales.push(translation.lang))
     recursive(baseDir, (err, files) => {
       // if err return material, if err is different from no screenshots dir, warning through console
-      if (err) err.code != 'ENOENT' && console.warn (err) 
-      if (files != null) {
+      if (err) err.code !== 'ENOENT' && console.warn (err) 
+      if (files !== null) {
         files.map(file =>{
           let relativeFile = file.replace(baseDir, '')
           let fileName = path.basename(file)
-          if (fileName=='index.html') return // extra files from previous app
+          if (fileName === 'index.html') return // extra files from previous app
           let dir = path.dirname(relativeFile)
           let subdir = path.dirname(relativeFile).split(path.sep).pop()
           if (dir==='.'){
@@ -213,7 +179,7 @@ const getFiles = (material) => {
           else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName)
           else if (dir.match(/screenshots_300\/[A-z]{2,3}$/)) 
             material.screenshots[subdir] ? 
-              material.screenshots[subdir].push(fileName) 
+              material.screenshots[subdir].push(fileName)
             : material.screenshots[subdir] = [fileName]
           else if (dir.match(/^[A-z]{2,3}$/)) 
             material.files[subdir] ?
