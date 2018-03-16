@@ -4,7 +4,7 @@ module.exports = {
   getPictogramById: (req, res) => {
     var id = req.swagger.params.idPictogram.value
     // Use lean to get a plain JS object to modify it, instead of a full model instance
-    Pictograms.findOne({_id: id}).lean().exec( (err, pictogram) => {
+    Pictograms.findOne({id: id}).lean().exec( (err, pictogram) => {
       if(err) {
         return res.status(500).json({
           message: 'Se ha producido un error al obtener el pictogram',
@@ -24,7 +24,7 @@ module.exports = {
     var locale = req.swagger.params.locale.value
     var searchText = req.swagger.params.searchText.value
     Pictograms
-      .find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}})
+      .find({ $text: { $search: searchText, $language: locale, $diacriticSensitive: false } }, {score: {$meta: 'textScore'}})
       .sort({'score': { '$meta': 'textScore'} })
       .lean()
       .exec ((err, pictograms) => {

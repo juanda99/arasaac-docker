@@ -1,20 +1,91 @@
- [
-   {
-    "id": 1234,
-    "keywords": [ 
-      {"keyword": "comida", "locution": 34567, "meaning": "Acto de alimentarse a mediodía", "lse": 17589, "type": "noun", "downloads": 0, "sinonyms": ["manjar", "alimento" ] }, 
-      {"keyword": "cena", "locution": 23657, "meaning": "Acto de alimentarse por la noche", "lse": 17629, "type": "noun", "downloads": 0}
-    ],
-    "status": "publish",
-    "created": ISODate("1927-09-04T04:00:00Z"),
-    "lastUpdate": ISODate("1927-09-04T04:00:00Z"),
-    "license": "MIT",
-    "downloads": 0,
-    "authors": [
-      {"name": "Pepito", "surname": "González",  "email": "prueba@prueba.com", "url": "http://www.marca.es", "company": "DGA"}
-    ], 
-    "tags": ["alimentacion", "plato"]
+[  
+  {
+      "_id" : ObjectId("5aabb680d5a3febb7f3487fc"),
+      "id" : 1234,
+      "keywords" : [ 
+          {
+              "keyword" : "comida",
+              "locution" : 34567,
+              "meaning" : "Acto de alimentarse a mediodía",
+              "lse" : 17589,
+              "type" : "noun",
+              "downloads" : 0,
+              "sinonyms" : [ 
+                  "manjar", 
+                  "alimento"
+              ]
+          }, 
+          {
+              "keyword" : "cena",
+              "locution" : 23657,
+              "meaning" : "Acto de alimentarse por la noche",
+              "lse" : 17629,
+              "type" : "noun",
+              "downloads" : 0
+          }
+      ],
+      "status" : "publish",
+      "created": {
+            "$date": "2015-03-23T09:08:31Z"
+        }, 
+      "lastUpdate": {
+            "$date": "2015-03-23T09:08:31Z"
+        }, 
+      "license" : "MIT",
+      "downloads" : 0,
+      "authors" : [ 
+          {
+              "name" : "Pepito",
+              "surname" : "González",
+              "email" : "prueba@prueba.com",
+              "url" : "http://www.marca.es",
+              "company" : "DGA"
+          }
+      ],
+      "tags" : [ 
+          "alimentación", 
+          "plato"
+      ]
+  },
+  {
+      "_id" : ObjectId("5aabb680d5a3febb7f3487fd"),
+      "id" : 1235,
+      "keywords" : [ 
+          {
+              "keyword" : "día",
+              "locution" : 34567,
+              "meaning" : "Periodo de tiempo formado por mañana, día y noche",
+              "lse" : 17589,
+              "type" : "noun",
+              "downloads" : 0,
+              "sinonyms" : [ 
+                  "24h"
+              ]
+          }
+      ],
+      "status" : "publish",
+      "created": {
+            "$date": "2015-03-23T09:08:31Z"
+        }, 
+      "lastUpdate": {
+            "$date": "2015-03-23T09:08:31Z"
+        }, 
+      "license" : "MIT",
+      "downloads" : 0,
+      "authors" : [ 
+          {
+              "name" : "Pepito",
+              "surname" : "González",
+              "email" : "prueba@prueba.com",
+              "url" : "http://www.marca.es",
+              "company" : "DGA"
+          }
+      ],
+      "tags" : [ 
+          "tiempo", 
+          "duración", 
+          "plato"
+      ]
   }
 ]
-
 

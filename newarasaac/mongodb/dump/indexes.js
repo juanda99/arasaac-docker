@@ -7,4 +7,17 @@ db.materials.createIndex(
     "default_language": "spanish"
   }
 );
-
+db.pictograms.createIndex(
+  { "keywords.keyword": "text", "tags": "text"},
+  {
+    "weights":
+      { "keywords.keyword": 10, "tags":1 },
+    "default_language": "spanish"
+  }
+);
+db.tests.createIndex(
+  { "word": "text"},
+  {
+    "default_language": "spanish"
+  }
+);
