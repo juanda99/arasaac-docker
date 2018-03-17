@@ -91,6 +91,19 @@ services:
     - ./materials:/app/materials
     - /app/node_modules
 
+  svgwatcher:
+    hostname: svgwatcher
+    container_name: svgwatcher
+    build:
+      context: ./svgwatcher
+      dockerfile: svgwatcher-dockerfile.yml
+    command: yarn start
+    volumes:
+    - ./svgwatcher:/app
+    - ./svg:/app/svg:ro
+    - /app/node_modules
+    - ./images/pictos:/app/pictos
+
   mongodb:
     hostname: mongodb
     container_name: mongodb

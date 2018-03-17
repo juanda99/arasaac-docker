@@ -7,7 +7,7 @@ nginx-proxy/vhost.d
 
 # ***** MATERIALS *****
 newarasaac/materials
-newarasaac/.materials
+newarasaac/svg/*.svg
 
 # ***** API *****
 # Runtime configuration for swagger app
@@ -23,6 +23,9 @@ newarasaac/auth/certs/*.pem
 
 # ***** WATCHER *****
 newarasaac/watcher/.config
+
+# ***** WATCHER *****
+newarasaac/svgwatcher/.config
 
 # ***** MONGODB *****
 newarasaac/mongodb/dbdata/*
