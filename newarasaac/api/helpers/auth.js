@@ -3,7 +3,6 @@ import { authorization } from '../config'
 import { isArray } from 'util'
 const BearerStrategy = require('passport-http-bearer').Strategy
 const request = require('request')
-// const jwt = require('jsonwebtoken')
 import jwtDecode from 'jwt-decode'
 
 

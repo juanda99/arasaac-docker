@@ -23,7 +23,6 @@
     "dotenv-safe": "^4.0.4",
     "email-verification": "^0.4.6",
     "express": "^4.12.3",
-    "express-jwt": "^5.0.0",
     "express-session": "^1.14.1",
     "intl-locales-supported": "^1.0.0",
     "jwt-decode": "^2.2.0",
