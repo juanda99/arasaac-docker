@@ -20,6 +20,9 @@
   "dependencies": {
     "chokidar": "^1.7.0",
     "dotenv": "^4.0.0",
+    "fs": "0.0.1-security",
+    "imagemin": "^5.3.1",
+    "imagemin-pngquant": "^5.1.0",
     "sharp": "0.18.4",
     "winston": "^3.0.0-rc1"
   },

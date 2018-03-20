@@ -3,6 +3,11 @@
 var chokidar = require('chokidar')
 var path = require('path')
 var sharp = require('sharp')
+var imagemin = require('imagemin')
+const imageminPngquant = require('imagemin-pngquant')
+const fs = require('fs')
+
+
 const { createLogger, format, transports } = require('winston')
 const { combine, timestamp, label, printf, colorize } = format
 
@@ -14,8 +19,11 @@ const INCLUDE_FILE = "include"
 const EXCLUDE_FILE = "exclude"
 const SVG_DIR= process.env.MATERIALS || '/app/svg'
 const IMAGE_DIR = process.env.MATERIALS || '/app/pictos'
-const RESOLUTIONS = process.env.RESOLUTION || [300, 600]
+const RESOLUTIONS = [300, 500, 2500]
 const NODE_ENV = process.env.NODE_ENV || 'development'
+
+
+
 
 
 // log configuration
@@ -56,9 +64,10 @@ if (process.env.NODE_ENV !== 'production') {
   }))
 }
 
+
 // Initialize watcher.
 var watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
-  ignoreInitial: true,
+  ignoreInitial: false,
   cwd: SVG_DIR
 })
 
@@ -67,16 +76,20 @@ logger.info(`Using folder: ${SVG_DIR}`)
 logger.info(`Start scanning....`)
 
 process.on('uncaughtException', function (err) {
-  logger.log(err)
-  logger.log('error', 'Fatal uncaught exception crashed cluster', err, function (err, level, msg, meta) {
+  // logger.log(err)
+  console.log(err)
+  logger.error('error', 'Fatal uncaught exception crashed cluster', err, function (err, level, msg, meta) {
     process.exit(1)
   })
 })
 
+function prueba(){
+  console.log("kkkkkkk")
+}
+
 // Add event listeners.
 watcher
   .on('add', (file) => {
-    logger.info(`WATCHER - ADDED FILE: ${path.resolve(SVG_DIR, file)}`)
     addTask(file, INCLUDE_FILE)
   })
 
@@ -87,6 +100,7 @@ watcher
   })
   .on('error', error => logger.error(`WATCHER ERROR: ${error}`))
   .on('ready', () => logger.info('Initial scan complete, waiting for changes'))
+
 
 
 const addTask = (file, operation) => {
@@ -100,10 +114,15 @@ const addTask = (file, operation) => {
   } 
 }
 
+// var debouncedTask = _.debounce(addTask, 500);
+
 const convertSVG = (file, resolution) => {
   try {
+    console.log(`executing with ${file}`)
 
     let fileName = path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
+
+
     /* sharp(path.resolve(SVG_DIR, file))
       .resize(resolution)
       .png({
@@ -113,10 +132,49 @@ const convertSVG = (file, resolution) => {
       // .withoutAdaptiveFiltering()
       .toFile(fileName)
     */
-   const pngBuffer = sharp(path.resolve(SVG_DIR, file)).resize(resolution)
-    logger.debug(`IMAGE GENERATED: ${fileName}`)
+   // logger.info(`generating ${file}`)
+
+  
+   console.log(sharp.counters())
+   if (process.memoryUsage().rss > maxRss) {
+    maxRss = process.memoryUsage().rss;
+    console.log(maxRss);
   }
-  catch (err) { 
-    logger.error(`Error converting ${file} to png :${err}`) 
-  }
+
+   sharp(path.resolve(SVG_DIR, file), { density: 450 })
+   .resize(resolution)
+   .png()
+   .toBuffer()
+   .then (buffer => {
+     return imagemin.buffer(buffer, {
+       plugins: [
+         imageminPngquant({quality: '65-80'})
+       ]
+     })
+   })
+   .then(buffer => {
+     fs.open(fileName, 'w', function(err, fd) {  
+       if (err) {
+           throw 'could not open file: ' + err
+       }
+       // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
+       fs.write(fd, buffer, 0, buffer.length, null, function(err) {
+           if (err) throw 'error writing file: ' + err
+           fs.close(fd, function() {
+             logger.info(`IMAGE GENERATED: ${fileName}`)
+           })
+       })
+     })
+   }) 
+   .catch( err => console.log(err) );
+   
+ }
+ catch (err) { 
+   console.log(err)
+   logger.error(`Error converting ${file} to png :${err}`) 
+ }
+
 }
+
+
+
