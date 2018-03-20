@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --ignore 'node_modules' --ignore 'materials' index.js"
+    "start": "nodemon --ignore 'node_modules' --ignore 'svg' --ignore 'pictos' index.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,7 @@
     "fs": "0.0.1-security",
     "imagemin": "^5.3.1",
     "imagemin-pngquant": "^5.1.0",
+    "p-limit": "^1.2.0",
     "sharp": "0.18.4",
     "winston": "^3.0.0-rc1"
   },

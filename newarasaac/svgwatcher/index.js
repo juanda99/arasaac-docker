@@ -6,6 +6,8 @@ var sharp = require('sharp')
 var imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 const fs = require('fs')
+const pLimit = require('p-limit')
+const limit = pLimit(1)
 
 
 const { createLogger, format, transports } = require('winston')
@@ -83,14 +85,13 @@ process.on('uncaughtException', function (err) {
   })
 })
 
-function prueba(){
-  console.log("kkkkkkk")
-}
+
 
 // Add event listeners.
 watcher
   .on('add', (file) => {
-    addTask(file, INCLUDE_FILE)
+    logger.info(`ADD FILE: ${path.resolve(SVG_DIR, file)}`)
+    limit(()=>{addTask(file, INCLUDE_FILE)})
   })
 
   .on('unlink', (file) => {
@@ -118,11 +119,7 @@ const addTask = (file, operation) => {
 
 const convertSVG = (file, resolution) => {
   try {
-    console.log(`executing with ${file}`)
-
     let fileName = path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
-
-
     /* sharp(path.resolve(SVG_DIR, file))
       .resize(resolution)
       .png({
@@ -135,11 +132,8 @@ const convertSVG = (file, resolution) => {
    // logger.info(`generating ${file}`)
 
   
-   console.log(sharp.counters())
-   if (process.memoryUsage().rss > maxRss) {
-    maxRss = process.memoryUsage().rss;
-    console.log(maxRss);
-  }
+   //console.log(sharp.counters())
+
 
    sharp(path.resolve(SVG_DIR, file), { density: 450 })
    .resize(resolution)
