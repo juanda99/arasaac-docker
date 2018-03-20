@@ -104,7 +104,7 @@ const convertSVG = (file, resolution) => {
   try {
 
     let fileName = path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
-    sharp(path.resolve(SVG_DIR, file))
+    /* sharp(path.resolve(SVG_DIR, file))
       .resize(resolution)
       .png({
         compressionLevel: 9,
@@ -112,6 +112,8 @@ const convertSVG = (file, resolution) => {
       })
       // .withoutAdaptiveFiltering()
       .toFile(fileName)
+    */
+   const pngBuffer = sharp(path.resolve(SVG_DIR, file)).resize(resolution)
     logger.debug(`IMAGE GENERATED: ${fileName}`)
   }
   catch (err) { 
