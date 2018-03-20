@@ -59,7 +59,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Initialize watcher.
 var watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
   ignoreInitial: true,
-  cwd: MATERIALS
+  cwd: SVG_DIR
 })
 
 logger.info('ARASAAC SVG-WATCHER STARTED')
@@ -102,10 +102,15 @@ const addTask = (file, operation) => {
 
 const convertSVG = (file, resolution) => {
   try {
-    let fileName = path.resolve(IMAGE_DIR, path.basename($file, '.svg'), `_${resolution}.png` )
-    sharp(file)
+
+    let fileName = path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
+    sharp(path.resolve(SVG_DIR, file))
       .resize(resolution)
-      .png()
+      .png({
+        compressionLevel: 9,
+        adaptiveFiltering: false
+      })
+      // .withoutAdaptiveFiltering()
       .toFile(fileName)
     logger.debug(`IMAGE GENERATED: ${fileName}`)
   }
