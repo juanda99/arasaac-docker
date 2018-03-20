@@ -21,6 +21,7 @@ newarasaac/auth/certs/*.key
 newarasaac/auth/certs/*.crt
 newarasaac/auth/certs/*.csr
 newarasaac/auth/certs/*.pem
+newarasaac/auth/.config
 
 # ***** WATCHER *****
 newarasaac/watcher/.config
