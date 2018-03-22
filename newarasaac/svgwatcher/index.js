@@ -69,7 +69,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Initialize watcher.
 var watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
-  ignoreInitial: false,
+  ignoreInitial: true,
   cwd: SVG_DIR
 })
 
