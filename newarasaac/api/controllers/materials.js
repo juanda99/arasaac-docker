@@ -52,8 +52,7 @@ module.exports = {
         } 
         // if no items, return empty array
         if (materials.length===0) return res.status(404).json([]) //send http code 404!!!
-        const response = await Promise.all(
-          materials.map( async (material) => (await getFiles(material))) // not async&await as we want to get all material images in parallel
+        const response = await Promise.all(materials.map( async material => (await getFiles(material))) // not async&await as we want to get all material images in parallel
         )
         return res.json(response)
       })
@@ -75,9 +74,27 @@ module.exports = {
         }
         // if no items, return empty array
         if (materials.length === 0) return res.status(404).json([]) //send http code 404!!!
-        const response = await Promise.all(
-          materials.map(async(material) => (await getFiles(material))) // not async&await as we want to get all material images in parallel
-        )
+        const response = await Promise.all(materials.map(material => (getFiles(material))))
+        return res.json(response)
+      })
+  },
+  getLastMaterials: (req, res) => {
+    const total = req.swagger.params.total.value
+    Materials
+      .find()
+      .sort({lastUpdate: -1})
+      .limit(total)
+      .lean()
+      .exec(async(err, materials) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error buscando el material',
+            error: err
+          })
+        }
+        // if no items, return empty array
+        if (materials.length === 0) return res.status(404).json([]) //send http code 404!!!
+        const response = await Promise.all(materials.map(material => (getFiles(material))))
         return res.json(response)
       })
   },
@@ -152,6 +169,7 @@ const initMaterial = material => {
   material.file={}
 }
 
+
 const getFiles = material => {
   initMaterial(material)
   return new Promise (resolve => {
@@ -175,15 +193,12 @@ const getFiles = material => {
               let fileLocale = fileName.split('-')[1]
               material.file[fileLocale]=fileName
             } else material.commonFiles.push(fileName)
-          } 
-          else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName)
-          else if (dir.match(/screenshots_300\/[A-z]{2,3}$/)) 
-            material.screenshots[subdir] ? 
-              material.screenshots[subdir].push(fileName)
-            : material.screenshots[subdir] = [fileName]
-          else if (dir.match(/^[A-z]{2,3}$/)) 
-            material.files[subdir] ?
-              material.files[subdir].push (fileName)
+          } else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName)
+          else if (dir.match(/screenshots_300\/[A-z]{2,3}$/)) material.screenshots[subdir] 
+              ? material.screenshots[subdir].push(fileName)
+              : material.screenshots[subdir] = [fileName]
+          else if (dir.match(/^[A-z]{2,3}$/)) material.files[subdir]
+              ? material.files[subdir].push (fileName)
               : material.files[subdir] = [fileName]
         })
       }
