@@ -1,0 +1,40 @@
+{
+  "name": "privateapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --ignore 'node_modules' app.js",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "dotenv-safe": "^5.0.1",
+    "express": "^4.16.3",
+    "formidable": "^1.2.1",
+    "mongoose": "^5.0.11"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.0",
+    "nodemon": "^1.17.2",
+    "prettier": "1.11.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": false
+  }
+}
