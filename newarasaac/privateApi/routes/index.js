@@ -1,10 +1,10 @@
 const router = require('express').Router()
-const materiales = require('./materiales')
+const materials = require('./materials')
 
-router.use('/materiales', materiales)
+router.use('/materials', materials)
 
 router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Estás conectado a nuestra API' })
+  res.status(200).json({ message: 'Connected to ARASAAC private API' })
 })
 
 module.exports = router

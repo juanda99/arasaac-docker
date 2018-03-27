@@ -2,48 +2,49 @@ const Materials = require('../models/materials')
 const formidable = require('formidable')
 
 module.exports = {
-  create: (req, res, next) => {
+  create: (req, res) => {
     const form = new formidable.IncomingForm()
     form.encoding = 'utf-8'
-    form.uploadDir = `${__dirname}/uploads`
+    // form.uploadDir = `${__dirname}/uploads`
     form
-      .parse(req)
-      .on('fileBegin', (name, file) => {
-        console.log(`upfile file to ${__dirname}/uploads/${file.name}`)
+      .parse(req, (err, fields, files) => {
+        console.log(fields)
+        console.log(JSON.parse(fields))
+        if (fields.translations) {
+          const translations = JSON.parse(fields.translations)
+          const originalData = translations.shift()
+          const data = { ...fields, translations, ...originalData }
+          console.log(data)
+          const Material = new Materials(data)
+          console.log('grabando....')
+          Material.save((err, material) => {
+            if (err) {
+              return res.status(500).json({
+                message: 'Error al guardar el material',
+                error: err
+              })
+            }
+            // mongodb saves data, so we move files to its dir
+            return res.status(201).json({
+              message: 'saved',
+              _id: material._id
+            })
+          })
+        }
       })
-      .on('file', (name, file) => {
-        console.log(name)
-        // console.log(file)
-        console.log(`Uploaded ${file.name}`)
+      // show progress with socket.io? better from client,
+      // see: https://stackoverflow.com/questions/29659154/what-is-the-best-way-to-upload-files-in-a-modern-browser
+      /*
+      .on('progress', (bytesReceived, bytesExpected) => {
+        console.log('Progress so far: '+(bytesReceived / bytesExpected * 100).toFixed(0)+"%")
       })
-      .on('field', (name, field) => {
-        console.log(`Got a field:, ${name} - ${field}`)
-      })
+      */
       .on('error', err => {
         return res.status(500).json({
           message: 'Error al leer el fichero',
           error: err
         })
       })
-      .on('end', () => {
-        // we move files to the proper directory
-        // save to mongoDB and move files to proper directory
-        res.end()
-      })
-
-    const material = new Materials(req.body)
-    material.save((err, material) => {
-      if (err) {
-        return res.status(500).json({
-          message: 'Error al guardar el material',
-          error: err
-        })
-      }
-      return res.status(201).json({
-        message: 'saved',
-        _id: material._id
-      })
-    })
   },
   update: (req, res) => {
     const { id } = req.params
