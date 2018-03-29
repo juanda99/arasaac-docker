@@ -8,29 +8,33 @@ module.exports = {
     // form.uploadDir = `${__dirname}/uploads`
     form
       .parse(req, (err, fields, files) => {
-        console.log(fields)
-        console.log(JSON.parse(fields))
-        if (fields.translations) {
-          const translations = JSON.parse(fields.translations)
-          const originalData = translations.shift()
-          const data = { ...fields, translations, ...originalData }
-          console.log(data)
-          const Material = new Materials(data)
-          console.log('grabando....')
-          Material.save((err, material) => {
-            if (err) {
-              return res.status(500).json({
-                message: 'Error al guardar el material',
-                error: err
-              })
-            }
-            // mongodb saves data, so we move files to its dir
-            return res.status(201).json({
-              message: 'saved',
-              _id: material._id
-            })
+        const formData = JSON.parse(fields.formData)
+        if (!formData.translations) {
+          return res.status(422).json({
+            error: 'It neeeds at least title and desc in one language'
           })
         }
+        const { translations } = formData
+        const originalData = translations.shift()
+        // const originalData = translations.slice(0, 1)
+        // set lang if needed (not only language)
+        const data = { ...formData, translations, ...originalData }
+        console.log(data)
+        const Material = new Materials(data)
+        console.log('grabando....')
+        Material.save((err, material) => {
+          if (err) {
+            return res.status(500).json({
+              message: 'Error al guardar el material',
+              error: err
+            })
+          }
+          // mongodb saves data, so we move files to its dir
+          return res.status(201).json({
+            message: 'saved',
+            _id: material._id
+          })
+        })
       })
       // show progress with socket.io? better from client,
       // see: https://stackoverflow.com/questions/29659154/what-is-the-best-way-to-upload-files-in-a-modern-browser
