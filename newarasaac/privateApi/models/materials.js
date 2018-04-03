@@ -16,11 +16,11 @@ const translationSchema = new Schema({
 })
 
 const materialSchema = new Schema({
-  activity: {
+  activities: {
     type: [Number],
     required: true
   },
-  area: {
+  areas: {
     type: [Number],
     required: true
   },
