@@ -179,7 +179,8 @@ const getFiles = material => {
     recursive(baseDir, (err, files) => {
       // if err return material, if err is different from no screenshots dir, warning through console
       if (err) err.code !== 'ENOENT' && console.warn (err) 
-      if (files !== null) {
+      if (files) {
+        console.log(`Files: ${files}`)
         files.map(file =>{
           let relativeFile = file.replace(baseDir, '')
           let fileName = path.basename(file)
@@ -194,12 +195,15 @@ const getFiles = material => {
               material.file[fileLocale]=fileName
             } else material.commonFiles.push(fileName)
           } else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName)
-          else if (dir.match(/screenshots_300\/[A-z]{2,3}$/)) material.screenshots[subdir] 
+          else if (dir.match(/screenshots_300\/[A-z]{2,3}$/)) {
+            material.screenshots[subdir]
               ? material.screenshots[subdir].push(fileName)
               : material.screenshots[subdir] = [fileName]
-          else if (dir.match(/^[A-z]{2,3}$/)) material.files[subdir]
+          } else if (dir.match(/^[A-z]{2,3}$/)) {
+            material.files[subdir]
               ? material.files[subdir].push (fileName)
               : material.files[subdir] = [fileName]
+          }
         })
       }
       resolve(material)
