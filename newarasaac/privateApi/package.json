@@ -20,7 +20,8 @@
     "dotenv-safe": "^5.0.1",
     "express": "^4.16.3",
     "formidable": "^1.2.1",
-    "mongoose": "^5.0.11"
+    "mongoose": "^5.0.11",
+    "mongoose-plugin-autoinc": "^1.1.9"
   },
   "devDependencies": {
     "eslint": "^4.19.1",

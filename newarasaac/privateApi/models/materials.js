@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const mongoosePluginAutoinc = require('mongoose-plugin-autoinc')
+const { autoIncrement } = mongoosePluginAutoinc
 const { Schema } = mongoose
 
 const authorSchema = new Schema({
@@ -37,6 +39,12 @@ const materialSchema = new Schema({
   translations: [translationSchema]
 })
 
+materialSchema.plugin(autoIncrement, {
+  model: 'Material',
+  field: 'idMaterial',
+  startAt: 1709,
+  incrementBy: 1
+})
 const Material = mongoose.model('Material', materialSchema)
 
 module.exports = Material
