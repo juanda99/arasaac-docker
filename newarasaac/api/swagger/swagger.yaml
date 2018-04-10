@@ -98,6 +98,12 @@ parameters:
     in: path
     required: true
     default: 30
+  NumItems:
+    name: numItems
+    description: Number of items
+    type: integer
+    in: path
+    required: true
 tags:
   - name: materials
     description: Everything about materiales made with Arasaac pictograms
@@ -206,12 +212,32 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/GetMaterialResponse"
+            $ref: "#/definitions/Materials"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
             
+  /materials/new/{numItems}:
+    x-swagger-router-controller: materials
+    get:
+      operationId: getLastMaterials
+      description: Obtain last modified or publish materials.
+      tags:
+      - materials
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/NumItems'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Materials"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
   /materials/{locale}/{searchText}:
     x-swagger-router-controller: materials
     get:

@@ -79,11 +79,11 @@ module.exports = {
       })
   },
   getLastMaterials: (req, res) => {
-    const total = req.swagger.params.total.value
+    const numItems = req.swagger.params.numItems.value
     Materials
       .find()
       .sort({lastUpdate: -1})
-      .limit(total)
+      .limit(numItems)
       .lean()
       .exec(async(err, materials) => {
         if (err) {
