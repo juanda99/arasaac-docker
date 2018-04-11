@@ -5,6 +5,8 @@ module.exports = {
   create: (req, res) => {
     const form = new formidable.IncomingForm()
     form.encoding = 'utf-8'
+    form.keepExtensions = true
+    form.multiples = true
     // form.uploadDir = `${__dirname}/uploads`
     form
       .parse(req, (err, fields, files) => {
@@ -21,7 +23,6 @@ module.exports = {
         const data = { ...formData, translations, ...originalData }
         console.log(data)
         const Material = new Materials(data)
-        console.log('grabando....')
         Material.save((err, material) => {
           if (err) {
             return res.status(500).json({
@@ -30,9 +31,11 @@ module.exports = {
             })
           }
           // mongodb saves data, so we move files to its dir
+          // files, screenshots, {lang}_files, {lang}_screenshots
+          // if files.files
+          console.log(files)
           return res.status(201).json({
-            message: 'saved',
-            _id: material._id
+            id: material.idMaterial
           })
         })
       })
