@@ -5,6 +5,9 @@ nginx-proxy/certs/*.crt
 nginx-proxy/certs/*.pem
 nginx-proxy/vhost.d
 
+# ***** FRONTEND *****
+newarasaac/frontend/code/
+
 # ***** MATERIALS *****
 newarasaac/materials
 newarasaac/svg/*.svg
