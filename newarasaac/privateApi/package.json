@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --ignore 'node_modules' app.js",
+    "debug": "nodemon --inspect=0.0.0.0:9229 --ignore 'materials/' app.js",
+    "start": "nodemon --ignore 'materials/' app.js",
+
     "precommit": "lint-staged"
   },
   "lint-staged": {

@@ -54,7 +54,31 @@ services:
       - backend
     ports:
       - "9229:9229"
-  
+  privateapi:
+    hostname: privateapi
+    container_name: privateapi
+    build:
+      context: ./privateApi
+      dockerfile: dockerfile.yml
+    command: yarn debug
+    depends_on:
+      - mongodb
+      - auth
+    volumes:
+    - ./api:/app
+    - ./materials:/app/materials
+    - /app/node_modules
+    environment:
+      LETSENCRYPT_HOST: "privateapi.arasaac.org"
+      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      VIRTUAL_HOST: "privateapi.arasaac.org"
+      NODE_ENV: "production"
+    networks:
+      - nginxproxy_frontend
+      - backend
+    ports:
+      - "9227:9229"
+ 
   auth:
     hostname: auth
     container_name: auth
