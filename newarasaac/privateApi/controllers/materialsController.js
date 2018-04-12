@@ -22,8 +22,14 @@ module.exports = {
         // set lang if needed (not only language)
         const data = { ...formData, translations, ...originalData }
         console.log(data)
+        console.log('*************************')
         const Material = new Materials(data)
+        console.log('kkkkkkkkkkkkkkkkkkk')
         Material.save((err, material) => {
+          console.log(err)
+          console.log(material)
+          console.log('*************************')
+
           if (err) {
             return res.status(500).json({
               message: 'Error al guardar el material',
