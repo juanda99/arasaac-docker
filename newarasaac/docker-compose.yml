@@ -65,7 +65,7 @@ services:
       - mongodb
       - auth
     volumes:
-    - ./api:/app
+    - ./privateApi:/app
     - ./materials:/app/materials
     - /app/node_modules
     environment:
