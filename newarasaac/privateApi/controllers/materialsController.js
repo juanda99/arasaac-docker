@@ -1,6 +1,8 @@
 const Materials = require('../models/materials')
 const formidable = require('formidable')
 
+const MATERIALS = process.env.MATERIALS || '/app/materials'
+
 module.exports = {
   create: (req, res) => {
     const form = new formidable.IncomingForm()
@@ -21,7 +23,6 @@ module.exports = {
         // const originalData = translations.slice(0, 1)
         // set lang if needed (not only language)
         const data = { ...formData, translations, ...originalData }
-        console.log(data)
         const Material = new Materials(data)
         Material.save((err, material) => {
           if (err) {
@@ -30,10 +31,11 @@ module.exports = {
               error: err
             })
           }
+          console.log(files)
           // mongodb saves data, so we move files to its dir
           // files, screenshots, {lang}_files, {lang}_screenshots
           // if files.files
-          console.log(files)
+          saveFiles(files, material.idMaterial)
           return res.status(201).json({
             id: material.idMaterial
           })
@@ -95,4 +97,21 @@ module.exports = {
       return res.json(material)
     })
   }
+}
+
+const saveFilesByType = (formFiles, id) => {
+  let files, screenshots, langFiles, langScreenshots
+  let langFilesPattern = new RegExp(`^[A-z]{2,3}langFiles$`, 'i')
+  let langScreenshotsPattern = new RegExp(`^[A-z]{2,3}langScreenshots$`, 'i')
+  /*
+  if (formFiles.files) saveFiles(formFiles.files, `$`)
+  if (formFiles.screnshots)
+  screenshots = formFiles.screenshots ? true : false
+  langFiles = Object.keys(formFiles).some((key) => langFilesPattern.test(key))
+  langScreenshots = Object.keys(formFiles).some((key) => langScreenshotsPattern.test(key))
+
+*/
+
+  // mongodb saves data, so we move files to its dir
+  // files, screenshots, {lang}_files, {lang}_screenshots
 }

@@ -1,7 +1,4 @@
-const development = require('./env/development')
 const path = require('path')
-const test = require('./env/test')
-const production = require('./env/production')
 const dotenv = require('dotenv-safe')
 
 dotenv.load()
@@ -13,7 +10,7 @@ const requireProcessEnv = name => {
   return process.env[name]
 }
 
-const defaults = {
+const config = {
   port: process.env.PORT || 8100, // port 80 by default, defined in api-dockerfile.yml
   materialsDir: path.join(process.cwd(), 'materials'),
   masterKey: requireProcessEnv('MASTER_KEY'),
@@ -27,7 +24,8 @@ const defaults = {
     authorizeURL: 'https://auth.arasaac.org/dialog/authorize',
     tokeninfoURL: 'http://auth/api/tokeninfo?access_token=',
     redirectURL: 'https://api.arasaac.org/receivetoken'
-  }
+  },
+  databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac'
 }
 
 
@@ -35,8 +33,4 @@ const defaults = {
  * Expose
  */
 
-module.exports = {
-  development: Object.assign({}, defaults, development),
-  test: Object.assign({}, defaults, test),
-  production: Object.assign({}, defaults, production)
-}[process.env.NODE_ENV || 'development']
+module.exports = config

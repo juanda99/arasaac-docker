@@ -3,7 +3,7 @@ const cors = require('cors')
 const router = require('./routes')
 
 const app = express()
-const port = process.env.port || 4000
+const port = process.env.port || 80
 
 /* bbdd config */
 require('./db')
