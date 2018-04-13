@@ -45,13 +45,17 @@ services:
       - .env
     networks:
       - backend
+      - newarasaac_backend
     depends_on:
       - db
     volumes:
       - "./data:/app/data"
+  
 
 networks:
   nginxproxy_frontend:
     external: true
   backend:
     driver: bridge
+  newarasaac_backend:
+    external: true
