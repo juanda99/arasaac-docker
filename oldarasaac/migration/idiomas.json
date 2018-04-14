@@ -1,0 +1,98 @@
+[
+  {
+    "desc": "Español",
+    "lang": "es",
+    "table": "palabras",
+    "encoding": "latin1"
+  },
+  {
+    "desc": "Ruso",
+    "lang": "ru",
+    "table": "1",
+    "encoding": "1251"
+  },
+  {
+    "desc": "Rumano",
+    "lang": "ro",
+    "table": "2",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Arabe",
+    "lang": "ar",
+    "table": "3",
+    "encoding": "1256"
+  },
+  {
+    "desc": "Chino",
+    "lang": "zh",
+    "table": "4",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Bulgaro",
+    "lang": "bg",
+    "table": "5",
+    "encoding": "1251"
+  },
+  {
+    "desc": "Polaco",
+    "lang": "pl",
+    "table": "6",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Ingles",
+    "lang": "en",
+    "table": "7",
+    "encoding": "latin1"
+  },
+  {
+    "desc": "Frances",
+    "lang": "fr",
+    "table": "8",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Catalan",
+    "lang": "ca",
+    "table": "9",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Euskera",
+    "lang": "eu",
+    "table": "10",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Aleman",
+    "lang": "de",
+    "table": "11",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Italiano",
+    "lang": "it",
+    "table": "12",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Portugues",
+    "lang": "pt",
+    "table": "13",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Gallego",
+    "lang": "ga",
+    "table": "14",
+    "encoding": "utf-8"
+  },
+  {
+    "desc": "Portugues de Brasil",
+    "lang": "br",
+    "table": "15",
+    "encoding": "utf-8"
+  }
+]
