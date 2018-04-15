@@ -6,7 +6,6 @@
   "scripts": {
     "debug": "nodemon --inspect=0.0.0.0:9229 --ignore 'materials/' app.js",
     "start": "nodemon --ignore 'materials/' app.js",
-
     "precommit": "lint-staged"
   },
   "lint-staged": {
@@ -22,6 +21,7 @@
     "dotenv-safe": "^5.0.1",
     "express": "^4.16.3",
     "formidable": "^1.2.1",
+    "fs-extra": "^5.0.0",
     "mongoose": "^5.0.11",
     "mongoose-plugin-autoinc": "^1.1.9"
   },
