@@ -7,20 +7,20 @@ const saveFiles = async (files, dir) => {
   if (Array.isArray(files)) {
     return Promise.all(
       files.map(file => {
-        const { filename, path, name } = file
-        const destDir = path.resolve(path, name)
-        return fs.move(filename, destDir)
+        const destDir = path.resolve(dir, file.name)
+        return fs.move(file.path, destDir)
       })
     )
   }
-  const { filename, path, name } = files
-  const destDir = path.resolve(path, name)
-  return fs.move(filename, destDir)
+  const destDir = path.resolve(dir, file.name)
+  return fs.move(file.path, destDir)
 }
 
 module.exports = {
   saveFilesByType: async (formFiles, id) => {
     const filePromises = []
+    let filesPromise
+    let screenshotsPromise
     const langFilesPattern = new RegExp(`^[A-z]{2,3}langFiles$`, 'i')
     const langScreenshotsPattern = new RegExp(
       `^[A-z]{2,3}langScreenshots$`,
@@ -28,17 +28,16 @@ module.exports = {
     )
 
     if (formFiles.files) {
-      filePromises.push(
-        saveFiles(formFiles.files, path.resolve(MATERIALS, id, 'files'))
+      filePromise = saveFiles(
+        formFiles.files, 
+        path.resolve(MATERIALS, `${id}`, 'files')
       )
     }
 
     if (formFiles.screnshots) {
-      filePromises.push(
-        saveFiles(
-          formFiles.screenshots,
-          path.resolve(MATERIALS, id, 'screenshots')
-        )
+      screenshotsPromise = saveFiles(
+        formFiles.screenshots,
+        path.resolve(MATERIALS, `${id}`, 'files')
       )
     }
 
@@ -48,7 +47,10 @@ module.exports = {
 
     const langFilesPromises = langFiles.map(langFile => {
       const locale = langFile.substr(0, langFile.indexOf('langFile'))
-      return saveFiles(formFiles[langFile], path.resolve(MATERIALS, id, locale))
+      return saveFiles(
+        formFiles[langFile],
+        path.resolve(MATERIALS, `${id}`, locale, 'files')
+      )
     })
 
     const langScreenshotsFiles = Object.keys(formFiles).filter(key =>
@@ -62,14 +64,15 @@ module.exports = {
       )
       return saveFiles(
         formFiles[langScreenshot],
-        path.resolve(MATERIALS, id, locale)
+        path.resolve(MATERIALS, `${id}`, locale, 'screenshots')
       )
     })
 
-    return Promise.all(
-      ...filePromises,
+    return Promise.all([
+      filesPromise,
+      screenshotsPromise,
       ...langFilesPromises,
       ...langScreenshotsPromises
-    )
+    ])
   }
 }
