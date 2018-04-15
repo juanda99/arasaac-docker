@@ -1,6 +1,6 @@
 const Materials = require('../models/materials')
 const formidable = require('formidable')
-const saveFilesByType = require('./utils')
+const saveFilesByType = require('./utils').saveFilesByType
 
 module.exports = {
   create: (req, res) => {
@@ -26,20 +26,21 @@ module.exports = {
       try {
         material = await Material.save()
       } catch (err) {
+        console.log(err)
         return res.status(500).json({
           message: 'Error al guardar el material',
           error: err
         })
       }
-
       try {
         await saveFilesByType(files, material.idMaterial)
         return res.status(201).json({
           id: material.idMaterial
         })
       } catch (err) {
+        console.log(err)
         return res.status(500).json({
-          message: 'Error al guardar el material',
+          message: 'Error saving material',
           error: err
         })
       }
