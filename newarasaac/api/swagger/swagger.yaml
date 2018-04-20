@@ -135,7 +135,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   
-  /pictograms/{idPictogram}:
+  /pictograms/{locale}/{idPictogram}:
     x-swagger-router-controller: pictograms
     get:
       operationId: getPictogramById
@@ -144,6 +144,7 @@ paths:
       - pictograms
       # define the type of response for Success "200" and Error
       parameters:
+        - $ref: '#/parameters/Locale'
         - $ref: '#/parameters/IdPictogram'
       responses:
         "200":
@@ -156,7 +157,7 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   
   
-  /pictograms/{locale}/{searchText}:
+  /pictograms/search/{locale}/{searchText}:
     x-swagger-router-controller: pictograms
     get:
       operationId: searchPictograms
