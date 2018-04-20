@@ -15,6 +15,7 @@ services:
       VIRTUAL_HOST: "beta.arasaac.org"
     networks:
       - nginxproxy_frontend
+
   webstatic:
     image: nginx
     hostname: webstatic
@@ -54,6 +55,7 @@ services:
       - backend
     ports:
       - "9229:9229"
+
   privateapi:
     hostname: privateapi
     container_name: privateapi
@@ -139,6 +141,23 @@ services:
       - backend
     ports:
       - "27000:27017"
+
+  sftp:
+    hostname: sftp
+    container_name: sftp
+    image: atmoz/sftp
+    env_file:
+      - .env
+    volumes:
+      - ./ssh_keys/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key
+      - ./ssh_keys/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key
+      - ./svg:/home/betaarasaac/svg
+      - ./materials:/home/betaarasaac/materials
+    ports:
+      - "8005:22"
+    command: betaarasaac:${SFTP_PASSWORD}
+    networks:
+      - nginxproxy_frontend
 
 networks:
   nginxproxy_frontend:

@@ -5,6 +5,12 @@ nginx-proxy/certs/*.crt
 nginx-proxy/certs/*.pem
 nginx-proxy/vhost.d
 
+newarasaac/.env
+
+# ***** SFTP *****
+newarasaac/ssh_keys/*key
+
+
 # ***** FRONTEND *****
 newarasaac/frontend/code/
 
