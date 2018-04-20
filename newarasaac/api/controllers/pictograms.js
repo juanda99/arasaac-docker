@@ -2,7 +2,8 @@ var Pictograms = require('../models/Pictograms')
 
 module.exports = {
   getPictogramById: (req, res) => {
-    var id = req.swagger.params.idPictogram.value
+    const id = req.swagger.params.idPictogram.value
+    const locale = req.swagger.params.locale.value
     // Use lean to get a plain JS object to modify it, instead of a full model instance
     Pictograms.findOne({id: id}).lean().exec( (err, pictogram) => {
       if(err) {
