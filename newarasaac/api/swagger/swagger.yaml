@@ -157,7 +157,7 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   
   
-  /pictograms/search/{locale}/{searchText}:
+  /pictograms/{locale}/search/{searchText}:
     x-swagger-router-controller: pictograms
     get:
       operationId: searchPictograms
@@ -169,6 +169,48 @@ paths:
         - $ref: '#/parameters/Locale'
         - $ref: '#/parameters/SearchText'
 
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Pictograms"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  
+  /pictograms/{locale}/days/{days}:
+    x-swagger-router-controller: pictograms
+    get:
+      operationId: getNewPictograms
+      description: Obtain pictograms created or updated in the last days.
+      tags:
+      - pictograms
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Locale'
+        - $ref: '#/parameters/Days'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Pictograms"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /pictograms/{locale}/new/{numItems}:
+    x-swagger-router-controller: pictograms
+    get:
+      operationId: getLastPictograms
+      description: Obtain last modified or publish pictograms.
+      tags:
+      - pictograms
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Locale'
+        - $ref: '#/parameters/NumItems'
       responses:
         "200":
           description: Success

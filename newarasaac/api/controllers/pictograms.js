@@ -1,20 +1,37 @@
-var Pictograms = require('../models/Pictograms')
+
+// we load pictos model for all languages
+
+const setPictogramModel = require('../models/Pictograms')
+const languages = [
+  'ar',
+  'bg',
+  'en',
+  'es',
+  'pl',
+  'ro',
+  'ru',
+  'zh'
+]
+const Pictograms = languages.reduce((dict, language)=> {
+  dict[language]= setPictogramModel(language)
+  return dict
+}, {})
 
 module.exports = {
   getPictogramById: (req, res) => {
     const id = req.swagger.params.idPictogram.value
     const locale = req.swagger.params.locale.value
     // Use lean to get a plain JS object to modify it, instead of a full model instance
-    Pictograms.findOne({id: id}).lean().exec( (err, pictogram) => {
+    Pictograms[locale].findOne({id_image: id}).exec( (err, pictogram) => {
       if(err) {
         return res.status(500).json({
-          message: 'Se ha producido un error al obtener el pictogram',
+          message: 'Error getting pictograms. See error field for detail',
           error: err
         })
       }
       if(!pictogram) {
         return res.status(404).json( {
-          message: 'No tenemos este pictograma',
+          message: `Error getting pictogram with id ${id}`,
           err
         })
       }
@@ -24,19 +41,60 @@ module.exports = {
   searchPictograms: (req, res) => {
     var locale = req.swagger.params.locale.value
     var searchText = req.swagger.params.searchText.value
-    Pictograms
+    Pictograms[locale]
       .find({ $text: { $search: searchText, $language: locale, $diacriticSensitive: false } }, {score: {$meta: 'textScore'}})
       .sort({'score': { '$meta': 'textScore'} })
       .lean()
       .exec ((err, pictograms) => {
         if(err) {
           return res.status(500).json({
-            message: 'Error buscando el pictograma',
+            message: 'Error getting pictograms. See error field for detail',
             error: err
           })
         } 
         // if no items, return empty array
         if (pictograms.length===0) return res.status(404).json([]) //send http code 404!!!
+        return res.json(pictograms)
+      })
+  },
+  getNewPictograms: (req, res) => {
+    let days = req.swagger.params.days.value
+    var locale = req.swagger.params.locale.value
+    let startDate = new Date()
+    startDate.setDate(startDate.getDate() - days)
+    Pictograms[locale]
+      .find({ lastUpdate: { $gt: startDate } })
+      .sort({ lastUpdate: -1 })
+      .lean()
+      .exec((err, pictograms) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error buscando el material',
+            error: err
+          })
+        }
+        // if no items, return empty array
+        if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
+        return res.json(pictograms)
+      })
+  },
+  getLastPictograms: (req, res) => {
+    const numItems = req.swagger.params.numItems.value
+    var locale = req.swagger.params.locale.value
+    Pictograms[locale]
+      .find()
+      .sort({ lastUpdate: -1 })
+      .limit(numItems)
+      .lean()
+      .exec((err, pictograms) => {
+        if (err) {
+          return res.status(500).json({
+            message: 'Error buscando el material',
+            error: err
+          })
+        }
+        // if no items, return empty array
+        if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
         return res.json(pictograms)
       })
   }

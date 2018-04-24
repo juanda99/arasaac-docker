@@ -57,7 +57,7 @@ const  pictogramSchema = new Schema({
 })
 
 module.exports = locale => {
-  return mongoose.model('Pictogram', pictogramSchema, `picto-${locale}`)
+  return mongoose.model('Pictogram', pictogramSchema, `pictos_${locale}`)
 } 
 
 
