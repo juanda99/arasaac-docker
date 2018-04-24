@@ -15,6 +15,14 @@ db.pictograms.createIndex(
     "default_language": "spanish"
   }
 );
+db.pictos_es.createIndex(
+  { "labels.palabra": "text", "tags": "text"},
+  {
+    "weights":
+      { "labels.palabra": 10, "tags":1 },
+    "default_language": "spanish"
+  }
+);
 db.tests.createIndex(
   { "word": "text"},
   {
