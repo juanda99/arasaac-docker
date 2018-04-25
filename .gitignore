@@ -17,7 +17,7 @@ newarasaac/frontend/code/
 # ***** MATERIALS *****
 newarasaac/materials
 newarasaac/svg/*.svg
-newarasaac/images/pictos/*.png
+newarasaac/pictograms/*.png
 
 # ***** API *****
 # Runtime configuration for swagger app

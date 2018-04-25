@@ -23,6 +23,7 @@ services:
     volumes:
        - ./materials:/usr/share/nginx/html/materials:ro
        - ./images:/usr/share/nginx/html/images:ro
+       - ./pictograms:/usr/share/nginx/html/pictograms:ro
        - ./webstatic-conf/:/etc/nginx/conf.d:ro
     environment:
       LETSENCRYPT_HOST: "static.arasaac.org"
@@ -128,7 +129,7 @@ services:
     - ./svgwatcher:/app
     - ./svg:/app/svg:ro
     - /app/node_modules
-    - ./images/pictos:/app/pictos
+    - ./pictograms:/app/pictos
 
   mongodb:
     hostname: mongodb
