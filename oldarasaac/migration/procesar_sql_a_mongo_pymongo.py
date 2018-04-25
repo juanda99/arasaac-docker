@@ -14,6 +14,7 @@ import time
 
 
 logger = create_logger()
+time.sleep(5)
 
 # útiles
 def timed(func):
@@ -86,8 +87,9 @@ def insertar_imagenes(lang='es'):
     data = cur_a_dict(cursor)
 
     # genera una colección diferente por idioma
-    coleccion = 'araimage_{}'.format(lang)
+    coleccion = 'pictos_{}'.format(lang)
     colimages = db_mongo[coleccion]
+    colimages.drop()
     
     coleccion_pal = 'words_{}'.format(lang)
     word_col = db_mongo[coleccion_pal]
@@ -180,6 +182,7 @@ def inserta_palabras(lang='es'):
     '''
     coleccion = 'words_{}'.format(lang)
     word_col = db_mongo[coleccion]
+    word_col.drop() 
     word_col.create_index([('idPictogram', pymongo.ASCENDING)], background=True)
     word_col.insert_many(listado_palabras(lang))
 
@@ -225,11 +228,8 @@ def autores():
 if __name__ == '__main__':
     # MYSQL connection
     # CONFIGURACION
-    DBSQL = 'arasaac'
-    DBMONGO = 'arasaacx'
-
     client = MongoClient(host='mongodb', port=27017)
-    db_mongo = client.DBMONGO
+    db_mongo = client.arasaac
     cnx  = MySQLdb.connect(user=os.environ['MYSQL_USER'], passwd=os.environ['MYSQL_PASSWORD'], db=os.environ['MYSQL_DATABASE'], host='db')
     cursor = cnx.cursor()
 
