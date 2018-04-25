@@ -1,4 +1,4 @@
-db = db.getSiblingDB('arasaac')
+b = db.getSiblingDB('arasaac')
 db.materials.createIndex(
   { "title": "text", "desc": "text", "translations.title": "text", "translations.desc": "text"},
   {
@@ -16,11 +16,19 @@ db.pictograms.createIndex(
   }
 );
 db.pictos_es.createIndex(
-  { "labels.palabra": "text", "tags": "text"},
+  { "keywords.keyword": "text", "tags": "text"},
   {
     "weights":
-      { "labels.palabra": 10, "tags":1 },
+      { "keywords.keyword": 10, "tags":1 },
     "default_language": "spanish"
+  }
+);
+db.pictos_en.createIndex(
+  { "keywords.keyword": "text", "tags": "text"},
+  {
+    "weights":
+      { "keywords.keyword": 10, "tags":1 },
+    "default_language": "english"
   }
 );
 db.tests.createIndex(
