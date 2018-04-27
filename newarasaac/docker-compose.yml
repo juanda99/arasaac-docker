@@ -134,7 +134,7 @@ services:
   mongodb:
     hostname: mongodb
     container_name: mongodb
-    image: mongo
+    image: mongo:3.6
     volumes:
       - ./mongodb/dump:/docker-entrypoint-initdb.d
       - ./mongodb/dbdata:/data/db
