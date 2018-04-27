@@ -3,15 +3,26 @@
 
 const setPictogramModel = require('../models/Pictograms')
 const languages = [
-  'ar',
-  'bg',
-  'en',
   'es',
-  'pl',
-  'ro',
   'ru',
-  'zh'
+  'ro',
+  'ara', // instead of ar
+  'zhs', // instead of zh, zhs simplified chineese zht traditional chineese
+  'bg', // not available
+  'pl', // not available
+  'en',
+  'fr',
+  'ca', // not available
+  'eu', // not available
+  'de',
+  'it',
+  'pt',
+  'ga', // not available
+  'br', // not available, should we use pt?
+  'cr', // not available
+  'val' // not available
 ]
+
 const Pictograms = languages.reduce((dict, language)=> {
   dict[language]= setPictogramModel(language)
   return dict
