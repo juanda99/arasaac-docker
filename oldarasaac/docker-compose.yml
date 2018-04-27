@@ -40,6 +40,7 @@ services:
       context: .
       dockerfile: python-dockerfile.yml
     working_dir: /app
+    #command: ./start.sh
     command: ./start.sh
     env_file:
       - .env
