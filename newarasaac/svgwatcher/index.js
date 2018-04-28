@@ -90,7 +90,7 @@ process.on('uncaughtException', function (err) {
 // Add event listeners.
 watcher
   .on('add', (file) => {
-    logger.info(`ADD FILE: ${path.resolve(SVG_DIR, file)}`)
+    logger.info(`WATCHER - ADD FILE: ${path.resolve(SVG_DIR, file)}`)
     limit(()=>{addTask(file, INCLUDE_FILE)})
   })
 
@@ -106,12 +106,8 @@ watcher
 
 const addTask = (file, operation) => {
   if (operation===INCLUDE_FILE) {
-    logger.info(`ADD FILE: ${file}`)
+    logger.info(`ADD FILE : ${file}`)
     RESOLUTIONS.map(resolution=>convertSVG(file, resolution))
-
-  }
-  else if (operation===EXCLUDE_FILE) {
-    logger.warn(`REMOVE FILE ${file}`)
   } 
 }
 
@@ -120,20 +116,6 @@ const addTask = (file, operation) => {
 const convertSVG = (file, resolution) => {
   try {
     let fileName = path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
-    /* sharp(path.resolve(SVG_DIR, file))
-      .resize(resolution)
-      .png({
-        compressionLevel: 9,
-        adaptiveFiltering: false
-      })
-      // .withoutAdaptiveFiltering()
-      .toFile(fileName)
-    */
-   // logger.info(`generating ${file}`)
-
-  
-   //console.log(sharp.counters())
-
 
    sharp(path.resolve(SVG_DIR, file), { density: 450 })
    .resize(resolution)
@@ -142,7 +124,7 @@ const convertSVG = (file, resolution) => {
    .then (buffer => {
      return imagemin.buffer(buffer, {
        plugins: [
-         imageminPngquant({quality: '65-80'})
+         imageminPngquant({quality: '65-80', speed: 10})
        ]
      })
    })
@@ -153,20 +135,18 @@ const convertSVG = (file, resolution) => {
        }
        // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
        fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-           if (err) throw 'error writing file: ' + err
-           fs.close(fd, function() {
-             logger.info(`IMAGE GENERATED: ${fileName}`)
-           })
+          if (err) throw 'error writing file: ' + err
+          fs.close(fd, function() {
+            logger.info(`IMAGE GENERATED: ${fileName}`)
+          })
        })
      })
    }) 
-   .catch( err => console.log(err) );
-   
- }
- catch (err) { 
-   console.log(err)
-   logger.error(`Error converting ${file} to png :${err}`) 
- }
+  }
+  catch (err) { 
+    console.log(err)
+    logger.error(`Error converting ${file} to png :${err}`) 
+  }
 
 }
 
