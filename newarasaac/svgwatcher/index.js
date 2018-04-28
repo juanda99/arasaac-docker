@@ -19,8 +19,8 @@ require('dotenv').config()
 // global variables and constants
 const INCLUDE_FILE = "include"
 const EXCLUDE_FILE = "exclude"
-const SVG_DIR= process.env.MATERIALS || '/app/svg'
-const IMAGE_DIR = process.env.MATERIALS || '/app/pictos'
+const SVG_DIR= process.env.SVG_DIR || '/app/svg'
+const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictos'
 const RESOLUTIONS = [300, 500, 2500]
 const NODE_ENV = process.env.NODE_ENV || 'development'
 

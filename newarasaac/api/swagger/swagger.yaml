@@ -52,7 +52,7 @@ parameters:
     in: path
     required: true
     description: Provides more efficient searches. If you specify a language value of "none", then the text search uses simple tokenization with no list of stop words and no stemming.
-    enum: ["da", "nl", "en", "fi", "fr", "de", "hu", "it", "nb", "pt", "ro", "ru", "es", "sv", "tr", "ara", "prs", "pes", "urd", "zhs", "zht", "none"]
+    enum: ['es', 'ru', 'ro', 'ara', 'zhs', 'bg', 'pl', 'en', 'fr', 'ca', 'eu', 'de', 'it', 'pt', 'ga', 'br', 'cr', 'val', 'none']
   SearchText:
     name: searchText
     in: path
