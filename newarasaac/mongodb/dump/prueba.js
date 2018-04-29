@@ -19,7 +19,7 @@ const languages = [
   "cr", // not available
   "val" // not available
 ];
-
+/*
 const notAvailableLanguages = [
   "ara", // available with mongodb enterprise and Basis Technology Rosette Linguistics Platform, see: https://docs.mongodb.com/manual/tutorial/text-search-with-rlp/
   "zhs", // available with mongodb enterprise and Basis Technology Rosette Linguistics Platform, see: https://docs.mongodb.com/manual/tutorial/text-search-with-rlp/
@@ -31,11 +31,11 @@ const notAvailableLanguages = [
   "cr",
   "val"
 ]
-
+*/
 
 languages.forEach(language => {
   const collectionName = `pictos_${language}`
-  var defaultLanguage
+  /*var defaultLanguage
   if (notAvailableLanguages.includes(language)){
     defaultLanguage="none"
   }
@@ -45,6 +45,10 @@ languages.forEach(language => {
   else {
     defaultLanguage=language
   }
+  */
+  // indexes without stemming for pictos, more accurate
+  const defaultLanguage='None'
+  const indexName = `text_${language}_${defaultLanguage}`
   db[collectionName].createIndex(
     { "keywords.keyword": "text", "tags": "text"},
     {
