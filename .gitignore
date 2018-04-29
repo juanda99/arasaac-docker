@@ -9,6 +9,7 @@ newarasaac/.env
 
 # ***** SFTP *****
 newarasaac/ssh_keys/*key
+newarasaac/ssh_keys/*pub
 
 
 # ***** FRONTEND *****

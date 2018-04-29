@@ -148,7 +148,7 @@ services:
     container_name: sftp
     image: atmoz/sftp
     env_file:
-      - .env
+      - ./.env
     volumes:
       - ./ssh_keys/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key
       - ./ssh_keys/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key
