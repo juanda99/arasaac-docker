@@ -70,7 +70,11 @@ if (process.env.NODE_ENV !== 'production') {
 // Initialize watcher.
 var watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
   ignoreInitial: true,
-  cwd: SVG_DIR
+  cwd: SVG_DIR,
+  awaitWriteFinish: {
+    stabilityThreshold: 3000,
+    pollInterval: 300
+  }
 })
 
 logger.info('ARASAAC SVG-WATCHER STARTED')
@@ -107,47 +111,46 @@ watcher
 const addTask = (file, operation) => {
   if (operation===INCLUDE_FILE) {
     logger.info(`ADD FILE : ${file}`)
-    RESOLUTIONS.map(resolution=>convertSVG(file, resolution))
-  } 
+    // resize just when size is bigger than 1500
+    RESOLUTIONS.forEach(resolution => getPNG(file, resolution))
+  }
 }
 
-// var debouncedTask = _.debounce(addTask, 500);
+const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
 
-const convertSVG = (file, resolution) => {
-  try {
-    let fileName = path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
+const convertSVG = (file, resolution) => 
+  resolution<1500
+    ? sharp(path.resolve(SVG_DIR, file), { density: 450 }).resize(resolution).png().toBuffer()
+    : sharp(path.resolve(SVG_DIR, file), { density: 450 }).png().toBuffer()
 
-   sharp(path.resolve(SVG_DIR, file), { density: 450 })
-   .resize(resolution)
-   .png()
-   .toBuffer()
-   .then (buffer => {
-     return imagemin.buffer(buffer, {
-       plugins: [
-         imageminPngquant({quality: '65-80', speed: 10})
-       ]
-     })
-   })
-   .then(buffer => {
-     fs.open(fileName, 'w', function(err, fd) {  
-       if (err) {
-           throw 'could not open file: ' + err
-       }
-       // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
-       fs.write(fd, buffer, 0, buffer.length, null, function(err) {
+const getPNG= (file, resolution, resize) => {
+  let fileName = getPNGFileName(file, resolution)
+  convertSVG(file, resolution, file)
+  .then (buffer => {
+    return imagemin.buffer(buffer, {
+      plugins: [
+        imageminPngquant({quality: '65-80', speed: 10})
+      ]
+    })
+  })
+  .then(buffer => {
+    fs.open(fileName, 'w', function(err, fd) {  
+      if (err) {
+          throw 'could not open file: ' + err
+      }
+      // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
+      fs.write(fd, buffer, 0, buffer.length, null, function(err) {
           if (err) throw 'error writing file: ' + err
           fs.close(fd, function() {
             logger.info(`IMAGE GENERATED: ${fileName}`)
           })
-       })
-     })
-   }) 
-  }
-  catch (err) { 
-    console.log(err)
-    logger.error(`Error converting ${file} to png :${err}`) 
-  }
-
+      })
+    })
+  }) 
+  .catch(err => { 
+    logger.error(`Error converting ${file}:`)
+    logger.error(err) 
+  })
 }
 
 
