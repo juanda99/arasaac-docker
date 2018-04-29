@@ -33,7 +33,9 @@ const  pictogramSchema = new Schema({
       sinonyms: [String]
     }
   ],
-  authors: [authorSchema],
+  authors: [{
+    type: mongoose.Schema.Types.ObjectId, ref: 'Author'
+  }],
   status: Number, // published (1), unpublished (0)
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },

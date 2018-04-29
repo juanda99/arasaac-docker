@@ -29,85 +29,77 @@ const Pictograms = languages.reduce((dict, language)=> {
 }, {})
 
 module.exports = {
-  getPictogramById: (req, res) => {
+  getPictogramById: async (req, res) => {
     const id = req.swagger.params.idPictogram.value
     const locale = req.swagger.params.locale.value
-    // Use lean to get a plain JS object to modify it, instead of a full model instance
-    Pictograms[locale].findOne({id_image: id}).exec( (err, pictogram) => {
-      if(err) {
-        return res.status(500).json({
-          message: 'Error getting pictograms. See error field for detail',
-          error: err
-        })
-      }
-      if(!pictogram) {
-        return res.status(404).json( {
-          message: `Error getting pictogram with id ${id}`,
-          err
-        })
-      }
+    try{
+      let pictogram = await Pictograms[locale]
+        .findOne({idPictogram: id})
+        .populate('authors')
+      if(!pictogram) return res.status(404).json()
       return res.json(pictogram)
-    })
+    } catch(err){
+      return res.status(500).json({
+        message: 'Error getting pictograms. See error field for detail',
+        error: err
+      })
+    }
   },
-  searchPictograms: (req, res) => {
+
+  searchPictograms: async (req, res) => {
     var locale = req.swagger.params.locale.value
     var searchText = req.swagger.params.searchText.value
-    Pictograms[locale]
-      .find({ $text: { $search: searchText, $language: locale, $diacriticSensitive: false } }, {score: {$meta: 'textScore'}})
-      .sort({'score': { '$meta': 'textScore'} })
-      .lean()
-      .exec ((err, pictograms) => {
-        if(err) {
-          return res.status(500).json({
-            message: 'Error getting pictograms. See error field for detail',
-            error: err
-          })
-        } 
-        // if no items, return empty array
-        if (pictograms.length===0) return res.status(404).json([]) //send http code 404!!!
-        return res.json(pictograms)
+    try {
+      let pictograms = await Pictograms[locale]
+        .find({ $text: { $search: searchText, $language: 'none', $diacriticSensitive: false } }, {score: {$meta: 'textScore'}})
+        .populate('authors')
+        .sort({'score': { '$meta': 'textScore'} })
+      if (pictograms.length===0) return res.status(404).json([]) 
+      return res.json(pictograms)
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: 'Error getting pictograms. See error field for detail',
+        error: err
       })
+    }
   },
-  getNewPictograms: (req, res) => {
+  getNewPictograms: async (req, res) => {
     let days = req.swagger.params.days.value
     var locale = req.swagger.params.locale.value
     let startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
-    Pictograms[locale]
-      .find({ lastUpdate: { $gt: startDate } })
-      .sort({ lastUpdate: -1 })
-      .lean()
-      .exec((err, pictograms) => {
-        if (err) {
-          return res.status(500).json({
-            message: 'Error buscando el material',
-            error: err
-          })
-        }
-        // if no items, return empty array
-        if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
-        return res.json(pictograms)
+    try {
+      let pictograms = await Pictograms[locale]
+        .find({ lastUpdate: { $gt: startDate } })
+        .sort({ lastUpdate: -1 })
+        .populate('authors')
+      if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
+      return res.json(pictograms)
+    } catch(err){
+      return res.status(500).json({
+        message: 'Error searching pictogram. See error field for detail',
+        error: err
       })
+    }
   },
-  getLastPictograms: (req, res) => {
+  getLastPictograms: async (req, res) => {
     const numItems = req.swagger.params.numItems.value
     var locale = req.swagger.params.locale.value
-    Pictograms[locale]
-      .find()
-      .sort({ lastUpdate: -1 })
-      .limit(numItems)
-      .lean()
-      .exec((err, pictograms) => {
-        if (err) {
-          return res.status(500).json({
-            message: 'Error buscando el material',
-            error: err
-          })
-        }
-        // if no items, return empty array
-        if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
-        return res.json(pictograms)
+    try {
+      let pictograms = await Pictograms[locale]
+        .find()
+        .sort({ lastUpdate: -1 })
+        .limit(numItems)
+        .populate('authors')
+      if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
+      return res.json(pictograms)
+    } catch(err){
+      return res.status(500).json({
+        message: 'Error searching pictogram. See error field for detail',
+        error: err
       })
+    }
   }
 }
 
