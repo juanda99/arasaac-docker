@@ -161,7 +161,7 @@ paths:
     x-swagger-router-controller: pictograms
     get:
       operationId: searchPictograms
-      description: Obtain a list of materials based on the searchText. It will search inside title and description of each material. Locale is only used for search optimization.
+      description: Obtain a list of pictograms based on the searchText. WIP. Currently just for color pictos and singular. The picture url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.
       tags:
       - pictograms
       # define the type of response for Success "200" and Error
