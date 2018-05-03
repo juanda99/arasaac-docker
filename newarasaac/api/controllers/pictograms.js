@@ -1,7 +1,7 @@
 
 // we load pictos model for all languages
-
 const setPictogramModel = require('../models/Pictograms')
+const stopWords = require('../utils/stopWords')
 const languages = [
   'es',
   'ru',
@@ -47,8 +47,9 @@ module.exports = {
   },
 
   searchPictograms: async (req, res) => {
-    var locale = req.swagger.params.locale.value
-    var searchText = req.swagger.params.searchText.value
+    const locale = req.swagger.params.locale.value
+    const searchText = stopWords(req.swagger.params.searchText.value, locale)
+    console.log(`searchText filtered:  ${searchText}`)
     try {
       let pictograms = await Pictograms[locale]
         .find({ $text: { $search: searchText, $language: 'none', $diacriticSensitive: false } }, {score: {$meta: 'textScore'}})
