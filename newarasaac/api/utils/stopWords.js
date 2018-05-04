@@ -8,6 +8,7 @@ const stopWords = (searchText, locale) => {
   if (locale==='br') newLocale='pt'
   if (locale==='ara') newLocale='ar'
   let searchItems = searchText.split(' ')
+  if (searchItems.length===1) return searchText
   return sw.removeStopwords(searchItems, stopwords[newLocale]).join(' ')
 }
 
