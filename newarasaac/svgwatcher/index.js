@@ -118,11 +118,11 @@ const addTask = (file, operation) => {
 
 const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
 
-const convertSVG = (file, resolution) => 
-  resolution<1500
-    ? sharp(path.resolve(SVG_DIR, file), { density: 450 }).resize(resolution).png().toBuffer()
-    : sharp(path.resolve(SVG_DIR, file), { density: 450 }).png().toBuffer()
-
+const convertSVG = (file, resolution) => {
+  // density 450p is for 3125x image
+  const density = parseInt(0.144 * resolution)
+  return sharp(path.resolve(SVG_DIR, file), { density }).png().toBuffer()
+}
 const getPNG= (file, resolution, resize) => {
   let fileName = getPNGFileName(file, resolution)
   convertSVG(file, resolution, file)
