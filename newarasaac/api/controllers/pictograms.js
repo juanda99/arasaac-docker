@@ -2,6 +2,8 @@
 const sharp = require('sharp')
 const fs = require('fs-extra')
 const path = require('path')
+var imagemin = require('imagemin')
+const imageminPngquant = require('imagemin-pngquant')
 // we load pictos model for all languages
 const setPictogramModel = require('../models/Pictograms')
 const stopWords = require('../utils/stopWords')
@@ -47,7 +49,7 @@ const modifySVG = (fileContent, layer, layerText) => {
   const finishAt = getNextLayer(layer)
   let s = fileContent.indexOf(startAt)
   let f = fileContent.indexOf(finishAt)
-  return `${fileContent.substr(0, s)}<g id=${layer}>${layerText}</g>\n${fileContent.substr(f)}`
+  return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
 }
 
 const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
@@ -119,12 +121,13 @@ module.exports = {
               if (err) throw 'error writing file: ' + err
               console.log('2222222222222222222222222222222')
               fs.close(fd, function() {
-                logger.info(`IMAGE GENERATED: ${fileName}`)
+                // logger.info(`IMAGE GENERATED: ${fileName}`)
+                console.log(`IMAGE GENERATED: ${fileName}`)
               })
           })
         })
       }) 
-      res.sendFile('/app/pictos/10266_2500.png')
+      res.sendFile(fileName)
     } catch (err) {
       console.log(err)
       return res.status(500).json({
