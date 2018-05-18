@@ -46,6 +46,8 @@ services:
     - ./api:/app
     - ./materials:/app/materials
     - /app/node_modules
+    - ./svg:/app/svg:ro
+    - ./pictograms:/app/pictos
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"

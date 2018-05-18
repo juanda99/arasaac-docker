@@ -84,6 +84,20 @@ parameters:
           type: string
         website:
           type: string
+  PictoOptions:
+    name: pictoOptions
+    in: body
+    description: Object with parameters to modify pictogram on demand 
+    required: false
+    schema:
+      type: object
+      properties:
+        color:
+          type: integer
+          enum: [0, 1]
+        plural:
+          type: integer
+          enum: [0,1]
   Language:
     name: language
     description: Languages than we currently use for pictograms searches.
@@ -134,18 +148,19 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  
-  /pictograms/{locale}/{idPictogram}:
+            
+            
+  /pictograms/{idPictogram}:
     x-swagger-router-controller: pictograms
     get:
-      operationId: getPictogramById
-      description: Obtain a material based on its key.
+      operationId: getPictogramFileById
+      description: Obtain a custom pictogram image based on its identity key and some options like color, resolution, plural...
       tags:
       - pictograms
       # define the type of response for Success "200" and Error
       parameters:
-        - $ref: '#/parameters/Locale'
         - $ref: '#/parameters/IdPictogram'
+        - $ref: '#/parameters/PictoOptions'
       responses:
         "200":
           description: Success
@@ -156,12 +171,28 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   
-  
+  /pictograms/{locale}/{idPictogram}:
+    x-swagger-router-controller: pictograms
+    get:
+      operationId: getPictogramById
+      description: Obtain pictogram data based on its identity key. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.
+      tags:
+      - pictograms
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Locale'
+        - $ref: '#/parameters/IdPictogram'
+      produces:
+        - image/png
+      responses:
+        "200":
+          description: Success
+
   /pictograms/{locale}/search/{searchText}:
     x-swagger-router-controller: pictograms
     get:
       operationId: searchPictograms
-      description: Obtain a list of pictograms based on the searchText. WIP. Currently just for color pictos and singular. The picture url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.
+      description: Obtain a list of pictograms based on the searchText. WIP. Currently just for color pictos and singular. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.
       tags:
       - pictograms
       # define the type of response for Success "200" and Error

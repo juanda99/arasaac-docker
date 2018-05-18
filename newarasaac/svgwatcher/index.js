@@ -125,7 +125,7 @@ const convertSVG = (file, resolution) => {
 }
 const getPNG= (file, resolution, resize) => {
   let fileName = getPNGFileName(file, resolution)
-  convertSVG(file, resolution, file)
+  convertSVG(file, resolution)
   .then (buffer => {
     return imagemin.buffer(buffer, {
       plugins: [

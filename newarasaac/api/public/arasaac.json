@@ -53,27 +53,24 @@
             "required": true,
             "description": "Provides more efficient searches. If you specify a language value of \"none\", then the text search uses simple tokenization with no list of stop words and no stemming.",
             "enum": [
-                "da",
-                "nl",
-                "en",
-                "fi",
-                "fr",
-                "de",
-                "hu",
-                "it",
-                "nb",
-                "pt",
-                "ro",
-                "ru",
                 "es",
-                "sv",
-                "tr",
+                "ru",
+                "ro",
                 "ara",
-                "prs",
-                "pes",
-                "urd",
                 "zhs",
-                "zht",
+                "bg",
+                "pl",
+                "en",
+                "fr",
+                "ca",
+                "eu",
+                "de",
+                "it",
+                "pt",
+                "ga",
+                "br",
+                "cr",
+                "val",
                 "none"
             ]
         },
@@ -138,6 +135,31 @@
                     },
                     "website": {
                         "type": "string"
+                    }
+                }
+            }
+        },
+        "PictoOptions": {
+            "name": "pictoOptions",
+            "in": "body",
+            "description": "Object with parameters to modify pictogram on demand",
+            "required": false,
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "color": {
+                        "type": "integer",
+                        "enum": [
+                            0,
+                            1
+                        ]
+                    },
+                    "plural": {
+                        "type": "integer",
+                        "enum": [
+                            0,
+                            1
+                        ]
                     }
                 }
             }
@@ -236,14 +258,17 @@
         "/pictograms/{idPictogram}": {
             "x-swagger-router-controller": "pictograms",
             "get": {
-                "operationId": "getPictogramById",
-                "description": "Obtain a material based on its key.",
+                "operationId": "getPictogramFileById",
+                "description": "Obtain a custom pictogram image based on its identity key and some options like color, resolution, plural...",
                 "tags": [
                     "pictograms"
                 ],
                 "parameters": [
                     {
                         "$ref": "#/parameters/IdPictogram"
+                    },
+                    {
+                        "$ref": "#/parameters/PictoOptions"
                     }
                 ],
                 "responses": {
@@ -262,11 +287,37 @@
                 }
             }
         },
-        "/pictograms/{locale}/{searchText}": {
+        "/pictograms/{locale}/{idPictogram}": {
+            "x-swagger-router-controller": "pictograms",
+            "get": {
+                "operationId": "getPictogramById",
+                "description": "Obtain pictogram data based on its identity key. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.",
+                "tags": [
+                    "pictograms"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Locale"
+                    },
+                    {
+                        "$ref": "#/parameters/IdPictogram"
+                    }
+                ],
+                "produces": [
+                    "image/png"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        },
+        "/pictograms/{locale}/search/{searchText}": {
             "x-swagger-router-controller": "pictograms",
             "get": {
                 "operationId": "searchPictograms",
-                "description": "Obtain a list of materials based on the searchText. It will search inside title and description of each material. Locale is only used for search optimization.",
+                "description": "Obtain a list of pictograms based on the searchText. WIP. Currently just for color pictos and singular. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.",
                 "tags": [
                     "pictograms"
                 ],
@@ -276,6 +327,70 @@
                     },
                     {
                         "$ref": "#/parameters/SearchText"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Pictograms"
+                        }
+                    },
+                    "default": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pictograms/{locale}/days/{days}": {
+            "x-swagger-router-controller": "pictograms",
+            "get": {
+                "operationId": "getNewPictograms",
+                "description": "Obtain pictograms created or updated in the last days.",
+                "tags": [
+                    "pictograms"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Locale"
+                    },
+                    {
+                        "$ref": "#/parameters/Days"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/Pictograms"
+                        }
+                    },
+                    "default": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pictograms/{locale}/new/{numItems}": {
+            "x-swagger-router-controller": "pictograms",
+            "get": {
+                "operationId": "getLastPictograms",
+                "description": "Obtain last modified or publish pictograms.",
+                "tags": [
+                    "pictograms"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Locale"
+                    },
+                    {
+                        "$ref": "#/parameters/NumItems"
                     }
                 ],
                 "responses": {
