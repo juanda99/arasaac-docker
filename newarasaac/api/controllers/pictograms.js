@@ -1,4 +1,3 @@
-
 const sharp = require('sharp')
 const fs = require('fs-extra')
 const path = require('path')
@@ -35,13 +34,18 @@ const Pictograms = languages.reduce((dict, language)=> {
   return dict
 }, {})
 
-const getNextLayer = (layer) => {
-  const layers = ['Fondo', 'contorno2', 'relleno', 'contorno']
-  const layerIndex = layers.indexOf(layer) +1;
+const getNextLayer = layer => {
+  const layers = [
+    'Fondo',
+    'contorno2',
+    'relleno',
+    'contorno'
+  ]
+  const layerIndex = layers.indexOf(layer) +1
   if (layerIndex<3) {
-    return `<g id="${layers[layerIndex]}">`;
+    return `<g id="${layers[layerIndex]}">`
   }
-  else return '</svg>';
+  return '</svg>'
 }
 
 const modifySVG = (fileContent, layer, layerText) => {
@@ -58,8 +62,6 @@ const convertSVG = (fileContent, resolution) => {
   // density 450p is for 3125x image
   const density = parseInt(0.144 * resolution)
   const fileBuffer = Buffer.from(fileContent)
-  console.log(fileBuffer)
-  console.log('ssssssssssssssssssssssssssssssssssssssssssssssssssssss')
   return sharp(fileBuffer).png().toBuffer()
 }
 
@@ -95,38 +97,30 @@ module.exports = {
       const layerContent = `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`
       console.log(svgContent)
       let newSVGContent = modifySVG(svgContent, layer, layerContent )
-      console.log('---------------------------------------')
       console.log(newSVGContent)
       const fileName = getPNGFileName(file, resolution)
 
       convertSVG(newSVGContent, resolution)
-      .then (buffer => {
-        console.log('5555555555555555555555555555555555')
-        return imagemin.buffer(buffer, {
+        .then (buffer => imagemin.buffer(buffer, {
           plugins: [
             imageminPngquant({quality: '65-80', speed: 10})
           ]
-        })
-      })
-      .then(buffer => {
-        console.log('**************************************************')
-        fs.open(fileName, 'w', function(err, fd) {  
-          if (err) {
+        }))
+        .then(buffer => {
+          fs.open(fileName, 'w', function(err, fd) {  
+            if (err) {
               throw 'could not open file: ' + err
-          }
-          console.log("????????????????????????????????????????????????????")
-          // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
-          fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-            console.log('111111111111111111111111111111111111111')
+            }
+            // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
+            fs.write(fd, buffer, 0, buffer.length, null, function(err) {
               if (err) throw 'error writing file: ' + err
-              console.log('2222222222222222222222222222222')
               fs.close(fd, function() {
                 // logger.info(`IMAGE GENERATED: ${fileName}`)
                 console.log(`IMAGE GENERATED: ${fileName}`)
               })
+            })
           })
-        })
-      }) 
+        }) 
       res.sendFile(fileName)
     } catch (err) {
       console.log(err)
