@@ -48,6 +48,7 @@ const getNextLayer = layer => {
   return '</svg>'
 }
 
+/*
 const modifySVG = (fileContent, layer, layerText) => {
   const startAt = `<g id="${layer}">`
   const finishAt = getNextLayer(layer)
@@ -55,15 +56,51 @@ const modifySVG = (fileContent, layer, layerText) => {
   let f = fileContent.indexOf(finishAt)
   return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
 }
+*/
 
-const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
+// const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
+
+const getPNGFileName = async (file, options ) => {
+  const { plural, color, backgroundColor, action, resolution } = options
+  let fileName = idFile
+  if (plural) fileName = `${fileName}-plural`
+  if (!color) fileName = `${fileName}-nocolor`
+  if (backgroundColor !== 'none') fileName = `${fileName}-backgroundColor=${backgroundColor}`
+  if (action !== 'present') fileName = `${fileName}-action=${action}`
+  if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
+  const idFile = path.basename(file, '.svg')
+  await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
+  return path.resolve(IMAGE_DIR, idFile, `${fileName}.png` )
+}
+
+const modifyLayer = (fileContent, layer, layerText) => {
+  const startAt = `<g id="${layer}">`
+  const finishAt = getNextLayer(layer)
+  let s = fileContent.indexOf(startAt)
+  let f = fileContent.indexOf(finishAt)
+  return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
+}
+
+const modifySVG = ( fileContent, options ) => {
+  const { backgroundColor, color } = options
+  if (backgroundColor !== 'none') {
+    fileContent = modifyLayer(fileContent, 'Fondo', `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`)
+  }
+  if (!color) {
+    console.log('Ha entrado!')
+    fileContent = modifyLayer(fileContent, 'relleno', '')
+  }
+  console.log(fileContent)
+  return fileContent
+}
 
 const convertSVG = (fileContent, resolution) => {
   // density 450p is for 3125x image
-  const density = parseInt(0.144 * resolution)
+  const density = parseInt(0.144 * resolution, 10)
   const fileBuffer = Buffer.from(fileContent)
-  return sharp(fileBuffer).png().toBuffer()
+  return sharp(fileBuffer, {density}).png().toBuffer()
 }
+
 
 module.exports = {
   getPictogramById: async (req, res) => {
@@ -85,26 +122,22 @@ module.exports = {
 
   getPictogramFileById: async (req, res) => {
     const file = `${req.swagger.params.idPictogram.value}.svg`
-    const options = req.body
-    console.log(file)
+    const options = {
+      plural: req.swagger.params.plural.value || false,
+      color: (req.swagger.params.color.value === false) ? req.swagger.params.color.value : true,
+      backgroundColor: req.swagger.params.backgroundColor.value || 'None',
+      action: req.swagger.params.action.value || 'present',
+      resolution: req.swagger.params.resolution.value || 500
+    }
     console.log(options)
-    const resolution = 500
     try {
       const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
-      const backgroundColor='#CCC'
-      const layer = 'Fondo'
-      const resolution = 500
-      const layerContent = `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`
-      console.log(svgContent)
-      let newSVGContent = modifySVG(svgContent, layer, layerContent )
-      console.log(newSVGContent)
-      const fileName = getPNGFileName(file, resolution)
-
-      convertSVG(newSVGContent, resolution)
+      // let newSVGContent = modifySVG(svgContent, layer, layerContent )
+      let newSVGContent = modifySVG(svgContent, options )
+      const fileName = await getPNGFileName(file, options)
+      convertSVG(newSVGContent, options.resolution)
         .then (buffer => imagemin.buffer(buffer, {
-          plugins: [
-            imageminPngquant({quality: '65-80', speed: 10})
-          ]
+          plugins: [imageminPngquant({quality: '65-80', speed: 10})]
         }))
         .then(buffer => {
           fs.open(fileName, 'w', function(err, fd) {  
@@ -117,11 +150,11 @@ module.exports = {
               fs.close(fd, function() {
                 // logger.info(`IMAGE GENERATED: ${fileName}`)
                 console.log(`IMAGE GENERATED: ${fileName}`)
+                res.sendFile(fileName)
               })
             })
           })
         }) 
-      res.sendFile(fileName)
     } catch (err) {
       console.log(err)
       return res.status(500).json({

@@ -84,20 +84,33 @@ parameters:
           type: string
         website:
           type: string
-  PictoOptions:
-    name: pictoOptions
-    in: body
-    description: Object with parameters to modify pictogram on demand 
-    required: false
-    schema:
-      type: object
-      properties:
-        color:
-          type: integer
-          enum: [0, 1]
-        plural:
-          type: integer
-          enum: [0,1]
+  Plural:
+    name: plural
+    in: query
+    type: boolean
+    description: Pictogram in singular or with plural symbol. It should only be applied to pictograms that represent a noun.
+  Color:
+    name: color
+    in: query
+    type: boolean
+    description: Pictogram in color (default value) or in black and white.
+  BackgroundColor:
+    name: backgroundColor
+    in: query
+    type: string
+    description: Hexadecimal value to set the background color of the pictogram. The pictograms are transparent by default (value 'none')
+  Action:
+    name: action
+    in: query
+    type: string
+    enum: ['past', 'present', 'future']
+    description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
+  Resolution:
+    name: resolution
+    in: query
+    type: integer
+    enum: ['500', '2500']
+    description: Pictogram resolution. 500px by default.
   Language:
     name: language
     description: Languages than we currently use for pictograms searches.
@@ -160,7 +173,11 @@ paths:
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/IdPictogram'
-        - $ref: '#/parameters/PictoOptions'
+        - $ref: '#/parameters/Plural'
+        - $ref: '#/parameters/Color'
+        - $ref: '#/parameters/BackgroundColor'
+        - $ref: '#/parameters/Action'
+        - $ref: '#/parameters/Resolution'
       responses:
         "200":
           description: Success
