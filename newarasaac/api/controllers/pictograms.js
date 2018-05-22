@@ -42,11 +42,33 @@ const getNextLayer = layer => {
     'contorno'
   ]
   const layerIndex = layers.indexOf(layer) +1
-  if (layerIndex<3) {
+  if (layerIndex<4) {
     return `<g id="${layers[layerIndex]}">`
   }
   return '</svg>'
 }
+
+const pluralSVGCode = '\n<rect x="390.2" y="147.2" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:16.6297;" x1="417.6" y1="149.5" x2="417.6" y2="199.5"/>\n<line style="fill:none;stroke:#000000;stroke-width:16.6297;" x1="392.5" y1="174.7" x2="442.5" y2="174.7"/>'
+const futureSVGCode = '\n<rect x="390.2" y="147.2" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:12;" x1="393.1" y1="174.7" x2="423.5" y2="174.7"/>\n<polygon points="413,156.9 413,192.1 443,174.5"/>'
+const pastSVGCode = '\n<rect x="-55" y="147" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:12;" x1="-33.5" y1="174.7" x2="-3.1" y2="174.7"/>\n<polygon points="-53,174.5 -23,192.1 -23,156.9"/>'
+const skin = {
+  white: '#F5E5DE',
+  black: '#A65C17',
+  assian: '#F4ECAD',
+  mulatto: '#E3AB72',
+  aztec: '#CF9D7C',
+  schematic: '#FEFEFE'
+}
+const hair = {
+  brown: '#A65E26',
+  blonde: '#FDD700',
+  red: '#F04A23',
+  black: '#020100',
+  gray: '#EFEFEF',
+  darkGray: '#AAABAB',
+  darkBrown: '#6A2703'
+}
+
 
 /*
 const modifySVG = (fileContent, layer, layerText) => {
@@ -61,14 +83,17 @@ const modifySVG = (fileContent, layer, layerText) => {
 // const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
 
 const getPNGFileName = async (file, options ) => {
-  const { plural, color, backgroundColor, action, resolution } = options
+  const { plural, color, backgroundColor, action, resolution, hair, skin } = options
+  const idFile = path.basename(file, '.svg')
   let fileName = idFile
   if (plural) fileName = `${fileName}-plural`
   if (!color) fileName = `${fileName}-nocolor`
-  if (backgroundColor !== 'none') fileName = `${fileName}-backgroundColor=${backgroundColor}`
+  if (backgroundColor) fileName = `${fileName}-backgroundColor=${backgroundColor}`
   if (action !== 'present') fileName = `${fileName}-action=${action}`
   if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
-  const idFile = path.basename(file, '.svg')
+  if (hair) fileName = `${fileName}-hair=${hair}`
+  if (skin) fileName = `${fileName}-skin=${hair}`
+  
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
   return path.resolve(IMAGE_DIR, idFile, `${fileName}.png` )
 }
@@ -81,17 +106,30 @@ const modifyLayer = (fileContent, layer, layerText) => {
   return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
 }
 
+const addLayer = (fileContent, layer, layerText) => {
+  let s = fileContent.indexOf('</svg>')
+  return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n</svg>`
+}
+
+/* var hairReplaceRegex = "regex";
+var re = new RegExp(replace,"g");
+*/
+
+const modifySkin = (fileContent, type) => fileContent.replace(`/${skin.white}|${skin.schematic}/gim`, skin[type])
+const modifyHair = (fileContent, type) => fileContent
+
 const modifySVG = ( fileContent, options ) => {
-  const { backgroundColor, color } = options
-  if (backgroundColor !== 'none') {
-    fileContent = modifyLayer(fileContent, 'Fondo', `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`)
-  }
-  if (!color) {
-    console.log('Ha entrado!')
-    fileContent = modifyLayer(fileContent, 'relleno', '')
-  }
-  console.log(fileContent)
-  return fileContent
+  let content = fileContent
+  const { plural, color, backgroundColor, action, resolution, hair, skin } = options
+  if (plural) content = addLayer(content, 'plural', pluralSVGCode)
+  if (backgroundColor) content = modifyLayer(content, 'Fondo', `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`)
+  if (!color) content = modifyLayer(content, 'relleno', '')
+  if (action==='future') content = addLayer (content, 'action', futureSVGCode)
+  else if (action==='past') content = addLayer (content, 'action', pastSVGCode)
+  if (hair) content = modifyHair(content, hair)
+  if (skin) content = modifySkin(content, skin)
+  /* eslint-enable no-param-reassign */
+  return content
 }
 
 const convertSVG = (fileContent, resolution) => {
@@ -122,19 +160,26 @@ module.exports = {
 
   getPictogramFileById: async (req, res) => {
     const file = `${req.swagger.params.idPictogram.value}.svg`
+    /* eslint-disable multiline-ternary */
     const options = {
       plural: req.swagger.params.plural.value || false,
       color: (req.swagger.params.color.value === false) ? req.swagger.params.color.value : true,
-      backgroundColor: req.swagger.params.backgroundColor.value || 'None',
+      backgroundColor: req.swagger.params.backgroundColor.value || false,
       action: req.swagger.params.action.value || 'present',
-      resolution: req.swagger.params.resolution.value || 500
+      resolution: req.swagger.params.resolution.value || 500,
+      skin: req.swagger.params.skin.value || false,
+      hair: req.swagger.params.hair.value || false
     }
-    console.log(options)
+    /* eslint-enable multiline-ternary */
     try {
+      const fileName = await getPNGFileName(file, options)
+      const exists = await fs.pathExists(file)
+      if (exists) res.sendFile(fileName) 
+
+
       const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
       // let newSVGContent = modifySVG(svgContent, layer, layerContent )
       let newSVGContent = modifySVG(svgContent, options )
-      const fileName = await getPNGFileName(file, options)
       convertSVG(newSVGContent, options.resolution)
         .then (buffer => imagemin.buffer(buffer, {
           plugins: [imageminPngquant({quality: '65-80', speed: 10})]

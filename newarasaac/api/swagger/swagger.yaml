@@ -105,6 +105,18 @@ parameters:
     type: string
     enum: ['past', 'present', 'future']
     description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
+  Skin:
+    name: skin
+    in: query
+    type: string
+    enum: ['white', 'black', 'assian', 'mulatto', 'aztec']
+    description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
+  Hair:
+    name: hair
+    in: query
+    type: string
+    enum: ['blonde', 'brown', 'darkBrown', 'gray', 'darkGray', 'red', 'black']
+    description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
   Resolution:
     name: resolution
     in: query
@@ -178,6 +190,8 @@ paths:
         - $ref: '#/parameters/BackgroundColor'
         - $ref: '#/parameters/Action'
         - $ref: '#/parameters/Resolution'
+        - $ref: '#/parameters/Skin'
+        - $ref: '#/parameters/Hair'
       responses:
         "200":
           description: Success
