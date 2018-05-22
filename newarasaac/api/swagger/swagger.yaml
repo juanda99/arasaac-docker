@@ -123,6 +123,11 @@ parameters:
     type: integer
     enum: ['500', '2500']
     description: Pictogram resolution. 500px by default.
+  Url:
+    name: url
+    in: query
+    type: boolean
+    description: Get pictogram url or binary data (default value)
   Language:
     name: language
     description: Languages than we currently use for pictograms searches.
@@ -192,6 +197,7 @@ paths:
         - $ref: '#/parameters/Resolution'
         - $ref: '#/parameters/Skin'
         - $ref: '#/parameters/Hair'
+        - $ref: '#/parameters/Url'
       responses:
         "200":
           description: Success

@@ -167,7 +167,9 @@ module.exports = {
 
   getPictogramFileById: async (req, res) => {
     const file = `${req.swagger.params.idPictogram.value}.svg`
+    console.log(req.swagger.params)
     /* eslint-disable multiline-ternary */
+    const url = (req.swagger.params.url.value === true) ? true : false
     const options = {
       plural: req.swagger.params.plural.value || false,
       color: (req.swagger.params.color.value === false) ? req.swagger.params.color.value : true,
@@ -202,7 +204,8 @@ module.exports = {
               fs.close(fd, function() {
                 // logger.info(`IMAGE GENERATED: ${fileName}`)
                 console.log(`IMAGE GENERATED: ${fileName}`)
-                res.sendFile(fileName)
+                if (url) res.json({image: fileName.replace(IMAGE_DIR, 'https://static.arasaac.org/pictograms')})
+                else res.sendFile(fileName)
               })
             })
           })
