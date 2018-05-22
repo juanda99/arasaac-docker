@@ -51,7 +51,7 @@ parameters:
     type: string
     in: path
     required: true
-    description: Provides more efficient searches. If you specify a language value of "none", then the text search uses simple tokenization with no list of stop words and no stemming.
+    description: Language associated with the searchText and the results.
     enum: ['es', 'ru', 'ro', 'ara', 'zhs', 'bg', 'pl', 'en', 'fr', 'ca', 'eu', 'de', 'it', 'pt', 'ga', 'br', 'cr', 'val', 'none']
   SearchText:
     name: searchText
@@ -62,7 +62,7 @@ parameters:
   User:
     name: user
     in: body
-    description: User data for creating a new local user 
+    description: User data for creating a new local user .
     required: true
     schema:
       type: object
@@ -98,25 +98,25 @@ parameters:
     name: backgroundColor
     in: query
     type: string
-    description: Hexadecimal value to set the background color of the pictogram. The pictograms are transparent by default (value 'none')
+    description: Hexadecimal value to set the background color of the pictogram. The pictograms are transparent by default (value 'none').
   Action:
     name: action
     in: query
     type: string
-    enum: ['past', 'present', 'future']
-    description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
+    enum: ['past', 'future']
+    description: Add an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
   Skin:
     name: skin
     in: query
     type: string
     enum: ['white', 'black', 'assian', 'mulatto', 'aztec']
-    description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
+    description: Usefull for pictograms with people. Customize its skin
   Hair:
     name: hair
     in: query
     type: string
     enum: ['blonde', 'brown', 'darkBrown', 'gray', 'darkGray', 'red', 'black']
-    description: Pictograms in present (default value) or whith an extra symbol for indicating a past or future status. It should only be applied to pictograms that represent an action or a verb.
+    description:  Usefull for pictograms with people. Customize its hair.
   Resolution:
     name: resolution
     in: query
