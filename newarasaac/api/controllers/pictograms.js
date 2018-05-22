@@ -92,7 +92,7 @@ const getPNGFileName = async (file, options ) => {
   if (action !== 'present') fileName = `${fileName}-action=${action}`
   if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
   if (hair) fileName = `${fileName}-hair=${hair}`
-  if (skin) fileName = `${fileName}-skin=${hair}`
+  if (skin) fileName = `${fileName}-skin=${skin}`
   
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
   return path.resolve(IMAGE_DIR, idFile, `${fileName}.png` )
@@ -111,16 +111,23 @@ const addLayer = (fileContent, layer, layerText) => {
   return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n</svg>`
 }
 
-/* var hairReplaceRegex = "regex";
-var re = new RegExp(replace,"g");
-*/
+const skinsToRemove = `${skin.white}|${skin.schematic}`
+const reSkin = new RegExp(skinsToRemove, 'gim')
+const modifySkin = (fileContent, key) => fileContent.replace(reSkin, skin[key])
 
-const modifySkin = (fileContent, type) => fileContent.replace(`/${skin.white}|${skin.schematic}/gim`, skin[type])
-const modifyHair = (fileContent, type) => fileContent
+const hairToRemove = () => {
+  let value=''
+  Object.keys(hair).forEach(function(key) {
+    value += `${hair[key]}|` 
+  })
+  return value.slice(0, -1) 
+}
+const reHair = new RegExp(hairToRemove(), 'gim')
+const modifyHair = (fileContent, key) => fileContent.replace(reHair, hair[key])
 
 const modifySVG = ( fileContent, options ) => {
   let content = fileContent
-  const { plural, color, backgroundColor, action, resolution, hair, skin } = options
+  const { plural, color, backgroundColor, action, hair, skin } = options
   if (plural) content = addLayer(content, 'plural', pluralSVGCode)
   if (backgroundColor) content = modifyLayer(content, 'Fondo', `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`)
   if (!color) content = modifyLayer(content, 'relleno', '')
