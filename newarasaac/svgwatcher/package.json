@@ -23,7 +23,7 @@
     "fs": "0.0.1-security",
     "imagemin": "^5.3.1",
     "imagemin-pngquant": "^5.1.0",
-    "p-limit": "^1.2.0",
+    "p-queue": "2.4.2",
     "sharp": "0.18.4",
     "winston": "^3.0.0-rc1"
   },

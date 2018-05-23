@@ -6,8 +6,7 @@ var sharp = require('sharp')
 var imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 const fs = require('fs')
-const pLimit = require('p-limit')
-const limit = pLimit(1)
+const PQueue = require('p-queue')
 
 
 const { createLogger, format, transports } = require('winston')
@@ -25,7 +24,7 @@ const RESOLUTIONS = [300, 500, 2500]
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
 
-
+const queue = new PQueue({concurrency: 5})
 
 
 // log configuration
@@ -95,7 +94,7 @@ process.on('uncaughtException', function (err) {
 watcher
   .on('add', (file) => {
     logger.info(`WATCHER - ADD FILE: ${path.resolve(SVG_DIR, file)}`)
-    limit(()=>{addTask(file, INCLUDE_FILE)})
+    addTask(file, INCLUDE_FILE)
   })
 
   .on('unlink', (file) => {
@@ -125,7 +124,7 @@ const convertSVG = (file, resolution) => {
 }
 const getPNG= (file, resolution, resize) => {
   let fileName = getPNGFileName(file, resolution)
-  convertSVG(file, resolution)
+  queue.add(() => convertSVG(file, resolution))
   .then (buffer => {
     return imagemin.buffer(buffer, {
       plugins: [
