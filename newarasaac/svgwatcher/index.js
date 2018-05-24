@@ -6,8 +6,6 @@ var sharp = require('sharp')
 var imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 const fs = require('fs')
-const PQueue = require('p-queue')
-
 
 const { createLogger, format, transports } = require('winston')
 const { combine, timestamp, label, printf, colorize } = format
@@ -23,8 +21,6 @@ const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictos'
 const RESOLUTIONS = [300, 500, 2500]
 const NODE_ENV = process.env.NODE_ENV || 'development'
 
-
-const queue = new PQueue({concurrency: 5})
 
 
 // log configuration
@@ -69,6 +65,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Initialize watcher.
 var watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
   ignoreInitial: true,
+  usePolling: true,
   cwd: SVG_DIR,
   awaitWriteFinish: {
     stabilityThreshold: 3000,
@@ -117,14 +114,11 @@ const addTask = (file, operation) => {
 
 const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
 
-const convertSVG = (file, resolution) => {
+const getPNG= (file, resolution) => {
+  let fileName = getPNGFileName(file, resolution)
   // density 450p is for 3125x image
   const density = parseInt(0.144 * resolution)
-  return sharp(path.resolve(SVG_DIR, file), { density }).png().toBuffer()
-}
-const getPNG= (file, resolution, resize) => {
-  let fileName = getPNGFileName(file, resolution)
-  queue.add(() => convertSVG(file, resolution))
+  sharp(path.resolve(SVG_DIR, file), { density }).png().toBuffer()
   .then (buffer => {
     return imagemin.buffer(buffer, {
       plugins: [
