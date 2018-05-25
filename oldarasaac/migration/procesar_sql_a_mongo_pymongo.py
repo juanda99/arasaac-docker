@@ -351,12 +351,13 @@ def genera_colecciones_palabras():
 
 if __name__ == '__main__':
     logger = create_logger()
-
+    # esperamos si está dockerizado a que el mysql se levante
+    time.sleep(5)    
     load_dotenv('.env')
 
     # crear json con singulares (svgs) Descomentar para usar
-    #svgs = os.getenv('FOLDER_SVGS')
-    #singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
-    #json.dump(singulares, open('singulares.json', 'w'))
+    svgs = os.getenv('FOLDER_SVGS')
+    singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
+    json.dump(singulares, open('singulares.json', 'w'))
 
     genera_colecciones_palabras()
