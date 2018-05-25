@@ -24,6 +24,7 @@ services:
        - ./materials:/usr/share/nginx/html/materials:ro
        - ./images:/usr/share/nginx/html/images:ro
        - ./pictograms:/usr/share/nginx/html/pictograms:ro
+       - ./locutions:/usr/share/nginx/html/locutions:ro
        - ./webstatic-conf/:/etc/nginx/conf.d:ro
     environment:
       LETSENCRYPT_HOST: "static.arasaac.org"
