@@ -51,7 +51,8 @@ services:
       - db
     volumes:
       - "./data:/app/data"
-  
+      - "../newarasaac/locutions:/app/locutions"
+      - "../newarasaac/svg:/app/svg"  
 
 networks:
   nginxproxy_frontend:

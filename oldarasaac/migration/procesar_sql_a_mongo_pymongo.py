@@ -2,7 +2,6 @@
 
 import MySQLdb
 import re
-import os
 import json
 import logging
 from pymongo import MongoClient
@@ -11,17 +10,10 @@ import datetime
 from utils import create_logger
 from functools import wraps
 import time
+import os
+from dotenv import load_dotenv
 
-# wait until mysql is ready
-time.sleep(5)
 
-
-# DATABASE CONNECTIONS
-client = MongoClient(host='mongodb', port=27017)
-db_mongo = client['arasaac']
-cnx  = MySQLdb.connect(user=os.environ['MYSQL_USER'], passwd=os.environ['MYSQL_PASSWORD'], db=os.environ['MYSQL_DATABASE'], host='db')
-
-logger = create_logger()
 
 
 # útiles
@@ -36,11 +28,17 @@ def timed(func):
         return result
     return wrapper
 
-def cur_a_dict(cur):
+def cur_a_dict(cur, include_only = []):
     '''
     devuelve lista de diccionarios
+    costoso si restricción de imágenes (no plurales)
     '''
-    return [dict((cur.description[i][0], value) \
+    if include_only:
+        return [dict((cur.description[i][0], value) 
+                    for i, value in enumerate(row)) for row in cur.fetchall()
+                    if row[0] in include_only]
+    else:
+        return [dict((cur.description[i][0], value) 
                for i, value in enumerate(row)) for row in cur.fetchall()]
 
 def limpia(s):
@@ -112,8 +110,7 @@ class Autores(object):
             if name:
                 d['name'] = name.decode('latin1').encode('utf-8')
 
-        logger.info('Insertando autores')
-        col_authors.drop()
+        logger.info('Insertando autores') 
         col_authors.insert_many(data)
 
 class Imagenes(object):
@@ -124,69 +121,97 @@ class Imagenes(object):
         self.con_sql = con_sql
         self.mongo = con_mongo
         self.lang = lang
-        
-        
-    def inserta_locuciones(self):
-        '''
-        Locuciones sólo en español?
-        '''
-        pass
 
     def inserta_lse(self):
         sql = '''select id_imagen
             from imagenes_12'''
 
-    @timed
-    def inserta_imagenes(self):
-        '''
-        Extract Mysql info: image & author
-        Usa infor de auxiliar de palabras word_
-        '''
+
+    def listado_imagenes(self):
         sql_images =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdate,
-            licencia as license, id_autor as authors,
+            id_licencia as license, id_autor as authors,
             estado as status 
-            FROM imagenes_10, licencias
-            WHERE imagenes_10.id_licencia = licencias.id_licencia'''
-            
-        sql_images_autor =  '''SELECT imagen as image, id_imagen as id_image,
-            fecha_creacion as created, ultima_modificacion as modificated,
-            autores.id_autor as id_author, autor as first_name, email_autor as email
-            FROM autores, imagenes
-            WHERE imagenes.id_autor = autores.id_autor'''
+            FROM imagenes_10
+            '''
+        sql_images_es =  '''SELECT id_imagen as idPictogram,
+            fecha_creacion as created, ultima_modificacion as lastUpdate,
+            id_licencia as license, id_autor as authors, 
+            estado as status, tags_imagen as legacyTags
+            FROM imagenes_10
+            '''
+        if self.lang == 'es':
+            sql_images = sql_images_es
 
         cursor = self.con_sql.cursor()
 
         cursor.execute(sql_images)
-        data = cur_a_dict(cursor)
+        
+        svgs = os.getenv('FOLDER_SVGS')
+        try:
+            singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
+            # descomentar para usar estático
+            #singulares = json.load(open('singulares.json'))
+        except OSError:
+            logger.error('No existe carpeta de SVGs %s', svgs)
+            singulares = []
+        data = cur_a_dict(cursor, include_only = singulares)
+        
+        return data
 
-        col_authors = self.mongo.authors
+    @timed
+    def inserta_imagenes(self):
+        
+        data = self.listado_imagenes()
 
-        # genera una co# imagenes.tags_imagen as tags  PENDIENTE TAGS      lección diferente por idioma
-        coleccion = 'pictos_{}'.format(self.lang)
+        col_authors = self. mongo.authors
+
+        # genera una colección de imagenes diferente por idioma
+        
+        coleccion = 'araimage_{}'.format(self.lang)
         colimages = self.mongo[coleccion]
         
         coleccion_pal = 'words_{}'.format(self.lang)
         word_col = self.mongo[coleccion_pal]
 
         for im in data:
-            if im['status'] == 1:
-                im['status'] = 'publish'
             author = im['authors']  # one
             _author =  col_authors.find_one({'idAuthor': author})
             if _author:
                 authorid = _author.get('_id')
                 im['authors'] = [authorid]
 
-            im['keywords'] = list(word_col.find({'idPictogram': im['idPictogram']}))
-            # eliminar _id de cada keyword?
-        # drop collections from previous import
-        colimages.drop()
+            im['keywords'] = list(word_col.find({'idPictogram': im['idPictogram']},
+                        projection={'_id': 0, 'idPictogram':0} ))
+                         
+            tags = im.get('legacyTags')
+            if tags:
+                im['legacyTags'] = separa_campos(im['legacyTags'])
+
         colimages.insert_many(data)
 
         # elimina colección aux de palabras
         self.mongo.drop_collection(coleccion_pal)
-        
+
+    def inserta_locuciones(self, palabras):
+        traducciones = json.load(open('idiomas.json'))
+        carpeta = ''
+        for t in traducciones:
+            if t.get('lang') == self.lang:
+                carpeta = t.get('table')
+                break
+        if carpeta == 'palabras':
+            carpeta = '0'
+        folder = os.path.join(os.getenv('FOLDER_LOCUTIONS'), carpeta)
+        try:
+            locuciones_ids = [int(f.split('.')[0]) for f in os.listdir(folder)]
+            for p in palabras:
+                if p.get('idKeyword') in locuciones_ids:
+                    p['idLocution']="{}.mp3".format(p.get('idKeyword'))
+        except OSError:
+            logger.error('No existe carpeta de locuciones en %s', folder) 
+
+
     def listado_palabras(self):
         '''
         Devuelve listado de palabras preparadas para insertar en mongo
@@ -211,24 +236,21 @@ class Imagenes(object):
         sql_pal = '''select imagenes.id_imagen as idPictogram, 
                 {tablapal}.id_palabra as idKeyword, traduccion as keyword,
                 definicion_traduccion as meaning,
-                tipo_palabra_en as type
-                from {tablapal}, imagenes, palabra_imagen, tipos_palabra, palabras
+                id_tipo_palabra as type
+                from {tablapal}, imagenes, palabra_imagen, palabras
                 where imagenes.id_imagen = palabra_imagen.id_imagen and
                 {tablapal}.id_palabra = palabra_imagen.id_palabra and
-                palabras.id_tipo_palabra = tipos_palabra.id_tipo_palabra and
                 palabras.id_palabra = palabra_imagen.id_palabra
 
                 '''.format(tablapal=tablapal)
         
         sql_pal_es = '''select imagenes.id_imagen as idPictogram, 
                 palabras.id_palabra as idKeyword, palabra as keyword,
-                definicion as meaning,
-                tipo_palabra_{} as type
-                from palabras, imagenes, palabra_imagen, tipos_palabra
+                definicion as meaning, id_tipo_palabra as type
+                from palabras, imagenes, palabra_imagen
                 where imagenes.id_imagen = palabra_imagen.id_imagen and
-                palabras.id_palabra = palabra_imagen.id_palabra and
-                palabras.id_tipo_palabra = tipos_palabra.id_tipo_palabra
-                '''.format(lang)
+                palabras.id_palabra = palabra_imagen.id_palabra
+                ''' 
         # imagenes.tags_imagen as tags  PENDIENTE TAGS      
 
         if lang == 'es':
@@ -243,6 +265,7 @@ class Imagenes(object):
         cursor.execute(sql_pal)
 
         listapals = cur_a_dict(cursor)
+
         logger.info ('TOTAL: %s palabras', len(listapals))
         
         for pal in listapals:
@@ -253,6 +276,9 @@ class Imagenes(object):
                                                     encoding)
                 else:
                     pal['meaning'] = decode(pal['meaning'], encoding)
+            else:
+                del(pal['meaning'])
+                
             if pal.get('keyword'):
                 if charset:
                     pal['keyword'] = doble_decode(pal['keyword'], 
@@ -260,7 +286,9 @@ class Imagenes(object):
                                                     encoding)
                 else:
                     pal['keyword'] = decode(pal['keyword'], encoding)
-                
+
+        self.inserta_locuciones(listapals)
+
         return listapals
 
     @timed
@@ -272,12 +300,12 @@ class Imagenes(object):
         coleccion = 'words_{}'.format(self.lang)
         word_col = self.mongo[coleccion]
         word_col.create_index([('idPictogram', pymongo.ASCENDING)], background=True)
-        word_col.drop()
         word_col.insert_many(self.listado_palabras())
 
     def procesar(self):
         self.inserta_palabras()
         self.inserta_imagenes()
+
 
 
 def genera_colecciones_palabras():
@@ -289,7 +317,22 @@ def genera_colecciones_palabras():
 
     Usa idiomas.json como configuración
     '''
+    
+    # DATABASE CONNECTIONS
+    load_dotenv()
 
+    MYSQL_DATABASE = os.getenv('MYSQL_DATABASE')
+    MONGO_DATABASE = os.getenv('MONGO_DATABASE')
+    MYSQL_USER = os.getenv('MYSQL_USER')
+    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+    HOST_MONGO = os.getenv('HOST_MONGO')
+    HOST_MYSQL = os.getenv('HOST_MYSQL')
+
+    client = MongoClient(host=HOST_MONGO, port=27017)
+    db_mongo = getattr(client, MONGO_DATABASE)
+
+    cnx  = MySQLdb.connect(host=HOST_MYSQL, port=3306, user = MYSQL_USER, 
+                passwd = MYSQL_PASSWORD, db= MYSQL_DATABASE)
 
     a = Autores(cnx, db_mongo)
     a.procesar()
@@ -302,6 +345,18 @@ def genera_colecciones_palabras():
         im.inserta_palabras()
         logger.info('Procesando imagenes --> %s', l)
         im.inserta_imagenes() 
+        
+        
+
 
 if __name__ == '__main__':
+    logger = create_logger()
+
+    load_dotenv('.env')
+
+    # crear json con singulares (svgs) Descomentar para usar
+    #svgs = os.getenv('FOLDER_SVGS')
+    #singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
+    #json.dump(singulares, open('singulares.json', 'w'))
+
     genera_colecciones_palabras()
