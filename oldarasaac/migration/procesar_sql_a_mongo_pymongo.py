@@ -168,7 +168,7 @@ class Imagenes(object):
 
         # genera una colección de imagenes diferente por idioma
         
-        coleccion = 'araimage_{}'.format(self.lang)
+        coleccion = 'pictos_{}'.format(self.lang)
         colimages = self.mongo[coleccion]
         
         coleccion_pal = 'words_{}'.format(self.lang)
