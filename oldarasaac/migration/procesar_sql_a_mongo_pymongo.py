@@ -234,7 +234,7 @@ class Imagenes(object):
                     break
 
         sql_pal = '''select imagenes.id_imagen as idPictogram, 
-                {tablapal}.id_palabra as idKeyword, traduccion as keyword,
+                {tablapal}.id_traduccion as idKeyword, traduccion as keyword,
                 definicion_traduccion as meaning,
                 id_tipo_palabra as type
                 from {tablapal}, imagenes, palabra_imagen, palabras
