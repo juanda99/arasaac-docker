@@ -1,10 +1,15 @@
 const User = require('../models/users')
 const mailing = require('../mail')
-const nev = mailing('en')
+const formidable = require('formidable')
+const nev = mailing()
 
 module.exports = {
   create: (req, res) => {
     const user = new User(req.body)
+    console.log('++++++++++++++++++++')
+    console.log(req.body)
+    console.log('------------')
+
     nev.createTempUser(user, (err, existingPersistentUser, newTempUser) => {
       if (err) {
         return res.status(404).json({
@@ -18,34 +23,39 @@ module.exports = {
             'You have already signed up and confirmed your account. Did you forget your password?'
         })
       }
+      console.log(newTempUser)
       // new user created
       if (newTempUser) {
         console.log(newTempUser)
         const URL = newTempUser[nev.options.URLFieldName]
-        const info = nev.sendVerificationEmail(
+        nev.sendVerificationEmail(
           newTempUser.email,
           URL,
           (err, info) => {
             if (err) {
+              console.log(err)
               return res.status(500).json({
-                message: `ERROR: sending verification email FAILED ${info}`
+                message: `ERROR: sending verification email FAILED`,
+                err
               })
             }
-            return info
+            else {
+              return res.status(201).json({
+                message:
+                  'An email has been sent to you. Please check it to verify your account.',
+                _id: newTempUser._id
+              })
+            }
           }
         )
-        console.log(info)
-        return res.status(201).json({
-          message:
-            'An email has been sent to you. Please check it to verify your account.',
-          _id: newTempUser._id
-        })
-        // user already exists in temporary collection!
+      // user already exists in temporary collection!
       }
-      return res.status(409).json({
-        message:
-          'You have already signed up. Please check your email to verify your account.'
-      })
+      else {
+        return res.status(409).json({
+          message:
+            'You have already signed up. Please check your email to verify your account.'
+        })
+      }
     })
   },
   activate: (req, res) => {
