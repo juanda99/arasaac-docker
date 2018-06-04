@@ -8,8 +8,8 @@
   "license": "",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --ignore 'public/arasaac.json' --ignore 'materials/' app.js --exec babel-node  --presets es2015,stage-2",
-    "debug": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' app.js --exec babel-node  --presets es2015,stage-2",
+    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictos/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
+    "debug": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictos/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
     "edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
     "test": "swagger project test",
     "compile": "yaml2json api/swagger/swagger.yaml > swagger.json"
