@@ -31,7 +31,7 @@ const swaggerConfig = {
 
 /*bbdd configuration in its own file*/
 require('./db')
-app.use(passport.initialize());
+app.use(passport.initialize())
 app.use(cors())
 app.set('etag', false)
 app.use(morgan('dev'))

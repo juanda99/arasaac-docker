@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs')
 const config = require('../config')
 
 module.exports = () => {
-  const locale='es'
+  const locale = 'es'
   const myHasher = (password, tempUserData, insertTempUser, callback) => {
     bcrypt.genSalt(8, (err, salt) => {
       bcrypt.hash(password, salt, (err, hash) =>
@@ -15,11 +15,14 @@ module.exports = () => {
   }
   /* email messages, we may change them depending on locale */
   let subject = 'Please confirm account'
-  let html = 'Click the following link to confirm your account:</p><p>${URL}</p>'
-  let text = 'Please confirm your account by clicking the following link: ${URL}'
+  let html =
+    'Click the following link to confirm your account:</p><p>${URL}</p>'
+  let text =
+    'Please confirm your account by clicking the following link: ${URL}'
   if (locale === 'es') {
     subject = 'Por favor, confirma tu cuenta'
-    html = 'Pulsa el enlace siguiente para confirmar tu cuenta:</p><p>${URL}</p>'
+    html =
+      'Pulsa el enlace siguiente para confirmar tu cuenta:</p><p>${URL}</p>'
     text = 'Por favor, confirma tu cuenta pulsando el enlace siguiente: ${URL}'
   }
 
@@ -59,7 +62,7 @@ module.exports = () => {
       hashingFunction: myHasher
     },
     (err, options) => {
-      if (err) {        
+      if (err) {
         console.log(err)
         return
       }
