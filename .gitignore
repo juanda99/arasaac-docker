@@ -13,12 +13,13 @@ newarasaac/ssh_keys/*pub
 
 
 # ***** FRONTEND *****
-newarasaac/frontend/code/
+#newarasaac/frontend/code/
 
 # ***** MATERIALS *****
 newarasaac/materials
 newarasaac/svg/*.svg
-newarasaac/pictograms/*.png
+newarasaac/pictograms/**/
+newarasaac/pictograms/*
 
 # ***** API *****
 # Runtime configuration for swagger app
