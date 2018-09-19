@@ -6,9 +6,14 @@ var sharp = require('sharp')
 var imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 const fs = require('fs')
+// const Bottleneck = require('bottleneck')
 
 const { createLogger, format, transports } = require('winston')
 const { combine, timestamp, label, printf, colorize } = format
+
+/* const limiter = new Bottleneck({
+  maxConcurrent: 3
+}) */
 
 // load environment
 require('dotenv').config()
@@ -31,7 +36,6 @@ const myFormat = printf(info => {
 
 const logger = createLogger({
   format: combine(
-    colorize(),
     timestamp(),
     myFormat
   ), 
@@ -43,10 +47,11 @@ const logger = createLogger({
     new transports.File({
       filename: 'error.log',
       level: 'error'
-    })/*,
+    }),
     new transports.File({
-      filename: 'combined.log'
-    })*/
+      filename: 'svgwatcher.log',
+      level: 'info'
+    })
   ]
 })
 
@@ -57,7 +62,12 @@ const logger = createLogger({
 // 
 if (process.env.NODE_ENV !== 'production') {
   logger.add(new transports.Console({
-    level: 'debug'
+    level: 'debug',
+    format: combine(
+      colorize(),
+      timestamp(),
+      myFormat
+    )
   }))
 }
 
@@ -66,7 +76,7 @@ if (process.env.NODE_ENV !== 'production') {
 var watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
   ignoreInitial: true,
   // move to env variable, 0 for mac, 1 for server
-  // usePolling: false,
+  usePolling: true,
   cwd: SVG_DIR,
   awaitWriteFinish: {
     stabilityThreshold: 3000,
@@ -115,37 +125,27 @@ const addTask = (file, operation) => {
 
 const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
 
-const getPNG= (file, resolution) => {
+const getPNG= async (file, resolution) => {
   let fileName = getPNGFileName(file, resolution)
   // density 450p is for 3125x image
   const density = parseInt(0.144 * resolution)
-  sharp(path.resolve(SVG_DIR, file), { density }).png().toBuffer()
-  .then (buffer => {
-    return imagemin.buffer(buffer, {
+
+  try {
+    const buffer = await sharp(path.resolve(SVG_DIR, file), { density }).png().toBuffer()
+    const newBuffer = await imagemin.buffer(buffer, {
       plugins: [
         imageminPngquant({quality: '65-80', speed: 10})
       ]
     })
-  })
-  .then(buffer => {
-    fs.open(fileName, 'w', function(err, fd) {  
-      if (err) {
-          throw 'could not open file: ' + err
-      }
-      // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
-      fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-          if (err) throw 'error writing file: ' + err
-          fs.close(fd, function() {
-            logger.info(`IMAGE GENERATED: ${fileName}`)
-          })
-      })
-    })
-  }) 
-  .catch(err => { 
+    const fd = fs.openSync(fileName, 'w')
+    // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
+    fs.writeSync(fd, buffer, 0, buffer.length, null)
+    fs.closeSync(fd)
+    await logger.info(`IMAGE GENERATED: ${fileName}`)
+  }
+  catch(err) { 
     logger.error(`Error converting ${file}:`)
     logger.error(err) 
-  })
+  }
 }
-
-
 
