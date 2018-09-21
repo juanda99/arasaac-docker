@@ -38,8 +38,7 @@ services:
     container_name: api
     build:
       context: ./api
-      dockerfile: dockerfile.yml
-    command: yarn debug
+    command: npm run debug
     depends_on:
       - mongodb
       - auth
@@ -47,6 +46,7 @@ services:
     - ./api:/app
     - ./materials:/app/materials
     - /app/node_modules
+    - /app/.config
     - ./svg:/app/svg:ro
     - ./pictograms:/app/pictos
     environment:
@@ -65,8 +65,7 @@ services:
     container_name: privateapi
     build:
       context: ./privateApi
-      dockerfile: dockerfile.yml
-    command: yarn debug
+    command: npm run debug
     depends_on:
       - mongodb
       - auth
@@ -74,6 +73,7 @@ services:
     - ./privateApi:/app
     - ./materials:/app/materials
     - /app/node_modules
+    - /app/.config
     environment:
       LETSENCRYPT_HOST: "privateapi.arasaac.org"
       LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
@@ -90,13 +90,13 @@ services:
     container_name: auth
     build:
       context: ./auth
-      dockerfile: dockerfile.yml
     command: npm run debug
     depends_on:
       - mongodb
     volumes:
     - ./auth:/app
     - /app/node_modules
+    - /app/.config
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
       LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
@@ -114,24 +114,24 @@ services:
     container_name: watcher
     build:
       context: ./watcher
-      dockerfile: watcher-dockerfile.yml
-    command: yarn start
+    command: npm start
     volumes:
     - ./watcher:/app
     - ./materials:/app/materials
     - /app/node_modules
+    - /app/.config
 
   svgwatcher:
     hostname: svgwatcher
     container_name: svgwatcher
     build:
       context: ./svgwatcher
-      dockerfile: svgwatcher-dockerfile.yml
-    command: yarn start
+    command: npm start
     volumes:
     - ./svgwatcher:/app
     - ./svg:/app/svg:ro
     - /app/node_modules
+    - /app/.config
     - ./pictograms:/app/pictos
 
   mongodb:

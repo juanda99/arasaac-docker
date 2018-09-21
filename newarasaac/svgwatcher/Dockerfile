@@ -11,8 +11,8 @@ WORKDIR /app
 ENV HOME=/app
 
 # Install dependencies
-COPY ./package.json ./yarn.lock $HOME/
+COPY ./package.json ./package-lock.json $HOME/
 RUN npm install -g node-gyp
-RUN yarn install
+RUN npm install
 
 EXPOSE $PORT
