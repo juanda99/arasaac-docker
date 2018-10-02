@@ -1,6 +1,6 @@
 FROM node:8.11.1
 
-MAINTAINER juandacorreo@gmail.com
+LABEL MAINTAINER juandacorreo@gmail.com
 
 ENV NODE_ENV=development 
 ENV PORT=80
@@ -11,7 +11,7 @@ WORKDIR /app
 ENV HOME=/app
 
 # Install dependencies
-COPY package.json yarn.lock $HOME/
-RUN yarn install
+COPY package.json package-lock.json $HOME/
+RUN npm install
 
 EXPOSE $PORT

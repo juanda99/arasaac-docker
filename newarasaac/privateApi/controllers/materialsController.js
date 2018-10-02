@@ -1,6 +1,6 @@
 const Materials = require('../models/materials')
 const formidable = require('formidable')
-const saveFilesByType = require('./utils').saveFilesByType
+const { saveFilesByType } = require('./utils')
 
 module.exports = {
   create: (req, res) => {

@@ -54,16 +54,16 @@ userSchema.path('email').validate(function (email) {
   return email.length
 }, 'Email cannot be blank')
 
-userSchema.path('email').validate(function (email, fn) {
+userSchema.path('email').validate(function (email) {
   const User = mongoose.model('User')
-  if (this.skipValidation()) fn(true)
+  if (this.skipValidation()) return true
 
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
     User.find({ email: email }).exec(function (err, users) {
-      fn(!err && users.length === 0)
+      return (!err && users.length === 0)
     })
-  } else fn(true)
+  } else return true
 }, 'Email already exists')
 
 userSchema.path('username').validate(function (username) {

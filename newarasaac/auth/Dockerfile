@@ -1,6 +1,6 @@
 FROM node:8.2.1
 
-MAINTAINER juandacorreo@gmail.com
+LABEL maintainer="juandacorreo@gmail.com"
 
 ENV PORT=80
 
@@ -10,7 +10,7 @@ WORKDIR /app
 ENV HOME=/app
 
 # Install dependencies
-COPY package.json $HOME/
+COPY package.json package-lock.json $HOME/
 RUN npm install
 
 EXPOSE $PORT

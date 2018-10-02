@@ -51,7 +51,8 @@ oldarasaac/data
 # ***** GENERIC CONFIGURATION *****
 # Environment specific configuration
 .env
-
+.v8flags*
+.babel.json
 # MAC-OS
 .DS_Store
 

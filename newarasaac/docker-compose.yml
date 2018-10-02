@@ -11,7 +11,7 @@ services:
        - ./frontend/code/:/usr/share/nginx/html
     environment:
       LETSENCRYPT_HOST: "beta.arasaac.org"
-      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "beta.arasaac.org"
     networks:
       - nginxproxy_frontend
@@ -28,7 +28,7 @@ services:
        - ./webstatic-conf/:/etc/nginx/conf.d:ro
     environment:
       LETSENCRYPT_HOST: "static.arasaac.org"
-      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "static.arasaac.org"
     networks:
       - nginxproxy_frontend
@@ -51,9 +51,9 @@ services:
     - ./pictograms:/app/pictos
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
-      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "api.arasaac.org"
-      NODE_ENV: "production"
+      NODE_ENV: $NODE_ENV
     networks:
       - nginxproxy_frontend
       - backend
@@ -72,13 +72,17 @@ services:
     volumes:
     - ./privateApi:/app
     - ./materials:/app/materials
-    - /app/node_modules
+      # - /app/node_modules
     - /app/.config
     environment:
       LETSENCRYPT_HOST: "privateapi.arasaac.org"
-      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "privateapi.arasaac.org"
-      NODE_ENV: "production"
+      NODE_ENV: $NODE_ENV
+      EMAIL_FROM: $EMAIL_FROM
+      EMAIL_USER: $EMAIL_USER
+      EMAIL_PASSWORD: $EMAIL_PASSWORD
+      EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
     networks:
       - nginxproxy_frontend
       - backend
@@ -99,9 +103,9 @@ services:
     - /app/.config
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
-      LETSENCRYPT_EMAIL: "juandacorreo@gmail.com"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "auth.arasaac.org"
-      NODE_ENV: "production"
+      NODE_ENV: $NODE_ENV
     networks:
       - nginxproxy_frontend
       - backend
@@ -120,6 +124,8 @@ services:
     - ./materials:/app/materials
     - /app/node_modules
     - /app/.config
+    environment:
+      NODE_ENV: $NODE_ENV
 
   svgwatcher:
     hostname: svgwatcher
@@ -133,6 +139,8 @@ services:
     - /app/node_modules
     - /app/.config
     - ./pictograms:/app/pictos
+    environment:
+      NODE_ENV: $NODE_ENV
 
   mongodb:
     hostname: mongodb

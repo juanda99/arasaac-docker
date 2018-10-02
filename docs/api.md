@@ -1,10 +1,12 @@
 
 # ARASAAC API
+
 These are the docs about how to test & code our API. 
 
 If you need to use our API, you should use previous API (we can send you docs through email arasaac@gmail.com)
 
 ## Ingredients for the API
+
 <dl>
   <dt>Server language</dt>
   <dd><a href="https://nodejs.org)">nodeJS</a>JavaScript for the server Side</dd>

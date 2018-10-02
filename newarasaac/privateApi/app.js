@@ -1,7 +1,6 @@
 const express = require('express')
 const cors = require('cors')
 const router = require('./routes')
-const config = require('./config')
 const bodyParser = require('body-parser')
 
 const app = express()

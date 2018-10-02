@@ -1,6 +1,6 @@
 FROM node:8.11.1
 
-MAINTAINER juandacorreo@gmail.com
+LABEL maintainer="juandacorreo@gmail.com"
 
 ENV NODE_ENV=development 
 ENV PORT=80

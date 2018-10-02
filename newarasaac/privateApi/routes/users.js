@@ -7,4 +7,7 @@ router.post('/', (req, res) => {
 router.delete('/:id', (req, res) => {
   usersController.delete(req, res)
 })
+router.get('/activate/:code', (req, res) => {
+  usersController.activate(req, res)
+})
 module.exports = router
