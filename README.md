@@ -49,6 +49,15 @@ ssh-keygen -t rsa -b 4096 -f ssh_host_rsa_key < /dev/null
 
 - You can change urls and even decide not to use SSL. Just change api calls from [Arasaac frontend repo](https://github.com/juanda99/arasaac-frontend).
 
+- Generate keys for signing tokens. They can be generated through the commands:
+
+```bash
+cd newarasaac/auth/certs
+openssl genrsa -out privatekey.pem 2048
+openssl req -new -key privatekey.pem -out certrequest.csr
+openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+```
+
 ## Problems
 
 ### Ports
