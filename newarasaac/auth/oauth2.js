@@ -116,6 +116,7 @@ const getScopes = (user) => {
  * application issues an access token on behalf of the user who authorized the code.
  */
 server.exchange(oauth2orize.exchange.password((client, username, password, scope, done) => {
+  console.log('kkkkkkkkkk');
   /* this should be use just by our app, other spa should use implicit grant */
   User
     .findOne({email: username})
@@ -149,6 +150,8 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
  * application issues an access token on behalf of the client who authorized the code.
  */
 server.exchange(oauth2orize.exchange.clientCredentials((client, scope, done) => {
+  console.log('kkkkkkkkkk');
+  
   const token = createToken({sub: client.name, aud: client.name, name: client.name, role: 'app', exp: config.token.expiresIn});
   const expiration = config
     .token

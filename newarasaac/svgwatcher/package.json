@@ -18,17 +18,15 @@
   },
   "homepage": "https://github.com/juanda99/arasaac-watcher#readme",
   "dependencies": {
-    "chokidar": "^1.7.0",
-    "dotenv": "^4.0.0",
-    "fs": "0.0.1-security",
-    "imagemin": "^5.3.1",
-    "imagemin-pngquant": "^5.1.0",
-    "p-queue": "2.4.2",
-    "sharp": "0.18.4",
-    "winston": "^3.0.0-rc1"
+    "chokidar": "^2.0.4",
+    "dotenv": "^6.0.0",
+    "imagemin": "^6.0.0",
+    "imagemin-pngquant": "^6.0.0",
+    "sharp": "^0.20.8",
+    "winston": "3.1.0"
   },
   "devDependencies": {
-    "eslint": "^4.10.0",
-    "nodemon": "^1.12.1"
+    "eslint": "^5.6.0",
+    "nodemon": "^1.18.4"
   }
 }

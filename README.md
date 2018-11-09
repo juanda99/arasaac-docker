@@ -1,49 +1,73 @@
-# arasaac-docker
+# Arasaac server
 
-This is the backend server for the new Arasaac Project. Based on docker for better scaling.
+This is the backend server for [beta Arasaac Project](https://beta.arasaac.org/).
 
 ## Project layout
 
-### General server configuration
-Located in *nginx-proxy* folder. Based on docker it runs two services:
+We use docker for our development. 
+
+### General server services
+
+Located in *nginxproxy* folder. It runs two services (see *nginxproxy/docker-compose.yml*):
 - nginx-proxy: [Automated nginx proxy for Docker](https://github.com/jwilder/nginx-proxy) based on VIRTUAL_HOST env variable
 - letsencrypt: automates SSL server certificate generation and renewal processes
 
 - TODO: Add Varnish cache
 
-### Project specific servers
-Located in *newarasaac* folder. Based on docker it runs several services:
-Arasaac project installation repo, based on two other repos:
-- **frontend**: nginx service for all our javascript.
-  - **code**: Our client code, based on React. Source repo is https://github.com/juanda99/arasaac-frontend and code is generated running ``` npm run build``` periodically. 
-  - **conf**: nginx configuration
-- [**api**](./docs/api.md): Our backend code based on node.js, express, swagger-ui and mongodb.
-- **watcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and create zip files, compress images...
-- **mongo**: mongodb service
-- **materials**: nginx service that serve materials (located in materials folder). TODO: get pictos
+### Project specific services
 
+Located in *newarasaac* folder. It runs several services (see *newarasaac/docker-compose.yml*):
+- **frontend**: nginx service for [our SPA](https://github.com/juanda99/arasaac-frontend)
+  - **code**: Our client code, based on React.
+  - **conf**: nginx configuration
+- **webstatic**: nginx service for Arasaac materials, pictograms and locutions.
+- [**api**](./docs/api.md): Our backend api based on node.js, express, swagger-ui and mongodb. Used by Arasaac SPA and third apps.
+- [**privateapi**](./docs/privateapi.md): Our backend private API.
+- [**auth**](./docs/auth.md): Our auth server
+- **svgwatcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and convert svg files (pictograms) to png files
+- **watcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and generate zip files from materials uploaded by Arasaac users. Images are reduced and minified. 
+- **mongo**: mongodb service
+- **sftp**: sftp service to access material and svg folders.
 
 ## Local replication
-- Create entries for domains in local. */etc/hosts* file:
+
+- Create several entries in */etc/hosts* file to resolve domains locally:
 ```
 127.0.0.1       www.api.arasaac.org            api.arasaac.org
 127.0.0.1       www.beta.arasaac.org           beta.arasaac.org
 127.0.0.1       www.static.arasaac.org         static.arasaac.org
 ```
 
-- Copy certificates from server (*nginx-proxy/certs* folder)
+- Copy certificates from server (*nginx-proxy/certs* folder) or execute:
+``` 
+cd newarasaac/ssh_keys
+ssh-keygen -t ed25519 -f ssh_host_ed25519_key < /dev/null
+ssh-keygen -t rsa -b 4096 -f ssh_host_rsa_key < /dev/null
+```
 
 - Execute ```./start.sh``` script to load all the containers.
 
 - You can change urls and even decide not to use SSL. Just change api calls from [Arasaac frontend repo](https://github.com/juanda99/arasaac-frontend).
 
+- Generate keys for signing tokens. They can be generated through the commands:
+
+```bash
+cd newarasaac/auth/certs
+openssl genrsa -out privatekey.pem 2048
+openssl req -new -key privatekey.pem -out certrequest.csr
+openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem
+```
+
 ## Problems
+
 ### Ports
+
 - Web will be served by 443 port by default
 - If there's any error with the certificates it will use 80 port **but api won't work**
 - Any cache problem with ports, http and https, check *chrome://net-internals* HSTS (query and delete domain)
 
 ### Changes monitor
+
 Arasaac-watcher uses inotify by default on Linux to monitor directories for changes. It's not uncommon to encounter a system limit on the number of files you can monitor. You can get your current inotify file watch limit by executing:
 ```
 $ cat /proc/sys/fs/inotify/max_user_watches

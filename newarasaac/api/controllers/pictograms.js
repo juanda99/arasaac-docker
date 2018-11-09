@@ -1,7 +1,7 @@
 const sharp = require('sharp')
 const fs = require('fs-extra')
 const path = require('path')
-var imagemin = require('imagemin')
+const imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 // we load pictos model for all languages
 const setPictogramModel = require('../models/Pictograms')
@@ -169,7 +169,7 @@ module.exports = {
     const file = `${req.swagger.params.idPictogram.value}.svg`
     console.log(req.swagger.params)
     /* eslint-disable multiline-ternary */
-    const url = (req.swagger.params.url.value === true) ? true : false
+    const url = (req.swagger.params.url.value === true)
     const options = {
       plural: req.swagger.params.plural.value || false,
       color: (req.swagger.params.color.value === false) ? req.swagger.params.color.value : true,
