@@ -59,6 +59,7 @@ def separa_campos(texto):
     except:
         logger.info('ERROR EXTRACCION TAGS: %s', texto)
         return []
+        
 
 def decode(word, encoding):
     '''
@@ -130,15 +131,15 @@ class Imagenes(object):
     def listado_imagenes(self):
         sql_images =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdate,
-            id_licencia as license, id_autor as authors,
-            estado as status 
-            FROM imagenes_10
+            id_licencia as license, id_autor as authors, 
+            estado as status, syncsets
+            FROM imagenes where id_tipo_imagen='10'
             '''
         sql_images_es =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdate,
             id_licencia as license, id_autor as authors, 
-            estado as status, tags_imagen as legacyTags
-            FROM imagenes_10
+            estado as status, tags_imagen as legacyTags, syncsets
+            FROM imagenes where id_tipo_imagen='10'
             '''
         if self.lang == 'es':
             sql_images = sql_images_es
@@ -187,6 +188,10 @@ class Imagenes(object):
             tags = im.get('legacyTags')
             if tags:
                 im['legacyTags'] = separa_campos(im['legacyTags'])
+
+            synsets = im.get('synsets')
+            if synsets:
+                im['synsets'] = im['synsets'].split(';')
 
         colimages.insert_many(data)
 

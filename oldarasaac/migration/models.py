@@ -70,6 +70,7 @@ class AraImage(Document):
     image = StringField(required=True)
     labels = ListField(EmbeddedDocumentField(Word))
     tags = ListField(StringField())
+    synsets = ListField(StringField())
     created = DateTimeField()
     modificated = DateTimeField()
     id_image = IntField()
