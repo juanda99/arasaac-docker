@@ -149,7 +149,7 @@ class Imagenes(object):
         
         svgs = os.getenv('FOLDER_SVGS')
         try:
-            singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
+            singulares = [int(f.split('.')[0]) for f in os.listdir(svgs) if f.split('.')[0].isdigit()]
             # descomentar para usar estático
             #singulares = json.load(open('singulares.json'))
         except OSError:
@@ -357,7 +357,9 @@ if __name__ == '__main__':
 
     # crear json con singulares (svgs) Descomentar para usar
     svgs = os.getenv('FOLDER_SVGS')
-    singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
+    #singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
+    singulares = [int(f.split('.')[0]) for f in os.listdir(svgs) if f.split('.')[0].isdigit()]
     json.dump(singulares, open('singulares.json', 'w'))
 
     genera_colecciones_palabras()
+
