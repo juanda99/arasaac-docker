@@ -20,6 +20,7 @@ newarasaac/materials
 newarasaac/svg/*.svg
 newarasaac/pictograms/**/
 newarasaac/pictograms/*
+newarasaac/locutions
 
 # ***** API *****
 # Runtime configuration for swagger app
@@ -42,6 +43,7 @@ newarasaac/svgwatcher/.config
 
 # ***** MONGODB *****
 newarasaac/mongodb/dbdata/*
+newarasaac/mongodb/dump
 !newarasaac/mongodb/dbdata/.gitkeep
 
 # ***** OLDARASAAC *****
