@@ -132,13 +132,13 @@ class Imagenes(object):
         sql_images =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdate,
             id_licencia as license, id_autor as authors, 
-            estado as status, syncsets
+            estado as status, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         sql_images_es =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdate,
             id_licencia as license, id_autor as authors, 
-            estado as status, tags_imagen as legacyTags, syncsets
+            estado as status, tags_imagen as legacyTags, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         if self.lang == 'es':
@@ -191,7 +191,7 @@ class Imagenes(object):
 
             synsets = im.get('synsets')
             if synsets:
-                im['synsets'] = im['synsets'].split(';')
+                im['synsets'] = [s.strip() for s in im['synsets'].split(';')]
 
         colimages.insert_many(data)
 
