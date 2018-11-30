@@ -55,6 +55,7 @@ oldarasaac/data
 .env
 .v8flags*
 .babel.json
+.npm
 # MAC-OS
 .DS_Store
 
