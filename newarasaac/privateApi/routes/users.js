@@ -10,4 +10,7 @@ router.delete('/:id', (req, res) => {
 router.get('/activate/:code', (req, res) => {
   usersController.activate(req, res)
 })
+router.get('/', (req, res) => {
+  usersController.getAll(req, res)
+})
 module.exports = router

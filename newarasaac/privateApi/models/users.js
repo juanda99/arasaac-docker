@@ -1,18 +1,22 @@
 const mongoose = require('mongoose')
 const crypto = require('crypto')
 
-const Schema = mongoose.Schema
+const { Schema } = mongoose
 
 const oAuthTypes = ['facebook', 'google']
 
 const userSchema = new Schema({
-  name: { type: String, default: '' },
-  email: { type: String, default: '' },
-  provider: { type: String, default: '' },
+  name: String,
+  email: String,
+  provider: String,
   locale: { type: String, default: 'en' },
-  password: { type: String, default: '' },
-  authToken: { type: String, default: '' },
+  password: String,
+  authToken: String,
   lastlogin: { type: Date, default: Date.now },
+  url: String,
+  company: String,
+  role: { type: String, default: 'User' },
+  targetLanguages: [String],
   facebook: {
     id: String,
     token: String,
@@ -51,8 +55,9 @@ userSchema.path('email').validate(function(email) {
 
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
-    User.find({ email }).exec((err, users) => !err && users.length === 0)
-  } else return true
+    return User.find({ email }).exec((err, users) => !err && users.length === 0)
+  }
+  return true
 }, 'Email already exists')
 
 userSchema.path('password').validate(function(password) {
@@ -68,10 +73,9 @@ userSchema.pre('save', function(next) {
   if (!this.isNew) return next()
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
-    next(new Error('Invalid password'))
-  } else {
-    next()
+    return next(new Error('Invalid password'))
   }
+  return next()
 })
 
 /**
