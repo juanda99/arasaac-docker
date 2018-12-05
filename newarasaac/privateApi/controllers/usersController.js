@@ -1,4 +1,4 @@
-const User = require('../models/users')
+const User = require('../models/User')
 const mailing = require('../mail')
 const nev = mailing()
 

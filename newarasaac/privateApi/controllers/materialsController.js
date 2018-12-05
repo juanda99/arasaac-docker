@@ -1,4 +1,4 @@
-const Materials = require('../models/materials')
+const Materials = require('../models/Material')
 const formidable = require('formidable')
 const { saveFilesByType } = require('./utils')
 

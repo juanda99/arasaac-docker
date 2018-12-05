@@ -1,4 +1,4 @@
-const User = require('../models/users')
+const User = require('../models/User')
 const mongoose = require('mongoose')
 const nev = require('email-verification')(mongoose)
 const bcrypt = require('bcryptjs')
