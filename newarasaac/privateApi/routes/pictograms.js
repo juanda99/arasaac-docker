@@ -11,4 +11,12 @@ router.get('/:locale/:lastUpdated', (req, res) => {
   pictogramsController.getPictogramsFromDate(req, res)
 })
 
+router.get('/:locale/:lastUpdated', (req, res) => {
+  pictogramsController.getPictogramsFromDate(req, res)
+})
+
+router.get('/:locale/searchId/:searchText', (req, res) => {
+  pictogramsController.getPictogramsIdBySearch(req, res)
+})
+
 module.exports = router

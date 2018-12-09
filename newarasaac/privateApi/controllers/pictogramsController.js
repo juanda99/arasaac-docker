@@ -1,4 +1,5 @@
 const setPictogramModel = require('../models/Pictogram')
+const stopWords = require('../utils/stopWords')
 const languages = [
   'es',
   'ru',
@@ -45,8 +46,6 @@ const getPictogramsFromDate = async (req, res) => {
 
 const getAll = async (req, res) => {
   const { locale } = req.params
-  console.log('Params:')
-  console.log(req.params)
   try {
     const pictograms = await Pictograms[locale].find()
     if (pictograms.length === 0) return res.status(404).json([]) // send http code 404!!!
@@ -59,7 +58,37 @@ const getAll = async (req, res) => {
   }
 }
 
+/* not used, could be for searching in arasaac-admin, but we use public api endpoint */
+const getPictogramsIdBySearch = async (req, res) => {
+  const { locale, searchText } = req.params
+  const filterSearchText = stopWords(searchText, locale)
+  console.log(`searchText filtered:  ${searchText}`)
+  try {
+    const pictograms = await Pictograms[locale]
+      .find(
+        {
+          $text: {
+            $search: filterSearchText,
+            $language: 'none',
+            $diacriticSensitive: false
+          }
+        },
+        { score: { $meta: 'textScore' }, _id: 1, authors: 1 }
+      )
+      .sort({ score: { $meta: 'textScore' } })
+    if (pictograms.length === 0) return res.status(404).json([])
+    return res.json(pictograms)
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
 module.exports = {
   getPictogramsFromDate,
-  getAll
+  getAll,
+  getPictogramsIdBySearch
 }
