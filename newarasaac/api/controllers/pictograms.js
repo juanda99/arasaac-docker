@@ -29,8 +29,8 @@ const languages = [
   'val' // not available
 ]
 
-const Pictograms = languages.reduce((dict, language)=> {
-  dict[language]= setPictogramModel(language)
+const Pictograms = languages.reduce((dict, language) => {
+  dict[language] = setPictogramModel(language)
   return dict
 }, {})
 
@@ -41,16 +41,19 @@ const getNextLayer = layer => {
     'relleno',
     'contorno'
   ]
-  const layerIndex = layers.indexOf(layer) +1
-  if (layerIndex<4) {
+  const layerIndex = layers.indexOf(layer) + 1
+  if (layerIndex < 4) {
     return `<g id="${layers[layerIndex]}">`
   }
   return '</svg>'
 }
 
-const pluralSVGCode = '\n<rect x="390.2" y="147.2" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:16.6297;" x1="417.6" y1="149.5" x2="417.6" y2="199.5"/>\n<line style="fill:none;stroke:#000000;stroke-width:16.6297;" x1="392.5" y1="174.7" x2="442.5" y2="174.7"/>'
-const futureSVGCode = '\n<rect x="390.2" y="147.2" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:12;" x1="393.1" y1="174.7" x2="423.5" y2="174.7"/>\n<polygon points="413,156.9 413,192.1 443,174.5"/>'
-const pastSVGCode = '\n<rect x="-55" y="147" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:12;" x1="-33.5" y1="174.7" x2="-3.1" y2="174.7"/>\n<polygon points="-53,174.5 -23,192.1 -23,156.9"/>'
+const pluralSVGCode =
+  '\n<rect x="390.2" y="147.2" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:16.6297;" x1="417.6" y1="149.5" x2="417.6" y2="199.5"/>\n<line style="fill:none;stroke:#000000;stroke-width:16.6297;" x1="392.5" y1="174.7" x2="442.5" y2="174.7"/>'
+const futureSVGCode =
+  '\n<rect x="390.2" y="147.2" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:12;" x1="393.1" y1="174.7" x2="423.5" y2="174.7"/>\n<polygon points="413,156.9 413,192.1 443,174.5"/>'
+const pastSVGCode =
+  '\n<rect x="-55" y="147" style="fill:#FFFFFF;" width="55" height="55"/>\n<line style="fill:none;stroke:#000000;stroke-width:12;" x1="-33.5" y1="174.7" x2="-3.1" y2="174.7"/>\n<polygon points="-53,174.5 -23,192.1 -23,156.9"/>'
 const skin = {
   white: '#F5E5DE',
   black: '#A65C17',
@@ -69,7 +72,6 @@ const hair = {
   darkBrown: '#6A2703'
 }
 
-
 /*
 const modifySVG = (fileContent, layer, layerText) => {
   const startAt = `<g id="${layer}">`
@@ -82,8 +84,16 @@ const modifySVG = (fileContent, layer, layerText) => {
 
 // const getPNGFileName = (file, resolution) => path.resolve(IMAGE_DIR, `${path.basename(file, '.svg')}_${resolution}.png` )
 
-const getPNGFileName = async (file, options ) => {
-  const { plural, color, backgroundColor, action, resolution, hair, skin } = options
+const getPNGFileName = async (file, options) => {
+  const {
+    plural,
+    color,
+    backgroundColor,
+    action,
+    resolution,
+    hair,
+    skin
+  } = options
   const idFile = path.basename(file, '.svg')
   let fileName = idFile
   if (plural) fileName = `${fileName}-plural`
@@ -93,9 +103,9 @@ const getPNGFileName = async (file, options ) => {
   if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
   if (hair) fileName = `${fileName}-hair=${hair}`
   if (skin) fileName = `${fileName}-skin=${skin}`
-  
+
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
-  return path.resolve(IMAGE_DIR, idFile, `${fileName}.png` )
+  return path.resolve(IMAGE_DIR, idFile, `${fileName}.png`)
 }
 
 const modifyLayer = (fileContent, layer, layerText) => {
@@ -103,7 +113,10 @@ const modifyLayer = (fileContent, layer, layerText) => {
   const finishAt = getNextLayer(layer)
   let s = fileContent.indexOf(startAt)
   let f = fileContent.indexOf(finishAt)
-  return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
+  return `${fileContent.substr(
+    0,
+    s
+  )}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
 }
 
 const addLayer = (fileContent, layer, layerText) => {
@@ -116,23 +129,27 @@ const reSkin = new RegExp(skinsToRemove, 'gim')
 const modifySkin = (fileContent, key) => fileContent.replace(reSkin, skin[key])
 
 const hairToRemove = () => {
-  let value=''
+  let value = ''
   Object.keys(hair).forEach(function(key) {
-    value += `${hair[key]}|` 
+    value += `${hair[key]}|`
   })
-  return value.slice(0, -1) 
+  return value.slice(0, -1)
 }
 const reHair = new RegExp(hairToRemove(), 'gim')
 const modifyHair = (fileContent, key) => fileContent.replace(reHair, hair[key])
 
-const modifySVG = ( fileContent, options ) => {
+const modifySVG = (fileContent, options) => {
   let content = fileContent
   const { plural, color, backgroundColor, action, hair, skin } = options
   if (plural) content = addLayer(content, 'plural', pluralSVGCode)
-  if (backgroundColor) content = modifyLayer(content, 'Fondo', `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`)
+  if (backgroundColor) content = modifyLayer(
+    content,
+    'Fondo',
+    `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`
+  )
   if (!color) content = modifyLayer(content, 'relleno', '')
-  if (action==='future') content = addLayer (content, 'action', futureSVGCode)
-  else if (action==='past') content = addLayer (content, 'action', pastSVGCode)
+  if (action === 'future') content = addLayer(content, 'action', futureSVGCode)
+  else if (action === 'past') content = addLayer(content, 'action', pastSVGCode)
   if (hair) content = modifyHair(content, hair)
   if (skin) content = modifySkin(content, skin)
   /* eslint-enable no-param-reassign */
@@ -143,21 +160,22 @@ const convertSVG = (fileContent, resolution) => {
   // density 450p is for 3125x image
   const density = parseInt(0.144 * resolution, 10)
   const fileBuffer = Buffer.from(fileContent)
-  return sharp(fileBuffer, {density}).png().toBuffer()
+  return sharp(fileBuffer, { density })
+    .png()
+    .toBuffer()
 }
-
 
 module.exports = {
   getPictogramById: async (req, res) => {
     const id = req.swagger.params.idPictogram.value
     const locale = req.swagger.params.locale.value
-    try{
+    try {
       let pictogram = await Pictograms[locale]
-        .findOne({idPictogram: id})
+        .findOne({ idPictogram: id })
         .populate('authors')
-      if(!pictogram) return res.status(404).json()
+      if (!pictogram) return res.status(404).json()
       return res.json(pictogram)
-    } catch(err){
+    } catch (err) {
       return res.status(500).json({
         message: 'Error getting pictograms. See error field for detail',
         error: err
@@ -169,32 +187,36 @@ module.exports = {
     const file = `${req.swagger.params.idPictogram.value}.svg`
     console.log(req.swagger.params)
     /* eslint-disable multiline-ternary */
-    const url = (req.swagger.params.url.value === true)
+    const url = req.swagger.params.url.value === true
     const options = {
       plural: req.swagger.params.plural.value || false,
-      color: (req.swagger.params.color.value === false) ? req.swagger.params.color.value : true,
+      color:
+        req.swagger.params.color.value === false
+          ? req.swagger.params.color.value
+          : true,
       backgroundColor: req.swagger.params.backgroundColor.value || false,
       action: req.swagger.params.action.value || 'present',
       resolution: req.swagger.params.resolution.value || 500,
       skin: req.swagger.params.skin.value || false,
       hair: req.swagger.params.hair.value || false
     }
+    const download = req.swagger.params.download || false
     /* eslint-enable multiline-ternary */
     try {
       const fileName = await getPNGFileName(file, options)
       const exists = await fs.pathExists(file)
-      if (exists) res.sendFile(fileName) 
-
-
+      if (exists && download) res.download(fileName)
+      else if (exists && !download) res.sendFile(fileName)
       const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
       // let newSVGContent = modifySVG(svgContent, layer, layerContent )
-      let newSVGContent = modifySVG(svgContent, options )
+      let newSVGContent = modifySVG(svgContent, options)
       convertSVG(newSVGContent, options.resolution)
-        .then (buffer => imagemin.buffer(buffer, {
-          plugins: [imageminPngquant({quality: '65-80', speed: 10})]
-        }))
+        .then(buffer =>
+          imagemin.buffer(buffer, {
+            plugins: [imageminPngquant({ quality: '65-80', speed: 10 })]
+          }))
         .then(buffer => {
-          fs.open(fileName, 'w', function(err, fd) {  
+          fs.open(fileName, 'w', function(err, fd) {
             if (err) {
               throw 'could not open file: ' + err
             }
@@ -204,12 +226,18 @@ module.exports = {
               fs.close(fd, function() {
                 // logger.info(`IMAGE GENERATED: ${fileName}`)
                 console.log(`IMAGE GENERATED: ${fileName}`)
-                if (url) res.json({image: fileName.replace(IMAGE_DIR, 'https://static.arasaac.org/pictograms')})
+                if (url) res.json({
+                  image: fileName.replace(
+                    IMAGE_DIR,
+                    'https://static.arasaac.org/pictograms'
+                  )
+                })
+                else if (download) res.download(fileName)
                 else res.sendFile(fileName)
               })
             })
           })
-        }) 
+        })
     } catch (err) {
       console.log(err)
       return res.status(500).json({
@@ -225,10 +253,19 @@ module.exports = {
     console.log(`searchText filtered:  ${searchText}`)
     try {
       let pictograms = await Pictograms[locale]
-        .find({ $text: { $search: searchText, $language: 'none', $diacriticSensitive: false } }, {score: {$meta: 'textScore'}})
+        .find(
+          {
+            $text: {
+              $search: searchText,
+              $language: 'none',
+              $diacriticSensitive: false
+            }
+          },
+          { score: { $meta: 'textScore' } }
+        )
         .populate('authors')
-        .sort({'score': { '$meta': 'textScore'} })
-      if (pictograms.length===0) return res.status(404).json([]) 
+        .sort({ score: { $meta: 'textScore' } })
+      if (pictograms.length === 0) return res.status(404).json([])
       return res.json(pictograms)
     } catch (err) {
       console.log(err)
@@ -250,7 +287,7 @@ module.exports = {
         .populate('authors')
       if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
       return res.json(pictograms)
-    } catch(err){
+    } catch (err) {
       return res.status(500).json({
         message: 'Error searching pictogram. See error field for detail',
         error: err
@@ -268,7 +305,7 @@ module.exports = {
         .populate('authors')
       if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
       return res.json(pictograms)
-    } catch(err){
+    } catch (err) {
       return res.status(500).json({
         message: 'Error searching pictogram. See error field for detail',
         error: err
@@ -276,4 +313,3 @@ module.exports = {
     }
   }
 }
-

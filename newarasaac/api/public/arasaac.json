@@ -211,6 +211,13 @@
             "type": "boolean",
             "description": "Get pictogram url or binary data (default value)"
         },
+        "Download": {
+            "name": "download",
+            "in": "query",
+            "type": "boolean",
+            "description": "Defines if the pictogram response will be render in the browser or saved as a file (sets header Content Disposition as attachment). Only applies if url parameter is binary data.",
+            "default": false
+        },
         "Language": {
             "name": "language",
             "description": "Languages than we currently use for pictograms searches.",
@@ -337,6 +344,9 @@
                     },
                     {
                         "$ref": "#/parameters/Url"
+                    },
+                    {
+                        "$ref": "#/parameters/Download"
                     }
                 ],
                 "responses": {
