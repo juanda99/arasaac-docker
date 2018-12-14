@@ -132,13 +132,13 @@ class Imagenes(object):
         sql_images =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as status, synsets
+            estado as published, 0 as validated, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         sql_images_es =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as status, tags_imagen as legacyTags, synsets
+            estado as published, 0 as validated, tags_imagen as legacyTags, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         if self.lang == 'es':

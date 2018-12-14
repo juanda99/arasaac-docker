@@ -32,7 +32,7 @@ const getPictogramsFromDate = async (req, res) => {
   const { lastUpdated, locale } = req.params
   try {
     const pictograms = await Pictograms[locale]
-      .find({ lastUpdate: { $gt: lastUpdated } })
+      .find({ lastUpdated: { $gt: new Date(lastUpdated) } })
       .populate('authors')
     if (pictograms.length === 0) return res.status(404).json([]) // send http code 404!!!
     return res.json(pictograms)
