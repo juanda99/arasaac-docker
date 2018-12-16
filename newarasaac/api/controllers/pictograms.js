@@ -98,7 +98,9 @@ const getPNGFileName = async (file, options) => {
   let fileName = idFile
   if (plural) fileName = `${fileName}-plural`
   if (!color) fileName = `${fileName}-nocolor`
-  if (backgroundColor) fileName = `${fileName}-backgroundColor=${backgroundColor}`
+  if (backgroundColor) fileName = `${fileName}-backgroundColor=${backgroundColor
+    .replace('#', '')
+    .toUpperCase()}`
   if (action !== 'present') fileName = `${fileName}-action=${action}`
   if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
   if (hair) fileName = `${fileName}-hair=${hair}`
@@ -185,7 +187,6 @@ module.exports = {
 
   getPictogramFileById: async (req, res) => {
     const file = `${req.swagger.params.idPictogram.value}.svg`
-    console.log(req.swagger.params)
     /* eslint-disable multiline-ternary */
     const url = req.swagger.params.url.value === true
     const options = {
@@ -204,6 +205,9 @@ module.exports = {
     /* eslint-enable multiline-ternary */
     try {
       const fileName = await getPNGFileName(file, options)
+      console.log('*********')
+      console.log(fileName)
+      console.log('**********************')
       const exists = await fs.pathExists(file)
       if (exists && download) res.download(fileName)
       else if (exists && !download) res.sendFile(fileName)
