@@ -226,7 +226,10 @@ idiomas = {
     'ro': 'ro', 
     'ru': 'ru',
     'zh': 'zhs', # zht????
-    'es': 'es'
+    'es': 'es',
+    'cr': 'none',
+    'val': 'none',
+    'nl': 'nl'
 }
 
 mongoLanguage = {
