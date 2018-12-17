@@ -1,13 +1,6 @@
-# ***** NGINX-PROXY CERTIFICATES *****
-nginxproxy/certs/**/
-nginxproxy/certs/*.key
-nginxproxy/certs/*.crt
-nginxproxy/certs/*.pem
-
 # ***** SFTP *****
 newarasaac/ssh_keys/*key
 newarasaac/ssh_keys/*pub
-
 
 # ***** FRONTEND *****
 #newarasaac/frontend/code/
@@ -31,16 +24,8 @@ newarasaac/watcher/.config
 # ***** WATCHER *****
 newarasaac/svgwatcher/.config
 
-# ***** MONGODB *****
-newarasaac/mongodb/dbdata/*
-newarasaac/mongodb/dump
-!newarasaac/mongodb/dbdata/.gitkeep
 
 # ***** OLDARASAAC *****
-oldarasaac/dump/*
-oldarasaac/bbdd/*
-!oldarasaac/dump/.gitkeep
-!oldarasaac/bbdd/.gitkeep
 oldarasaac/data
 
 # ***** GENERIC CONFIGURATION *****
