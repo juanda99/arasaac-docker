@@ -16,6 +16,16 @@ import datetime
 import chardet
 import uuid
 
+def decode(word, encoding):
+    '''
+    specific decode for lang
+    '''
+    try:
+        return word.decode(encoding)
+    except:
+        logger.info ('ERROR DECODE %s  --> %s',  encoding, word.decode(encoding, 'ignore'))
+        return word.decode(encoding, 'ignore')
+
 
 def encode(word, encoding):
     '''
@@ -26,10 +36,16 @@ def encode(word, encoding):
     '''
     word2=""
     if encoding=='fixit':
-        return word.decode('utf-8').encode('latin1').decode('utf-8').encode('utf-8')
+        try:
+            return word.decode('utf-8').encode('latin1').decode('utf-8').encode('utf-8')
+        except:
+            return word.decode(encoding, 'ignore')
     else:
-        tmp = word.decode(encoding)  # unicode
-        return tmp.encode('utf-8')
+        try: 
+            tmp = word.decode(encoding)  # unicode
+            return tmp.encode('utf-8')
+        except:
+            return word.decode(encoding, 'ignore')    
     # tmp.encode('utf-8')
 
 
