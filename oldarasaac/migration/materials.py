@@ -245,7 +245,10 @@ mongoLanguage = {
     'ro': 'ro', 
     'ru': 'ru',
     'zh': 'none', # zht????
-    'es': 'es'
+    'es': 'es',
+    'cr': 'none',
+    'val': 'none',
+    'nl': 'nl'
 }
 
 licencias = {
