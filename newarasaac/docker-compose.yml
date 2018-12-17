@@ -54,6 +54,14 @@ services:
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "api.arasaac.org"
       NODE_ENV: $NODE_ENV
+      EMAIL_FROM: $EMAIL_FROM
+      EMAIL_USER: $EMAIL_USER
+      EMAIL_PASSWORD: $EMAIL_PASSWORD
+      EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
+      MASTER_KEY: $MASTER_KEY
+      JWT_SECRET: $JWT_SECRET
+      IMAGE_DIR: $IMAGE_DIR
+      SVG_DIR: $SVG_DIR
     networks:
       - nginxproxy_frontend
       - backend
