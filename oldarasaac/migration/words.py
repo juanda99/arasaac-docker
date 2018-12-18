@@ -106,7 +106,9 @@ idiomas = [{"id_idioma": 1,"idioma_ru": "Russian","idioma_abrev": "ru"},
             {"id_idioma": 14,"idioma_en": "Galician","idioma_abrev": "ga"}, 
             {"id_idioma": 15,"idioma_en": "Brazilian Portuguese","idioma_abrev": "br", "encoding2": "fixit"}, 
             {"id_idioma": 16,"idioma_en": "Croatian","idioma_abrev": "cr"}, 
-            {"id_idioma": 17,"idioma_en": "Valencian","idioma_abrev": "val"}]
+            {"id_idioma": 17,"idioma_en": "Valencian","idioma_abrev": "val"},
+            {"id_idioma": 18,"idioma_en": "Dutch","idioma_abrev": "nl"}
+            ]
 
 # idiomas = [{"id_idioma": 15,"idioma_en": "Brazilian Portuguese","idioma_abrev": "br", "encoding2": "fixit"}]
 
