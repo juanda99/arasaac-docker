@@ -1,8 +1,8 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
-let authorSchema = require('./Authors').authorSchema
+let { userSchema } = require('./User')
 
-const  pictogramSchema = new Schema({
+const pictogramSchema = new Schema({
   idPictogram: Number, // autogerated by mongoose-plugin-autoinc
   keywords: [
     {
@@ -33,9 +33,12 @@ const  pictogramSchema = new Schema({
       sinonyms: [String]
     }
   ],
-  authors: [{
-    type: mongoose.Schema.Types.ObjectId, ref: 'Author'
-  }],
+  authors: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  ],
   status: Number, // published (1), unpublished (0)
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
@@ -50,7 +53,8 @@ const  pictogramSchema = new Schema({
   },
   tags: [String],
   legacyTags: [String], // old tags just in case,
-  type: { // from tipo_pictograma, 1 descriptivos, 2 esquemáticos
+  type: {
+    // from tipo_pictograma, 1 descriptivos, 2 esquemáticos
     type: Number,
     min: 1,
     max: 2,
@@ -58,9 +62,5 @@ const  pictogramSchema = new Schema({
   }
 })
 
-module.exports = locale => {
-  return mongoose.model('Pictogram', pictogramSchema, `pictos_${locale}`)
-} 
-
-
-
+module.exports = locale =>
+  mongoose.model('Pictogram', pictogramSchema, `pictos_${locale}`)

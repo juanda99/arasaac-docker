@@ -19,7 +19,7 @@ const userSchema = new Schema({
   locale: { type: String, default: 'en' },
   password: { type: String, default: '' },
   authToken: { type: String, default: '' },
-  lastlogin: { type : Date, default : Date.now },
+  lastlogin: { type: Date, default: Date.now },
   facebook: {
     id: String,
     token: String,
@@ -36,51 +36,49 @@ const userSchema = new Schema({
 
 const validatePresenceOf = value => value && value.length
 
-
 /**
  * Validations
  */
 
 // the below 5 validations only apply if you are signing up traditionally
 
-userSchema.path('name').validate(function (name) {
+userSchema.path('name').validate(function(name) {
   if (this.skipValidation()) return true
   return name.length
 }, 'Name cannot be blank')
 
-userSchema.path('email').validate(function (email) {
+userSchema.path('email').validate(function(email) {
   if (this.skipValidation()) return true
   return email.length
 }, 'Email cannot be blank')
 
-userSchema.path('email').validate(function (email) {
+userSchema.path('email').validate(function(email) {
   const User = mongoose.model('User')
-  if (this.skipValidation()) return (true)
+  if (this.skipValidation()) return true
 
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
-    User.find({ email: email }).exec(function (err, users) {
-      return (!err && users.length === 0)
+    User.find({ email: email }).exec(function(err, users) {
+      return !err && users.length === 0
     })
-  } else return (true)
+  } else return true
 }, 'Email already exists')
 
-userSchema.path('username').validate(function (username) {
+userSchema.path('username').validate(function(username) {
   if (this.skipValidation()) return true
   return username.length
 }, 'Username cannot be blank')
 
-userSchema.path('password').validate(function (password) {
+userSchema.path('password').validate(function(password) {
   if (this.skipValidation()) return true
   return password.length
 }, 'Password cannot be blank')
-
 
 /**
  * Pre-save hook
  */
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function(next) {
   if (!this.isNew) return next()
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
@@ -104,7 +102,7 @@ userSchema.methods = {
    * @api public
    */
 
-  authenticate: function (plainText) {
+  authenticate: function(plainText) {
     return this.encryptPassword(plainText) === this.hashed_password
   },
 
@@ -115,8 +113,8 @@ userSchema.methods = {
    * @api public
    */
 
-  makeSalt: function () {
-    return Math.round((new Date().valueOf() * Math.random())) + ''
+  makeSalt: function() {
+    return String(Math.round(new Date().valueOf() * Math.random()))
   },
 
   /**
@@ -127,7 +125,7 @@ userSchema.methods = {
    * @api public
    */
 
-  encryptPassword: function (password) {
+  encryptPassword: function(password) {
     if (!password) return ''
     try {
       return crypto
@@ -143,7 +141,7 @@ userSchema.methods = {
    * Validation is not required if using OAuth
    */
 
-  skipValidation: function () {
+  skipValidation: function() {
     return ~oAuthTypes.indexOf(this.provider)
   }
 }
@@ -162,7 +160,7 @@ userSchema.statics = {
    * @api private
    */
 
-  load: function (options, cb) {
+  load: function(options, cb) {
     options.select = options.select || 'name username'
     return this.findOne(options.criteria)
       .select(options.select)
@@ -172,4 +170,4 @@ userSchema.statics = {
 
 var User = mongoose.model('User', userSchema, 'users')
 
-module.exports = User
+module.exports = { User, userSchema }
