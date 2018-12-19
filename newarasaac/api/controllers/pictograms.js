@@ -65,7 +65,7 @@ const skin = {
 const hair = {
   brown: '#A65E26',
   blonde: '#FDD700',
-  red: '#F04A23',
+  red: '#ED4120',
   black: '#020100',
   gray: '#EFEFEF',
   darkGray: '#AAABAB',
@@ -205,9 +205,6 @@ module.exports = {
     /* eslint-enable multiline-ternary */
     try {
       const fileName = await getPNGFileName(file, options)
-      console.log('*********')
-      console.log(fileName)
-      console.log('**********************')
       const exists = await fs.pathExists(file)
       if (exists && download) res.download(fileName)
       else if (exists && !download) res.sendFile(fileName)
@@ -228,7 +225,6 @@ module.exports = {
             fs.write(fd, buffer, 0, buffer.length, null, function(err) {
               if (err) throw 'error writing file: ' + err
               fs.close(fd, function() {
-                // logger.info(`IMAGE GENERATED: ${fileName}`)
                 console.log(`IMAGE GENERATED: ${fileName}`)
                 if (url) res.json({
                   image: fileName.replace(
