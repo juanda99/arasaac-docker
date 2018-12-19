@@ -147,7 +147,7 @@ const modifySVG = (fileContent, options) => {
   if (backgroundColor) content = modifyLayer(
     content,
     'Fondo',
-    `<rect x="-54" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`
+    `<rect x="-55" y="147" style="fill:${backgroundColor};" width="500" height="500"/>`
   )
   if (!color) content = modifyLayer(content, 'relleno', '')
   if (action === 'future') content = addLayer(content, 'action', futureSVGCode)
