@@ -60,7 +60,6 @@ const getPictogramFileById = async (req, res) => {
     else if (exists && !download) res.sendFile(fileName)
     const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
     let newSVGContent = modifySVG(svgContent, options)
-    console.log(newSVGContent)
     convertSVG(newSVGContent, options.resolution)
       .then(buffer =>
         imagemin.buffer(buffer, {
