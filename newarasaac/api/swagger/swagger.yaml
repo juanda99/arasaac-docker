@@ -123,6 +123,18 @@ parameters:
     type: integer
     enum: ['500', '2500']
     description: Pictogram resolution. 500px by default.
+  Identity:
+    name: identity
+    in: query
+    type: string
+    enum: ['classroom', 'health', 'library', 'office']
+    description: Classify the type of pictogram
+  IdentityPosition:
+    name: identityPosition
+    in: query
+    type: string
+    enum: ['left', 'right']
+    description: Identity position. Only applies if Identity values is provided.
   Url:
     name: url
     in: query
@@ -205,6 +217,8 @@ paths:
         - $ref: '#/parameters/Hair'
         - $ref: '#/parameters/Url'
         - $ref: '#/parameters/Download'
+        - $ref: '#/parameters/Identity'
+        - $ref: '#/parameters/IdentityPosition'
       responses:
         "200":
           description: Success
