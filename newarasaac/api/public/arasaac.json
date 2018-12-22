@@ -205,8 +205,8 @@
             ],
             "description": "Pictogram resolution. 500px by default."
         },
-        "Identity": {
-            "name": "identity",
+        "Identifier": {
+            "name": "identifier",
             "in": "query",
             "type": "string",
             "enum": [
@@ -217,15 +217,15 @@
             ],
             "description": "Classify the type of pictogram"
         },
-        "IdentityPosition": {
-            "name": "identityPosition",
+        "IdentifierPosition": {
+            "name": "identifierPosition",
             "in": "query",
             "type": "string",
             "enum": [
                 "left",
                 "right"
             ],
-            "description": "Identity position. Only applies if Identity values is provided."
+            "description": "Identity position. Only applies if an identifier has been provided."
         },
         "Url": {
             "name": "url",
@@ -371,10 +371,10 @@
                         "$ref": "#/parameters/Download"
                     },
                     {
-                        "$ref": "#/parameters/Identity"
+                        "$ref": "#/parameters/Identifier"
                     },
                     {
-                        "$ref": "#/parameters/IdentityPosition"
+                        "$ref": "#/parameters/IdentifierPosition"
                     }
                 ],
                 "responses": {

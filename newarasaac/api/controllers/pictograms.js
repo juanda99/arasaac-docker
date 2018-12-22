@@ -48,8 +48,8 @@ const getPictogramFileById = async (req, res) => {
     resolution: req.swagger.params.resolution.value || 500,
     skin: req.swagger.params.skin.value || false,
     hair: req.swagger.params.hair.value || false,
-    identity: req.swagger.params.identity.value,
-    identityPosition: req.swagger.params.identityPosition.value
+    identifier: req.swagger.params.identifier.value,
+    identifierPosition: req.swagger.params.identifierPosition.value
   }
   const download = req.swagger.params.download || false
   /* eslint-enable multiline-ternary */

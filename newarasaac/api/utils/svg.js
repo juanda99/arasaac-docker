@@ -43,7 +43,7 @@ const getNextLayer = layer => {
   return '</svg>'
 }
 
-const identifierCode = (type, position, color) =>
+const identifierCode = (type, position = 'right', color) =>
   (color ? identitySVGCode[type][position] : identityBNSVGCode[type][position])
 
 const modifyLayer = (fileContent, layer, layerText) => {
@@ -71,8 +71,8 @@ const getPNGFileName = async (file, options) => {
     resolution,
     hair,
     skin,
-    identity,
-    identityPosition
+    identifier,
+    identifierPosition
   } = options
   const idFile = path.basename(file, '.svg')
   let fileName = idFile
@@ -85,9 +85,9 @@ const getPNGFileName = async (file, options) => {
   if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
   if (hair) fileName = `${fileName}-hair=${hair}`
   if (skin) fileName = `${fileName}-skin=${skin}`
-  if (identity) {
-    fileName = `${fileName}-identity=${identity}`
-    if (identityPosition === 'left') fileName = `${fileName}-identityPosition`
+  if (identifier) {
+    fileName = `${fileName}-identifier=${identifier}`
+    if (identifierPosition === 'left') fileName = `${fileName}-${identifierPosition}`
   }
 
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
@@ -117,8 +117,8 @@ const modifySVG = (fileContent, options) => {
     action,
     hair,
     skin,
-    identity,
-    identityPosition
+    identifier,
+    identifierPosition
   } = options
   if (plural) content = addLayer(content, 'plural', pluralSVGCode)
   if (backgroundColor) content = modifyLayer(
@@ -131,11 +131,11 @@ const modifySVG = (fileContent, options) => {
   else if (action === 'past') content = addLayer(content, 'action', pastSVGCode)
   if (hair) content = modifyHair(content, hair)
   if (skin) content = modifySkin(content, skin)
-  if (identity) {
+  if (identifier) {
     content = addLayer(
       content,
-      'identity',
-      identifierCode(identity, identityPosition, color)
+      'identifier',
+      identifierCode(identifier, identifierPosition, color)
     )
   }
   /* eslint-enable no-param-reassign */
