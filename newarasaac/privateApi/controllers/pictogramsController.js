@@ -95,18 +95,42 @@ const getPictogramsIdBySearch = async (req, res) => {
 /*
      Use for downloading custom pictograms made with canvas
 */
-const postPictoImageFromBase64 = async (req, res) => {
+const postCustomPictogramFromBase64 = async (req, res) => {
+  console.log('*******')
+  console.log(req.body.base64Data)
+  console.log('***************')
   let { fileName, base64Data} = req.body
   base64Data = base64Data.replace(/^data:image\/png;base64,/, '')
-  const destFileName = `/tmp/${randomize('Aa0', 10)}.png`
-  fileName = `${sanitize(fileName) || 'image'}.png`
+  fileName = `${randomize('Aa0', 10)}-${sanitize(fileName) || 'image'}.png`
+  const destFileName = `/app/pictograms/${fileName}`
+  console.log('kkkkk')
+
   try {
     await fs.writeFile(destFileName, base64Data, 'base64')
-    res.download(destFileName, fileName)
+    return res.status(201).json({ fileName })
+    // res.download(destFileName, fileName)
   } catch (err) {
     console.log(err)
     return res.status(500).json({
-      message: 'Error downloading pictogram. See error field for detail',
+      message: 'Error generating pictogram. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const getCustomPictogramByName = (req, res) => {
+  console.log('kkkkkkk')
+  const { fileName } = req.params
+  console.log(fileName)
+  console.log('ppppp')
+  const destFileName = `/app/pictograms/${fileName}`
+  try {
+    const newFileName = fileName.substring(fileName.indexOf('-') + 1);
+    res.download(destFileName, newFileName)
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      message: 'Error getting pictogram. See error field for detail',
       error: err
     })
   }
@@ -116,5 +140,6 @@ module.exports = {
   getPictogramsFromDate,
   getAll,
   getPictogramsIdBySearch,
-  postPictoImageFromBase64
+  postCustomPictogramFromBase64,
+  getCustomPictogramByName
 }

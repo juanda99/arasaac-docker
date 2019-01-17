@@ -1,14 +1,13 @@
-version: '3'
+version: "3"
 
 services:
-
   frontend:
     image: nginx
     hostname: frontend
     container_name: frontend
     volumes:
-       - ./frontend/conf/:/etc/nginx/conf.d:ro
-       - ./frontend/code/:/usr/share/nginx/html
+      - ./frontend/conf/:/etc/nginx/conf.d:ro
+      - ./frontend/code/:/usr/share/nginx/html
     environment:
       LETSENCRYPT_HOST: "beta.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -21,11 +20,11 @@ services:
     hostname: webstatic
     container_name: webstatic
     volumes:
-       - ./materials:/usr/share/nginx/html/materials:ro
-       - ./images:/usr/share/nginx/html/images:ro
-       - ./pictograms:/usr/share/nginx/html/pictograms:ro
-       - ./locutions:/usr/share/nginx/html/locutions:ro
-       - ./webstatic-conf/:/etc/nginx/conf.d:ro
+      - ./materials:/usr/share/nginx/html/materials:ro
+      - ./images:/usr/share/nginx/html/images:ro
+      - ./pictograms:/usr/share/nginx/html/pictograms:ro
+      - ./locutions:/usr/share/nginx/html/locutions:ro
+      - ./webstatic-conf/:/etc/nginx/conf.d:ro
     environment:
       LETSENCRYPT_HOST: "static.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -43,12 +42,12 @@ services:
       - mongodb
       - auth
     volumes:
-    - ./api:/app
-    - ./materials:/app/materials
-    - /app/node_modules
-    - /app/.config
-    - ./svg:/app/svg:ro
-    - ./pictograms:/app/pictos
+      - ./api:/app
+      - ./materials:/app/materials
+      - /app/node_modules
+      - /app/.config
+      - ./svg:/app/svg:ro
+      - ./pictograms:/app/pictos
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -78,10 +77,11 @@ services:
       - mongodb
       - auth
     volumes:
-    - ./privateApi:/app
-    - ./materials:/app/materials
-    - /app/node_modules
-    - /app/.config
+      - ./privateApi:/app
+      - ./materials:/app/materials
+      - ./tmp:/app/pictograms
+      - /app/node_modules
+      - /app/.config
     environment:
       LETSENCRYPT_HOST: "privateapi.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -96,7 +96,7 @@ services:
       - backend
     ports:
       - "9227:9229"
- 
+
   auth:
     hostname: auth
     container_name: auth
@@ -106,9 +106,9 @@ services:
     depends_on:
       - mongodb
     volumes:
-    - ./auth:/app
-    - /app/node_modules
-    - /app/.config
+      - ./auth:/app
+      - /app/node_modules
+      - /app/.config
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -120,7 +120,7 @@ services:
     ports:
       - "9228:9229"
       - "5000:80"
-  
+
   watcher:
     hostname: watcher
     container_name: watcher
@@ -128,10 +128,10 @@ services:
       context: ./watcher
     command: npm start
     volumes:
-    - ./watcher:/app
-    - ./materials:/app/materials
-    - /app/node_modules
-    - /app/.config
+      - ./watcher:/app
+      - ./materials:/app/materials
+      - /app/node_modules
+      - /app/.config
     environment:
       NODE_ENV: $NODE_ENV
 
@@ -142,11 +142,11 @@ services:
       context: ./svgwatcher
     command: npm start
     volumes:
-    - ./svgwatcher:/app
-    - ./svg:/app/svg:ro
-    - /app/node_modules
-    - /app/.config
-    - ./pictograms:/app/pictos
+      - ./svgwatcher:/app
+      - ./svg:/app/svg:ro
+      - /app/node_modules
+      - /app/.config
+      - ./pictograms:/app/pictos
     environment:
       NODE_ENV: $NODE_ENV
 
