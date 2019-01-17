@@ -15,4 +15,8 @@ router.get('/:locale/searchId/:searchText', (req, res) => {
   pictogramsController.getPictogramsIdBySearch(req, res)
 })
 
+router.post('/base64', (req, res) => {
+  pictogramsController.postPictoImageFromBase64(req, res)
+})
+
 module.exports = router

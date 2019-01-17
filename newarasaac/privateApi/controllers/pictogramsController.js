@@ -1,5 +1,10 @@
+const fs = require('fs-extra')
+const randomize = require('randomatic')
+const sanitize = require('sanitize-filename')
+const formidable = require('formidable')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
+
 const languages = [
   'es',
   'ru',
@@ -87,8 +92,29 @@ const getPictogramsIdBySearch = async (req, res) => {
   }
 }
 
+/*
+     Use for downloading custom pictograms made with canvas
+*/
+const postPictoImageFromBase64 = async (req, res) => {
+  let { fileName, base64Data} = req.body
+  base64Data = base64Data.replace(/^data:image\/png;base64,/, '')
+  const destFileName = `/tmp/${randomize('Aa0', 10)}.png`
+  fileName = `${sanitize(fileName) || 'image'}.png`
+  try {
+    await fs.writeFile(destFileName, base64Data, 'base64')
+    res.download(destFileName, fileName)
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      message: 'Error downloading pictogram. See error field for detail',
+      error: err
+    })
+  }
+}
+
 module.exports = {
   getPictogramsFromDate,
   getAll,
-  getPictogramsIdBySearch
+  getPictogramsIdBySearch,
+  postPictoImageFromBase64
 }
