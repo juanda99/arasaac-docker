@@ -12,7 +12,7 @@ require('./db')
 app.use(cors())
 app.set('etag', false)
 
-app.use(bodyParser.json())
+app.use(bodyParser.json({limit: '50mb', type: 'application/json'}))
 
 app.use('/api', router)
 
