@@ -13,6 +13,10 @@ router.post('/custom/base64', (req, res) => {
   pictogramsController.postCustomPictogramFromBase64(req, res)
 })
 
+router.get('/keywords/:locale/:id', (req, res) => {
+  pictogramsController.getKeywordsById(req, res)
+})
+
 /* we get all Data, could create same endpoint on publicAPI but with less fields info */
 router.get('/:locale', (req, res) => {
   pictogramsController.getAll(req, res)

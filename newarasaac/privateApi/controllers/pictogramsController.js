@@ -86,6 +86,34 @@ const getPictogramsIdBySearch = async (req, res) => {
   } catch (err) {
     console.log(err)
     return res.status(500).json({
+      message: 'Error getting pictogram keywords. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const getKeywordsById = async (req, res) => {
+  const { id, locale } = req.params
+  console.log('VAlues:')
+  console.log(id)
+  console.log(locale)
+  try {
+    const pictograms = await Pictograms[locale]
+      .findOne(
+        {
+          idPictogram: id
+        },
+        { keywords: 1, _id: 0 }
+      )
+    if (pictograms.length === 0) return res.status(404).json([])
+    else {
+      const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
+      return res.status(200).json({keywords})
+    }
+    return res.json(pictograms)
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
     })
@@ -96,14 +124,10 @@ const getPictogramsIdBySearch = async (req, res) => {
      Use for downloading custom pictograms made with canvas
 */
 const postCustomPictogramFromBase64 = async (req, res) => {
-  console.log('*******')
-  console.log(req.body.base64Data)
-  console.log('***************')
   let { fileName, base64Data} = req.body
   base64Data = base64Data.replace(/^data:image\/png;base64,/, '')
   fileName = `${randomize('Aa0', 10)}-${sanitize(fileName) || 'image'}.png`
   const destFileName = `/app/pictograms/${fileName}`
-  console.log('kkkkk')
 
   try {
     await fs.writeFile(destFileName, base64Data, 'base64')
@@ -119,7 +143,6 @@ const postCustomPictogramFromBase64 = async (req, res) => {
 }
 
 const getCustomPictogramByName = (req, res) => {
-  console.log('kkkkkkk')
   const { fileName } = req.params
   console.log(fileName)
   console.log('ppppp')
@@ -139,6 +162,7 @@ const getCustomPictogramByName = (req, res) => {
 module.exports = {
   getPictogramsFromDate,
   getAll,
+  getKeywordsById,
   getPictogramsIdBySearch,
   postCustomPictogramFromBase64,
   getCustomPictogramByName
