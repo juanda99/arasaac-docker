@@ -20,13 +20,13 @@
   },
   {
     "desc": "Arabe",
-    "lang": "ar",
+    "lang": "ara",
     "table": "3",
     "encoding": "1256"
   },
   {
     "desc": "Chino",
-    "lang": "zh",
+    "lang": "zhs",
     "table": "4",
     "encoding": "utf-8"
   },
