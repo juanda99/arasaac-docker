@@ -107,8 +107,9 @@ const getKeywordsById = async (req, res) => {
       )
     if (pictograms.length === 0) return res.status(404).json([])
     else {
-      const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
-      return res.status(200).json({keywords})
+      // const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
+      // return res.status(200).json({keywords})
+      return res.status(200).json(pictograms.keywords)
     }
     return res.json(pictograms)
   } catch (err) {
