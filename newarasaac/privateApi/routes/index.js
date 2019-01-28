@@ -3,9 +3,11 @@ const materials = require('./materials')
 const users = require('./users')
 const words = require('./words')
 const pictograms = require('./pictograms')
+const locutions = require('./locutions')
 
 router.use('/materials', materials)
 router.use('/pictograms', pictograms)
+router.use('/locutions', locutions)
 router.use('/users', users)
 router.use('/words', words)
 
