@@ -79,6 +79,7 @@ services:
     volumes:
       - ./privateApi:/app
       - ./materials:/app/materials
+      - ./locutions:/app/locutions
       - ./tmp:/app/pictograms
       - /app/node_modules
       - /app/.config

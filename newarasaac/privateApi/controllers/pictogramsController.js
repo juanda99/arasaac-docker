@@ -145,8 +145,6 @@ const postCustomPictogramFromBase64 = async (req, res) => {
 
 const getCustomPictogramByName = (req, res) => {
   const { fileName } = req.params
-  console.log(fileName)
-  console.log('ppppp')
   const destFileName = `/app/pictograms/${fileName}`
   try {
     const newFileName = fileName.substring(fileName.indexOf('-') + 1);
@@ -160,11 +158,30 @@ const getCustomPictogramByName = (req, res) => {
   }
 }
 
+const getLocutionById = (req, res) => {
+  const { id, locale, text } = req.params
+  try {
+    const locution = `/app/locutions/${locale}/${id}.mp3`
+    console.log(locution)
+    console.log('ha entrado')
+    let locutionName = sanitize(text)
+    locutionName = locutionName ? `${locutionName}.mp3` : `{$id}.mp3`
+    res.download(locution, locutionName)
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({
+      message: 'Error getting locution. See error field for detail',
+      error: err
+    })
+  }
+}
+
 module.exports = {
   getPictogramsFromDate,
   getAll,
   getKeywordsById,
   getPictogramsIdBySearch,
   postCustomPictogramFromBase64,
-  getCustomPictogramByName
+  getCustomPictogramByName,
+  getLocutionById
 }
