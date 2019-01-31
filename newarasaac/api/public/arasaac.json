@@ -200,8 +200,8 @@
             "in": "query",
             "type": "integer",
             "enum": [
-                "500",
-                "2500"
+                500,
+                2500
             ],
             "description": "Pictogram resolution. 500px by default."
         },

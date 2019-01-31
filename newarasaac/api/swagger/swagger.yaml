@@ -121,7 +121,7 @@ parameters:
     name: resolution
     in: query
     type: integer
-    enum: ['500', '2500']
+    enum: [500, 2500]
     description: Pictogram resolution. 500px by default.
   Identifier:
     name: identifier
