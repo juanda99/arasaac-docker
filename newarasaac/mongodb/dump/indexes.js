@@ -1,5 +1,5 @@
 db = db.getSiblingDB('arasaac')
-const languages = ['ar', 'bg', 'br', 'ca', 'cr', 'de', 'en', 'es', 'eu', 'fr', 'ga', 'it', 'pl', 'pt', 'ro', 'ru', 'val', 'zh'];
+const languages = ['ar', 'bg', 'br', 'ca', 'hr', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'it', 'pl', 'pt', 'ro', 'ru', 'va', 'zh'];
 languages.forEach(language => {
   const collectionName = `pictos_${language}`
   db[collectionName].createIndex(
