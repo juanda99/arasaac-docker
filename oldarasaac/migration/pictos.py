@@ -11,6 +11,7 @@ from utils import create_logger
 from functools import wraps
 import time
 import os
+import ptvsd
 from dotenv import load_dotenv
 
 
@@ -94,9 +95,9 @@ class Autores(object):
         
     def procesar(self):
         col_authors = self.mongo.users
-        col_authors.create_index([('idAuthor', pymongo.ASCENDING)], background=True)
+        col_authors.create_index([('idUser', pymongo.ASCENDING)], background=True)
 
-        sql = '''select id_autor as idAuthor, autor as name, empresa_institucion as company, web_autor as url, 
+        sql = '''select id_autor as idUser, autor as name, empresa_institucion as company, web_autor as url, 
                 email_autor as email from autores
                 '''
         self.cursor.execute(sql)
@@ -132,13 +133,13 @@ class Imagenes(object):
         sql_images =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as published, 0 as validated, synsets
+            estado as status, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         sql_images_es =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as published, 0 as validated, tags_imagen as legacyTags, synsets
+            estado as status, tags_imagen as legacyTags, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         if self.lang == 'es':
@@ -165,7 +166,7 @@ class Imagenes(object):
         
         data = self.listado_imagenes()
 
-        col_authors = self. mongo.authors
+        col_authors = self.mongo.users
 
         # genera una colección de imagenes diferente por idioma
         
@@ -177,7 +178,7 @@ class Imagenes(object):
 
         for im in data:
             author = im['authors']  # one
-            _author =  col_authors.find_one({'idAuthor': author})
+            _author =  col_authors.find_one({'idUser': author})
             if _author:
                 authorid = _author.get('_id')
                 im['authors'] = [authorid]
@@ -336,8 +337,8 @@ def genera_colecciones_palabras():
     client = MongoClient(host=HOST_MONGO, port=27017)
     db_mongo = getattr(client, MONGO_DATABASE)
 
-    cnx  = MySQLdb.connect(host=HOST_MYSQL, port=3306, user=MYSQL_USER, 
-                passwd=MYSQL_PASSWORD, db=MYSQL_DATABASE)
+    cnx  = MySQLdb.connect(host=HOST_MYSQL, port=3306, user = MYSQL_USER, 
+                passwd = MYSQL_PASSWORD, db= MYSQL_DATABASE)
 
     a = Autores(cnx, db_mongo)
     a.procesar()
@@ -356,14 +357,23 @@ def genera_colecciones_palabras():
 
 if __name__ == '__main__':
     logger = create_logger()
+    # for debug:
+    address = ('0.0.0.0', 5000)
+    ptvsd.enable_attach(address)
+    print("attaching")
+    ptvsd.wait_for_attach()
     # esperamos si está dockerizado a que el mysql se levante
     time.sleep(5)    
     load_dotenv('.env')
 
+    print("attached")
+    breakpoint()
+    print("attached2")
+
     # crear json con singulares (svgs) Descomentar para usar
     svgs = os.getenv('FOLDER_SVGS')
+    #singulares = [int(f.split('.')[0]) for f in os.listdir(svgs)]
     singulares = [int(f.split('.')[0]) for f in os.listdir(svgs) if f.split('.')[0].isdigit()]
     json.dump(singulares, open('singulares.json', 'w'))
 
     genera_colecciones_palabras()
-

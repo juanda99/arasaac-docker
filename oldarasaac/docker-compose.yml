@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-
   db:
     hostname: db
     image: mysql:5.5
@@ -36,11 +35,12 @@ services:
   migration:
     hostname: migration
     container_name: migration
-    build: 
-      context: .
-      dockerfile: python-dockerfile.yml
+    build:
+      context: ./migration
+      dockerfile: Dockerfile
     working_dir: /app
-    command: ./start.sh
+    command: python /app/pictos.py
+    #command: ./start.sh
     #command: tail -100f /dev/null
     env_file:
       - .env
@@ -52,8 +52,9 @@ services:
     volumes:
       - "./data:/app/data"
       - "../newarasaac/locutions:/app/locutions"
-      - "../newarasaac/svg:/app/svg"  
-
+      - "../newarasaac/svg:/app/svg"
+    ports:
+      - 5005:5000
 networks:
   nginxproxy_frontend:
     external: true
