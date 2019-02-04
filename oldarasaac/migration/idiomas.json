@@ -20,13 +20,13 @@
   },
   {
     "desc": "Arabe",
-    "lang": "ara",
+    "lang": "ar",
     "table": "3",
     "encoding": "1256"
   },
   {
     "desc": "Chino",
-    "lang": "zhs",
+    "lang": "zh",
     "table": "4",
     "encoding": "utf-8"
   },
@@ -86,7 +86,7 @@
   },
   {
     "desc": "Gallego",
-    "lang": "ga",
+    "lang": "gl",
     "table": "14",
     "encoding": "utf-8"
   },
@@ -104,7 +104,7 @@
   },
   {
     "desc": "Valenciano",
-    "lang": "val",
+    "lang": "va",
     "table": "17",
     "encoding": "iso-8859-15",
     "charset": "utf8"

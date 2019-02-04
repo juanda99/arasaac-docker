@@ -94,9 +94,9 @@ class Autores(object):
         
     def procesar(self):
         col_authors = self.mongo.users
-        col_authors.create_index([('idUser', pymongo.ASCENDING)], background=True)
+        col_authors.create_index([('idAuthor', pymongo.ASCENDING)], background=True)
 
-        sql = '''select id_autor as idUser, autor as name, empresa_institucion as company, web_autor as url, 
+        sql = '''select id_autor as idAuthor, autor as name, empresa_institucion as company, web_autor as url, 
                 email_autor as email from autores
                 '''
         self.cursor.execute(sql)
