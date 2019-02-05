@@ -9,8 +9,8 @@ const languages = [
   'es',
   'ru',
   'ro',
-  'ara', // instead of ar
-  'zhs', // instead of zh, zhs simplified chineese zht traditional chineese
+  'ar', // instead of ar
+  'zh', // instead of zh, zhs simplified chineese zht traditional chineese
   'bg', // not available
   'pl', // not available
   'en',
@@ -20,9 +20,9 @@ const languages = [
   'de',
   'it',
   'pt',
-  'ga', // not available
+  'gl', // not available
   'br', // not available, should we use pt?
-  'cr', // not available
+  'hr', // not available
   'val' // not available
 ]
 
