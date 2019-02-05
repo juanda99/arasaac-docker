@@ -52,7 +52,7 @@ parameters:
     in: path
     required: true
     description: Language associated with the searchText and the results.
-    enum: ['es', 'ru', 'ro', 'ara', 'zhs', 'bg', 'pl', 'en', 'fr', 'ca', 'eu', 'de', 'it', 'pt', 'ga', 'br', 'cr', 'val', 'none']
+    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
   SearchText:
     name: searchText
     in: path
@@ -79,7 +79,7 @@ parameters:
           type: string
         locale:
           type: string
-          enum: ["da", "nl", "en", "fi", "fr", "de", "hu", "it", "nb", "pt", "ro", "ru", "es", "sv", "tr", "ara", "prs", "pes", "urd", "zhs", "zht", "none"]
+          enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
         company:
           type: string
         website:
@@ -152,7 +152,7 @@ parameters:
     type: string
     in: path
     required: true
-    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "ga", "br", "cr", "val"]
+    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
   Days:
     name: days
     description: Material identifier
@@ -538,7 +538,7 @@ definitions:
     properties:
       locale:
         type: string
-        enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "ga", "br", "cr", "val"]
+        enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
         description: Language of the keywords (two letters code), same as requested locale parameter.
       words:
         type: array

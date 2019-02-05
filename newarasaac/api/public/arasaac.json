@@ -56,8 +56,8 @@
                 "es",
                 "ru",
                 "ro",
-                "ara",
-                "zhs",
+                "ar",
+                "zh",
                 "bg",
                 "pl",
                 "en",
@@ -67,11 +67,10 @@
                 "de",
                 "it",
                 "pt",
-                "ga",
+                "gl",
                 "br",
-                "cr",
-                "val",
-                "none"
+                "hr",
+                "val"
             ]
         },
         "SearchText": {
@@ -106,28 +105,24 @@
                     "locale": {
                         "type": "string",
                         "enum": [
-                            "da",
-                            "nl",
-                            "en",
-                            "fi",
-                            "fr",
-                            "de",
-                            "hu",
-                            "it",
-                            "nb",
-                            "pt",
-                            "ro",
-                            "ru",
                             "es",
-                            "sv",
-                            "tr",
-                            "ara",
-                            "prs",
-                            "pes",
-                            "urd",
-                            "zhs",
-                            "zht",
-                            "none"
+                            "ru",
+                            "ro",
+                            "ar",
+                            "zh",
+                            "bg",
+                            "pl",
+                            "en",
+                            "fr",
+                            "ca",
+                            "eu",
+                            "de",
+                            "it",
+                            "pt",
+                            "gl",
+                            "br",
+                            "hr",
+                            "val"
                         ]
                     },
                     "company": {
@@ -261,9 +256,9 @@
                 "de",
                 "it",
                 "pt",
-                "ga",
+                "gl",
                 "br",
-                "cr",
+                "hr",
                 "val"
             ]
         },
@@ -886,9 +881,9 @@
                         "de",
                         "it",
                         "pt",
-                        "ga",
+                        "gl",
                         "br",
-                        "cr",
+                        "hr",
                         "val"
                     ],
                     "description": "Language of the keywords (two letters code), same as requested locale parameter."
