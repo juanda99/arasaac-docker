@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug": "nodemon --inspect=0.0.0.0:9229 --ignore 'materials/' app.js",
-    "start": "nodemon --ignore 'materials/' app.js",
+    "debug": "nodemon --inspect=0.0.0.0:9229 --ignore 'materials/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
+    "start": "nodemon --ignore 'materials/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
     "precommit": "lint-staged"
   },
   "lint-staged": {
