@@ -98,13 +98,13 @@
   },
   {
     "desc": "Croata",
-    "lang": "cr",
+    "lang": "hr",
     "table": "16",
     "encoding": "utf-8"
   },
   {
     "desc": "Valenciano",
-    "lang": "va",
+    "lang": "val",
     "table": "17",
     "encoding": "iso-8859-15",
     "charset": "utf8"

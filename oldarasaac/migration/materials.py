@@ -212,7 +212,7 @@ estados = {
 }
 
 idiomas = {
-    'ar': 'ara', # arabe
+    'ar': 'ar', # arabe
     'bg': 'bg', # change for english
     'br': 'br', # brasileño not in mongo, change for pt
     'ca': 'ca', # change for spanish
@@ -220,16 +220,16 @@ idiomas = {
     'en': 'en',
     'eu': 'eu', # change for spanish
     'fr': 'fr',
-    'ga': 'ga', # change for spanish
+    'ga': 'gl', # change for spanish
     'it': 'it',
     'pl': 'pl', 
     'pt': 'pt',
     'ro': 'ro', 
     'ru': 'ru',
-    'zh': 'zhs', # zht????
+    'zh': 'zh', # zht???? zhs???
     'es': 'es',
-    'cr': 'none',
-    'val': 'none',
+    'cr': 'hr',
+    'val': 'va',
     'nl': 'nl'
 }
 

@@ -103,9 +103,9 @@ idiomas = [{"id_idioma": 1,"idioma_ru": "Russian","idioma_abrev": "ru"},
             {"id_idioma": 11,"idioma_en": "German","idioma_abrev": "de"}, 
             {"id_idioma": 12,"idioma_en": "Italian","idioma_abrev": "it", "encoding2": "fixit"}, 
             {"id_idioma": 13,"idioma_en": "Portuguese","idioma_abrev": "pt", "encoding2": "fixit"}, # el fixit no va 
-            {"id_idioma": 14,"idioma_en": "Galician","idioma_abrev": "ga"}, 
+            {"id_idioma": 14,"idioma_en": "Galician","idioma_abrev": "gl"}, 
             {"id_idioma": 15,"idioma_en": "Brazilian Portuguese","idioma_abrev": "br", "encoding2": "fixit"}, 
-            {"id_idioma": 16,"idioma_en": "Croatian","idioma_abrev": "cr"}, 
+            {"id_idioma": 16,"idioma_en": "Croatian","idioma_abrev": "hr"}, 
             {"id_idioma": 17,"idioma_en": "Valencian","idioma_abrev": "val"},
             {"id_idioma": 18,"idioma_en": "Dutch","idioma_abrev": "nl"}
             ]
