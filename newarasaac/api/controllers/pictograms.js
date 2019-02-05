@@ -22,7 +22,7 @@ const getPictogramById = async (req, res) => {
   try {
     let pictogram = await Pictograms[locale]
       .findOne({ idPictogram: id })
-      .populate('authors')
+      .populate('authors', '_id name')
     if (!pictogram) return res.status(404).json()
     return res.json(pictogram)
   } catch (err) {
@@ -112,7 +112,7 @@ const searchPictograms = async (req, res) => {
         },
         { score: { $meta: 'textScore' } }
       )
-      .populate('authors')
+      .populate('authors', '_id name')
       .sort({ score: { $meta: 'textScore' } })
     if (pictograms.length === 0) return res.status(404).json([])
     return res.json(pictograms)
@@ -134,7 +134,7 @@ const getNewPictograms = async (req, res) => {
     let pictograms = await Pictograms[locale]
       .find({ lastUpdate: { $gt: startDate } })
       .sort({ lastUpdate: -1 })
-      .populate('authors')
+      .populate('authors', '_id name')
     if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
@@ -153,7 +153,7 @@ const getLastPictograms = async (req, res) => {
       .find()
       .sort({ lastUpdate: -1 })
       .limit(numItems)
-      .populate('authors')
+      .populate('authors', '_id name')
     if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
