@@ -11,3 +11,12 @@ languages.forEach(language => {
     }
   );
 });
+db.materials.createIndex(
+  { "title": "text", "desc": "text", "translations.title": "text", "translations.desc": "text"},
+  {
+    "weights": 
+      { "title": 3, "desc":1, "translations.title": 3, "translations.desc": 1 }, 
+    "default_language": "spanish" ,
+    language_override: "language" 
+  }
+);
