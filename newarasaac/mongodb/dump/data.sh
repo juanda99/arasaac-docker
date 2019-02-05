@@ -5,4 +5,4 @@ mongoimport --db arasaac --collection clients --file  /docker-entrypoint-initdb.
 #mongoimport --db arasaac --collection pictograms --file  /docker-entrypoint-initdb.d/pictograms.json  --jsonArray
 #mongoimport --db arasaac --collection tests --file  /docker-entrypoint-initdb.d/tests.json  --jsonArray
 #mongorestore --db arasaac --archive='/docker-entrypoint-initdb.d/arasaac.archive'
-#mongo localhost:27017/arasaac /docker-entrypoint-initdb.d/indexes.js
+mongo localhost:27017/arasaac /docker-entrypoint-initdb.d/indexes.js
