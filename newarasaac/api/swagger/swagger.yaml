@@ -192,7 +192,7 @@ paths:
           description: An object with the list of keywords for the specified language.
           schema:
             $ref: '#/definitions/Keywords'
-        default:
+        500:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
@@ -202,7 +202,7 @@ paths:
     x-swagger-router-controller: pictograms
     get:
       operationId: getPictogramFileById
-      description: Obtain a custom pictogram image based on its identity key and some options like color, resolution, plural...
+      description: Obtain pictogram image file in png format based on its key. Pictogram can be customized with color, resolution, plural...
       tags:
       - pictograms
       # define the type of response for Success "200" and Error
@@ -219,32 +219,37 @@ paths:
         - $ref: '#/parameters/Download'
         - $ref: '#/parameters/Identifier'
         - $ref: '#/parameters/IdentifierPosition'
+      produces:
+        - image/png
       responses:
         "200":
-          description: Success
+          description: Pictogram image file in PNG formats
           schema:
-            $ref: "#/definitions/GetPictogramResponse"
-        default:
-          description: Error
+            type: string
+            format: binary
+        "500":
+          description: Error generating PNG file
           schema:
             $ref: "#/definitions/ErrorResponse"
-  
+
   /pictograms/{locale}/{idPictogram}:
     x-swagger-router-controller: pictograms
     get:
       operationId: getPictogramById
-      description: Obtain pictogram data based on its identity key. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with idPictogram 2350 and resolution 2500px.
+      description: Obtain pictogram data based on its key (idPictogram). The pictogram image url can be generated based on pictogram key value and the desired resolution (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with key 2350 and resolution 2500px.
       tags:
       - pictograms
       # define the type of response for Success "200" and Error
       parameters:
         - $ref: '#/parameters/Locale'
         - $ref: '#/parameters/IdPictogram'
-      produces:
-        - image/png
       responses:
         "200":
           description: Success
+        "500":
+          description: Error generating pictograms data
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 
   /pictograms/{locale}/search/{searchText}:
     x-swagger-router-controller: pictograms
@@ -263,7 +268,7 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/Pictograms"
-        default:
+        "500":
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
@@ -644,10 +649,6 @@ definitions:
     type: array
     items: 
       $ref: "#/definitions/Pictogram"
-  GetPictogramResponse:
-    properties:
-      material:
-        type: object
   User:
     required:
       - email
@@ -711,4 +712,6 @@ definitions:
       - message
     properties:
       message:
+        type: string
+      err:
         type: string
