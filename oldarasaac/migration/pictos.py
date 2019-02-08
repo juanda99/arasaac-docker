@@ -15,6 +15,13 @@ import ptvsd
 from dotenv import load_dotenv
 
 
+## TODO: importar también LSE_definiciones y LSE_acepciones y fotografías
+# Las fotografias están en servidor arasaac, carpeta originales (junto con los pictos)
+# Los ids de definiciones corresponden a los de las palabras
+# Los ids de los ficheros de acepciones corresponden a la tabla de imagenes con tipo_pictograma 11
+# La carpeta originales (lo que no son pictos) igual que el anterior con id_tipo_imagen=12
+# Deberíamos tener entidades nuevas para lse y para las fotos.
+# Estaría bien tener en nombre de la palabra asociada, no solo id por si se aprovechan...
 
 
 # útiles
@@ -139,9 +146,10 @@ class Imagenes(object):
         sql_images_es =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as status, tags_imagen as legacyTags, synsets
+            estado as status, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
+        # remove: tags_imagen as legacyTags
         if self.lang == 'es':
             sql_images = sql_images_es
 
@@ -252,7 +260,7 @@ class Imagenes(object):
         
         sql_pal_es = '''select imagenes.id_imagen as idPictogram, 
                 palabras.id_palabra as idKeyword, palabra as keyword,
-                definicion as meaning, id_tipo_palabra as type
+                definicion as meaning, plural as plural, id_tipo_palabra as type
                 from palabras, imagenes, palabra_imagen
                 where imagenes.id_imagen = palabra_imagen.id_imagen and
                 palabras.id_palabra = palabra_imagen.id_palabra
@@ -292,6 +300,15 @@ class Imagenes(object):
                                                     encoding)
                 else:
                     pal['keyword'] = decode(pal['keyword'], encoding)
+
+            if pal.get('plural'):
+                if charset:
+                    pal['plural'] = doble_decode(pal['plural'], 
+                                                    charset,
+                                                    encoding)
+                else:
+                    pal['plural'] = decode(pal['plural'], encoding)
+            
 
         self.inserta_locuciones(listapals)
 
