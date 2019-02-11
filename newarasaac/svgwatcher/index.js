@@ -14,6 +14,7 @@ const INCLUDE_FILE = 'include'
 const EXCLUDE_FILE = 'exclude'
 const SVG_DIR = process.env.SVG_DIR || '/app/svg'
 const RESOLUTIONS = [300, 500, 2500]
+// const RESOLUTIONS = [500]
 
 // Init watcher
 

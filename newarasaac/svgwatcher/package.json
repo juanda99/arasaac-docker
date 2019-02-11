@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --ignore 'node_modules' --ignore 'svg' --ignore 'pictos' index.js"
+    "start": "nodemon --ignore 'node_modules' --ignore 'svg' --ignore 'pictos' index.js",
+    "debug": "nodemon --ignore 'node_modules' --ignore 'svg' --ignore 'pictos' --inspect=0.0.0.0:9229 index.js"
   },
   "repository": {
     "type": "git",

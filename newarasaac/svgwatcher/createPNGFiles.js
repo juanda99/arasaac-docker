@@ -7,7 +7,9 @@ const {
   getPNGFileName,
   getOptions,
   convertSVG,
-  modifySVG
+  modifySVG,
+  hasHair,
+  hasSkin
 } = require('./utils/svg')
 const SVG_DIR = process.env.SVG_DIR || '/app/svg'
 
@@ -16,10 +18,15 @@ const minifyPNG = async (file, resolution) => {
 
   const optionsArray = getOptions(resolution)
 
-  optionsArray.forEach(async options => {
-    try {
+  try {
+    const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
+    const withHair = hasHair(svgContent)
+    const withSkin = hasSkin(svgContent)
+    optionsArray.forEach(async options => {
+      if (options.hair && !withHair) return
+      if (options.skin && !withSkin) return
       const fileName = await getPNGFileName(file, options)
-      const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
+      /* if we need to generate with a different hair or skin and code is not inside the svg, we don't use it */
       let newSVGContent = modifySVG(svgContent, options)
       convertSVG(newSVGContent, options.resolution)
         .then(buffer =>
@@ -39,10 +46,10 @@ const minifyPNG = async (file, resolution) => {
             })
           })
         })
-    } catch (err) {
-      logger.error(err)
-    }
-  })
+    })
+  } catch (err) {
+    logger.error(err)
+  }
 }
 
 module.exports = minifyPNG

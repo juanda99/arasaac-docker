@@ -11,9 +11,10 @@ const skin = {
   black: '#A65C17',
   assian: '#F4ECAD',
   mulatto: '#E3AB72',
-  aztec: '#CF9D7C',
-  schematic: '#FEFEFE'
+  aztec: '#CF9D7C'
 }
+
+const schematic = '#FEFEFE'
 
 const hair = {
   brown: '#A65E26',
@@ -71,44 +72,69 @@ const getPNGFileName = async (file, options) => {
   return path.resolve(IMAGE_DIR, idFile, `${fileName}.png`)
 }
 
-const getOptions = resolution => {
-  const initOptions = preCompiledOptions[resolution]
-  const colors = [true]
-  const action = 'present'
-  if (initOptions.color) colors.push(false)
+const getPeopleAppearanceOptions = defaultValues => {
   const options = []
-  colors.forEach(color => {
-    options.push({ color, resolution, action })
-    if (initOptions.plural) {
-      options.push({ plural: true, resolution, color, action })
-    }
-    if (initOptions.action) {
-      options.push(
-        { action: 'past', resolution, color },
-        { action: 'future', resolution, color }
-      )
-    }
-  })
-  const peopleAppearanceOptions = initOptions.peopleAppearance
-    ? flatten(
+  // add skins:
+  options.push(
+    Object.keys(skin).map(skinType => ({
+      skin: skin[skinType],
+      ...defaultValues
+    }))
+  )
+
+  options.push(
+    Object.keys(hair).map(hairType => ({
+      hair: hair[hairType],
+      ...defaultValues
+    }))
+  )
+  options.push(
+    flatten(
       Object.keys(skin).map(skinType =>
         Object.keys(hair).map(hairType => ({
           hair: hair[hairType],
           skin: skin[skinType],
-          resolution,
-          color: true,
-          action: 'present'
+          ...defaultValues
         }))
       )
     )
-    : null
-  if (peopleAppearanceOptions) options.push(peopleAppearanceOptions)
+  )
   return flatten(options)
 }
 
-const skinsToRemove = `${skin.white}|${skin.schematic}`
-const reSkin = new RegExp(skinsToRemove, 'gim')
+const getOptions = resolution => {
+  const initOptions = preCompiledOptions[resolution]
+  const colors = [true]
+  if (initOptions.color) colors.push(false)
+  const options = []
+  const defaultValues = {
+    resolution,
+    color: true,
+    action: 'present'
+  }
+  colors.forEach(color => {
+    options.push({ ...defaultValues, color })
+    if (initOptions.plural) {
+      options.push({ ...defaultValues, plural: true, color })
+    }
+    if (initOptions.action) {
+      options.push(
+        { ...defaultValues, action: 'past', color },
+        { ...defaultValues, action: 'future', color }
+      )
+    }
+  })
+  if (initOptions.peopleAppearance) {
+    options.push(getPeopleAppearanceOptions(defaultValues))
+  }
+  return flatten(options)
+}
+
+const skinsToRemove = `${skin.white}|${schematic}`
+// important ! regex without -g option because it's acumulative between interations
+const reSkin = new RegExp(skinsToRemove, 'im')
 const modifySkin = (fileContent, key) => fileContent.replace(reSkin, skin[key])
+const hasSkin = fileContent => reSkin.test(fileContent)
 
 const hairToRemove = () => {
   let value = ''
@@ -117,8 +143,9 @@ const hairToRemove = () => {
   })
   return value.slice(0, -1)
 }
-const reHair = new RegExp(hairToRemove(), 'gim')
+const reHair = new RegExp(hairToRemove(), 'im')
 const modifyHair = (fileContent, key) => fileContent.replace(reHair, hair[key])
+const hasHair = fileContent => reSkin.test(fileContent)
 
 const modifySVG = (fileContent, options) => {
   let content = fileContent
@@ -154,5 +181,7 @@ module.exports = {
   getOptions,
   getPNGFileName,
   convertSVG,
-  modifySVG
+  modifySVG,
+  hasSkin,
+  hasHair
 }

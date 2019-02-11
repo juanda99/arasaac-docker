@@ -141,7 +141,7 @@ services:
     container_name: svgwatcher
     build:
       context: ./svgwatcher
-    command: npm start
+    command: npm run debug
     volumes:
       - ./svgwatcher:/app
       - ./svg:/app/svg:ro
@@ -150,6 +150,8 @@ services:
       - ./pictograms:/app/pictos
     environment:
       NODE_ENV: $NODE_ENV
+    ports:
+      - "9226:9229"
 
   mongodb:
     hostname: mongodb
