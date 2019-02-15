@@ -4,7 +4,7 @@ const sharp = require('sharp')
 var flatten = require('arr-flatten')
 const { pluralSVGCode, pastSVGCode, futureSVGCode } = require('./svgCodes')
 
-const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictos'
+const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictograms'
 
 const skin = {
   white: '#F5E5DE',
@@ -62,17 +62,17 @@ const getPNGFileName = async (file, options) => {
   const { plural, color, action, resolution, hair, skin } = options
   const idFile = path.basename(file, '.svg')
   let fileName = idFile
-  if (plural) fileName = `${fileName}-plural`
-  if (!color) fileName = `${fileName}-nocolor`
-  if (action !== 'present') fileName = `${fileName}-action_${action}`
-  if (hair) fileName = `${fileName}-hair_${hair.substr(1, 6)}`
-  if (skin) fileName = `${fileName}-skin_${skin.substr(1, 6)}`
+  if (plural) fileName = `${fileName}_plural`
+  if (!color) fileName = `${fileName}_nocolor`
+  if (action !== 'present') fileName = `${fileName}_action-${action}`
+  if (hair) fileName = `${fileName}_hair-${hair.substr(1, 6)}`
+  if (skin) fileName = `${fileName}_skin-${skin.substr(1, 6)}`
   fileName = `${fileName}_${resolution}`
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
   return path.resolve(IMAGE_DIR, idFile, `${fileName}.png`)
 }
 
-const getPeopleAppearanceOptions = defaultValues => {
+const getPeopleAppearanceOptions = (defaultValues, initOptions) => {
   const options = []
   // add skins:
   options.push(
@@ -99,6 +99,70 @@ const getPeopleAppearanceOptions = defaultValues => {
       )
     )
   )
+
+  if (initOptions.plural) {
+    // add skins:
+    options.push(
+      Object.keys(skin).map(skinType => ({
+        skin: skin[skinType],
+        ...defaultValues,
+        plural: true
+      }))
+    )
+
+    options.push(
+      Object.keys(hair).map(hairType => ({
+        hair: hair[hairType],
+        ...defaultValues,
+        plural: true
+      }))
+    )
+    options.push(
+      flatten(
+        Object.keys(skin).map(skinType =>
+          Object.keys(hair).map(hairType => ({
+            hair: hair[hairType],
+            skin: skin[skinType],
+            ...defaultValues,
+            plural: true
+          }))
+        )
+      )
+    )
+  }
+
+  if (initOptions.action) {
+    ;['past', 'future'].forEach(action => {
+      // add skins:
+      options.push(
+        Object.keys(skin).map(skinType => ({
+          skin: skin[skinType],
+          ...defaultValues,
+          action
+        }))
+      )
+
+      options.push(
+        Object.keys(hair).map(hairType => ({
+          hair: hair[hairType],
+          ...defaultValues,
+          action
+        }))
+      )
+      options.push(
+        flatten(
+          Object.keys(skin).map(skinType =>
+            Object.keys(hair).map(hairType => ({
+              hair: hair[hairType],
+              skin: skin[skinType],
+              ...defaultValues,
+              action
+            }))
+          )
+        )
+      )
+    })
+  }
   return flatten(options)
 }
 
@@ -125,7 +189,7 @@ const getOptions = resolution => {
     }
   })
   if (initOptions.peopleAppearance) {
-    options.push(getPeopleAppearanceOptions(defaultValues))
+    options.push(getPeopleAppearanceOptions(defaultValues, initOptions))
   }
   return flatten(options)
 }
@@ -133,7 +197,8 @@ const getOptions = resolution => {
 const skinsToRemove = `${skin.white}|${schematic}`
 // important ! regex without -g option because it's acumulative between interations
 const reSkin = new RegExp(skinsToRemove, 'im')
-const modifySkin = (fileContent, key) => fileContent.replace(reSkin, skin[key])
+const modifySkin = (fileContent, key) =>
+  fileContent.replace(reSkin, skin[key] || key)
 const hasSkin = fileContent => reSkin.test(fileContent)
 
 const hairToRemove = () => {
@@ -144,7 +209,8 @@ const hairToRemove = () => {
   return value.slice(0, -1)
 }
 const reHair = new RegExp(hairToRemove(), 'im')
-const modifyHair = (fileContent, key) => fileContent.replace(reHair, hair[key])
+const modifyHair = (fileContent, key) =>
+  fileContent.replace(reHair, hair[key] || key)
 const hasHair = fileContent => reSkin.test(fileContent)
 
 const modifySVG = (fileContent, options) => {
@@ -161,7 +227,9 @@ const modifySVG = (fileContent, options) => {
   if (!color) content = modifyLayer(content, 'relleno', '')
   if (action === 'future') content = addLayer(content, 'action', futureSVGCode)
   else if (action === 'past') content = addLayer(content, 'action', pastSVGCode)
+  if (hair === '#AAABAB' && !skin) console.log(content)
   if (hair) content = modifyHair(content, hair)
+  if (hair === '#AAABAB' && !skin) console.log(content)
   if (skin) content = modifySkin(content, skin)
 
   /* eslint-enable no-param-reassign */
@@ -183,5 +251,6 @@ module.exports = {
   convertSVG,
   modifySVG,
   hasSkin,
-  hasHair
+  hasHair,
+  preCompiledOptions
 }

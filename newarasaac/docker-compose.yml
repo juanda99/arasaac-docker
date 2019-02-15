@@ -22,7 +22,7 @@ services:
     volumes:
       - ./materials:/usr/share/nginx/html/materials:ro
       - ./images:/usr/share/nginx/html/images:ro
-      - ./pictograms:/usr/share/nginx/html/pictograms:ro
+      - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
       - ./locutions:/usr/share/nginx/html/locutions:ro
       - ./webstatic-conf/:/etc/nginx/conf.d:ro
     environment:
@@ -46,8 +46,8 @@ services:
       - ./materials:/app/materials
       - /app/node_modules
       - /app/.config
-      - ./svg:/app/svg:ro
-      - ./pictograms:/app/pictos
+      - ${SVG_DIR}:/app/svg:ro
+      - ${IMAGE_DIR}:/app/pictograms
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -59,8 +59,6 @@ services:
       EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
       MASTER_KEY: $MASTER_KEY
       JWT_SECRET: $JWT_SECRET
-      IMAGE_DIR: $IMAGE_DIR
-      SVG_DIR: $SVG_DIR
     networks:
       - nginxproxy_frontend
       - backend
@@ -80,7 +78,7 @@ services:
       - ./privateApi:/app
       - ./materials:/app/materials
       - ./locutions:/app/locutions
-      - ./tmp:/app/pictograms
+      - ./tmp:/app/$IMAGE_DIR
       - /app/node_modules
       - /app/.config
     environment:
@@ -144,12 +142,15 @@ services:
     command: npm run debug
     volumes:
       - ./svgwatcher:/app
-      - ./svg:/app/svg:ro
+      - ${SVG_DIR}:/app/svg:ro
       - /app/node_modules
       - /app/.config
-      - ./pictograms:/app/pictos
+      - ${IMAGE_DIR}:/app/pictograms
     environment:
       NODE_ENV: $NODE_ENV
+      CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING
+      OVERWRITE: $OVERWRITE
+      IMAGE_DIR: $IMAGE_DIR
     ports:
       - "9226:9229"
 
