@@ -38,6 +38,7 @@ const getFilesCatalog = async (locale, catalogData) => {
     else plurals = pictogram.types.some((type) => type === 2 || type === 4)
     // let check if we generate past and future
     const action = pictogram.types.some((type) => type === 3)
+
     ouput = 
     // verbs
     // plural
@@ -45,6 +46,24 @@ const getFilesCatalog = async (locale, catalogData) => {
   })
 
 }
+
+const skinsToRemove = `${skin.white}|${schematic}`
+// important ! regex without -g option because it's acumulative between interations
+const reSkin = new RegExp(skinsToRemove, 'im')
+const hasSkin = fileContent => reSkin.test(fileContent)
+
+const hairToRemove = () => {
+  let value = ''
+  Object.keys(hair).forEach(function (key) {
+    value += `${hair[key]}|`
+  })
+  return value.slice(0, -1)
+}
+const reHair = new RegExp(hairToRemove(), 'im')
+const hasHair = fileContent => reSkin.test(fileContent)
+
+
+
 
 const peopleVariations = [
   { hair: hair.darkBrown, skin: skin.white },
