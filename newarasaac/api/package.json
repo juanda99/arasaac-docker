@@ -8,8 +8,8 @@
   "license": "",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictos/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
-    "debug": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictos/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
+    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
+    "debug": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
     "edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
     "test": "swagger project test",
     "compile": "yaml2json api/swagger/swagger.yaml > swagger.json"
@@ -20,7 +20,6 @@
     "body-parser": "^1.15.0",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.4",
-    "dotenv-safe": "^4.0.4",
     "email-verification": "^0.4.6",
     "express": "^4.12.3",
     "express-session": "^1.14.1",

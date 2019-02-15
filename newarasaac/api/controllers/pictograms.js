@@ -5,8 +5,7 @@ const imageminPngquant = require('imagemin-pngquant')
 // we load pictos model for all languages
 const setPictogramModel = require('../models/Pictograms')
 const stopWords = require('../utils/stopWords')
-const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictos'
-const SVG_DIR = process.env.SVG_DIR || '/app/svg'
+const { IMAGE_DIR, SVG_DIR } = require('../config')
 
 const languages = require('../utils/languages')
 const { convertSVG, getPNGFileName, modifySVG } = require('../utils/svg')

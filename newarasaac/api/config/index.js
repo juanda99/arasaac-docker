@@ -1,7 +1,4 @@
 const path = require('path')
-const dotenv = require('dotenv-safe')
-
-dotenv.load()
 
 const requireProcessEnv = name => {
   if (!process.env[name]) {
@@ -25,9 +22,10 @@ const config = {
     tokeninfoURL: 'http://auth/api/tokeninfo?access_token=',
     redirectURL: 'https://api.arasaac.org/receivetoken'
   },
-  databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac'
+  databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac',
+  IMAGE_DIR: '/app/pictograms',
+  SVG_DIR: '/app/svg'
 }
-
 
 /**
  * Expose
