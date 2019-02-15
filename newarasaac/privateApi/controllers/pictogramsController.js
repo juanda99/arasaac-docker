@@ -2,29 +2,11 @@ const fs = require('fs-extra')
 const randomize = require('randomatic')
 const sanitize = require('sanitize-filename')
 const formidable = require('formidable')
+const path = require('path')
+const { IMAGE_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
-
-const languages = [
-  'es',
-  'ru',
-  'ro',
-  'ar', // instead of ar
-  'zh', // instead of zh, zhs simplified chineese zht traditional chineese
-  'bg', // not available
-  'pl', // not available
-  'en',
-  'fr',
-  'ca', // not available
-  'eu', // not available
-  'de',
-  'it',
-  'pt',
-  'gl', // not available
-  'br', // not available, should we use pt?
-  'hr', // not available
-  'val' // not available
-]
+const languages = require('../utils/languages')
 
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
@@ -94,9 +76,7 @@ const getPictogramsIdBySearch = async (req, res) => {
 
 const getKeywordsById = async (req, res) => {
   const { id, locale } = req.params
-  console.log('VAlues:')
-  console.log(id)
-  console.log(locale)
+
   try {
     const pictograms = await Pictograms[locale]
       .findOne(
@@ -128,7 +108,7 @@ const postCustomPictogramFromBase64 = async (req, res) => {
   let { fileName, base64Data} = req.body
   base64Data = base64Data.replace(/^data:image\/png;base64,/, '')
   fileName = `${randomize('Aa0', 10)}-${sanitize(fileName) || 'image'}.png`
-  const destFileName = `/app/pictograms/${fileName}`
+  const destFileName = path.resolve(IMAGE_DIR, fileName)
 
   try {
     await fs.writeFile(destFileName, base64Data, 'base64')
@@ -175,6 +155,8 @@ const getLocutionById = (req, res) => {
     })
   }
 }
+
+
 
 module.exports = {
   getPictogramsFromDate,
