@@ -1,11 +1,10 @@
-const sanitize = require('sanitize-filename')
+const filenamify = require('filenamify')
 
 const getLocutionById = (req, res) => {
   const { id, locale, keyword } = req.params
   try {
     const locution = `/app/locutions/${locale}/${id}`
-    let locutionName = sanitize(keyword)
-    locutionName = locutionName ? locutionName : `{$id}.mp3`
+    let locutionName = filenamify(keyword, { replacement: '' }) || `{$id}.mp3`
     res.download(locution, locutionName)
   } catch (err) {
     console.log(err)

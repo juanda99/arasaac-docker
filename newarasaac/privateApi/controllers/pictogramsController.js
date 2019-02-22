@@ -1,6 +1,6 @@
 const fs = require('fs-extra')
 const randomize = require('randomatic')
-const sanitize = require('sanitize-filename')
+const filenamify = require('filenamify')
 const formidable = require('formidable')
 const path = require('path')
 const { IMAGE_DIR } = require('../utils/constants')
@@ -78,13 +78,12 @@ const getKeywordsById = async (req, res) => {
   const { id, locale } = req.params
 
   try {
-    const pictograms = await Pictograms[locale]
-      .findOne(
-        {
-          idPictogram: id
-        },
-        { keywords: 1, _id: 0 }
-      )
+    const pictograms = await Pictograms[locale].findOne(
+      {
+        idPictogram: id
+      },
+      { keywords: 1, _id: 0 }
+    )
     if (pictograms.length === 0) return res.status(404).json([])
     else {
       // const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
@@ -105,9 +104,11 @@ const getKeywordsById = async (req, res) => {
      Use for downloading custom pictograms made with canvas
 */
 const postCustomPictogramFromBase64 = async (req, res) => {
-  let { fileName, base64Data} = req.body
+  let { fileName, base64Data } = req.body
   base64Data = base64Data.replace(/^data:image\/png;base64,/, '')
-  fileName = `${randomize('Aa0', 10)}-${sanitize(fileName) || 'image'}.png`
+  fileName = `${randomize('Aa0', 10)}-${filenamify(fileName, {
+    replacement: ''
+  }) || 'image'}.png`
   const destFileName = path.resolve(IMAGE_DIR, fileName)
 
   try {
@@ -127,7 +128,7 @@ const getCustomPictogramByName = (req, res) => {
   const { fileName } = req.params
   const destFileName = `/app/pictograms/${fileName}`
   try {
-    const newFileName = fileName.substring(fileName.indexOf('-') + 1);
+    const newFileName = fileName.substring(fileName.indexOf('-') + 1)
     res.download(destFileName, newFileName)
   } catch (err) {
     console.log(err)
@@ -155,8 +156,6 @@ const getLocutionById = (req, res) => {
     })
   }
 }
-
-
 
 module.exports = {
   getPictogramsFromDate,

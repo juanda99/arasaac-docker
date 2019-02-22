@@ -1,4 +1,9 @@
-IMAGE_DIR='/app/pictograms'
+const path = require('path')
+const IMAGE_DIR = '/app/pictograms'
+// catalogs must "depend" on IMAGE_DIR to prevent error with hard links: EXDEV: cross-device link not permitted
+const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
+
+const tmpCatalogDir = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
 
 const skin = {
   white: '#F5E5DE',
@@ -22,6 +27,9 @@ const hair = {
 
 module.exports = {
   IMAGE_DIR,
+  CATALOG_DIR,
+  tmpCatalogDir,
+  schematic,
   hair,
   skin
 }

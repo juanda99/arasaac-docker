@@ -78,6 +78,7 @@ services:
       - ./privateApi:/app
       - ./materials:/app/materials
       - ./locutions:/app/locutions
+      - ${IMAGE_DIR}:/app/pictograms
       - ./tmp:/app/$IMAGE_DIR
       - /app/node_modules
       - /app/.config
