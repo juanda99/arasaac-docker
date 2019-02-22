@@ -13,7 +13,7 @@ const INCLUDE_FILE = 'include'
 const EXCLUDE_FILE = 'exclude'
 const SVG_DIR = process.env.SVG_DIR || '/app/svg'
 const usePolling = parseInt(process.env.CHOKIDAR_USEPOLLING) || 1
-const RESOLUTIONS = [300, 500]
+const RESOLUTIONS = [300, 500, 2500]
 
 // startup logs
 logger.info('ARASAAC SVG-WATCHER STARTED')

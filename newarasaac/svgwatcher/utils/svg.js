@@ -30,7 +30,7 @@ const hair = {
 const preCompiledOptions = {
   300: { plural: true, action: true },
   500: { plural: true, action: true, color: true, peopleAppearance: true },
-  2500: { plural: true, action: true, color: true, peopleAppearance: true }
+  2500: { color: true, peopleAppearance: true }
 }
 
 const getNextLayer = layer => {
@@ -227,9 +227,7 @@ const modifySVG = (fileContent, options) => {
   if (!color) content = modifyLayer(content, 'relleno', '')
   if (action === 'future') content = addLayer(content, 'action', futureSVGCode)
   else if (action === 'past') content = addLayer(content, 'action', pastSVGCode)
-  if (hair === '#AAABAB' && !skin) console.log(content)
   if (hair) content = modifyHair(content, hair)
-  if (hair === '#AAABAB' && !skin) console.log(content)
   if (skin) content = modifySkin(content, skin)
 
   /* eslint-enable no-param-reassign */

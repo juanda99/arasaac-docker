@@ -16,7 +16,8 @@ const SVG_DIR = process.env.SVG_DIR || '/app/svg'
 // env variable come as a string! Be careful!!
 const overwrite = process.env.OVERWRITE === '1'
 
-const minifyPNG = async (file, resolution) => {
+// generate all
+const createPNGFiles = async (file, resolution) => {
   /* get options from preCompiledOptions */
 
   const optionsArray = getOptions(resolution)
@@ -52,12 +53,14 @@ const minifyPNG = async (file, resolution) => {
               })
             })
           })
-          .catch(err => logger.error(`ERROR GENERATING ${fileName}: ${err}`))
+          .catch(err => {
+            logger.error(`ERROR GENERATING: ${fileName}: ${err.message}`)
+          })
       }
     })
   } catch (err) {
-    logger.error(err)
+    logger.error(err.message)
   }
 }
 
-module.exports = minifyPNG
+module.exports = createPNGFiles
