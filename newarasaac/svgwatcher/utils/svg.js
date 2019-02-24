@@ -4,7 +4,7 @@ const sharp = require('sharp')
 var flatten = require('arr-flatten')
 const { pluralSVGCode, pastSVGCode, futureSVGCode } = require('./svgCodes')
 
-const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictograms'
+const IMAGE_DIR = '/app/pictograms'
 
 const skin = {
   white: '#F5E5DE',
