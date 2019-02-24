@@ -1,8 +1,9 @@
 const archiver = require('archiver')
 const fs = require('fs-extra')
 const async = require('async')
+const logger = require('./logger')
 
-const compressDirToZip = (dir, zipFile) => {
+const compressDirToZip = (directory, zipFile) => {
   directorySize(directory, function (err, totalSize) {
     var prettyTotalSize = bytesToSize(totalSize)
 
@@ -13,39 +14,26 @@ const compressDirToZip = (dir, zipFile) => {
       zlib: { level: 9 } // Sets the compression level.
     })
 
-    archive.on('error', function (err) {
-      console.error('Error while zipping', err)
+    archive.on('error', (err) => {
+      logger.error(`Error while zipping: ${err}`)
     })
 
-    archive.on('progress', function (progress) {
-      var percent =
-        100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
-      console.log(
-        '%s / %s (%d %)',
-        bytesToSize(progress.fs.processedBytes),
-        prettyTotalSize,
-        percent
-      )
+    archive.on('progress', (progress) => {
+      var percent = 100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
+      logger.debug(`${bytesToSize(progress.fs.processedBytes)} / ${prettyTotalSize} (${percent} %)`)
     })
 
     // on stream closed we can end the request
-    archive.on('end', function () {
-      console.log('%s / %s (%d %)', prettyTotalSize, prettyTotalSize, 100)
-
+    archive.on('end', () => {
+      logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `) 
       var archiveSize = archive.pointer()
-
-      console.log('Archiver wrote %s bytes', bytesToSize(archiveSize))
-      console.log(
-        'Compression ratio: %d:1',
-        Math.round(totalSize / archiveSize)
-      )
-      console.log('Space savings: %d %', (1 - archiveSize / totalSize) * 100)
+      logger.debug(`Archiver wrote %s bytes ${bytesToSize(archiveSize)}`)
+      logger.debug(`Compression ratio: ${Math.round(totalSize / archiveSize)}:1`)
+      logger.debug(`Space savings: ${(1 - archiveSize / totalSize) * 100} %`)
     })
 
     archive.pipe(destinationStream)
-
     archive.directory(directory)
-
     archive.finalize()
   })
 }

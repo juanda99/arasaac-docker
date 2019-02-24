@@ -1,8 +1,8 @@
 const { getCatalogData, getFilesCatalog } = require('../utils/catalogs')
+const { tmpCatalogDir, CATALOG_DIR } = require('../utils/constants')
 const logger = require('../utils/logger')
 const languages = require('../utils/languages')
-
-// const compressDirToZip = require('../utils/compress')
+const { compressDirToZip } = require('../utils/compress')
 
 const createCatalogByLanguage = async (req, res) => {
   const { locale } = req.params
@@ -15,14 +15,18 @@ const createCatalogByLanguage = async (req, res) => {
         400
       )
     }
-    const catalogData = await getCatalogData(locale)
-    await getFilesCatalog(locale, catalogData)
+    logger.debug(`CREATING CATALOG: Getting data from database`)
+    // const catalogData = await getCatalogData(locale)
+    logger.debug(`CREATING CATALOG: Getting files from folder`)
+    // await getFilesCatalog(locale, catalogData)
     // generate file and get statistics to save in database and res
     // websockets?????
-    // compressDirToZip(catalogDir, `${CATALOG_DIR}/catalog_${locale}.zip`)
+    logger.debug(`CREATING CATALOG: Generating zip file`)
+    compressDirToZip(tmpCatalogDir(locale), `${CATALOG_DIR}/catalog_${locale}.zip`)
     // now remove tmp files...
     logger.info(`CATALOG FOR LANGUAGE ${locale.toUpperCase()} CREATED`)
-    return res.json(catalogData)
+    return res.json({resultado: 'ok'})
+    // return res.json(catalogData)
   } catch (err) {
     logger.error(`ERROR GENERATIG CATALOG: ${err.message}`)
     return res.status(err.httpCode || 500).json({

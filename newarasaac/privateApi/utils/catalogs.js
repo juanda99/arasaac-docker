@@ -241,6 +241,7 @@ const peopleVariations = [
 const copyFiles = async (input, output) => {
   try {
     await fs.ensureLink(input, output)
+    logger.debug(`CREATING CATALOG: Copied filed ${input} to ${output}`)
   } catch (err) {
     logger.error(`CREATING CATALOG: ${err.message}`)
   }
