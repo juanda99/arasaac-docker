@@ -1,8 +1,14 @@
 const router = require('express').Router()
 const catalogsController = require('../controllers/catalogsController')
 
-router.post('/', (req, res) => catalogsController.createAllCatalogs(req, res))
+const returnRouter = io => {
+  router.post('/', (req, res) =>
+    catalogsController.createAllCatalogs(req, res, io)
+  )
+  router.post('/:locale', (req, res) =>
+    catalogsController.createCatalogByLanguage(req, res, io)
+  )
+  return router
+}
 
-router.post('/:locale', (req, res) => catalogsController.createCatalogByLanguage(req, res))
-
-module.exports = router
+module.exports = returnRouter

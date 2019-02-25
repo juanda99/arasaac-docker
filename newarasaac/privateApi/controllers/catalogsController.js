@@ -4,10 +4,14 @@ const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 const { compressDirToZip } = require('../utils/compress')
 
-const createCatalogByLanguage = async (req, res) => {
+let generatingCatalog = false
+
+const createCatalogByLanguage = async (req, res, io) => {
   const { locale } = req.params
   try {
     logger.info(`CREATING CATALOG FOR LANGUAGE ${locale.toUpperCase()}`)
+    if (generatingCatalog) res.json({ server: 'executing!!!' })
+    generatingCatalog = true
     if (!locale) throw new CustomError('Parameter language not defined', 400)
     if (!languages.some(language => language === locale)) {
       throw new CustomError(
@@ -22,12 +26,18 @@ const createCatalogByLanguage = async (req, res) => {
     // generate file and get statistics to save in database and res
     // websockets?????
     logger.debug(`CREATING CATALOG: Generating zip file`)
-    compressDirToZip(tmpCatalogDir(locale), `${CATALOG_DIR}/catalog_${locale}.zip`)
+    compressDirToZip(
+      tmpCatalogDir(locale),
+      `${CATALOG_DIR}/catalog_${locale}.zip`,
+      io
+    )
     // now remove tmp files...
     logger.info(`CATALOG FOR LANGUAGE ${locale.toUpperCase()} CREATED`)
-    return res.json({resultado: 'ok'})
+    generatingCatalog = false
+    return res.json({ resultado: 'ok' })
     // return res.json(catalogData)
   } catch (err) {
+    generatingCatalog = false
     logger.error(`ERROR GENERATIG CATALOG: ${err.message}`)
     return res.status(err.httpCode || 500).json({
       message: 'Error generating catalog. See error field for detail',

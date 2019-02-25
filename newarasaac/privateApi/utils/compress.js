@@ -3,8 +3,11 @@ const fs = require('fs-extra')
 const async = require('async')
 const logger = require('./logger')
 
-const compressDirToZip = (directory, zipFile) => {
-  directorySize(directory, function (err, totalSize) {
+const compressDirToZip = (directory, zipFile, io) => {
+  console.log(io.sockets.name)
+  io.emit('backupPercent', 'hello world222')
+  directorySize(directory, (err, totalSize) => {
+    if (err) logger.debug(err)
     var prettyTotalSize = bytesToSize(totalSize)
 
     // create a file to stream archive data to.
@@ -14,21 +17,31 @@ const compressDirToZip = (directory, zipFile) => {
       zlib: { level: 9 } // Sets the compression level.
     })
 
-    archive.on('error', (err) => {
+    archive.on('error', err => {
       logger.error(`Error while zipping: ${err}`)
     })
 
-    archive.on('progress', (progress) => {
-      var percent = 100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
-      logger.debug(`${bytesToSize(progress.fs.processedBytes)} / ${prettyTotalSize} (${percent} %)`)
+    archive.on('progress', progress => {
+      var percent =
+        100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
+      console.log(io.sockets.name, percent)
+      console.log(io)
+      io.emit('backupPercent', percent)
+      logger.debug(
+        `${bytesToSize(
+          progress.fs.processedBytes
+        )} / ${prettyTotalSize} (${percent} %)`
+      )
     })
 
     // on stream closed we can end the request
     archive.on('end', () => {
-      logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `) 
+      logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `)
       var archiveSize = archive.pointer()
       logger.debug(`Archiver wrote %s bytes ${bytesToSize(archiveSize)}`)
-      logger.debug(`Compression ratio: ${Math.round(totalSize / archiveSize)}:1`)
+      logger.debug(
+        `Compression ratio: ${Math.round(totalSize / archiveSize)}:1`
+      )
       logger.debug(`Space savings: ${(1 - archiveSize / totalSize) * 100} %`)
     })
 
