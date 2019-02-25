@@ -25,11 +25,15 @@ const hair = {
   darkBrown: '#6A2703'
 }
 
+/* websocket msg */
+const WS_CATALOG_STATUS = 'catalogStatus'
+
 module.exports = {
   IMAGE_DIR,
   CATALOG_DIR,
   tmpCatalogDir,
   schematic,
   hair,
-  skin
+  skin,
+  WS_CATALOG_STATUS
 }

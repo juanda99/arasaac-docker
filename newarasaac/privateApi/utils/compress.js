@@ -4,8 +4,8 @@ const async = require('async')
 const logger = require('./logger')
 
 const compressDirToZip = (directory, zipFile, io) => {
+  let previousPercent = 0
   console.log(io.sockets.name)
-  io.emit('backupPercent', 'hello world222')
   directorySize(directory, (err, totalSize) => {
     if (err) logger.debug(err)
     var prettyTotalSize = bytesToSize(totalSize)
@@ -22,22 +22,25 @@ const compressDirToZip = (directory, zipFile, io) => {
     })
 
     archive.on('progress', progress => {
-      var percent =
+      const percent =
         100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
-      console.log(io.sockets.name, percent)
-      console.log(io)
-      io.emit('backupPercent', percent)
-      logger.debug(
-        `${bytesToSize(
-          progress.fs.processedBytes
-        )} / ${prettyTotalSize} (${percent} %)`
-      )
+      if (percent - previousPercent > 0.5) {
+        previousPercent = percent
+        io.emit('catalogStatus', { completed: percent.toFixed(2) })
+        logger.debug(
+          `${bytesToSize(
+            progress.fs.processedBytes
+          )} / ${prettyTotalSize} (${percent} %)`
+        )
+      }
     })
 
     // on stream closed we can end the request
     archive.on('end', () => {
       logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `)
       var archiveSize = archive.pointer()
+      io.emit('catalogStatus', { completed: 100 })
+      generatingCatalog = false
       logger.debug(`Archiver wrote %s bytes ${bytesToSize(archiveSize)}`)
       logger.debug(
         `Compression ratio: ${Math.round(totalSize / archiveSize)}:1`
@@ -46,7 +49,7 @@ const compressDirToZip = (directory, zipFile, io) => {
     })
 
     archive.pipe(destinationStream)
-    archive.directory(directory)
+    archive.directory(directory, 'ARASAAC')
     archive.finalize()
   })
 }
