@@ -2,57 +2,73 @@ const archiver = require('archiver')
 const fs = require('fs-extra')
 const async = require('async')
 const logger = require('./logger')
+const { WS_CATALOG_STATUS } = require('./constants')
 
-const compressDirToZip = (directory, zipFile, io) => {
-  let previousPercent = 0
-  console.log(io.sockets.name)
-  directorySize(directory, (err, totalSize) => {
-    if (err) logger.debug(err)
-    var prettyTotalSize = bytesToSize(totalSize)
+/* global catalogStatus, catalogStatistics */
 
-    // create a file to stream archive data to.
-    const destinationStream = fs.createWriteStream(zipFile)
-
-    const archive = archiver('zip', {
-      zlib: { level: 9 } // Sets the compression level.
-    })
-
-    archive.on('error', err => {
-      logger.error(`Error while zipping: ${err}`)
-    })
-
-    archive.on('progress', progress => {
-      const percent =
-        100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
-      if (percent - previousPercent > 0.5) {
-        previousPercent = percent
-        io.emit('catalogStatus', { completed: percent.toFixed(2) })
-        logger.debug(
-          `${bytesToSize(
-            progress.fs.processedBytes
-          )} / ${prettyTotalSize} (${percent} %)`
-        )
+const compressDirToZip = async (directory, zipFile, locale, io) =>
+  new Promise((resolve, reject) => {
+    let previousPercent = 0
+    logger.debug(`CREATING CATALOG: Generating zip file`)
+    catalogStatus[locale].step = 3
+    catalogStatus[locale].complete = 20
+    io.emit(WS_CATALOG_STATUS, catalogStatus)
+    return directorySize(directory, async (err, totalSize) => {
+      if (err) {
+        logger.debug(err)
+        reject(err)
       }
-    })
+      var prettyTotalSize = bytesToSize(totalSize)
 
-    // on stream closed we can end the request
-    archive.on('end', () => {
-      logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `)
-      var archiveSize = archive.pointer()
-      io.emit('catalogStatus', { completed: 100 })
-      generatingCatalog = false
-      logger.debug(`Archiver wrote %s bytes ${bytesToSize(archiveSize)}`)
-      logger.debug(
-        `Compression ratio: ${Math.round(totalSize / archiveSize)}:1`
+      // create a file to stream archive data to.
+      const destinationStream = fs.createWriteStream(zipFile)
+
+      const archive = archiver(
+        'zip' /* {
+        zlib: { level: 9 } // Sets the compression level.
+      } */
       )
-      logger.debug(`Space savings: ${(1 - archiveSize / totalSize) * 100} %`)
-    })
 
-    archive.pipe(destinationStream)
-    archive.directory(directory, 'ARASAAC')
-    archive.finalize()
+      archive.on('error', err => {
+        logger.error(`Error while zipping: ${err}`)
+        reject(err)
+      })
+
+      archive.on('progress', progress => {
+        const percent =
+          100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
+        if (percent - previousPercent > 0.5) {
+          previousPercent = percent
+          catalogStatus[locale].complete = 20 + percent * 0.6
+          io.emit(WS_CATALOG_STATUS, catalogStatus)
+          logger.debug(
+            `${bytesToSize(
+              progress.fs.processedBytes
+            )} / ${prettyTotalSize} (${percent} %)`
+          )
+        }
+      })
+
+      // on stream closed we can end the request
+      archive.on('end', () => {
+        const archiveSize = archive.pointer()
+        catalogStatistics.size = bytesToSize(archiveSize)
+        logger.info(`CATALOG FOR LANGUAGE ${locale.toUpperCase()} CREATED`)
+        logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `)
+        logger.debug(`Archiver wrote %s bytes ${catalogStatistics.size}`)
+        logger.debug(
+          `Compression ratio: ${Math.round(totalSize / archiveSize)}:1`
+        )
+        logger.debug(`Space savings: ${(1 - archiveSize / totalSize) * 100} %`)
+        // publish
+        resolve()
+      })
+
+      archive.pipe(destinationStream)
+      archive.directory(directory, 'ARASAAC')
+      archive.finalize()
+    })
   })
-}
 
 /**
  * You can use a nodejs module to do this, this function is really straightforward and will fail on error

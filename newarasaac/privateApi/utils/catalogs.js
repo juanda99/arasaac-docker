@@ -1,6 +1,8 @@
 const filenamify = require('filenamify')
 const fs = require('fs-extra')
 const path = require('path')
+const client = require('scp2')
+const { exec } = require('child_process')
 const logger = require('./logger')
 const {
   hair,
@@ -11,8 +13,9 @@ const {
 } = require('./constants')
 const languages = require('./languages')
 const setPictogramModel = require('../models/Pictogram')
+let previousFiles = 0 // for sending progress bar info
 
-/* global catalogStatus */
+/* global catalogStatus, catalogStatistics */
 
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
@@ -21,7 +24,7 @@ const Pictograms = languages.reduce((dict, language) => {
 
 const getCatalogData = async (locale, io) => {
   logger.debug(`CREATING CATALOG: Getting data from database`)
-  catalogStatus[locale].obtainingData.status = true
+  catalogStatus[locale].step = 1
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   const pictograms = await Pictograms[locale]
     .find({}, { idPictogram: 1, keywords: 1, _id: 0 })
@@ -35,14 +38,12 @@ const getCatalogData = async (locale, io) => {
       .replace(/(_)\1+/g, '_')
       .replace(/_\s*$/, '')
       .replace(/^_/, '')
-    catalogStatus[locale].obtainingData.complete = 20
     const plurals = pictogram.keywords
       .map(keyword => keyword.plural)
       .join('_')
       .replace(/(_)\1+/g, '_')
       .replace(/_\s*$/, '')
       .replace(/^_/, '')
-    catalogStatus[locale].obtainingData.complete = 40
     const verbs = pictogram.keywords
       .filter(keyword => keyword.type === 3)
       .map(keyword => keyword.keyword)
@@ -51,7 +52,6 @@ const getCatalogData = async (locale, io) => {
       .replace(/_\s*$/, '')
       .replace(/^_/, '')
     const types = uniq(pictogram.keywords.map(keyword => keyword.type))
-    catalogStatus[locale].obtainingData.complete = 60
     return {
       idPictogram: pictogram.idPictogram,
       keywords: filenamify(keywords, { replacement: '' }),
@@ -60,19 +60,24 @@ const getCatalogData = async (locale, io) => {
       verbs: filenamify(verbs, { replacement: '' })
     }
   })
+  catalogStatus[locale].complete = 5
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
   if (locale === 'es') {
-    catalogStatus[locale].obtainingData.complete = 100
+    catalogStatus[locale].complete = 10
+    io.emit(WS_CATALOG_STATUS, catalogStatus)
     return catalogData
   }
   const esPictograms = await Pictograms['es']
     .find({}, { idPictogram: 1, keywords: 1, _id: 0 })
     .lean()
-  catalogStatus[locale].obtainingData.complete = 70
+  catalogStatus[locale].complete = 7
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
   const esCatalogData = esPictograms.map(pictogram => {
     const types = uniq(pictogram.keywords.map(keyword => keyword.type))
     return { idPictogram: pictogram.idPictogram, types: types }
   })
-  catalogStatus[locale].obtainingData.complete = 80
+  catalogStatus[locale].complete = 8
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
   // pictos without keywords, doesn't have types (for plural and verbs)
   // we fill catalog typs from esCatalog
   const completeCatalogData = catalogData.map(pictogram => {
@@ -85,12 +90,16 @@ const getCatalogData = async (locale, io) => {
     }
     return pictogram
   })
-  catalogStatus[locale].obtainingData.complete = 100
+  catalogStatus[locale].complete = 10
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
   return completeCatalogData
 }
 
-const getFilesCatalog = async (locale, catalogData, io) =>
-  Promise.all(
+const getFilesCatalog = async (locale, catalogData, io) => {
+  catalogStatus[locale].step = 2
+  logger.debug(`CREATING CATALOG: Getting files from folder`)
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
+  return Promise.all(
     catalogData.map(async pictogram => {
       const plurals =
         locale === 'es'
@@ -105,6 +114,7 @@ const getFilesCatalog = async (locale, catalogData, io) =>
       ])
     })
   )
+}
 
 const getDefaultFile = async (pictogram, locale, io) => {
   const TMP_DIR = tmpCatalogDir(locale)
@@ -117,7 +127,7 @@ const getDefaultFile = async (pictogram, locale, io) => {
     TMP_DIR,
     `${pictogram.keywords}_${pictogram.idPictogram}.png`
   )
-  return copyFiles(inputFile, outputFile, locale, io)
+  return copyFiles(inputFile, outputFile, false, locale, io)
 }
 
 const getPluralFile = async (pictogram, plurals, locale, io) => {
@@ -135,7 +145,7 @@ const getPluralFile = async (pictogram, plurals, locale, io) => {
       }.png`
     )
 
-    return copyFiles(inputFile, outputFile, locale, io)
+    return copyFiles(inputFile, outputFile, false, locale, io)
   }
 }
 
@@ -153,7 +163,7 @@ const getActionFiles = async (pictogram, action, locale, io) => {
           TMP_DIR,
           `${pictogram.verbs}_${action}_${pictogram.idPictogram}.png`
         )
-        return copyFiles(inputFile, outputFile, locale, io)
+        return copyFiles(inputFile, outputFile, false, locale, io)
       })
     )
   }
@@ -186,7 +196,7 @@ const getCommonPeopleFiles = async (pictogram, locale, io) => {
             pictogram.idPictogram
           }.png`
         )
-        return copyFiles(inputFile, outputFile, locale, io)
+        return copyFiles(inputFile, outputFile, true, locale, io)
       }
     })
   )
@@ -213,7 +223,7 @@ const getPluralPeopleFiles = async (pictogram, plurals, locale, io) => {
               person.hair
             }_skin-${person.skin}_${pictogram.idPictogram}.png`
           )
-          return copyFiles(inputFile, outputFile, locale, io)
+          return copyFiles(inputFile, outputFile, true, locale, io)
         }
       })
     )
@@ -243,7 +253,7 @@ const getActionPeopleFiles = async (pictogram, action, locale, io) => {
                   person.skin
                 }_${pictogram.idPictogram}.png`
               )
-              return copyFiles(inputFile, outputFile, locale, io)
+              return copyFiles(inputFile, outputFile, true, locale, io)
             }
           })
         )
@@ -260,12 +270,21 @@ const peopleVariations = [
   { hair: hair.darkBrown.substring(1), skin: skin.aztec.substring(1) }
 ]
 
-const copyFiles = async (input, output, locale io) => {
+const copyFiles = async (input, output, isVariation, locale, io) => {
   try {
     await fs.ensureLink(input, output)
     logger.debug(`CREATING CATALOG: Copied filed ${input} to ${output}`)
-    catalogStatus[locale].obtainingData.status = true
-    io.emit(WS_CATALOG_STATUS, catalogStatus)
+    if (isVariation) catalogStatistics[locale].variations += 1
+    catalogStatistics[locale].totalFiles += 1
+    const nowFiles = catalogStatistics[locale].totalFiles
+    if (nowFiles - previousFiles > 3000) {
+      const complete = (nowFiles / 70000).toFixed(2) * 0.2
+      catalogStatus[locale].complete += complete
+      previousFiles = nowFiles
+      // hardcode numFiles. Could be more so we make this hack so progress bar gets hold:
+      // 30% of time with generatingCatalogData (10%) and gettingFiles(20%)
+      if (complete < 30) io.emit(WS_CATALOG_STATUS, catalogStatus)
+    }
   } catch (err) {
     logger.error(`CREATING CATALOG: ${err.message}`)
   }
@@ -273,7 +292,29 @@ const copyFiles = async (input, output, locale io) => {
 
 const uniq = a => [...new Set(a)]
 
+const publishCatalog = async (file, destination, locale, io) => {
+  logger.error(`PUBLISHING CATALOG ${locale}`)
+  catalogStatus[locale].step = 4
+  catalogStatus[locale].complete = 90
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
+  console.log(`scp ${file} ${destination}`)
+  exec(`scp ${file} ${destination}`, (err, stdout, stderr) => {
+    if (err) {
+      // node couldn't execute the command
+      catalogStatus[locale].error = true
+      io.emit(WS_CATALOG_STATUS, catalogStatus)
+      console.log(`stderr: ${stderr}`)
+    } else {
+      catalogStatus[locale].complete = 100
+      io.emit(WS_CATALOG_STATUS, catalogStatus)
+      console.log(`stdout: ${stdout}`)
+    }
+    // the *entire* stdout and stderr (buffered)
+  })
+}
+
 module.exports = {
   getCatalogData,
-  getFilesCatalog
+  getFilesCatalog,
+  publishCatalog
 }
