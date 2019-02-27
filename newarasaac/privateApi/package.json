@@ -34,7 +34,7 @@
     "puppeteer": "^1.10.0",
     "randomatic": "^3.1.1",
     "remove": "^0.1.5",
-    "scp2": "^0.5.0",
+    "rsync": "^0.6.1",
     "socket.io": "^2.2.0",
     "stopword": "^0.1.13",
     "stopwords-iso": "^0.4.0",

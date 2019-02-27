@@ -28,6 +28,7 @@ const initCatalogStatistics = locale => {
 const initCatalogStatus = locale => {
   catalogStatus[locale] = {
     step: 0,
+    info: '',
     complete: 0,
     err: null
   }
@@ -64,8 +65,8 @@ const createCatalogByLanguage = async (req, res, io) => {
     .json({ status: 'Your request has started, it will take a while.' })
 
   try {
-    // const catalogData = await getCatalogData(locale, io)
-    // await getFilesCatalog(locale, catalogData, io)
+    const catalogData = await getCatalogData(locale, io)
+    await getFilesCatalog(locale, catalogData, io)
     const catalogFileName = path.resolve(CATALOG_DIR, `catalog_${locale}.zip`)
     await compressDirToZip(tmpCatalogDir(locale), catalogFileName, locale, io)
     await publishCatalog(

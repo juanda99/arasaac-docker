@@ -80,7 +80,7 @@ services:
       - ./locutions:/app/locutions
       - ./certs:/root/.ssh
       - ${IMAGE_DIR}:/app/pictograms
-      - ./tmp:/app/$IMAGE_DIR
+      - ./tmp:/app/tmp
       - /app/node_modules
       - /app/.config
     environment:

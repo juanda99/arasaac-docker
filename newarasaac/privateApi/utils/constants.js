@@ -5,6 +5,26 @@ const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
 
 const tmpCatalogDir = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
 
+// for progress_bar, each item corresponds to one step in catalogGeneration
+const catalogProgress = [
+  {
+    init: 0,
+    duration: 10
+  },
+  {
+    init: 10,
+    duration: 10
+  },
+  {
+    init: 20,
+    duration: 70
+  },
+  {
+    init: 90,
+    duration: 10
+  }
+]
+
 const skin = {
   white: '#F5E5DE',
   black: '#A65C17',
@@ -35,5 +55,6 @@ module.exports = {
   schematic,
   hair,
   skin,
-  WS_CATALOG_STATUS
+  WS_CATALOG_STATUS,
+  catalogProgress
 }

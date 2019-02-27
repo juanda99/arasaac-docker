@@ -2,16 +2,26 @@ const archiver = require('archiver')
 const fs = require('fs-extra')
 const async = require('async')
 const logger = require('./logger')
-const { WS_CATALOG_STATUS } = require('./constants')
+const { WS_CATALOG_STATUS, catalogProgress } = require('./constants')
 
 /* global catalogStatus, catalogStatistics */
 
 const compressDirToZip = async (directory, zipFile, locale, io) =>
   new Promise((resolve, reject) => {
+    // init progressBar:
+    const step = 3
+    const init = catalogProgress[step - 1].init
+    const duration = catalogProgress[step - 1].duration
+
     let previousPercent = 0
+
     logger.debug(`CREATING CATALOG: Generating zip file`)
-    catalogStatus[locale].step = 3
-    catalogStatus[locale].complete = 20
+
+    catalogStatus[locale].step = step
+    catalogStatus[locale].info = ''
+    catalogStatus[locale].error = false
+    catalogStatus[locale].complete = init
+
     io.emit(WS_CATALOG_STATUS, catalogStatus)
     return directorySize(directory, async (err, totalSize) => {
       if (err) {
@@ -39,7 +49,8 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
           100 - (totalSize - progress.fs.processedBytes) / totalSize * 100
         if (percent - previousPercent > 0.5) {
           previousPercent = percent
-          catalogStatus[locale].complete = 20 + percent * 0.6
+          catalogStatus[locale].info = `${percent.toFixed(2)}%`
+          catalogStatus[locale].complete = init + percent * duration / 100
           io.emit(WS_CATALOG_STATUS, catalogStatus)
           logger.debug(
             `${bytesToSize(
@@ -61,6 +72,9 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
         )
         logger.debug(`Space savings: ${(1 - archiveSize / totalSize) * 100} %`)
         // publish
+        catalogStatus[locale].complete = init + duration
+        io.emit(WS_CATALOG_STATUS, catalogStatus)
+
         resolve()
       })
 

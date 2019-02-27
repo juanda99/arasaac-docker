@@ -1,15 +1,15 @@
 const filenamify = require('filenamify')
 const fs = require('fs-extra')
 const path = require('path')
-const client = require('scp2')
-const { exec } = require('child_process')
+var Rsync = require('rsync')
 const logger = require('./logger')
 const {
   hair,
   skin,
   IMAGE_DIR,
   tmpCatalogDir,
-  WS_CATALOG_STATUS
+  WS_CATALOG_STATUS,
+  catalogProgress
 } = require('./constants')
 const languages = require('./languages')
 const setPictogramModel = require('../models/Pictogram')
@@ -23,8 +23,13 @@ const Pictograms = languages.reduce((dict, language) => {
 }, {})
 
 const getCatalogData = async (locale, io) => {
+  const step = 1
+  const init = catalogProgress[step - 1].init
+  const duration = catalogProgress[step - 1].duration
   logger.debug(`CREATING CATALOG: Getting data from database`)
-  catalogStatus[locale].step = 1
+  catalogStatus[locale].step = step
+  catalogStatus[locale].info = ''
+  catalogStatus[locale].error = false
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   const pictograms = await Pictograms[locale]
     .find({}, { idPictogram: 1, keywords: 1, _id: 0 })
@@ -60,23 +65,23 @@ const getCatalogData = async (locale, io) => {
       verbs: filenamify(verbs, { replacement: '' })
     }
   })
-  catalogStatus[locale].complete = 5
+  catalogStatus[locale].complete = init + duration / 2
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   if (locale === 'es') {
-    catalogStatus[locale].complete = 10
+    catalogStatus[locale].complete = init + duration
     io.emit(WS_CATALOG_STATUS, catalogStatus)
     return catalogData
   }
   const esPictograms = await Pictograms['es']
     .find({}, { idPictogram: 1, keywords: 1, _id: 0 })
     .lean()
-  catalogStatus[locale].complete = 7
+  catalogStatus[locale].complete = init + duration / 2 + duration / 5
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   const esCatalogData = esPictograms.map(pictogram => {
     const types = uniq(pictogram.keywords.map(keyword => keyword.type))
     return { idPictogram: pictogram.idPictogram, types: types }
   })
-  catalogStatus[locale].complete = 8
+  catalogStatus[locale].complete = init + duration / 2 + 2 * duration / 5
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   // pictos without keywords, doesn't have types (for plural and verbs)
   // we fill catalog typs from esCatalog
@@ -90,13 +95,18 @@ const getCatalogData = async (locale, io) => {
     }
     return pictogram
   })
-  catalogStatus[locale].complete = 10
+  catalogStatus[locale].complete = init + duration
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   return completeCatalogData
 }
 
 const getFilesCatalog = async (locale, catalogData, io) => {
-  catalogStatus[locale].step = 2
+  const step = 2
+  const init = catalogProgress[step - 1].init
+  catalogStatus[locale].step = step
+  catalogStatus[locale].info = ''
+  catalogStatus[locale].error = false
+  catalogStatus[locale].complete = init
   logger.debug(`CREATING CATALOG: Getting files from folder`)
   io.emit(WS_CATALOG_STATUS, catalogStatus)
   return Promise.all(
@@ -271,6 +281,9 @@ const peopleVariations = [
 ]
 
 const copyFiles = async (input, output, isVariation, locale, io) => {
+  const step = 2
+  const init = catalogProgress[step - 1].init
+  const duration = catalogProgress[step - 1].duration
   try {
     await fs.ensureLink(input, output)
     logger.debug(`CREATING CATALOG: Copied filed ${input} to ${output}`)
@@ -278,8 +291,9 @@ const copyFiles = async (input, output, isVariation, locale, io) => {
     catalogStatistics[locale].totalFiles += 1
     const nowFiles = catalogStatistics[locale].totalFiles
     if (nowFiles - previousFiles > 3000) {
-      const complete = (nowFiles / 70000).toFixed(2) * 0.2
-      catalogStatus[locale].complete += complete
+      const complete = (nowFiles / 70000).toFixed(2)
+      catalogStatus[locale].complete = init + complete * duration / 100
+      catalogStatus[locale].info = nowFiles
       previousFiles = nowFiles
       // hardcode numFiles. Could be more so we make this hack so progress bar gets hold:
       // 30% of time with generatingCatalogData (10%) and gettingFiles(20%)
@@ -293,24 +307,62 @@ const copyFiles = async (input, output, isVariation, locale, io) => {
 const uniq = a => [...new Set(a)]
 
 const publishCatalog = async (file, destination, locale, io) => {
-  logger.error(`PUBLISHING CATALOG ${locale}`)
-  catalogStatus[locale].step = 4
-  catalogStatus[locale].complete = 90
+  // init progressBar:
+  const step = 4
+  const init = catalogProgress[step - 1].init
+  const duration = catalogProgress[step - 1].duration
+
+  logger.info(`PUBLISHING CATALOG ${locale}`)
+  catalogStatus[locale].step = step
+  catalogStatus[locale].complete = init
+  catalogStatus[locale].info = ''
   io.emit(WS_CATALOG_STATUS, catalogStatus)
-  console.log(`scp ${file} ${destination}`)
-  exec(`scp ${file} ${destination}`, (err, stdout, stderr) => {
-    if (err) {
-      // node couldn't execute the command
+
+  const rsync = new Rsync()
+    .shell('ssh')
+    .flags('az')
+    .set('info', 'progress2') // see https://github.com/mattijs/node-rsync/issues/49
+    .set('no-inc-recursive')
+    .source(file)
+    .destination(destination)
+
+  // Execute the command
+  rsync.execute(
+    (err, code, cmd) => {
+      logger.debug(`COMMAND EXECUTED: ${cmd}`)
+      logger.debug(`RETURNED VALUE: ${code}`)
+      if (err) {
+        logger.error(`PUBLISHING CATALOG FAILED!: ${err}`)
+        catalogStatus[locale].error = true
+        io.emit(WS_CATALOG_STATUS, catalogStatus)
+      } else {
+        logger.info('PUBLISHING CATALOG DONE')
+        catalogStatus[locale].complete = init + duration
+        io.emit(WS_CATALOG_STATUS, catalogStatus)
+      }
+    },
+    data => {
+      const arrayValues = data
+        .toString('utf-8')
+        .replace(/\s\s+/g, ' ')
+        .split(' ')
+      if (arrayValues[2]) {
+        const percent = arrayValues[2].slice(0, -1)
+        const speed = arrayValues[3]
+        logger.debug(data)
+        catalogStatus[locale].info = `${parseFloat(percent).toFixed(
+          2
+        )}% - ${speed}`
+        catalogStatus[locale].complete = init + percent * duration / 100
+        io.emit(WS_CATALOG_STATUS, catalogStatus)
+      }
+    },
+    error => {
+      logger.error(error)
       catalogStatus[locale].error = true
       io.emit(WS_CATALOG_STATUS, catalogStatus)
-      console.log(`stderr: ${stderr}`)
-    } else {
-      catalogStatus[locale].complete = 100
-      io.emit(WS_CATALOG_STATUS, catalogStatus)
-      console.log(`stdout: ${stdout}`)
     }
-    // the *entire* stdout and stderr (buffered)
-  })
+  )
 }
 
 module.exports = {
