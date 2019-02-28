@@ -354,18 +354,23 @@ const copyFiles = async (input, output, isVariation, isBN, locale, io) => {
     await fs.ensureLink(input, output)
     logger.debug(`CREATING CATALOG: Copied filed ${input} to ${output}`)
     if (isVariation) catalogStatistics[locale].variations += 1
-    if (isBN) catalogStatistics[locale].bnFiles += 1
-    catalogStatistics[locale].totalFiles += 1
-    const nowFiles = catalogStatistics[locale].totalFiles
+    else if (isBN) catalogStatistics[locale].noColorPictograms += 1
+    else catalogStatistics[locale].colorPictograms += 1
+    const nowFiles =
+      catalogStatistics[locale].variations +
+      catalogStatistics[locale].noColorPictograms +
+      catalogStatistics[locale].colorPictograms
     // every 4000 to 5000 files (random) we emit progress
     if (nowFiles - previousFiles > Math.floor(Math.random() * 5000) + 4000) {
-      const complete = (nowFiles / 90000).toFixed(2)
+      const complete = (
+        nowFiles / catalogStatistics[locale].previousFiles
+      ).toFixed(2)
       catalogStatus[locale].complete = init + complete * duration / 100
       catalogStatus[locale].info = nowFiles
       previousFiles = nowFiles
-      // hardcode numFiles. Could be more so we make this hack so progress bar gets hold:
-      // 30% of time with generatingCatalogData (10%) and gettingFiles(20%)
-      if (complete < 30) io.emit(WS_CATALOG_STATUS, catalogStatus)
+      // hardcode previousFiles from catalogStatistics could be hardcoded
+      // Could be more so we make this hack so progress bar gets hold
+      if (complete < init + duration) io.emit(WS_CATALOG_STATUS, catalogStatus)
     }
   } catch (err) {
     logger.error(`CREATING CATALOG: ${err.message}`)
@@ -424,7 +429,7 @@ const publishCatalog = (file, destination, locale, io) =>
         if (arrayValues[2]) {
           const percent = arrayValues[2].slice(0, -1)
           const speed = arrayValues[3]
-          logger.debug(`UPLOADING CATALOG ${locale}: ${percent} ${speed}`)
+          logger.debug(`UPLOADING CATALOG ${locale}: ${percent}% ${speed}`)
           catalogStatus[locale].info = `${parseFloat(percent).toFixed(
             2
           )}% - ${speed}`
@@ -445,7 +450,6 @@ const saveCatalog = async (locale, io) => {
   // save in database:
   const catalog = {
     language: locale,
-    category: 'General',
     status: 1, // published
     pictograms: catalogStatistics[locale].totalFiles,
     variations: catalogStatistics[locale].variations,
@@ -473,12 +477,23 @@ const saveCatalog = async (locale, io) => {
   const amountTime = time - catalogStatistics[locale].startTime // Difference in milliseconds.
   logger.info(`CREATED CATALOG ${locale} OK in ${amountTime / 1000} seconds `)
   catalogStatus[locale].complete = init + duration
+  catalogStatus[locale].info = amountTime
   io.emit(WS_CATALOG_STATUS, catalogStatus)
+}
+
+const getTotalFiles = async language => {
+  logger.debug(`SEARCHING CATALOG ${language} IN DATABASE`)
+  const catalog = await Catalog.findOne({ language })
+  if (catalog.length === 0) return 0
+  return (
+    catalog.colorPictograms + catalog.noColorPictograms + catalog.variations
+  )
 }
 
 module.exports = {
   getCatalogData,
   getFilesCatalog,
   publishCatalog,
-  saveCatalog
+  saveCatalog,
+  getTotalFiles
 }

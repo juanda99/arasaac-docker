@@ -6,26 +6,22 @@ const catalogSchema = new Schema({
     type: String,
     required: true
   },
-  category: {
-    type: String,
-    required: true
-  },
   status: {
     type: Number, // published (1), unpublished (0)
     default: 1
   },
   lastUpdated: { type: Date, default: Date.now },
-  pictograms: {
+  colorPictograms: {
+    type: Number,
+    required: true
+  },
+  noColorPictograms: {
     type: Number,
     required: true
   },
   variations: {
     type: Number,
     required: true
-  },
-  downloads: {
-    type: Number,
-    default: 1
   }
 })
 

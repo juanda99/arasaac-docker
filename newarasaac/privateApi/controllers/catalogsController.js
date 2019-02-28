@@ -2,7 +2,8 @@ const {
   getCatalogData,
   getFilesCatalog,
   publishCatalog,
-  saveCatalog
+  saveCatalog,
+  getTotalFiles
 } = require('../utils/catalogs')
 const { CATALOG_DIR, WS_CATALOG_STATUS } = require('../utils/constants')
 const path = require('path')
@@ -24,11 +25,12 @@ languages.forEach(language => {
 
 const initCatalogStatistics = locale => {
   catalogStatistics[locale] = {
-    totalFiles: 0,
-    bnFiles: 0,
+    colorPictograms: 0,
+    noColorPictograms: 0,
     variations: 0,
     size: 0,
-    startTime: new Date() // will be use to get the total amount of time
+    startTime: new Date(), // will be use to get the total amount of time
+    previousFiles: getTotalFiles(locale) || 100000 // in case of a new catalog, stimated amount of files, could change in the future
   }
 }
 const initCatalogStatus = locale => {
@@ -106,6 +108,21 @@ const createAllCatalogs = async (req, res, io) => {
   )
 }
 
+// generate all catalogs at the same time
+// createAllCatalogs function in async mode
+const createAllCatalogsAsync = async (req, res, io) => {
+  logger.info(`CREATE CATALOGS for languages: ${languages.join(', ')}`)
+
+  const promises = languages.map(language => {
+    req.params.locale = language
+    return createCatalogByLanguage(req, res, io)
+  })
+  await Promise.all(promises)
+  logger.info(
+    `FINISHED CREATING CATALOGS for languages: ${languages.join(', ')}`
+  )
+}
+
 const getAllCatalogs = async (req, res) => {
   logger.debug(`GET CATALOGS DATA FROM ALL LANGUAGES: getAllCatalogs()`)
   try {
@@ -137,7 +154,7 @@ const getCatalogsByLanguage = async (req, res) => {
 }
 
 class CustomError extends Error {
-  constructor(message, code) {
+  constructor (message, code) {
     super(message)
     this.httpCode = code
     this.name = 'Custom error'
@@ -148,5 +165,6 @@ module.exports = {
   createCatalogByLanguage,
   createAllCatalogs,
   getAllCatalogs,
-  getCatalogsByLanguage
+  getCatalogsByLanguage,
+  createAllCatalogsAsync
 }
