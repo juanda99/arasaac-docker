@@ -2,6 +2,7 @@ const filenamify = require('filenamify')
 const fs = require('fs-extra')
 const path = require('path')
 var Rsync = require('rsync')
+const Catalog = require('../models/Catalog')
 const logger = require('./logger')
 const {
   hair,
@@ -120,13 +121,17 @@ const getFilesCatalog = async (locale, catalogData, io) => {
         getDefaultFile(pictogram, locale, io),
         getPluralFile(pictogram, plurals, locale, io),
         getActionFiles(pictogram, action, locale, io),
-        getPeopleFiles(pictogram, plurals, action, locale, io)
+        getPeopleFiles(pictogram, plurals, action, locale, io),
+        getDefaultFileBN(pictogram, locale, io),
+        getPluralFileBN(pictogram, plurals, locale, io),
+        getActionFilesBN(pictogram, action, locale, io)
       ])
     })
   )
 }
 
 const getDefaultFile = async (pictogram, locale, io) => {
+  const isBN = false
   const TMP_DIR = tmpCatalogDir(locale)
   const inputFile = await path.resolve(
     IMAGE_DIR,
@@ -137,10 +142,26 @@ const getDefaultFile = async (pictogram, locale, io) => {
     TMP_DIR,
     `${pictogram.keywords}_${pictogram.idPictogram}.png`
   )
-  return copyFiles(inputFile, outputFile, false, locale, io)
+  return copyFiles(inputFile, outputFile, false, isBN, locale, io)
+}
+
+const getDefaultFileBN = async (pictogram, locale, io) => {
+  const isBN = true
+  const TMP_DIR = tmpCatalogDir(locale, isBN)
+  const inputFile = await path.resolve(
+    IMAGE_DIR,
+    pictogram.idPictogram.toString(),
+    `${pictogram.idPictogram}_nocolor_500.png`
+  )
+  const outputFile = path.resolve(
+    TMP_DIR,
+    `${pictogram.keywords}_${pictogram.idPictogram}.png`
+  )
+  return copyFiles(inputFile, outputFile, false, isBN, locale, io)
 }
 
 const getPluralFile = async (pictogram, plurals, locale, io) => {
+  const isBN = false
   const TMP_DIR = tmpCatalogDir(locale)
   if (plurals) {
     const inputFile = path.resolve(
@@ -155,11 +176,32 @@ const getPluralFile = async (pictogram, plurals, locale, io) => {
       }.png`
     )
 
-    return copyFiles(inputFile, outputFile, false, locale, io)
+    return copyFiles(inputFile, outputFile, false, isBN, locale, io)
+  }
+}
+
+const getPluralFileBN = async (pictogram, plurals, locale, io) => {
+  const isBN = true
+  const TMP_DIR = tmpCatalogDir(locale, true)
+  if (plurals) {
+    const inputFile = path.resolve(
+      IMAGE_DIR,
+      pictogram.idPictogram.toString(),
+      `${pictogram.idPictogram}_plural_nocolor_500.png`
+    )
+    const outputFile = path.resolve(
+      TMP_DIR,
+      `${pictogram.plurals || pictogram.keywords}_plural_${
+        pictogram.idPictogram
+      }.png`
+    )
+
+    return copyFiles(inputFile, outputFile, false, isBN, locale, io)
   }
 }
 
 const getActionFiles = async (pictogram, action, locale, io) => {
+  const isBN = false
   const TMP_DIR = tmpCatalogDir(locale)
   if (action) {
     return Promise.all(
@@ -173,7 +215,28 @@ const getActionFiles = async (pictogram, action, locale, io) => {
           TMP_DIR,
           `${pictogram.verbs}_${action}_${pictogram.idPictogram}.png`
         )
-        return copyFiles(inputFile, outputFile, false, locale, io)
+        return copyFiles(inputFile, outputFile, false, isBN, locale, io)
+      })
+    )
+  }
+}
+
+const getActionFilesBN = async (pictogram, action, locale, io) => {
+  const isBN = true
+  const TMP_DIR = tmpCatalogDir(locale, true)
+  if (action) {
+    return Promise.all(
+      ['past', 'future'].map(async action => {
+        const inputFile = path.resolve(
+          IMAGE_DIR,
+          pictogram.idPictogram.toString(),
+          `${pictogram.idPictogram}_nocolor_action-${action}_500.png`
+        )
+        const outputFile = path.resolve(
+          TMP_DIR,
+          `${pictogram.verbs}_${action}_${pictogram.idPictogram}.png`
+        )
+        return copyFiles(inputFile, outputFile, false, isBN, locale, io)
       })
     )
   }
@@ -187,6 +250,7 @@ const getPeopleFiles = async (pictogram, plurals, action, locale, io) =>
   ])
 
 const getCommonPeopleFiles = async (pictogram, locale, io) => {
+  const isBN = false
   const TMP_DIR = tmpCatalogDir(locale)
   return Promise.all(
     peopleVariations.map(async person => {
@@ -206,13 +270,14 @@ const getCommonPeopleFiles = async (pictogram, locale, io) => {
             pictogram.idPictogram
           }.png`
         )
-        return copyFiles(inputFile, outputFile, true, locale, io)
+        return copyFiles(inputFile, outputFile, true, isBN, locale, io)
       }
     })
   )
 }
 
 const getPluralPeopleFiles = async (pictogram, plurals, locale, io) => {
+  const isBN = false
   const TMP_DIR = tmpCatalogDir(locale)
   if (plurals) {
     return Promise.all(
@@ -233,7 +298,7 @@ const getPluralPeopleFiles = async (pictogram, plurals, locale, io) => {
               person.hair
             }_skin-${person.skin}_${pictogram.idPictogram}.png`
           )
-          return copyFiles(inputFile, outputFile, true, locale, io)
+          return copyFiles(inputFile, outputFile, true, isBN, locale, io)
         }
       })
     )
@@ -241,6 +306,7 @@ const getPluralPeopleFiles = async (pictogram, plurals, locale, io) => {
 }
 
 const getActionPeopleFiles = async (pictogram, action, locale, io) => {
+  const isBN = false
   const TMP_DIR = tmpCatalogDir(locale)
   if (action) {
     return Promise.all(
@@ -263,7 +329,7 @@ const getActionPeopleFiles = async (pictogram, action, locale, io) => {
                   person.skin
                 }_${pictogram.idPictogram}.png`
               )
-              return copyFiles(inputFile, outputFile, true, locale, io)
+              return copyFiles(inputFile, outputFile, true, isBN, locale, io)
             }
           })
         )
@@ -280,7 +346,7 @@ const peopleVariations = [
   { hair: hair.darkBrown.substring(1), skin: skin.aztec.substring(1) }
 ]
 
-const copyFiles = async (input, output, isVariation, locale, io) => {
+const copyFiles = async (input, output, isVariation, isBN, locale, io) => {
   const step = 2
   const init = catalogProgress[step - 1].init
   const duration = catalogProgress[step - 1].duration
@@ -288,10 +354,12 @@ const copyFiles = async (input, output, isVariation, locale, io) => {
     await fs.ensureLink(input, output)
     logger.debug(`CREATING CATALOG: Copied filed ${input} to ${output}`)
     if (isVariation) catalogStatistics[locale].variations += 1
+    if (isBN) catalogStatistics[locale].bnFiles += 1
     catalogStatistics[locale].totalFiles += 1
     const nowFiles = catalogStatistics[locale].totalFiles
-    if (nowFiles - previousFiles > 3000) {
-      const complete = (nowFiles / 70000).toFixed(2)
+    // every 4000 to 5000 files (random) we emit progress
+    if (nowFiles - previousFiles > Math.floor(Math.random() * 5000) + 4000) {
+      const complete = (nowFiles / 90000).toFixed(2)
       catalogStatus[locale].complete = init + complete * duration / 100
       catalogStatus[locale].info = nowFiles
       previousFiles = nowFiles
@@ -306,67 +374,111 @@ const copyFiles = async (input, output, isVariation, locale, io) => {
 
 const uniq = a => [...new Set(a)]
 
-const publishCatalog = async (file, destination, locale, io) => {
-  // init progressBar:
-  const step = 4
+const publishCatalog = (file, destination, locale, io) =>
+  new Promise((resolve, reject) => {
+    // init progressBar:
+    const step = 4
+    const init = catalogProgress[step - 1].init
+    const duration = catalogProgress[step - 1].duration
+
+    logger.info(`PUBLISHING CATALOG ${locale}`)
+    catalogStatus[locale].step = step
+    catalogStatus[locale].complete = init
+    catalogStatus[locale].info = ''
+    io.emit(WS_CATALOG_STATUS, catalogStatus)
+
+    const rsync = new Rsync()
+      .shell('ssh')
+      .flags('az')
+      .set('info', 'progress2') // see https://github.com/mattijs/node-rsync/issues/49
+      .set('no-inc-recursive')
+      .set('delete-after') // receiver deletes after transfer, not during
+      .set('remove-source-files') // remove source file afterwards
+      .set('bwlimit', 10000) // 10 MBytes maximum
+      .source(file)
+      .destination(destination)
+
+    // Execute the command
+    rsync.execute(
+      (err, code, cmd) => {
+        logger.debug(`COMMAND EXECUTED: ${cmd}`)
+        if (err) {
+          logger.error(`PUBLISHING CATALOG FAILED!: ${err}`)
+          logger.debug(`RETURNED VALUE: ${code}`)
+          catalogStatus[locale].error = true
+          io.emit(WS_CATALOG_STATUS, catalogStatus)
+          reject(err)
+        } else {
+          logger.info('PUBLISHING CATALOG DONE')
+          catalogStatus[locale].info = '100%'
+          catalogStatus[locale].complete = init + duration
+          io.emit(WS_CATALOG_STATUS, catalogStatus)
+          resolve()
+        }
+      },
+      data => {
+        const arrayValues = data
+          .toString('utf-8')
+          .replace(/\s\s+/g, ' ')
+          .split(' ')
+        if (arrayValues[2]) {
+          const percent = arrayValues[2].slice(0, -1)
+          const speed = arrayValues[3]
+          logger.debug(`UPLOADING CATALOG ${locale}: ${percent} ${speed}`)
+          catalogStatus[locale].info = `${parseFloat(percent).toFixed(
+            2
+          )}% - ${speed}`
+          catalogStatus[locale].complete = init + percent * duration / 100
+          io.emit(WS_CATALOG_STATUS, catalogStatus)
+        }
+      },
+      err => {
+        logger.error(err)
+        catalogStatus[locale].error = true
+        io.emit(WS_CATALOG_STATUS, catalogStatus)
+        reject(err)
+      }
+    )
+  })
+
+const saveCatalog = async (locale, io) => {
+  // save in database:
+  const catalog = {
+    language: locale,
+    category: 'General',
+    status: 1, // published
+    pictograms: catalogStatistics[locale].totalFiles,
+    variations: catalogStatistics[locale].variations,
+    size: catalogStatistics[locale].size,
+    lastUpdate: Date.now
+  }
+
+  logger.debug(`SAVING CATALOG ${locale} IN DATABASE`)
+  const step = 5
   const init = catalogProgress[step - 1].init
   const duration = catalogProgress[step - 1].duration
-
-  logger.info(`PUBLISHING CATALOG ${locale}`)
   catalogStatus[locale].step = step
   catalogStatus[locale].complete = init
   catalogStatus[locale].info = ''
+  catalogStatus[locale].error = false
   io.emit(WS_CATALOG_STATUS, catalogStatus)
 
-  const rsync = new Rsync()
-    .shell('ssh')
-    .flags('az')
-    .set('info', 'progress2') // see https://github.com/mattijs/node-rsync/issues/49
-    .set('no-inc-recursive')
-    .source(file)
-    .destination(destination)
-
-  // Execute the command
-  rsync.execute(
-    (err, code, cmd) => {
-      logger.debug(`COMMAND EXECUTED: ${cmd}`)
-      logger.debug(`RETURNED VALUE: ${code}`)
-      if (err) {
-        logger.error(`PUBLISHING CATALOG FAILED!: ${err}`)
-        catalogStatus[locale].error = true
-        io.emit(WS_CATALOG_STATUS, catalogStatus)
-      } else {
-        logger.info('PUBLISHING CATALOG DONE')
-        catalogStatus[locale].complete = init + duration
-        io.emit(WS_CATALOG_STATUS, catalogStatus)
-      }
-    },
-    data => {
-      const arrayValues = data
-        .toString('utf-8')
-        .replace(/\s\s+/g, ' ')
-        .split(' ')
-      if (arrayValues[2]) {
-        const percent = arrayValues[2].slice(0, -1)
-        const speed = arrayValues[3]
-        logger.debug(data)
-        catalogStatus[locale].info = `${parseFloat(percent).toFixed(
-          2
-        )}% - ${speed}`
-        catalogStatus[locale].complete = init + percent * duration / 100
-        io.emit(WS_CATALOG_STATUS, catalogStatus)
-      }
-    },
-    error => {
-      logger.error(error)
-      catalogStatus[locale].error = true
-      io.emit(WS_CATALOG_STATUS, catalogStatus)
-    }
+  await Catalog.findOneAndUpdate(
+    { language: locale, category: 'General' },
+    catalog, // document to insert when nothing was found
+    { upsert: true, new: true, runValidators: true }
   )
+  logger.debug(`SAVED CATALOG ${locale} IN DATABASE`)
+  const time = new Date()
+  const amountTime = time - catalogStatistics[locale].startTime // Difference in milliseconds.
+  logger.info(`CREATED CATALOG ${locale} OK in ${amountTime / 1000} seconds `)
+  catalogStatus[locale].complete = init + duration
+  io.emit(WS_CATALOG_STATUS, catalogStatus)
 }
 
 module.exports = {
   getCatalogData,
   getFilesCatalog,
-  publishCatalog
+  publishCatalog,
+  saveCatalog
 }

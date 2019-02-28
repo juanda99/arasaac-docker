@@ -28,7 +28,7 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
         logger.debug(err)
         reject(err)
       }
-      var prettyTotalSize = bytesToSize(totalSize)
+      var prettyTotalSize = formatBytes(totalSize)
 
       // create a file to stream archive data to.
       const destinationStream = fs.createWriteStream(zipFile)
@@ -53,7 +53,7 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
           catalogStatus[locale].complete = init + percent * duration / 100
           io.emit(WS_CATALOG_STATUS, catalogStatus)
           logger.debug(
-            `${bytesToSize(
+            `COMPRESSING CATALOG ${locale} ${formatBytes(
               progress.fs.processedBytes
             )} / ${prettyTotalSize} (${percent} %)`
           )
@@ -63,7 +63,7 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
       // on stream closed we can end the request
       archive.on('end', () => {
         const archiveSize = archive.pointer()
-        catalogStatistics.size = bytesToSize(archiveSize)
+        catalogStatistics.size = formatBytes(archiveSize)
         logger.info(`CATALOG FOR LANGUAGE ${locale.toUpperCase()} CREATED`)
         logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `)
         logger.debug(`Archiver wrote %s bytes ${catalogStatistics.size}`)
@@ -72,6 +72,7 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
         )
         logger.debug(`Space savings: ${(1 - archiveSize / totalSize) * 100} %`)
         // publish
+        catalogStatus[locale].info = `100%`
         catalogStatus[locale].complete = init + duration
         io.emit(WS_CATALOG_STATUS, catalogStatus)
 
@@ -94,7 +95,7 @@ const directorySize = (path, cb, size) => {
     size = 0
   }
 
-  fs.stat(path, function (err, stat) {
+  fs.stat(path, function(err, stat) {
     if (err) {
       cb(err)
       return
@@ -107,19 +108,19 @@ const directorySize = (path, cb, size) => {
       return
     }
 
-    fs.readdir(path, function (err, paths) {
+    fs.readdir(path, function(err, paths) {
       if (err) {
         cb(err)
         return
       }
 
       async.map(
-        paths.map(function (p) {
+        paths.map(function(p) {
           return path + '/' + p
         }),
         directorySize,
-        function (err, sizes) {
-          size += sizes.reduce(function (a, b) {
+        function(err, sizes) {
+          size += sizes.reduce(function(a, b) {
             return a + b
           }, 0)
           cb(err, size)
@@ -132,11 +133,13 @@ const directorySize = (path, cb, size) => {
 /**
  * https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript#18650828
  */
-const bytesToSize = bytes => {
-  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  if (bytes == 0) return '0 Byte'
-  var i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
-  return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i]
+const formatBytes = (bytes, decimals) => {
+  if (bytes === 0) return '0 Bytes'
+  var k = 1024
+  var dm = decimals <= 0 ? 0 : decimals || 2
+  var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  var i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
 module.exports = {

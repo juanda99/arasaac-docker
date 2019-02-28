@@ -8,6 +8,10 @@ const returnRouter = io => {
   router.post('/:locale', (req, res) =>
     catalogsController.createCatalogByLanguage(req, res, io)
   )
+  router.get('/', (req, res) => catalogsController.getAllCatalogs(req, res))
+  router.get('/:locale', (req, res) =>
+    catalogsController.getCatalogsByLanguage(req, res)
+  )
   return router
 }
 

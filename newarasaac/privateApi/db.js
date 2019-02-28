@@ -14,6 +14,8 @@ mongoose.connect(databaseUrl).then(
   }
 )
 
+mongoose.set('useFindAndModify', false)
+
 process.on('SIGINT', () =>
   mongoose.connection.close(() => {
     console.log('Finished App and disconnected from database')

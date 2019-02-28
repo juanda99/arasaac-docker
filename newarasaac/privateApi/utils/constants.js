@@ -3,25 +3,32 @@ const IMAGE_DIR = '/app/pictograms'
 // catalogs must "depend" on IMAGE_DIR to prevent error with hard links: EXDEV: cross-device link not permitted
 const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
 
-const tmpCatalogDir = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
+const tmpCatalogDir = (locale, bn) =>
+  bn
+    ? path.resolve(CATALOG_DIR, 'tmp', locale, 'NO_COLOR')
+    : path.resolve(CATALOG_DIR, 'tmp', locale, 'COLOR')
 
 // for progress_bar, each item corresponds to one step in catalogGeneration
 const catalogProgress = [
   {
     init: 0,
-    duration: 10
+    duration: 5
   },
   {
-    init: 10,
-    duration: 10
+    init: 5,
+    duration: 15
   },
   {
     init: 20,
-    duration: 70
+    duration: 60
   },
   {
-    init: 90,
-    duration: 10
+    init: 80,
+    duration: 18
+  },
+  {
+    init: 99,
+    duration: 1
   }
 ]
 
