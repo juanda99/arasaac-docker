@@ -448,13 +448,21 @@ const publishCatalog = (file, destination, locale, io) =>
 
 const saveCatalog = async (locale, io) => {
   // save in database:
+  const {
+    colorPictograms,
+    noColorPictograms,
+    variations,
+    size
+  } = catalogStatistics[locale]
+  const totalPictograms = colorPictograms + noColorPictograms + variations
   const catalog = {
     language: locale,
     status: 1, // published
-    pictograms: catalogStatistics[locale].totalFiles,
-    variations: catalogStatistics[locale].variations,
-    size: catalogStatistics[locale].size,
-    lastUpdate: Date.now
+    colorPictograms,
+    noColorPictograms,
+    variations: variations,
+    size,
+    totalPictograms
   }
 
   logger.debug(`SAVING CATALOG ${locale} IN DATABASE`)
@@ -468,7 +476,7 @@ const saveCatalog = async (locale, io) => {
   io.emit(WS_CATALOG_STATUS, catalogStatus)
 
   await Catalog.findOneAndUpdate(
-    { language: locale, category: 'General' },
+    { language: locale },
     catalog, // document to insert when nothing was found
     { upsert: true, new: true, runValidators: true }
   )

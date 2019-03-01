@@ -66,7 +66,7 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
         catalogStatistics.size = formatBytes(archiveSize)
         logger.info(`CATALOG FOR LANGUAGE ${locale.toUpperCase()} CREATED`)
         logger.debug(`${prettyTotalSize} / ${prettyTotalSize} (100 %) `)
-        logger.debug(`Archiver wrote %s bytes ${catalogStatistics.size}`)
+        logger.debug(`Archiver wrote ${catalogStatistics.size}`)
         logger.debug(
           `Compression ratio: ${Math.round(totalSize / archiveSize)}:1`
         )
@@ -74,6 +74,7 @@ const compressDirToZip = async (directory, zipFile, locale, io) =>
         // publish
         catalogStatus[locale].info = `100%`
         catalogStatus[locale].complete = init + duration
+        catalogStatistics[locale].size = prettyTotalSize
         io.emit(WS_CATALOG_STATUS, catalogStatus)
 
         resolve()
@@ -95,7 +96,7 @@ const directorySize = (path, cb, size) => {
     size = 0
   }
 
-  fs.stat(path, function(err, stat) {
+  fs.stat(path, function (err, stat) {
     if (err) {
       cb(err)
       return
@@ -108,19 +109,19 @@ const directorySize = (path, cb, size) => {
       return
     }
 
-    fs.readdir(path, function(err, paths) {
+    fs.readdir(path, function (err, paths) {
       if (err) {
         cb(err)
         return
       }
 
       async.map(
-        paths.map(function(p) {
+        paths.map(function (p) {
           return path + '/' + p
         }),
         directorySize,
-        function(err, sizes) {
-          size += sizes.reduce(function(a, b) {
+        function (err, sizes) {
+          size += sizes.reduce(function (a, b) {
             return a + b
           }, 0)
           cb(err, size)

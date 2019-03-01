@@ -28,7 +28,7 @@ const initCatalogStatistics = locale => {
     colorPictograms: 0,
     noColorPictograms: 0,
     variations: 0,
-    size: 0,
+    size: '',
     startTime: new Date(), // will be use to get the total amount of time
     previousFiles: getTotalFiles(locale) || 100000 // in case of a new catalog, stimated amount of files, could change in the future
   }
