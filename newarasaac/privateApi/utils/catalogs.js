@@ -9,12 +9,13 @@ const {
   skin,
   IMAGE_DIR,
   tmpCatalogDir,
+  tmpCatalogDirRoot,
   WS_CATALOG_STATUS,
   catalogProgress
 } = require('./constants')
 const languages = require('./languages')
 const setPictogramModel = require('../models/Pictogram')
-let previousFiles = 0 // for sending progress bar info
+const previousFiles = {} // for sending progress bar info
 
 /* global catalogStatus, catalogStatistics */
 
@@ -108,8 +109,12 @@ const getFilesCatalog = async (locale, catalogData, io) => {
   catalogStatus[locale].info = ''
   catalogStatus[locale].error = false
   catalogStatus[locale].complete = init
+  previousFiles[locale] = 0
   logger.debug(`CREATING CATALOG: Getting files from folder`)
   io.emit(WS_CATALOG_STATUS, catalogStatus)
+  /* COPY LICENSE FILES */
+  await copyLicenses(locale)
+
   return Promise.all(
     catalogData.map(async pictogram => {
       const plurals =
@@ -361,19 +366,39 @@ const copyFiles = async (input, output, isVariation, isBN, locale, io) => {
       catalogStatistics[locale].noColorPictograms +
       catalogStatistics[locale].colorPictograms
     // every 4000 to 5000 files (random) we emit progress
-    if (nowFiles - previousFiles > Math.floor(Math.random() * 5000) + 4000) {
+    if (
+      nowFiles - previousFiles[locale] >
+      Math.floor(Math.random() * 5000) + 4000
+    ) {
       const complete = (
-        nowFiles / catalogStatistics[locale].previousFiles
+        nowFiles / catalogStatistics[locale].totalFiles
       ).toFixed(2)
-      catalogStatus[locale].complete = init + complete * duration / 100
+      catalogStatus[locale].complete = init + complete * duration
       catalogStatus[locale].info = nowFiles
-      previousFiles = nowFiles
-      // hardcode previousFiles from catalogStatistics could be hardcoded
+      previousFiles[locale] = nowFiles
+      // hardcode totalFiles from catalogStatistics could be hardcoded
       // Could be more so we make this hack so progress bar gets hold
       if (complete < init + duration) io.emit(WS_CATALOG_STATUS, catalogStatus)
     }
   } catch (err) {
     logger.error(`CREATING CATALOG: ${err.message}`)
+  }
+}
+
+const copyLicenses = async locale => {
+  const dir = tmpCatalogDirRoot(locale)
+  const inputFile1 = await path.resolve(IMAGE_DIR, 'TERMS_OF_USE.txt')
+  const outputFile1 = path.resolve(dir, 'TERMS_OF_USE.txt')
+  const inputFile2 = await path.resolve(IMAGE_DIR, 'CONDICIONES_DE_USO.txt')
+  const outputFile2 = path.resolve(dir, 'CONDICIONES_DE_USO.txt')
+  try {
+    logger.debug(`COPY LICENSES TO ${dir}`)
+    return Promise.all([
+      fs.ensureLink(inputFile1, outputFile1),
+      fs.ensureLink(inputFile2, outputFile2)
+    ])
+  } catch (err) {
+    logger.error(`CREATING CATALOG, COPY LICENSES: ${err.message}`)
   }
 }
 
@@ -462,7 +487,8 @@ const saveCatalog = async (locale, io) => {
     noColorPictograms,
     variations: variations,
     size,
-    totalPictograms
+    totalPictograms,
+    lastUpdated: Date.now()
   }
 
   logger.debug(`SAVING CATALOG ${locale} IN DATABASE`)
@@ -482,20 +508,39 @@ const saveCatalog = async (locale, io) => {
   )
   logger.debug(`SAVED CATALOG ${locale} IN DATABASE`)
   const time = new Date()
-  const amountTime = time - catalogStatistics[locale].startTime // Difference in milliseconds.
-  logger.info(`CREATED CATALOG ${locale} OK in ${amountTime / 1000} seconds `)
+  const amountTime = parseInt(
+    (time - catalogStatistics[locale].startTime) / 1000
+  ) // Difference in milliseconds.
+  logger.info(`CREATED CATALOG ${locale} OK in ${amountTime} seconds `)
   catalogStatus[locale].complete = init + duration
-  catalogStatus[locale].info = amountTime
+  catalogStatus[locale].info = {
+    amountTime,
+    colorPictograms,
+    noColorPictograms,
+    variations: variations,
+    size,
+    totalPictograms,
+    lastUpdated: catalog.lastUpdated
+  }
   io.emit(WS_CATALOG_STATUS, catalogStatus)
 }
 
 const getTotalFiles = async language => {
   logger.debug(`SEARCHING CATALOG ${language} IN DATABASE`)
   const catalog = await Catalog.findOne({ language })
-  if (catalog.length === 0) return 0
+  if (!catalog) throw Error('No catalog')
   return (
     catalog.colorPictograms + catalog.noColorPictograms + catalog.variations
   )
+}
+
+const removeTmpFiles = async dest => {
+  try {
+    await fs.remove(dest)
+    logger.debug(`REMOVED TEMP FILES FROM ${dest}`)
+  } catch (err) {
+    logger.error(`REMOVING TEMP FILES FROM ${dest}: ${err}`)
+  }
 }
 
 module.exports = {
@@ -503,5 +548,6 @@ module.exports = {
   getFilesCatalog,
   publishCatalog,
   saveCatalog,
-  getTotalFiles
+  getTotalFiles,
+  removeTmpFiles
 }

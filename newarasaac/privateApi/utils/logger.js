@@ -31,13 +31,13 @@ const logger = createLogger({
 if (process.env.NODE_ENV !== 'production') {
   logger.add(
     new transports.Console({
-      level: 'debug',
+      level: 'info',
       format: combine(colorize(), timestamp(), myFormat)
     })
   )
 }
 
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', function(err) {
   logger.error(err.message)
 })
 

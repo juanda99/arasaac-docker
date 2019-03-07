@@ -3,7 +3,8 @@ const {
   getFilesCatalog,
   publishCatalog,
   saveCatalog,
-  getTotalFiles
+  getTotalFiles,
+  removeTmpFiles
 } = require('../utils/catalogs')
 const { CATALOG_DIR, WS_CATALOG_STATUS } = require('../utils/constants')
 const path = require('path')
@@ -23,14 +24,27 @@ languages.forEach(language => {
   generatingCatalog[language] = false
 })
 
-const initCatalogStatistics = locale => {
+const initCatalogStatistics = async locale => {
+  let totalFiles
+  try {
+    totalFiles = await getTotalFiles(locale)
+    logger.info(
+      `ESTIMATED CATALOG NUMBER OF FILES FOR LOCALE ${locale}: ${totalFiles}`
+    )
+  } catch (err) {
+    // in case of a new catalog, stimated amount of files, could change in the future
+    totalFiles = 100000
+    logger.error(
+      `UNKNOWN CATALOG NUMBER OF FILES for ${locale}, we use ${totalFiles}: ${err}`
+    )
+  }
   catalogStatistics[locale] = {
     colorPictograms: 0,
     noColorPictograms: 0,
     variations: 0,
     size: '',
     startTime: new Date(), // will be use to get the total amount of time
-    previousFiles: getTotalFiles(locale) || 100000 // in case of a new catalog, stimated amount of files, could change in the future
+    totalFiles
   }
 }
 const initCatalogStatus = locale => {
@@ -44,7 +58,7 @@ const initCatalogStatus = locale => {
 
 const createCatalogByLanguage = async (req, res, io) => {
   const { locale } = req.params
-  initCatalogStatistics(locale)
+  await initCatalogStatistics(locale)
   initCatalogStatus(locale)
   try {
     logger.info(`CREATING CATALOG FOR LANGUAGE ${locale.toUpperCase()}`)
@@ -71,9 +85,11 @@ const createCatalogByLanguage = async (req, res, io) => {
 
   /* now start generating and response via ajax, rest of process via websockets */
   generatingCatalog[locale] = true
-  res
-    .status(200)
-    .json({ status: 'Your request has started, it will take a while.' })
+  if (!res.headersSent) {
+    res
+      .status(200)
+      .json({ status: 'Your request has started, it will take a while.' })
+  }
 
   try {
     const catalogData = await getCatalogData(locale, io)
@@ -83,11 +99,13 @@ const createCatalogByLanguage = async (req, res, io) => {
     await compressDirToZip(tmpCatalogDir, catalogFileName, locale, io)
     await publishCatalog(
       catalogFileName,
-      `storage.arasaac.org:/tmp/catalog_${locale}.zip`,
+      `storage.arasaac.org:/var/www/html/catalog_${locale}.zip`,
       locale,
       io
     )
     await saveCatalog(locale, io)
+    // remove tmp files
+    await removeTmpFiles(tmpCatalogDir)
     generatingCatalog[locale] = false
   } catch (err) {
     generatingCatalog[locale] = false
@@ -126,9 +144,19 @@ const createAllCatalogsAsync = async (req, res, io) => {
 const getAllCatalogs = async (req, res) => {
   logger.debug(`GET CATALOGS DATA FROM ALL LANGUAGES: getAllCatalogs()`)
   try {
-    const catalogs = await Catalog.find()
-    if (catalogs.length === 0) return res.status(404).json([]) // send http code 404!!!
-    return res.json(catalogs)
+    const catalogs = await Catalog.find().lean()
+    // if no catalog generated we send 404 but show all possible catalogs:
+    if (!catalogs) {
+      const noCatalogs = languages.map(language => ({ language }))
+      return res.status(404).json(noCatalogs)
+    }
+    const languagesCatalog = languages.map(
+      language =>
+        catalogs.filter(catalog => catalog.language === language)[0] || {
+          language
+        }
+    )
+    return res.json(languagesCatalog)
   } catch (err) {
     logger.err(err.message)
     return res.status(500).json({
@@ -154,7 +182,7 @@ const getCatalogsByLanguage = async (req, res) => {
 }
 
 class CustomError extends Error {
-  constructor (message, code) {
+  constructor(message, code) {
     super(message)
     this.httpCode = code
     this.name = 'Custom error'

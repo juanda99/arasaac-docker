@@ -2,7 +2,7 @@ const path = require('path')
 const IMAGE_DIR = '/app/pictograms'
 // catalogs must "depend" on IMAGE_DIR to prevent error with hard links: EXDEV: cross-device link not permitted
 const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
-
+const tmpCatalogDirRoot = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
 const tmpCatalogDir = (locale, bn) =>
   bn
     ? path.resolve(CATALOG_DIR, 'tmp', locale, 'NO_COLOR')
@@ -58,6 +58,7 @@ const WS_CATALOG_STATUS = 'catalogStatus'
 module.exports = {
   IMAGE_DIR,
   CATALOG_DIR,
+  tmpCatalogDirRoot,
   tmpCatalogDir,
   schematic,
   hair,
