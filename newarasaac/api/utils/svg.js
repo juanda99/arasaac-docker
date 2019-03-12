@@ -1,7 +1,7 @@
 const sharp = require('sharp')
 const path = require('path')
 const fs = require('fs-extra')
-const IMAGE_DIR = process.env.IMAGE_DIR || '/app/pictos'
+const { IMAGE_DIR } = require('../config')
 
 const {
   pluralSVGCode,
@@ -69,27 +69,24 @@ const getPNGFileName = async (file, options) => {
     backgroundColor,
     action,
     resolution,
-    hair,
-    skin,
     identifier,
     identifierPosition
   } = options
   const idFile = path.basename(file, '.svg')
   let fileName = idFile
-  if (plural) fileName = `${fileName}-plural`
-  if (!color) fileName = `${fileName}-nocolor`
-  if (backgroundColor) fileName = `${fileName}-backgroundColor=${backgroundColor
+  if (plural) fileName = `${fileName}_plural`
+  if (!color) fileName = `${fileName}_nocolor`
+  if (backgroundColor) fileName = `${fileName}_backgroundColor-${backgroundColor
     .replace('#', '')
     .toUpperCase()}`
-  if (action !== 'present') fileName = `${fileName}-action=${action}`
-  if (resolution !== 500) fileName = `${fileName}-resolution=${resolution}`
-  if (hair) fileName = `${fileName}-hair=${hair}`
-  if (skin) fileName = `${fileName}-skin=${skin}`
+  if (action !== 'present') fileName = `${fileName}_action-${action}`
+  if (options.hair) fileName = `${fileName}_hair-${hair[options.hair].substr(1, 6)}`
+  if (options.skin) fileName = `${fileName}_skin-${skin[options.skin].substr(1, 6)}`
+  fileName = `${fileName}_${resolution}`
   if (identifier) {
-    fileName = `${fileName}-identifier=${identifier}`
+    fileName = `${fileName}_identifier-${identifier}`
     if (identifierPosition === 'left') fileName = `${fileName}-${identifierPosition}`
   }
-
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
   return path.resolve(IMAGE_DIR, idFile, `${fileName}.png`)
 }

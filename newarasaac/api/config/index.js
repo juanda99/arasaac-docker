@@ -24,7 +24,8 @@ const config = {
   },
   databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac',
   IMAGE_DIR: '/app/pictograms',
-  SVG_DIR: '/app/svg'
+  SVG_DIR: '/app/svg',
+  IMAGE_URL: 'https://static.arasaac.org/pictograms'
 }
 
 /**

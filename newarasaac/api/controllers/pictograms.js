@@ -5,7 +5,7 @@ const imageminPngquant = require('imagemin-pngquant')
 // we load pictos model for all languages
 const setPictogramModel = require('../models/Pictograms')
 const stopWords = require('../utils/stopWords')
-const { IMAGE_DIR, SVG_DIR } = require('../config')
+const { IMAGE_DIR, SVG_DIR, IMAGE_URL } = require('../config')
 
 const languages = require('../utils/languages')
 const { convertSVG, getPNGFileName, modifySVG } = require('../utils/svg')
@@ -33,6 +33,7 @@ const getPictogramById = async (req, res) => {
 }
 
 const getPictogramFileById = async (req, res) => {
+  console.log('kkkkkkk')
   const file = `${req.swagger.params.idPictogram.value}.svg`
   /* eslint-disable multiline-ternary */
   const url = req.swagger.params.url.value === true
@@ -50,13 +51,20 @@ const getPictogramFileById = async (req, res) => {
     identifier: req.swagger.params.identifier.value,
     identifierPosition: req.swagger.params.identifierPosition.value
   }
-  const download = req.swagger.params.download || false
+  const download = req.swagger.params.download.value || false
   /* eslint-enable multiline-ternary */
   try {
     const fileName = await getPNGFileName(file, options)
-    const exists = await fs.pathExists(file)
-    if (exists && download) res.download(fileName)
-    else if (exists && !download) res.sendFile(fileName)
+    const exists = await fs.pathExists(fileName)
+    console.log(exists)
+    console.log(`Download: ${JSON.stringify(download)}`)
+    if (exists) {
+      if (url) return res.json({
+        image: fileName.replace(IMAGE_DIR, IMAGE_URL)
+      })
+      if (!download) return res.sendFile(fileName)
+      return res.download(fileName)
+    }
     const svgContent = await fs.readFile(path.resolve(SVG_DIR, file), 'utf-8')
     let newSVGContent = modifySVG(svgContent, options)
     convertSVG(newSVGContent, options.resolution)
@@ -75,10 +83,7 @@ const getPictogramFileById = async (req, res) => {
             fs.close(fd, function() {
               console.log(`IMAGE GENERATED: ${fileName}`)
               if (url) res.json({
-                image: fileName.replace(
-                  IMAGE_DIR,
-                  'https://static.arasaac.org/pictograms'
-                )
+                image: fileName.replace(IMAGE_DIR, IMAGE_URL)
               })
               else if (download) res.download(fileName)
               else res.sendFile(fileName)
