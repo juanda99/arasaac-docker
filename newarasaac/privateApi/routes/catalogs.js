@@ -3,7 +3,7 @@ const catalogsController = require('../controllers/catalogsController')
 
 const returnRouter = io => {
   router.post('/', (req, res) =>
-    catalogsController.createAllCatalogsAsync(req, res, io)
+    catalogsController.createAllCatalogs(req, res, io)
   )
   router.post('/:locale', (req, res) =>
     catalogsController.createCatalogByLanguage(req, res, io)
