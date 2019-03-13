@@ -136,8 +136,8 @@ const getNewPictograms = async (req, res) => {
   startDate.setDate(startDate.getDate() - days)
   try {
     let pictograms = await Pictograms[locale]
-      .find({ lastUpdate: { $gt: startDate } })
-      .sort({ lastUpdate: -1 })
+      .find({ lastUpdated: { $gt: startDate } })
+      .sort({ lastUpdated: -1 })
       .populate('authors', '_id name')
     if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
     return res.json(pictograms)
@@ -155,7 +155,7 @@ const getLastPictograms = async (req, res) => {
   try {
     let pictograms = await Pictograms[locale]
       .find()
-      .sort({ lastUpdate: -1 })
+      .sort({ lastUpdated: -1 })
       .limit(numItems)
       .populate('authors', '_id name')
     if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
