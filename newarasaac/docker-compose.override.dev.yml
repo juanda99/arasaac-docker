@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  api:
+    command: npm run debug
+    ports:
+      - "9229:9229"
+
+  privateapi:
+    command: npm run debug
+    ports:
+      - "9227:9229"
+
+  auth:
+    command: npm run debug
+    depends_on:
+      - mongodb
+    ports:
+      - "9228:9229"
+      - "5000:80"
+
+  mongodb:
+    ports:
+      - "27000:27017"
+
+networks:
+  nginxproxy_frontend:
+    external: true
+  backend:
+    driver: bridge

@@ -1,43 +1,12 @@
 version: "3"
 
 services:
-  frontend:
-    image: nginx
-    hostname: frontend
-    container_name: frontend
-    volumes:
-      - ./frontend/conf/:/etc/nginx/conf.d:ro
-      - ./frontend/code/:/usr/share/nginx/html
-    environment:
-      LETSENCRYPT_HOST: "beta.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "beta.arasaac.org"
-    networks:
-      - nginxproxy_frontend
-
-  webstatic:
-    image: nginx
-    hostname: webstatic
-    container_name: webstatic
-    volumes:
-      - ./materials:/usr/share/nginx/html/materials:ro
-      - ./images:/usr/share/nginx/html/images:ro
-      - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
-      - ./locutions:/usr/share/nginx/html/locutions:ro
-      - ./webstatic-conf/:/etc/nginx/conf.d:ro
-    environment:
-      LETSENCRYPT_HOST: "static.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "static.arasaac.org"
-    networks:
-      - nginxproxy_frontend
-
   api:
     hostname: api
     container_name: api
     build:
       context: ./api
-    command: npm run debug
+    command: npm start
     depends_on:
       - mongodb
       - auth
@@ -62,15 +31,13 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
-    ports:
-      - "9229:9229"
 
   privateapi:
     hostname: privateapi
     container_name: privateapi
     build:
       context: ./privateApi
-    command: npm run debug
+    command: npm start
     depends_on:
       - mongodb
       - auth
@@ -95,21 +62,20 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
-    ports:
-      - "9227:9229"
 
   auth:
     hostname: auth
     container_name: auth
     build:
       context: ./auth
-    command: npm run debug
+    command: npm start
     depends_on:
       - mongodb
     volumes:
       - ./auth:/app
       - /app/node_modules
       - /app/.config
+      - ./auth/src/certs:/app/dist/certs
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -118,42 +84,6 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
-    ports:
-      - "9228:9229"
-      - "5000:80"
-
-  watcher:
-    hostname: watcher
-    container_name: watcher
-    build:
-      context: ./watcher
-    command: npm start
-    volumes:
-      - ./watcher:/app
-      - ./materials:/app/materials
-      - /app/node_modules
-      - /app/.config
-    environment:
-      NODE_ENV: $NODE_ENV
-
-  svgwatcher:
-    hostname: svgwatcher
-    container_name: svgwatcher
-    build:
-      context: ./svgwatcher
-    command: npm run debug
-    volumes:
-      - ./svgwatcher:/app
-      - ${SVG_DIR}:/app/svg:ro
-      - /app/node_modules
-      - /app/.config
-      - ${IMAGE_DIR}:/app/pictograms
-    environment:
-      NODE_ENV: $NODE_ENV
-      CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING
-      OVERWRITE: $OVERWRITE
-    ports:
-      - "9226:9229"
 
   mongodb:
     hostname: mongodb
@@ -164,25 +94,6 @@ services:
       - ./mongodb/dbdata:/data/db
     networks:
       - backend
-    ports:
-      - "27000:27017"
-
-  sftp:
-    hostname: sftp
-    container_name: sftp
-    image: atmoz/sftp
-    env_file:
-      - ./.env
-    volumes:
-      - ./ssh_keys/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key
-      - ./ssh_keys/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key
-      - ./svg:/home/betaarasaac/svg
-      - ./materials:/home/betaarasaac/materials
-    ports:
-      - "8005:22"
-    command: betaarasaac:${SFTP_PASSWORD}
-    networks:
-      - nginxproxy_frontend
 
 networks:
   nginxproxy_frontend:

@@ -12,5 +12,6 @@ ENV HOME=/app
 # Install dependencies
 COPY package.json package-lock.json $HOME/
 RUN npm install
+RUN npm build
 
 EXPOSE $PORT

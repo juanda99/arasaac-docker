@@ -33,7 +33,8 @@
   },
   "scripts": {
     "lint": "eslint *.js config db test",
-    "start": "nodemon --watch . --watch views --watch config --watch db -e js,ejs app.js --exec babel-node  --presets stage-2",
+    "start": "node dist/app.js",
+    "build": "babel src --out-dir dist",
     "debug": "nodemon --inspect=0.0.0.0:9229 --watch . --watch views --watch config --watch db -e js,ejs app.js --exec babel-node  --presets stage-2",
     "test": "mocha test test/db test/config",
     "test:watch": "npm run test -- --watch",
