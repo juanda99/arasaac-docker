@@ -11,9 +11,7 @@ services:
       - mongodb
       - auth
     volumes:
-      - ./api:/app
       - ./materials:/app/materials
-      - /app/node_modules
       - /app/.config
       - ${SVG_DIR}:/app/svg:ro
       - ${IMAGE_DIR}:/app/pictograms
@@ -68,7 +66,7 @@ services:
     container_name: auth
     build:
       context: ./auth
-    command: npm start
+    command: ./start-prod.sh
     depends_on:
       - mongodb
     volumes:

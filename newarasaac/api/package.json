@@ -8,13 +8,16 @@
   "license": "",
   "main": "app.js",
   "scripts": {
-    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
-    "debug": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' app.js --exec babel-node  --presets es2015,stage-2",
-    "edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
+    "predebug": "npm run build",
+    "start": "node app.js",
+    "build": "rimraf ./dist; cp -r src dist ; babel dist --out-dir dist --presets @babel/preset-env",
+    "debug": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'src/public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' src/app.js --exec babel-node  --presets es2015,stage-2",
+    "edit": "swagger_swagger_fileName=src/swagger/swagger.yaml swagger project edit",
     "test": "swagger project test",
-    "compile": "yaml2json api/swagger/swagger.yaml > swagger.json"
+    "compile": "yaml2json src/api/swagger/swagger.yaml > swagger.json"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "bcryptjs": "^2.3.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.15.0",
@@ -44,9 +47,10 @@
     "yamljs": "^0.2.8"
   },
   "devDependencies": {
-    "babel-cli": "^6.14.0",
-    "babel-preset-es2015": "^6.14.0",
-    "babel-preset-stage-2": "^6.13.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.4",
     "cross-env": "^3.0.0",
     "eslint": "^4.15.0",
     "morgan": "^1.7.0",

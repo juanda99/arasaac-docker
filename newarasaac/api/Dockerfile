@@ -11,6 +11,7 @@ WORKDIR /app
 ENV HOME=/app
 
 # Install dependencies
+COPY dist $HOME
 COPY package.json package-lock.json $HOME/
 RUN npm install
 

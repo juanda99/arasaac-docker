@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import cors from 'cors'
 import express from 'express'
 import fs from 'fs'
@@ -16,14 +17,11 @@ try {
   var swaggerDocument = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))
   const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)
-  fs.writeFile(
-    path.join(__dirname, './public/arasaac.json'),
-    swaggerJSON,
-    function(err) {
-      if (err) return console.log(err)
-      console.log('arasaac.json file generated')
-    }
-  )
+  const fileName = path.join(__dirname, './public/arasaac.json')
+  fs.writeFile(fileName, swaggerJSON, function(err) {
+    if (err) return console.log(err)
+    console.log(`arasaac.json file generated at ${fileName}`)
+  })
 } catch (e) {
   console.log(e)
 }
