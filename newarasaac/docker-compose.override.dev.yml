@@ -2,7 +2,7 @@ version: "3"
 
 services:
   api:
-    command: npm run debug
+    command: npm start
     ports:
       - "9229:9229"
     volumes:
@@ -10,17 +10,21 @@ services:
       - /app/node_modules
 
   privateapi:
-    command: npm run debug
+    command: npm start
     ports:
       - "9227:9229"
+    volumes:
+      - /app/node_modules
 
   auth:
-    command: npm run debug
+    command: npm start
     depends_on:
       - mongodb
     ports:
       - "9228:9229"
       - "5000:80"
+    volumes:
+      - /app/node_modules
 
   mongodb:
     ports:

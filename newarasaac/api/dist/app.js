@@ -1,7 +1,5 @@
 "use strict";
 
-require("babel-polyfill");
-
 var _cors = _interopRequireDefault(require("cors"));
 
 var _express = _interopRequireDefault(require("express"));

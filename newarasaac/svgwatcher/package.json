@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --max_old_space_size=3000 --ignore 'node_modules' --ignore 'svg' --ignore 'pictograms' index.js",
-    "debug": "nodemon --max_old_space_size=3000 --ignore 'node_modules' --ignore 'svg' --ignore 'pictograms' --inspect=0.0.0.0:9229 index.js"
+    "serve": "node --max_old_space_size=3000 index.js",
+    "start": "nodemon --max_old_space_size=3000 --ignore 'node_modules' --ignore 'svg' --ignore 'pictograms' --inspect=0.0.0.0:9229 index.js"
   },
   "repository": {
     "type": "git",

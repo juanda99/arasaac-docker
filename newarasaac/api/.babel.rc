@@ -4,5 +4,7 @@
   ],
   "plugins" : [
     "plugin-transform-modules-commonjs"
-  ]
+  ],
+  "sourceMaps": "inline",
+  "retainLines": true
 }

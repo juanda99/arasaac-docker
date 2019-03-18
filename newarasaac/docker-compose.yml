@@ -6,7 +6,7 @@ services:
     container_name: api
     build:
       context: ./api
-    command: npm start
+    command: npm run serve
     depends_on:
       - mongodb
       - auth
@@ -35,7 +35,7 @@ services:
     container_name: privateapi
     build:
       context: ./privateApi
-    command: npm start
+    command: npm run serve
     depends_on:
       - mongodb
       - auth
@@ -46,7 +46,6 @@ services:
       - ./certs:/root/.ssh
       - ${IMAGE_DIR}:/app/pictograms
       - ./tmp:/app/tmp
-      - /app/node_modules
       - /app/.config
     environment:
       LETSENCRYPT_HOST: "privateapi.arasaac.org"
@@ -66,14 +65,12 @@ services:
     container_name: auth
     build:
       context: ./auth
-    command: ./start-prod.sh
+    command: npm run serve
     depends_on:
       - mongodb
     volumes:
       - ./auth:/app
-      - /app/node_modules
       - /app/.config
-      - ./auth/src/certs:/app/dist/certs
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL

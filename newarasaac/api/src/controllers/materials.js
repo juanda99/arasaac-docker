@@ -39,6 +39,7 @@ module.exports = {
   searchMaterials: (req, res) => {
     var locale = req.swagger.params.locale.value
     var searchText = req.swagger.params.searchText.value
+    console.log('k*********************')
     Materials
       .find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}})
       .sort({'score': { '$meta': 'textScore'} })

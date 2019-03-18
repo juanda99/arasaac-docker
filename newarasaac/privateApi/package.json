@@ -4,15 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "debug": "nodemon --inspect=0.0.0.0:9229 --ignore 'materials/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
-    "start": "nodemon --ignore 'materials/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
+    "start":
+      "nodemon --inspect=0.0.0.0:9229 --ignore 'materials/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
+    "serve": "node app.js",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.js": ["prettier --write", "git add"]
   },
   "author": "",
   "license": "ISC",

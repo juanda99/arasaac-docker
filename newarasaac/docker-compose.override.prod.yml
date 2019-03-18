@@ -32,102 +32,12 @@ services:
     networks:
       - nginxproxy_frontend
 
-  api:
-    hostname: api
-    container_name: api
-    build:
-      context: ./api
-    command: npm run debug
-    depends_on:
-      - mongodb
-      - auth
-    volumes:
-      - ./api:/app
-      - ./materials:/app/materials
-      - /app/node_modules
-      - /app/.config
-      - ${SVG_DIR}:/app/svg:ro
-      - ${IMAGE_DIR}:/app/pictograms
-    environment:
-      LETSENCRYPT_HOST: "api.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "api.arasaac.org"
-      NODE_ENV: $NODE_ENV
-      EMAIL_FROM: $EMAIL_FROM
-      EMAIL_USER: $EMAIL_USER
-      EMAIL_PASSWORD: $EMAIL_PASSWORD
-      EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
-      MASTER_KEY: $MASTER_KEY
-      JWT_SECRET: $JWT_SECRET
-    networks:
-      - nginxproxy_frontend
-      - backend
-    ports:
-      - "9229:9229"
-
-  privateapi:
-    hostname: privateapi
-    container_name: privateapi
-    build:
-      context: ./privateApi
-    command: npm run debug
-    depends_on:
-      - mongodb
-      - auth
-    volumes:
-      - ./privateApi:/app
-      - ./materials:/app/materials
-      - ./locutions:/app/locutions
-      - ./certs:/root/.ssh
-      - ${IMAGE_DIR}:/app/pictograms
-      - ./tmp:/app/tmp
-      - /app/node_modules
-      - /app/.config
-    environment:
-      LETSENCRYPT_HOST: "privateapi.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "privateapi.arasaac.org"
-      NODE_ENV: $NODE_ENV
-      EMAIL_FROM: $EMAIL_FROM
-      EMAIL_USER: $EMAIL_USER
-      EMAIL_PASSWORD: $EMAIL_PASSWORD
-      EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
-    networks:
-      - nginxproxy_frontend
-      - backend
-    ports:
-      - "9227:9229"
-
-  auth:
-    hostname: auth
-    container_name: auth
-    build:
-      context: ./auth
-    command: npm run debug
-    depends_on:
-      - mongodb
-    volumes:
-      - ./auth:/app
-      - /app/node_modules
-      - /app/.config
-    environment:
-      LETSENCRYPT_HOST: "auth.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "auth.arasaac.org"
-      NODE_ENV: $NODE_ENV
-    networks:
-      - nginxproxy_frontend
-      - backend
-    ports:
-      - "9228:9229"
-      - "5000:80"
-
   watcher:
     hostname: watcher
     container_name: watcher
     build:
       context: ./watcher
-    command: npm start
+    command: npm run serve
     volumes:
       - ./watcher:/app
       - ./materials:/app/materials
@@ -141,7 +51,7 @@ services:
     container_name: svgwatcher
     build:
       context: ./svgwatcher
-    command: npm run debug
+    command: npm run serve
     volumes:
       - ./svgwatcher:/app
       - ${SVG_DIR}:/app/svg:ro
