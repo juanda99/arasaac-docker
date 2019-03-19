@@ -1,6 +1,22 @@
 # Grant types
 
-## Client credentials
+
+## Arasaac API
+
+- Our API needs to be open
+
+  ```
+  https://community.auth0.com/t/what-grant-endpoint-to-use-for-authentication-in-a-react-spa-that-accesses-external-api/6568
+  ```
+
+## Grant types
+
+- We should use implicit or ROPC for our app when user needs to authenticate:
+```
+https://stackoverflow.com/questions/40873263/what-type-of-grant-is-adequate-for-a-react-application
+```
+
+
 - Used by Arasaac for example for creating user.
 - Used by other apps????
 
