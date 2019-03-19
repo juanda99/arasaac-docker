@@ -25,6 +25,8 @@ services:
       - "5000:80"
     volumes:
       - /app/node_modules
+    environment:
+      DEBUG: "oauth2orize"
 
   mongodb:
     ports:
