@@ -65,18 +65,6 @@ services:
     ports:
       - "9226:9229"
 
-  mongodb:
-    hostname: mongodb
-    container_name: mongodb
-    image: mongo:3.6
-    volumes:
-      - ./mongodb/dump:/docker-entrypoint-initdb.d
-      - ./mongodb/dbdata:/data/db
-    networks:
-      - backend
-    ports:
-      - "27000:27017"
-
   sftp:
     hostname: sftp
     container_name: sftp
