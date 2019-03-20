@@ -32,6 +32,18 @@ services:
     networks:
       - nginxproxy_frontend
 
+  api:
+    volumes:
+      - /app/node_modules
+
+  privateapi:
+    volumes:
+      - /app/node_modules
+
+  auth:
+    volumes:
+      - /app/node_modules
+
   watcher:
     hostname: watcher
     container_name: watcher
