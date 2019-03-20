@@ -1,6 +1,5 @@
-var mongoose = require('mongoose');
-var bcrypt = require('bcrypt');
-const { logAndThrow } = require('../utils')
+var mongoose = require("mongoose");
+const { logAndThrow } = require("../utils");
 
 var ClientSchema = new mongoose.Schema({
   name: {
@@ -17,7 +16,7 @@ var ClientSchema = new mongoose.Schema({
   },
   clientSecret: {
     type: String,
-    required: true,
+    required: true
   },
   trustedClient: {
     type: Boolean,
@@ -25,16 +24,15 @@ var ClientSchema = new mongoose.Schema({
   }
 });
 
-
 ClientSchema.methods = {
-  validate: function (clientSecret) {
-    if (clientSecret === this.clientSecret) return this
+  validate: function(clientSecret) {
+    if (clientSecret === this.clientSecret) return this;
     // if (bcrypt.compareSync(clientSecret, this.clientSecret)) return this
-    logAndThrow(`Wrong secret for client ${this.name}`)
+    logAndThrow(`Wrong secret for client ${this.name}`);
   }
-}
+};
 
-var Client = mongoose.model('Client', ClientSchema);
+var Client = mongoose.model("Client", ClientSchema);
 
 /**
  * This is the configuration of the clients that are allowed to connected to your authorization
@@ -55,23 +53,27 @@ var Client = mongoose.model('Client', ClientSchema);
  * gets full scope access without the user having to make a decision to allow or disallow the scope
  * access.
  */
-const clients = [{
-  id            : '1',
-  name          : 'Samplr',
-  clientId      : 'abc123',
-  clientSecret  : 'ssh-secret',
-}, {
-  id            : '2',
-  name          : 'Samplr2',
-  clientId      : 'xyz123',
-  clientSecret  : 'ssh-password',
-}, {
-  id            : '3',
-  name          : 'Samplr3',
-  clientId      : 'trustedClient',
-  clientSecret  : 'ssh-otherpassword',
-  trustedClient : true,
-}];
+const clients = [
+  {
+    id: "1",
+    name: "Samplr",
+    clientId: "abc123",
+    clientSecret: "ssh-secret"
+  },
+  {
+    id: "2",
+    name: "Samplr2",
+    clientId: "xyz123",
+    clientSecret: "ssh-password"
+  },
+  {
+    id: "3",
+    name: "Samplr3",
+    clientId: "trustedClient",
+    clientSecret: "ssh-otherpassword",
+    trustedClient: true
+  }
+];
 
 /**
  * Returns a client if it finds one, otherwise returns null if a client is not found.
@@ -89,4 +91,4 @@ exports.find = id => Promise.resolve(clients.find(client => client.id === id));
 exports.findByClientId = clientId =>
   Promise.resolve(clients.find(client => client.clientId === clientId));
 
-module.exports = Client
+module.exports = Client;
