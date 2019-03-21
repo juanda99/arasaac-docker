@@ -11,6 +11,7 @@ const {
 } = require("passport-oauth2-client-password");
 const { Strategy: BearerStrategy } = require("passport-http-bearer");
 const validate = require("./validate");
+const ObjectID = require("mongodb").ObjectID;
 const { logAndThrow } = require("./utils");
 
 /**
@@ -142,7 +143,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findOne({ _id: ObjectId(id) }, (err, user) => {
+  User.findOne({ _id: ObjectID(id) }, (err, user) => {
     if (err) done(err);
     if (!user) done(null, null);
     done(null, user);

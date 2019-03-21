@@ -11,9 +11,11 @@ const passport = require("passport");
  */
 exports.index = (req, res) => {
   if (!req.query.code) {
+    console.log(req.query);
     // res.status(301).redirect("https://beta.arasaac.org/developers/accounts");
     res.render("index");
   } else {
+    console.log(req.query);
     res.render("index-with-code");
   }
 };
