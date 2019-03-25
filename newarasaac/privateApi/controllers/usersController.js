@@ -100,6 +100,14 @@ const getAll = async (req, res) => {
   }
 }
 
+const addFavorites = async (req, res) => {
+  const { list, id } = req.params
+}
+
+const getFavorites = async (req, res) => {
+  const { id } = req.params
+}
+
 module.exports = {
   create,
   remove,
