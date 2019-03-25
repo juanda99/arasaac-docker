@@ -1,21 +1,25 @@
-'use strict';
+"use strict";
 
-const fs   = require('fs');
-const path = require('path');
-const uuid = require('uuid/v4');
-const jwt  = require('jsonwebtoken');
+const fs = require("fs");
+const path = require("path");
+const uuid = require("uuid/v4");
+const jwt = require("jsonwebtoken");
 
-var PrettyError = require('pretty-error');
+var PrettyError = require("pretty-error");
 var pe = new PrettyError();
 
 /** Suppress tracing for things like unit testing */
-const DEBUG = process.env.DEBUG === true
+const DEBUG = process.env.DEBUG === true;
 
 /** Private certificate used for signing JSON WebTokens */
-const privateKey = fs.readFileSync(path.join(__dirname, 'certs/privatekey.pem'));
+const privateKey = fs.readFileSync(
+  path.join(__dirname, "certs/privatekey.pem")
+);
 
 /** Public certificate used for verification.  Note: you could also use the private key */
-const publicKey = fs.readFileSync(path.join(__dirname, 'certs/certificate.pem'));
+const publicKey = fs.readFileSync(
+  path.join(__dirname, "certs/certificate.pem")
+);
 
 /**
  * Creates a signed JSON WebToken and returns it.  Utilizes the private certificate to create
@@ -27,19 +31,29 @@ const publicKey = fs.readFileSync(path.join(__dirname, 'certs/certificate.pem'))
  * @param  {String} sub - The subject or identity of the token.
  * @return {String} The JWT Token
  */
-exports.createToken = ({ exp = 3600, sub = '', aud = '', scope = '', name = '', role = '' } = {}) => {
-  const token = jwt.sign({
-    jti : uuid(),
-    iss: 'auth.arasaac.org',
-    sub,
-    aud,
-    role,
-    name,
-    exp : Math.floor(Date.now() / 1000) + exp,
-    scope
-  }, privateKey, {
-    algorithm: 'RS256',
-  });
+exports.createToken = ({
+  exp = 3600,
+  sub = "",
+  aud = "",
+  scope = "",
+  role = ""
+} = {}) => {
+  const token = jwt.sign(
+    {
+      jti: uuid(),
+      iss: "auth.arasaac.org",
+      sub,
+      aud,
+      role,
+      exp: Math.floor(Date.now() / 1000) + exp,
+      scope
+    },
+    privateKey,
+    {
+      algorithm: "RS256"
+    }
+  );
+  console.log(`Token: ${token} ****************************************`);
   return token;
 };
 
@@ -51,9 +65,7 @@ exports.createToken = ({ exp = 3600, sub = '', aud = '', scope = '', name = '', 
  */
 exports.verifyToken = token => jwt.verify(token, publicKey);
 
-exports.logAndThrow = (msg) => {
+exports.logAndThrow = msg => {
   // if (DEBUG) console.trace(msg)
-  throw new Error(msg)
-}
-
-
+  throw new Error(msg);
+};

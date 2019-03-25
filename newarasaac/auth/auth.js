@@ -23,6 +23,7 @@ const { logAndThrow } = require("./utils");
  */
 passport.use(
   new LocalStrategy((username, password, done) => {
+    console.log("kkzzzzzzzzzzzzzzzzzzzzzzzzzzzkkkkkkkkkkkkkkk3");
     User.findOne({ email: username })
       .then(user =>
         user
@@ -90,6 +91,7 @@ passport.use(
  */
 passport.use(
   new ClientPasswordStrategy((clientId, clientSecret, done) => {
+    console.log("kkkkkkkkkkkkkkkkkxxxxxxxxxxxxx");
     Client.findOne({ clientId: clientId })
       .then(client =>
         client

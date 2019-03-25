@@ -144,7 +144,8 @@ server.exchange(
         return validate.generateTokens({
           scope,
           userID: user._id,
-          clientID: client.clientId
+          clientID: client.name,
+          role: user.role
         });
       })
       .then(tokens => {
@@ -388,20 +389,27 @@ exports.decision = [login.ensureLoggedIn(), server.decision()];
  * authenticate when making requests to this endpoint.
  */
 exports.token = [
+  (req, res, next) => {
+    console.log("ha entrado");
+    next();
+  },
   // changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
   passport.authenticate(["basic", "oauth2-client-password"], {
     session: false
   }),
   (req, res, next) => {
-    console.log(req.headers);
-    if (req.headers.referer == "http://localhost:3000/signin") {
-      console.log("ha entrado");
-      next();
-    } else if (req.headers.referer === "http://beta.arasaac.org/signin") next();
-    else if (req.headers.referer === "http://www.beta.arasaac.org/signin")
-      next();
-    else res.status(401).send("Only allowed for beta.arasaac.org");
+    console.log("continua");
+    next();
   },
+  // (req, res, next) => {
+  //   console.log(req.headers);
+  //   if (req.headers.origin == "http://localhost:3000") {
+  //     console.log("ha entrado");
+  //     next();
+  //   } else if (req.headers.origin === "http://beta.arasaac.org") next();
+  //   else if (req.headers.origin === "http://www.beta.arasaac.org") next();
+  //   else res.status(401).send("Only allowed for beta.arasaac.org");
+  // },
   server.token(),
   server.errorHandler()
 ];

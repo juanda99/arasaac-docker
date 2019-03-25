@@ -1,8 +1,9 @@
-'use strict';
+"use strict";
 
-const db       = require('./db');
-const Client = require('./db/clients')
-const validate = require('./validate');
+const jwt = require("jsonwebtoken");
+const db = require("./db");
+const Client = require("./db/clients");
+const validate = require("./validate");
 
 /**
  * This endpoint is for verifying a token.  This has the same signature to
@@ -25,23 +26,24 @@ const validate = require('./validate');
  * @param   {Object}  res - The response
  * @returns {Promise} Returns the promise for testing only
  */
-exports.info = (req, res) =>
-  validate.tokenForHttp(req.query.access_token)
-  .then(() => db.accessTokens.find(req.query.access_token))
-  .then(token => validate.tokenExistsForHttp(token))
-  .then(token =>
-    Client.findOne({ clientId: token.clientID })
-    .then(client => validate.clientExistsForHttp(client))
-    .then(client => ({ client, token })))
-  .then(({ client, token }) => {
-    const expirationLeft = Math.floor((token.expirationDate.getTime() - Date.now()) / 1000);
-    res.json({ audience : client.clientId, expires_in : expirationLeft });
-  })
-  .catch((err) => {
-    res.status(err.status);
-    res.json({ error: err.message });
-  });
+exports.info = (req, res) => {
+  console.log(req.query.access_token);
+  const token = req.query.access_token;
+  return validate
+    .tokenForHttp(token)
+    .then(() => validate.tokenExistsForHttp(token))
+    .then(token => {
+      const { iss, sub, aud, role, exp, scope } = jwt.decode(token);
+      const now = Date.now() / 1000;
+      const expirationLeft = exp < now ? 0 : exp - now;
+      res.json({ audience: aud, expires_in: expirationLeft });
+    })
 
+    .catch(err => {
+      res.status(err.status);
+      res.json({ error: err.message });
+    });
+};
 
 /**
  * This endpoint is for revoking a token.  This has the same signature to
@@ -65,19 +67,20 @@ exports.info = (req, res) =>
  * @returns {Promise} Returns the promise for testing
  */
 exports.revoke = (req, res) =>
-  validate.tokenForHttp(req.query.token)
-  .then(() => db.accessTokens.delete(req.query.token))
-  .then((token) => {
-    if (token == null) {
-      return db.refreshTokens.delete(req.query.token);
-    }
-    return token;
-  })
-  .then(tokenDeleted => validate.tokenExistsForHttp(tokenDeleted))
-  .then(() => {
-    res.json({});
-  })
-  .catch((err) => {
-    res.status(err.status);
-    res.json({ error: err.message });
-  });
+  validate
+    .tokenForHttp(req.query.token)
+    .then(() => db.accessTokens.delete(req.query.token))
+    .then(token => {
+      if (token == null) {
+        return db.refreshTokens.delete(req.query.token);
+      }
+      return token;
+    })
+    .then(tokenDeleted => validate.tokenExistsForHttp(tokenDeleted))
+    .then(() => {
+      res.json({});
+    })
+    .catch(err => {
+      res.status(err.status);
+      res.json({ error: err.message });
+    });
