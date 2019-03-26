@@ -16,6 +16,7 @@ try {
   var swaggerDocument = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))
   const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)
+  console.log(__dirname)
   const fileName = path.join(__dirname, './public/arasaac.json')
   fs.writeFile(fileName, swaggerJSON, function(err) {
     if (err) return console.log(err)
@@ -37,7 +38,7 @@ app.use(passport.initialize())
 app.use(cors())
 app.set('etag', false)
 app.use(morgan('dev'))
-app.use(express.static('./public'))
+app.use(express.static(path.join(__dirname, './public')))
 
 // we serve swagger-ui from our frontend, but it could be done from here, enabling next line
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))

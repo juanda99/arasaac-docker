@@ -396,58 +396,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /users:
-    x-swagger-router-controller: users
-    post:
-      operationId: createUser
-      description: Create a new user
-      tags:
-      - users
-      # define the type of response for Success "200" and Error
-      parameters:
-        - $ref: '#/parameters/User'
-      responses:
-        201:
-          description: User created. Email verification sended.
-          schema:
-            type: object
-            required:
-              - message
-              - _id
-            properties:
-              message:
-                type: string
-              _id: 
-                type: string
-        409:
-          description: User already created. Needs email verification.
-          schema:
-            type: object
-            required:
-              - message
-            properties:
-              message:
-                type: string
-        500:
-          description: Unexpected Error
-          schema:
-            $ref: "#/definitions/ErrorMessage"
-    get:
-      operationId: getUsers
-      description: Obtain users general data
-      tags:
-      - users
-      security:
-        - login: [read, write, admin, translator]
-      responses:
-        200:
-          description: List of verified users
-          schema:
-            $ref: "#/definitions/Users"
-        default:
-          description: Unexpected error
-          schema:
-            $ref: "#/definitions/ErrorMessage"
   /users/profile:
     x-swagger-router-controller: users
     post:
@@ -480,57 +428,6 @@ paths:
             $ref: "#/definitions/UserProfile"
         default:
           description: Unexpected error
-          schema:
-            $ref: "#/definitions/ErrorMessage"
-  /users/activate/{url}:
-    x-swagger-router-controller: users
-    post:
-      operationId: activateUser
-      description: Activate a new user
-      tags:
-      - users
-      # define the type of response for Success "200" and Error
-      parameters:
-        - in: path
-          name: url
-          description: Random generated key for user activation
-          required: true
-          type: string
-      responses:
-        201:
-          description: Permanent user created.
-          schema:
-            type: object
-            required:
-              - message
-              - _id
-              - name
-              - email
-              - username
-            properties:
-              message:
-                type: string
-              _id: 
-                type: string
-              name:
-                type: string
-              email:
-                type: string
-              username:
-                type: string
-              locale:
-                type: string
-        404:
-          description: Temporal user not found or expired.
-          schema:
-            type: object
-            required:
-              - message
-            properties:
-              message:
-                type: string
-        500:
-          description: Unexpected Error
           schema:
             $ref: "#/definitions/ErrorMessage"
   /swagger:
@@ -649,33 +546,6 @@ definitions:
     type: array
     items: 
       $ref: "#/definitions/Pictogram"
-  User:
-    required:
-      - email
-      - name
-    properties: 
-      _id:
-        type: string
-      email: 
-        type: string
-      name: 
-        type: string
-      role:
-        type: string
-      lastlogin: 
-        type: string
-      company:
-        type: string
-      website:
-        type: string
-      locale: 
-        type: string
-        description: Two letters code
-  Users: 
-    type: array
-    items: 
-      $ref: "#/definitions/User"
-      
   UserProfile:
     properties: 
       email: 

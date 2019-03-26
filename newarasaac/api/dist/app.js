@@ -27,6 +27,7 @@ try {
   var swaggerDocument = _jsYaml.default.safeLoad(_fs.default.readFileSync(_path.default.join(__dirname, './swagger/swagger.yaml'), 'utf8'));
 
   var swaggerJSON = JSON.stringify(swaggerDocument, null, 4);
+  console.log(__dirname);
 
   var fileName = _path.default.join(__dirname, './public/arasaac.json');
 
