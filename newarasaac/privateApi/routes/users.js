@@ -18,8 +18,8 @@ router.get('/:id/favorites/', (req, res) => {
   usersController.getFavorites(req, res)
 })
 
-router.post('/:id/favorites/:list', (req, res) => {
-  usersController.addFavorites(req, res)
+router.post('/:id/favorites/:list/:pictogram/', (req, res) => {
+  usersController.addFavorite(req, res)
 })
 
 module.exports = router
