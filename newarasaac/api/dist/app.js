@@ -54,7 +54,7 @@ app.use(_passport.default.initialize());
 app.use((0, _cors.default)());
 app.set('etag', false);
 app.use((0, _morgan.default)('dev'));
-app.use(_express.default.static('./public')); // we serve swagger-ui from our frontend, but it could be done from here, enabling next line
+app.use(_express.default.static(_path.default.join(__dirname, './public'))); // we serve swagger-ui from our frontend, but it could be done from here, enabling next line
 // app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 _swaggerExpressMw.default.create(swaggerConfig, function (err, swaggerExpress) {
