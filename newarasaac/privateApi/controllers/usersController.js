@@ -102,26 +102,61 @@ const getAll = async (req, res) => {
   }
 }
 
-const addFavorite = async (req, res) => {
-  const { list, id, pictogram } = req.params
+const deleteFavorite = async (req, res) => {
+  const { id } = req.params
+  const { pictogram, tag } = req.body
 
   try {
     if (!ObjectID.isValid(id)) {
       return res.status(404).json([])
     }
+
     let params = {}
-    if (list) {
+    if (tag) {
       params.favorites = {}
-      params.favorites[list] = pictogram
-    } else {
-      params.favorites = pictogram
+      params.favorites[tag] = pictogram
+    }
+    const dotNotated = objectToDotNotation(params)
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: id },
+      { $pull: dotNotated },
+      { new: true }
+    )
+    return res.status(201).json({ updatedUser })
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Error updating favorites. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const deleteFavoriteTag = async (req, res) => {}
+
+const addFavorite = async (req, res) => {
+  const { id } = req.params
+  const { pictogram, tag } = req.body
+
+  try {
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).json([])
     }
 
+    let params = {}
+    if (tag) {
+      params.favorites = {}
+      params.favorites[tag] = pictogram
+      params.favorites.all = pictogram
+    }
     const dotNotated = objectToDotNotation(params)
     console.log(JSON.stringify(dotNotated, null, 4))
 
-    await User.findOneAndUpdate({ _id: id }, { $push: dotNotated })
-    return res.status(201).send()
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: id },
+      { $addToSet: dotNotated },
+      { new: true }
+    )
+    return res.status(201).json({ updatedUser })
   } catch (err) {
     return res.status(500).json({
       message: 'Error updating favorites. See error field for detail',
@@ -154,5 +189,7 @@ module.exports = {
   activate,
   getAll,
   addFavorite,
-  getFavorites
+  getFavorites,
+  deleteFavorite,
+  deleteFavoriteTag
 }

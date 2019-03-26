@@ -17,9 +17,15 @@ io.on('connection', async socket => {
 /* bbdd config */
 require('./db')
 
+// Passport configuration
+require('./auth')
+
 app.use(cors())
 io.set('origins', '*:*')
 app.set('etag', false)
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }))
 

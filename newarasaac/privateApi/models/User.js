@@ -30,14 +30,7 @@ const userSchema = new Schema(
       email: String,
       name: String
     },
-    favorites: [
-      new Schema(
-        {
-          default: []
-        },
-        { strict: false }
-      )
-    ]
+    favorites: []
   },
   { strict: false }
 )
