@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const { ObjectID } = require('mongodb')
+const { objectToDotNotation } = require('../utils/mongo')
 const mailing = require('../mail')
 const nev = mailing()
 
@@ -100,17 +102,57 @@ const getAll = async (req, res) => {
   }
 }
 
-const addFavorites = async (req, res) => {
-  const { list, id } = req.params
+const addFavorite = async (req, res) => {
+  const { list, id, pictogram } = req.params
+
+  try {
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).json([])
+    }
+    let params = {}
+    if (list) {
+      params.favorites = {}
+      params.favorites[list] = pictogram
+    } else {
+      params.favorites = pictogram
+    }
+
+    const dotNotated = objectToDotNotation(params)
+    console.log(JSON.stringify(dotNotated, null, 4))
+
+    await User.findOneAndUpdate({ _id: id }, { $push: dotNotated })
+    return res.status(201).send()
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Error updating favorites. See error field for detail',
+      error: err
+    })
+  }
 }
 
 const getFavorites = async (req, res) => {
   const { id } = req.params
+
+  try {
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).json([])
+    }
+    const userFavorites = await User.find({ _id: id }, 'favorites -_id')
+    if (userFavorites.length === 0) return res.status(404).json([]) // send http code 404!!!
+    return res.json(userFavorites)
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Error searching user. See error field for detail',
+      error: err
+    })
+  }
 }
 
 module.exports = {
   create,
   remove,
   activate,
-  getAll
+  getAll,
+  addFavorite,
+  getFavorites
 }
