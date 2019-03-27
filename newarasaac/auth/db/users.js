@@ -49,17 +49,7 @@ var UserSchema = new mongoose.Schema(
 so your method will not have access to the document */
 UserSchema.methods = {
   validate: function(password) {
-    console.log(password);
-    console.log(typeof password);
-    const hashedPassword = `${SHA256("Esta es mi contraseña")}`;
-    console.log("------------------");
-    console.log(`${hashedPassword}`);
-    console.log("------------------");
-    const password2 = "Esta es mi contraseña";
-    const hashedPassword2 = SHA256(password2);
-    console.log(`Password2: ${password2}`);
-    console.log(`Hashed Password2: ${hashedPassword2}`);
-
+    const hashedPassword = `${SHA256(password)}`;
     if (hashedPassword === this.password) return this;
     logAndThrow(`Wrong password for user ${this.username}`);
   }
