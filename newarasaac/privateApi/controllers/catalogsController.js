@@ -11,6 +11,7 @@ const path = require('path')
 const Catalog = require('../models/Catalog')
 const logger = require('../utils/logger')
 const languages = require('../utils/languages')
+const CustomError = require('../utils/CustomError')
 const { compressDirToZip } = require('../utils/compress')
 
 /* global catalogStatus, catalogStatistics */
@@ -99,7 +100,7 @@ const createCatalogByLanguage = async (req, res, io) => {
     await compressDirToZip(tmpCatalogDir, catalogFileName, locale, io)
     await publishCatalog(
       catalogFileName,
-      `storage.arasaac.org:/var/www/html/catalog_${locale}.zip`,
+      `${process.env.SFTP_SERVER}:/var/www/html/catalog_${locale}.zip`,
       locale,
       io
     )
@@ -178,14 +179,6 @@ const getCatalogsByLanguage = async (req, res) => {
       message: 'Error searching pictogram. See error field for detail',
       error: err.message
     })
-  }
-}
-
-class CustomError extends Error {
-  constructor(message, code) {
-    super(message)
-    this.httpCode = code
-    this.name = 'Custom error'
   }
 }
 

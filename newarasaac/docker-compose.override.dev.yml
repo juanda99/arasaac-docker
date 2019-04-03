@@ -7,7 +7,6 @@ services:
       - "9229:9229"
     volumes:
       - ./api:/app
-      - ./api/node_modules:/app/node_modules
 
   privateapi:
     command: npm start

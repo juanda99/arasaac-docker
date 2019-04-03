@@ -1,81 +1,95 @@
 const User = require('../models/User')
 const { ObjectID } = require('mongodb')
+const moment = require('moment')
+// TODO: use Joi or mongodb validation
+// const Joi = require('joi')
+const CustomError = require('../utils/CustomError')
 const { objectToDotNotation } = require('../utils/mongo')
-const mailing = require('../mail')
-const nev = mailing()
+const sendMail = require('../utils/mail')
+const logger = require('../utils/logger')
 
-const create = (req, res) => {
-  const user = new User(req.body)
-  nev.createTempUser(user, (err, existingPersistentUser, newTempUser) => {
-    if (err) {
-      return res.status(500).json({
-        message: err,
-        err: 500
-      })
-    }
-    // user already exists in persistent collection
-    if (existingPersistentUser) {
-      return res.status(409).json({
-        message:
+const create = async (req, res) => {
+  const {
+    name,
+    email,
+    provider,
+    locale,
+    password,
+    url,
+    company,
+    role,
+    targetLanguages
+  } = req.body
+  const userData = {
+    name,
+    email,
+    provider,
+    locale,
+    password,
+    url,
+    company,
+    role,
+    targetLanguages
+  }
+
+  logger.debug(`Creating user with data: ${JSON.stringify(userData)}`)
+  try {
+    let user = await User.findOne({ email })
+    if (user) {
+      // it can be activated or not
+      if (user.isVerified) {
+        throw new CustomError(
           'You have already signed up and confirmed your account. Did you forget your password?',
-        err: 409
-      })
+          409
+        )
+      }
+      throw new CustomError(
+        `You have already signed up. Please check your email to verify your account`,
+        403
+      )
     }
-    console.log(newTempUser)
-    // new user created
-    if (newTempUser) {
-      console.log(newTempUser)
-      const URL = newTempUser[nev.options.URLFieldName]
-      nev.sendVerificationEmail(newTempUser.email, URL, (err /* , info */) => {
-        if (err) {
-          console.log(err)
-          return res.status(500).json({
-            message: `ERROR: sending verification email FAILED`,
-            err: 500
-          })
-        }
+    user = new User(userData)
+    const savedUser = await user.save()
+    await sendMail()
 
-        return res.status(201).json({
-          message:
-            'An email has been sent to you. Please check it to verify your account.',
-          _id: newTempUser._id
-        })
-      })
-      // user already exists in temporary collection!
-    } else {
-      return res.status(403).json({
-        message:
-          'You have already signed up. Please check your email to verify your account.',
-        err: 403
-      })
-    }
-  })
+    // else send verification email based on its locale
+    res.status(201).json({
+      message:
+        'An email has been sent to you. Please check it to verify your account.',
+      _id: savedUser._id
+    })
+  } catch (err) {
+    logger.error(`Error creating user: ${err.message}`)
+    res.status(err.httpCode || 500).json({
+      message: 'Error creating user. See error field for detail',
+      error: err.message
+    })
+  }
 }
 
-const activate = (req, res) => {
-  const url = req.params.code
-  nev.confirmTempUser(url, (err, user) => {
-    if (user) {
-      nev.sendConfirmationEmail(user.email, (err, info) => {
-        if (err) {
-          return res.status(500).json({
-            message: `ERROR: sending confirmation email FAILED ${info}`
-          })
-        }
-        return res.status(201).json({
-          message: 'User activated',
-          _id: user._id,
-          email: user.email,
-          name: user.name,
-          username: user.username,
-          locale: user.locale
-        })
-      })
+const activate = async (req, res) => {
+  const verifyToken = req.params.code
+  try {
+    const user = await User.findOne({ verifyToken })
+    if (!user) throw new CustomError(`Invalid code`, 400)
+    const tokenDate = moment(user.lastLogin)
+    const actualDate = moment()
+    const EXPIRY_TIME = 1440 // minutes in one day
+    if (actualDate.diff(tokenDate, 'minutes') > EXPIRY_TIME) {
+      throw new CustomError(`Token no longer valid`, 400)
     }
-    return res.status(404).json({
-      message: 'ERROR: temporal user not found or expired'
+    user.verifyToken = ''
+    user.save()
+    res.status(200).json({
+      message: 'User account verified.',
+      _id: user._id
     })
-  })
+  } catch (err) {
+    res.status(err.httpCode || 500).json({
+      message: 'Error activating user. See error field for detail',
+      error: err.message
+    })
+  }
 }
 
 const remove = (req, res) => {
@@ -149,7 +163,7 @@ const addFavorite = async (req, res) => {
       params.favorites.all = pictogram
     }
     const dotNotated = objectToDotNotation(params)
-    console.log(JSON.stringify(dotNotated, null, 4))
+    // console.log(JSON.stringify(dotNotated, null, 4))
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: id },

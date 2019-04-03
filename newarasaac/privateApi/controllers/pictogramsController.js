@@ -139,6 +139,7 @@ const getCustomPictogramByName = (req, res) => {
   }
 }
 
+// TODO: remove sanitize, what i use in public api?
 const getLocutionById = (req, res) => {
   const { id, locale, text } = req.params
   try {

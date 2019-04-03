@@ -6,6 +6,9 @@ const cors = require('cors')
 const router = require('./routes')(io)
 const bodyParser = require('body-parser')
 
+// check all variables are defined
+require('./checkEnv.js')
+
 const port = process.env.port || 80
 
 // whenever we receive a `connection` event

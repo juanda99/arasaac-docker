@@ -15,17 +15,12 @@ services:
       - /app/.config
       - ${SVG_DIR}:/app/svg:ro
       - ${IMAGE_DIR}:/app/pictograms
+      - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "api.arasaac.org"
       NODE_ENV: $NODE_ENV
-      EMAIL_FROM: $EMAIL_FROM
-      EMAIL_USER: $EMAIL_USER
-      EMAIL_PASSWORD: $EMAIL_PASSWORD
-      EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
-      MASTER_KEY: $MASTER_KEY
-      JWT_SECRET: $JWT_SECRET
     networks:
       - nginxproxy_frontend
       - backend
@@ -55,7 +50,9 @@ services:
       EMAIL_FROM: $EMAIL_FROM
       EMAIL_USER: $EMAIL_USER
       EMAIL_PASSWORD: $EMAIL_PASSWORD
-      EMAIL_VERIFICATION_URL: $EMAIL_VERIFICATION_URL
+      EMAIL_SMTP: $EMAIL_SMTP
+      SFTP_SERVER: $SFTP_SERVER
+      LOG_LEVEL: $LOG_LEVEL
     networks:
       - nginxproxy_frontend
       - backend
