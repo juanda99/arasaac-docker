@@ -24,7 +24,7 @@ const { logAndThrow } = require("./utils");
 passport.use(
   new LocalStrategy((username, password, done) => {
     console.log("kkzzzzzzzzzzzzzzzzzzzzzzzzzzzkkkkkkkkkkkkkkk3");
-    User.findOne({ email: username })
+    User.findOne({ email: username, verifyToken: "" })
       .then(user =>
         user
           ? user.validate(password)
