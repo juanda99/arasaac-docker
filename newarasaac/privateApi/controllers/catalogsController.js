@@ -88,7 +88,7 @@ const createCatalogByLanguage = async (req, res, io) => {
   generatingCatalog[locale] = true
   if (!res.headersSent) {
     res
-      .status(200)
+      .status(202)
       .json({ status: 'Your request has started, it will take a while.' })
   }
 

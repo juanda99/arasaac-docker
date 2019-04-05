@@ -1,11 +1,12 @@
 const User = require('../models/User')
 const { ObjectID } = require('mongodb')
 const moment = require('moment')
+const randomize = require('randomatic')
 // TODO: use Joi or mongodb validation
 // const Joi = require('joi')
 const CustomError = require('../utils/CustomError')
 const { objectToDotNotation } = require('../utils/mongo')
-const sendMail = require('../utils/mail')
+const { sendWelcomeMail } = require('../emails')
 const logger = require('../utils/logger')
 
 const create = async (req, res) => {
@@ -50,7 +51,8 @@ const create = async (req, res) => {
     }
     user = new User(userData)
     const savedUser = await user.save()
-    await sendMail()
+    logger.debug(`Create user with data: ${JSON.stringify(savedUser)}`)
+    await sendWelcomeMail(user)
 
     // else send verification email based on its locale
     res.status(201).json({
@@ -197,6 +199,29 @@ const getFavorites = async (req, res) => {
   }
 }
 
+const createPasswordlessToken = async (req, res) => {
+  const { id } = req.params
+
+  try {
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).json([])
+    }
+
+    /* we generate passwordless token */
+    const passwordlessToken = randomize('Aa0', 32)
+
+    await User.findOneAndUpdate({ _id: id }, { passwordlessToken })
+    /* generate mail with info */
+
+    return res.status(204).json()
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Error generating passwordless token',
+      error: err
+    })
+  }
+}
+
 module.exports = {
   create,
   remove,
@@ -205,5 +230,6 @@ module.exports = {
   addFavorite,
   getFavorites,
   deleteFavorite,
-  deleteFavoriteTag
+  deleteFavoriteTag,
+  createPasswordlessToken
 }

@@ -4,7 +4,7 @@ const { Schema } = mongoose
 const CustomError = require('../utils/CustomError')
 
 const oAuthTypes = ['facebook', 'google']
-const randtoken = require('rand-token')
+const randomize = require('randomatic')
 
 const userSchema = new Schema(
   {
@@ -14,6 +14,7 @@ const userSchema = new Schema(
     locale: { type: String, default: 'en' },
     password: String,
     verifyToken: String,
+    passwordlessToken: String,
     created: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now },
     url: String,
@@ -85,7 +86,7 @@ userSchema.pre('save', function (next) {
   // override password with the hashed one:
   this.password = `${SHA256(this.password)}`
   // generate randomToken for user activation
-  this.verifyToken = randtoken.generate(32)
+  this.verifyToken = randomize('Aa0', 32)
   return next()
 })
 
@@ -103,7 +104,8 @@ userSchema.methods = {
    */
 
   skipValidation () {
-    return ~oAuthTypes.indexOf(this.provider)
+    return !!this.passwordlessToken
+    // return ~oAuthTypes.indexOf(this.provider)
   },
 
   activate (verifyToken) {

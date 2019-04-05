@@ -14,7 +14,7 @@ router.get('/activate/:code', (req, res) => {
 router.get(
   '/',
   (req, res, next) => {
-    console.log('pruebarrrrrr')
+    console.log('Auth required. Starting...')
     next()
   },
   passport.authenticate('bearer', { session: false }),
@@ -29,6 +29,11 @@ router.get('/:id/favorites/', (req, res) => {
 
 router.post('/:id/favorites/', (req, res) => {
   usersController.addFavorite(req, res)
+})
+
+/* set passwordlessToken so user then can get a token */
+router.post('/:id/passwordless/', (req, res) => {
+  usersController.createPasswordlessToken(req, res)
 })
 
 router.delete('/:id/favorites/', (req, res) => {
