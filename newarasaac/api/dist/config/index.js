@@ -14,8 +14,8 @@ var config = {
   port: process.env.PORT || 8100,
   // port 80 by default, defined in api-dockerfile.yml
   materialsDir: path.join(process.cwd(), 'materials'),
-  masterKey: requireProcessEnv('MASTER_KEY'),
-  jwtSecret: requireProcessEnv('JWT_SECRET'),
+  // masterKey: requireProcessEnv('MASTER_KEY'),
+  // jwtSecret: requireProcessEnv('JWT_SECRET'),
   // inside docker http instead of https and auth as docker container instead of domain name
   authorization: {
     host: 'auth.arasaac.org',
