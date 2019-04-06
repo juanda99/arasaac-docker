@@ -9,7 +9,7 @@
   "main": "app.js",
   "scripts": {
     "prestart": "npm run build",
-    "serve": "node dist/app.js",
+    "serve": "node dist/prodapp.js",
     "build": "rimraf ./dist; cp -r src dist; babel dist --out-dir dist --presets @babel/preset-env",
     "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'src/public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' src/app.js --exec babel-node  --presets @babel/preset-env",
     "edit": "swagger_swagger_fileName=src/swagger/swagger.yaml swagger project edit",
