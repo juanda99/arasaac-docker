@@ -1,5 +1,8 @@
 {
   "Hi": "Hi",
   "activateUserText": "Press here to activate your user account",
-  "welcome": "welcome to Arasaac"
+  "welcome": "welcome to Arasaac",
+  "activateMessage": "activateMessage",
+  "contactar": "contactar",
+  "intro": "intro"
 }
