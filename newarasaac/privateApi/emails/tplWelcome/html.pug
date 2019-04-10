@@ -15,8 +15,8 @@ html
       p= `${t('Hi')} ${name},`
       p= `${t('intro')}`
       p= `${t('activateMessage')}`
-      .button= `${t('activateUserText')}`
-
+      a(href=tokenUrl)
+        .button= `${t('activateUserText')}`
       .box
         // icons from https://icons8.com/icons/set/social%20media
         a(href="https://www.facebook.com/arasaac/")

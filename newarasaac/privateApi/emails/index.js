@@ -3,7 +3,13 @@ const path = require('path')
 const Email = require('email-templates')
 const logger = require('../utils/logger')
 const CustomError = require('../utils/CustomError')
-const { EMAIL_FROM, EMAIL_USER, EMAIL_PASSWORD, EMAIL_SMTP } = process.env
+const {
+  EMAIL_FROM,
+  EMAIL_USER,
+  EMAIL_PASSWORD,
+  EMAIL_SMTP,
+  NODE_ENV
+} = process.env
 
 const transport = nodemailer.createTransport({
   // service: 'gmail',
@@ -15,6 +21,9 @@ const transport = nodemailer.createTransport({
   secure: true,
   host: EMAIL_SMTP
 })
+
+// TODO: Iconos redes sociales más pequeños, centrado al medio, icono red social también con el mismo estilo black&white. Quitar copyright y poner frase del tipo
+// Arasaac es una marca registrada por.....
 
 // const transport = nodemailer.createTransport({
 //   host: EMAIL_SMTP,
@@ -41,6 +50,10 @@ const email = new Email({
 
 const sendWelcomeMail = user =>
   new Promise((resolve, reject) => {
+    var tokenUrl = ''
+    if (NODE_ENV === 'development') {
+      tokenUrl = `http://localhost:3000/activate/${user.verifyToken}`
+    } else tokenUrl = `https://beta.arasaac.org/activate/${user.verifyToken}`
     return email
       .send({
         template: 'tplWelcome',
@@ -51,7 +64,7 @@ const sendWelcomeMail = user =>
           name: user.name,
           // if locale does not exist... it uses en by default
           locale: user.locale,
-          token: user.verifyToken
+          tokenUrl
         },
         htmlToText: true
       })

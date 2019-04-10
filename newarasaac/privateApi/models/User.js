@@ -6,10 +6,19 @@ const CustomError = require('../utils/CustomError')
 const oAuthTypes = ['facebook', 'google']
 const randomize = require('randomatic')
 
-const userSchema = new Schema(
+const UserSchema = new Schema(
   {
-    name: String,
-    email: String,
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    email: {
+      type: String,
+      trim: true,
+      required: true
+    },
+    id: Number, // just for old data. New values with _id
     provider: String,
     locale: { type: String, default: 'en' },
     password: String,
@@ -35,7 +44,9 @@ const userSchema = new Schema(
     },
     favorites: []
   },
-  { strict: false }
+  {
+    strict: false
+  } /* so we can insert later providers like facebook or google if needed, also for favorites... */
 )
 
 const validatePresenceOf = value => value && value.length
@@ -46,17 +57,17 @@ const validatePresenceOf = value => value && value.length
 
 // the below 5 validations only apply if you are signing up traditionally
 
-userSchema.path('name').validate(function (name) {
+UserSchema.path('name').validate(function (name) {
   if (this.skipValidation()) return true
   return name.length
 }, 'Name cannot be blank')
 
-userSchema.path('email').validate(function (email) {
+UserSchema.path('email').validate(function (email) {
   if (this.skipValidation()) return true
   return email.length
 }, 'Email cannot be blank')
 
-userSchema.path('email').validate(function (email) {
+UserSchema.path('email').validate(function (email) {
   const User = mongoose.model('User')
   if (this.skipValidation()) return true
 
@@ -67,7 +78,7 @@ userSchema.path('email').validate(function (email) {
   return true
 }, 'Email already exists')
 
-userSchema.path('password').validate(function (password) {
+UserSchema.path('password').validate(function (password) {
   if (this.skipValidation()) return true
   return password.length
 }, 'Password cannot be blank')
@@ -76,13 +87,12 @@ userSchema.path('password').validate(function (password) {
  * Pre-save hook
  */
 
-userSchema.pre('save', function (next) {
+UserSchema.pre('save', function (next) {
   if (!this.isNew) return next()
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
     return next(new CustomError('Invalid password', 400))
   }
-
   // override password with the hashed one:
   this.password = `${SHA256(this.password)}`
   // generate randomToken for user activation
@@ -94,9 +104,10 @@ userSchema.pre('save', function (next) {
  * Methods
  */
 
-userSchema.methods = {
+UserSchema.methods = {
   authenticate (plainText) {
-    return `${SHA256(plainText)}` === this.password
+    // if user is not activate return false, otherwise check password
+    return this.verifyToken ? false : `${SHA256(plainText)}` === this.password
   },
 
   /**
@@ -114,10 +125,10 @@ userSchema.methods = {
   }
 }
 
-userSchema.virtual('isVerified').get(function () {
+UserSchema.virtual('isVerified').get(function () {
   return !this.verifyToken
 })
 
-const User = mongoose.model('User', userSchema, 'users')
+const User = mongoose.model('User', UserSchema, 'users')
 
 module.exports = User
