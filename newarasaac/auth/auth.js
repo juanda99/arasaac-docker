@@ -91,7 +91,6 @@ passport.use(
  */
 passport.use(
   new ClientPasswordStrategy((clientId, clientSecret, done) => {
-    console.log("kkkkkkkkkkkkkkkkkxxxxxxxxxxxxx");
     Client.findOne({ clientId: clientId })
       .then(client =>
         client

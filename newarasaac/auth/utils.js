@@ -31,7 +31,7 @@ const publicKey = fs.readFileSync(
  * @param  {String} sub - The subject or identity of the token.
  * @return {String} The JWT Token
  */
-exports.createToken = ({
+const createToken = ({
   exp = 3600,
   sub = "",
   aud = "",
@@ -63,9 +63,24 @@ exports.createToken = ({
  * @throws  {Error} Error if the token could not be verified
  * @returns {Object} The token decoded and verified
  */
-exports.verifyToken = token => jwt.verify(token, publicKey);
+const verifyToken = token => jwt.verify(token, publicKey);
 
-exports.logAndThrow = msg => {
+const logAndThrow = msg => {
   // if (DEBUG) console.trace(msg)
   throw new Error(msg);
+};
+
+class CustomError extends Error {
+  constructor(message, code) {
+    super(message);
+    this.httpCode = code;
+    this.name = "Custom error";
+  }
+}
+
+module.exports = {
+  createToken,
+  verifyToken,
+  logAndThrow,
+  CustomError
 };

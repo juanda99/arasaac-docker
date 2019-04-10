@@ -128,27 +128,23 @@ const getScopes = user => {
  * The callback accepts the `client`, which is exchanging the user's name and password
  * from the token request for verification. If these values are validated, the
  * application issues an access token on behalf of the user who authorized the code.
+ *
+ * This should be use just by our app, other spa should use implicit grant
  */
 server.exchange(
-  oauth2orize.exchange.password((client, username, password, scope, done) => {
-    console.log("kkkkkkkkk5555555k");
-    /* this should be use just by our app, other spa should use implicit grant */
-    User.findOne({ email: username })
-      .then(user =>
-        user
-          ? user.validate(password)
-          : logAndThrow(`User ${username} not found`)
-      )
-      .then(user => {
+  oauth2orize.exchange.password(
+    async (client, username, password, scope, done) => {
+      try {
+        const user = await User.findOne({ email: username });
+        if (!user) return done(null, false);
+        if (!user.authenticate(password)) return done(null, false);
         const scope = getScopes(user);
-        return validate.generateTokens({
+        const tokens = await validate.generateTokens({
           scope,
           userID: user._id,
           clientID: client.name,
           role: user.role
         });
-      })
-      .then(tokens => {
         if (tokens === false) {
           return done(null, false);
         }
@@ -159,12 +155,11 @@ server.exchange(
           return done(null, tokens[0], tokens[1], expiresIn);
         }
         throw new Error("Error exchanging password for tokens");
-      })
-      .catch(err => {
-        console.log(err);
-        done(null, false);
-      });
-  })
+      } catch (err) {
+        return done(err);
+      }
+    }
+  )
 );
 
 /**
@@ -390,26 +385,18 @@ exports.decision = [login.ensureLoggedIn(), server.decision()];
  */
 exports.token = [
   (req, res, next) => {
-    console.log("ha entrado");
-    next();
+    const allow_origins = [
+      "http://localhost:3000",
+      "http://beta.arasaac.org",
+      "http://www.beta.arasaac.org"
+    ];
+    if (allow_origins.includes(req.headers.origin)) next();
+    else res.status(401).json({ error: "Only allowed for beta.arasaac.org" });
   },
   // changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
   passport.authenticate(["basic", "oauth2-client-password"], {
     session: false
   }),
-  (req, res, next) => {
-    console.log("continua");
-    next();
-  },
-  // (req, res, next) => {
-  //   console.log(req.headers);
-  //   if (req.headers.origin == "http://localhost:3000") {
-  //     console.log("ha entrado");
-  //     next();
-  //   } else if (req.headers.origin === "http://beta.arasaac.org") next();
-  //   else if (req.headers.origin === "http://www.beta.arasaac.org") next();
-  //   else res.status(401).send("Only allowed for beta.arasaac.org");
-  // },
   server.token(),
   server.errorHandler()
 ];
