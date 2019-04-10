@@ -73,12 +73,12 @@ const activate = async (req, res) => {
   const verifyToken = req.params.code
   try {
     const user = await User.findOne({ verifyToken })
-    if (!user) throw new CustomError(`Invalid code`, 400)
+    if (!user) throw new CustomError('INVALID_CODE', 400)
     const tokenDate = moment(user.lastLogin)
     const actualDate = moment()
     const EXPIRY_TIME = 1440 // minutes in one day
     if (actualDate.diff(tokenDate, 'minutes') > EXPIRY_TIME) {
-      throw new CustomError(`Token no longer valid`, 400)
+      throw new CustomError('EXPIRED_CODE', 400)
     }
     user.verifyToken = ''
     user.save()

@@ -6,21 +6,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var User = require('../models/User');
 
-var mailing = require('../mail');
-
-var nev = mailing('en');
-
 var auth = require('../helpers/auth');
 
 module.exports = {
   getProfile: function getProfile(req, res) {
-    //console.log(req)
+    console.log('kkkkkkkkkkkkkkkkkkkk'); //console.log(req)
     // we obtain the user id from token to get his profile
+
     var token = req.headers.authorization.split(' ').pop();
     console.log(token);
     var decoded = (0, _jwtDecode.default)(token);
     var id = decoded.sub;
-    console.log('xxxxxxxxxxxxxx');
+    console.log('xxxxxxxxxsssxxxxx');
     console.log(id);
     console.log('xxxxxxxxxxxxxxxx');
     User.findOne({

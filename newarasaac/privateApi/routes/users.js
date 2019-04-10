@@ -9,6 +9,7 @@ router.delete('/:id', (req, res) => {
   usersController.delete(req, res)
 })
 router.get('/activate/:code', (req, res) => {
+  console.log('activating...')
   usersController.activate(req, res)
 })
 router.get(

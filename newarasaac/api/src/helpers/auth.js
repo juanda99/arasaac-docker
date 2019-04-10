@@ -5,7 +5,6 @@ const BearerStrategy = require('passport-http-bearer').Strategy
 const request = require('request')
 import jwtDecode from 'jwt-decode'
 
-
 /**
  * BearerStrategy
  *
@@ -15,15 +14,15 @@ import jwtDecode from 'jwt-decode'
  * the authorizing user.
  */
 passport.use(new BearerStrategy((accessToken, done) => {
+  console.log('KKKKKKKKKKKKKKKKKKKKKK')
   if (accessToken === null) throw new Error('No token')
   const authUrl = authorization.tokeninfoURL + accessToken
-  request.get(authUrl, (error, response/*, body*/)=>{
+  request.get(authUrl, (error, response /*, body*/) => {
     if (error) done(null, false)
     else if (response.statusCode !== 200) {
       console.log(response.body.error)
       done(null, false)
-    }
-    else {
+    } else {
       // get scope from token
       const decoded = jwtDecode(accessToken)
       done(null, accessToken, { scopes: decoded.scope })
@@ -31,23 +30,22 @@ passport.use(new BearerStrategy((accessToken, done) => {
   })
 }))
 
-
-
 module.exports = {
   login: (req, res, next) => {
+    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYY')
     console.log(req.headers.authorization)
-    const scopeRequired=req.swagger.operation.security[0].login
+    const scopeRequired = req.swagger.operation.security[0].login
     passport.authenticate('bearer', { session: false }, (err, user, info) => {
-      if (err) return res.status(500).send(`Error`)
-      if (!user) return res.status(401).send(`Unauthorized!`)
+      if (err) return res.status(500).send('Error')
+      if (!user) return res.status(401).send('Unauthorized!')
       const userScopes = info.scopes
-      if (scopeRequired.some(r=> userScopes.includes(r))) {
+      if (scopeRequired.some(r => userScopes.includes(r))) {
         next()
-      }
-      else {
-        res.status(401).send(`Token valid but not enough priviledges. User scopes: ${userScopes}. Endpoint scopes: ${scopeRequired}`)
+      } else {
+        res
+          .status(401)
+          .send(`Token valid but not enough priviledges. User scopes: ${userScopes}. Endpoint scopes: ${scopeRequired}`)
       }
     })(req, res, next)
-    
-  } 
+  }
 }

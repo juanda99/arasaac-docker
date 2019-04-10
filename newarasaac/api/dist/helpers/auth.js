@@ -23,6 +23,7 @@ var request = require('request');
  * the authorizing user.
  */
 _passport.default.use(new BearerStrategy(function (accessToken, done) {
+  console.log('KKKKKKKKKKKKKKKKKKKKKK');
   if (accessToken === null) throw new Error('No token');
   var authUrl = _config.authorization.tokeninfoURL + accessToken;
   request.get(authUrl, function (error, response
@@ -43,14 +44,15 @@ _passport.default.use(new BearerStrategy(function (accessToken, done) {
 
 module.exports = {
   login: function login(req, res, next) {
+    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYY');
     console.log(req.headers.authorization);
     var scopeRequired = req.swagger.operation.security[0].login;
 
     _passport.default.authenticate('bearer', {
       session: false
     }, function (err, user, info) {
-      if (err) return res.status(500).send("Error");
-      if (!user) return res.status(401).send("Unauthorized!");
+      if (err) return res.status(500).send('Error');
+      if (!user) return res.status(401).send('Unauthorized!');
       var userScopes = info.scopes;
 
       if (scopeRequired.some(function (r) {
