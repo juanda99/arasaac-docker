@@ -2,43 +2,53 @@
 
 var mongoose = require('mongoose');
 
-var crypto = require('crypto');
+var _require = require('crypto-js'),
+    SHA256 = _require.SHA256;
 
 var Schema = mongoose.Schema;
-var oAuthTypes = ['github', 'twitter', 'facebook', 'google', 'linkedin'];
-var userSchema = new Schema({
+
+var CustomError = require('../utils/CustomError');
+
+var oAuthTypes = ['facebook', 'google'];
+
+var randomize = require('randomatic');
+
+var UserSchema = new Schema({
   name: {
     type: String,
-    default: ''
+    required: true,
+    trim: true
   },
   email: {
     type: String,
-    default: ''
+    trim: true,
+    required: true
   },
-  username: {
-    type: String,
-    default: ''
-  },
-  provider: {
-    type: String,
-    default: ''
-  },
+  id: Number,
+  // just for old data. New values with _id
+  provider: String,
   locale: {
     type: String,
     default: 'en'
   },
-  password: {
-    type: String,
-    default: ''
-  },
-  authToken: {
-    type: String,
-    default: ''
-  },
-  lastlogin: {
+  password: String,
+  verifyToken: String,
+  passwordlessToken: String,
+  created: {
     type: Date,
     default: Date.now
   },
+  lastLogin: {
+    type: Date,
+    default: Date.now
+  },
+  url: String,
+  company: String,
+  role: {
+    type: String,
+    default: 'user'
+  },
+  targetLanguages: [String],
   facebook: {
     id: String,
     token: String,
@@ -50,7 +60,12 @@ var userSchema = new Schema({
     token: String,
     email: String,
     name: String
-  }
+  },
+  favorites: []
+}, {
+  strict: false
+  /* so we can insert later providers like facebook or google if needed, also for favorites... */
+
 });
 
 var validatePresenceOf = function validatePresenceOf(value) {
@@ -62,31 +77,29 @@ var validatePresenceOf = function validatePresenceOf(value) {
 // the below 5 validations only apply if you are signing up traditionally
 
 
-userSchema.path('name').validate(function (name) {
+UserSchema.path('name').validate(function (name) {
   if (this.skipValidation()) return true;
   return name.length;
 }, 'Name cannot be blank');
-userSchema.path('email').validate(function (email) {
+UserSchema.path('email').validate(function (email) {
   if (this.skipValidation()) return true;
   return email.length;
 }, 'Email cannot be blank');
-userSchema.path('email').validate(function (email) {
+UserSchema.path('email').validate(function (email) {
   var User = mongoose.model('User');
   if (this.skipValidation()) return true; // Check only when it is a new user or when email field is modified
 
   if (this.isNew || this.isModified('email')) {
-    User.find({
+    return User.find({
       email: email
     }).exec(function (err, users) {
       return !err && users.length === 0;
     });
-  } else return true;
+  }
+
+  return true;
 }, 'Email already exists');
-userSchema.path('username').validate(function (username) {
-  if (this.skipValidation()) return true;
-  return username.length;
-}, 'Username cannot be blank');
-userSchema.path('password').validate(function (password) {
+UserSchema.path('password').validate(function (password) {
   if (this.skipValidation()) return true;
   return password.length;
 }, 'Password cannot be blank');
@@ -94,84 +107,42 @@ userSchema.path('password').validate(function (password) {
  * Pre-save hook
  */
 
-userSchema.pre('save', function (next) {
+UserSchema.pre('save', function (next) {
   if (!this.isNew) return next();
 
   if (!validatePresenceOf(this.password) && !this.skipValidation()) {
-    next(new Error('Invalid password'));
-  } else {
-    next();
-  }
+    return next(new CustomError('Invalid password', 400));
+  } // override password with the hashed one:
+
+
+  this.password = "".concat(SHA256(this.password)); // generate randomToken for user activation
+
+  this.verifyToken = randomize('Aa0', 32);
+  return next();
 });
 /**
  * Methods
  */
 
-userSchema.methods = {
-  /**
-   * Authenticate - check if the passwords are the same
-   *
-   * @param {String} plainText
-   * @return {Boolean}
-   * @api public
-   */
+UserSchema.methods = {
   authenticate: function authenticate(plainText) {
-    return this.encryptPassword(plainText) === this.hashed_password;
-  },
-
-  /**
-   * Make salt
-   *
-   * @return {String}
-   * @api public
-   */
-  makeSalt: function makeSalt() {
-    return String(Math.round(new Date().valueOf() * Math.random()));
-  },
-
-  /**
-   * Encrypt password
-   *
-   * @param {String} password
-   * @return {String}
-   * @api public
-   */
-  encryptPassword: function encryptPassword(password) {
-    if (!password) return '';
-
-    try {
-      return crypto.createHmac('sha1', this.salt).update(password).digest('hex');
-    } catch (err) {
-      return '';
-    }
+    // if user is not activate return false, otherwise check password
+    return this.verifyToken ? false : "".concat(SHA256(plainText)) === this.password;
   },
 
   /**
    * Validation is not required if using OAuth
    */
   skipValidation: function skipValidation() {
-    return ~oAuthTypes.indexOf(this.provider);
-  }
-  /**
-   * Statics
-   */
-
-};
-userSchema.statics = {
-  /**
-   * Load
-   *
-   * @param {Object} options
-   * @param {Function} cb
-   * @api private
-   */
-  load: function load(options, cb) {
-    options.select = options.select || 'name username';
-    return this.findOne(options.criteria).select(options.select).exec(cb);
+    return Boolean(this.passwordlessToken); // return ~oAuthTypes.indexOf(this.provider)
+  },
+  activate: function activate(verifyToken) {
+    if (verifyToken === this.verifyToken) this.verifyToken = '';
+    return '';
   }
 };
-var User = mongoose.model('User', userSchema, 'users');
-module.exports = {
-  User: User,
-  userSchema: userSchema
-};
+UserSchema.virtual('isVerified').get(function () {
+  return !this.verifyToken;
+});
+var User = mongoose.model('User', UserSchema, 'users');
+module.exports = User;

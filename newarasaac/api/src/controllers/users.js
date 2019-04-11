@@ -3,34 +3,28 @@ var User = require('../models/User')
 var auth = require('../helpers/auth')
 
 module.exports = {
-  getProfile: (req, res) => {
-    console.log('kkkkkkkkkkkkkkkkkkkk')
+  getProfile: async (req, res) => {
     //console.log(req)
     // we obtain the user id from token to get his profile
     const token = req.headers.authorization.split(' ').pop()
-    console.log(token)
     const decoded = jwtDecode(token)
     const id = decoded.sub
-    console.log('xxxxxxxxxsssxxxxx')
-    console.log(id)
-    console.log('xxxxxxxxxxxxxxxx')
-    User.findOne(
-      { _id: id },
-      { _id: 0, password: 0, authToken: 0 },
-      (err, user) => {
-        if (err) {
-          return res.status(500).json({
-            message: 'Error getting user profile. ' + err
-          })
-        }
-        if (!user) {
-          return res.status(404).json({
-            message: 'User does not exist. User Id: ' + id
-          })
-        }
-        return res.status(200).json(user)
+    try {
+      const user = await User.findOne(
+        { _id: id },
+        { _id: 0, password: 0, authToken: 0, verifyToken: 0, __v: 0 }
+      )
+      if (!user) {
+        return res.status(404).json({
+          message: 'User does not exist. User Id: ' + id
+        })
       }
-    )
+      return res.status(200).json(user)
+    } catch (err) {
+      return res.status(500).json({
+        message: 'Error getting user profile. ' + err
+      })
+    }
   },
 
   updateUser: (req, res) => {

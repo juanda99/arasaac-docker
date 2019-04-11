@@ -1,9 +1,8 @@
-import passport from 'passport'
-import { authorization } from '../config'
-import { isArray } from 'util'
+const { authorization } = require('../config')
+const jwtDecode = require('jwt-decode')
+const passport = require('passport')
 const BearerStrategy = require('passport-http-bearer').Strategy
 const request = require('request')
-import jwtDecode from 'jwt-decode'
 
 /**
  * BearerStrategy
@@ -14,7 +13,6 @@ import jwtDecode from 'jwt-decode'
  * the authorizing user.
  */
 passport.use(new BearerStrategy((accessToken, done) => {
-  console.log('KKKKKKKKKKKKKKKKKKKKKK')
   if (accessToken === null) throw new Error('No token')
   const authUrl = authorization.tokeninfoURL + accessToken
   request.get(authUrl, (error, response /*, body*/) => {
@@ -32,8 +30,6 @@ passport.use(new BearerStrategy((accessToken, done) => {
 
 module.exports = {
   login: (req, res, next) => {
-    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYY')
-    console.log(req.headers.authorization)
     const scopeRequired = req.swagger.operation.security[0].login
     passport.authenticate('bearer', { session: false }, (err, user, info) => {
       if (err) return res.status(500).send('Error')
