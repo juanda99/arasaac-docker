@@ -1,19 +1,15 @@
 "use strict";
 
-var _passport = _interopRequireDefault(require("passport"));
+var _require = require('../config'),
+    authorization = _require.authorization;
 
-var _config = require("../config");
+var jwtDecode = require('jwt-decode');
 
-var _util = require("util");
-
-var _jwtDecode = _interopRequireDefault(require("jwt-decode"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var passport = require('passport');
 
 var BearerStrategy = require('passport-http-bearer').Strategy;
 
 var request = require('request');
-
 /**
  * BearerStrategy
  *
@@ -22,10 +18,11 @@ var request = require('request');
  * application, which is issued an access token to make requests on behalf of
  * the authorizing user.
  */
-_passport.default.use(new BearerStrategy(function (accessToken, done) {
-  console.log('KKKKKKKKKKKKKKKKKKKKKK');
+
+
+passport.use(new BearerStrategy(function (accessToken, done) {
   if (accessToken === null) throw new Error('No token');
-  var authUrl = _config.authorization.tokeninfoURL + accessToken;
+  var authUrl = authorization.tokeninfoURL + accessToken;
   request.get(authUrl, function (error, response
   /*, body*/
   ) {
@@ -34,21 +31,17 @@ _passport.default.use(new BearerStrategy(function (accessToken, done) {
       done(null, false);
     } else {
       // get scope from token
-      var decoded = (0, _jwtDecode.default)(accessToken);
+      var decoded = jwtDecode(accessToken);
       done(null, accessToken, {
         scopes: decoded.scope
       });
     }
   });
 }));
-
 module.exports = {
   login: function login(req, res, next) {
-    console.log('YYYYYYYYYYYYYYYYYYYYYYYYYY');
-    console.log(req.headers.authorization);
     var scopeRequired = req.swagger.operation.security[0].login;
-
-    _passport.default.authenticate('bearer', {
+    passport.authenticate('bearer', {
       session: false
     }, function (err, user, info) {
       if (err) return res.status(500).send('Error');
