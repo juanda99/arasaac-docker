@@ -39,15 +39,9 @@ const create = async (req, res) => {
     if (user) {
       // it can be activated or not
       if (user.isVerified) {
-        throw new CustomError(
-          'You have already signed up and confirmed your account. Did you forget your password?',
-          409
-        )
+        throw new CustomError('ALREADY_USER', 409)
       }
-      throw new CustomError(
-        `You have already signed up. Please check your email to verify your account`,
-        403
-      )
+      throw new CustomError(`NOT_ACTIVATED_USER`, 403)
     }
     user = new User(userData)
     const savedUser = await user.save()
@@ -78,9 +72,10 @@ const activate = async (req, res) => {
     const actualDate = moment()
     const EXPIRY_TIME = 1440 // minutes in one day
     if (actualDate.diff(tokenDate, 'minutes') > EXPIRY_TIME) {
+      await sendWelcomeMail(user)
       throw new CustomError('EXPIRED_CODE', 400)
     }
-    user.verifyToken = ''
+    // user.verifyToken = ''
     user.save()
     res.status(200).json({
       message: 'User account verified.',
