@@ -10,6 +10,7 @@ const { IMAGE_DIR, SVG_DIR, IMAGE_URL } = require('../config')
 const languages = require('../utils/languages')
 const { convertSVG, getPNGFileName, modifySVG } = require('../utils/svg')
 
+const Synsets = require('../models/Synsets')
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
   return dict
@@ -23,6 +24,39 @@ const getPictogramById = async (req, res) => {
       .findOne({ idPictogram: id })
       .populate('authors', '_id name')
     if (!pictogram) return res.status(404).json()
+    return res.json(pictogram)
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const getPictogramsBySynset = async (req, res) => {
+  let synset = req.swagger.params.synset.value
+  const locale = req.swagger.params.locale.value
+  let wordnet = req.swagger.params.wordnet.value
+  wordnet = wordnet.replace(/\./g, '')
+
+  try {
+    if (wordnet !== '31') {
+      const key = `old_keys.pwn${wordnet}`
+      // we neeed to get syncset for wordnet3.1
+      const auxSynset = synset
+      const data = await Synsets.findOne({ [key]: synset }, { id: 1, _id: 0 })
+      if (!data) return res.status(404).json({
+        error: `Syncset ${auxSynset} not found for Wordnet ${wordnet} in our data`
+      })
+      data.id = synset
+    }
+
+    let pictogram = await Pictograms[locale]
+      .find({ synsets: synset })
+      .populate('authors', '_id name')
+    if (!pictogram) return res.status(404).json({
+      error: `No pictogram found for Wordnet v3.1 syncset ${synset}`
+    })
     return res.json(pictogram)
   } catch (err) {
     return res.status(500).json({
@@ -171,6 +205,7 @@ const getLastPictograms = async (req, res) => {
 module.exports = {
   getPictogramById,
   getPictogramFileById,
+  getPictogramsBySynset,
   searchPictograms,
   getNewPictograms,
   getLastPictograms

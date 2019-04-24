@@ -53,6 +53,19 @@ parameters:
     required: true
     description: Language associated with the searchText and the results.
     enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
+  Wordnet:
+    name: wordnet
+    type: string
+    in: path
+    required: true
+    description: Language associated with the searchText and the results.
+    enum: ["1.5", "1.6", "1.7", "1.7.1", "2.0", "2.1", "3.0", "3.1"]
+  Synset:
+    name: synset
+    in: path
+    description: Syncset value from specific wordnet. 
+    required: true
+    type: string
   SearchText:
     name: searchText
     in: path
@@ -301,7 +314,34 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  
+
+            
+  /pictograms/{locale}/wordnet/{wordnet}/id/{synset}:
+    x-swagger-router-controller: pictograms
+    get:
+      operationId: getPictogramsBySynset
+      description: 
+        Obtain a list of pictograms based on the Wordnet identifier (synset). Wordnet version must be provided. 
+
+      tags:
+        - pictograms
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: '#/parameters/Locale'
+        - $ref: '#/parameters/Wordnet'
+        - $ref: '#/parameters/Synset'
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Pictograms"
+        "500":
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+
   /pictograms/{locale}/days/{days}:
     x-swagger-router-controller: pictograms
     get:
