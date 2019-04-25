@@ -21,6 +21,7 @@ services:
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "api.arasaac.org"
       NODE_ENV: $NODE_ENV
+      LOG_LEVEL: $LOG_LEVEL
     networks:
       - nginxproxy_frontend
       - backend
