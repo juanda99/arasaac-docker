@@ -78,7 +78,7 @@
             "type": "string",
             "in": "path",
             "required": true,
-            "description": "Language associated with the searchText and the results.",
+            "description": "Wordnet version.",
             "enum": [
                 "1.5",
                 "1.6",
@@ -93,7 +93,7 @@
         "Synset": {
             "name": "synset",
             "in": "path",
-            "description": "Syncset value from specific wordnet.",
+            "description": "Wordnet identifier (synset).",
             "required": true,
             "type": "string"
         },

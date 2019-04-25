@@ -16,7 +16,6 @@ try {
   var swaggerDocument = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, './swagger/swagger.yaml'), 'utf8'))
   const swaggerJSON = JSON.stringify(swaggerDocument, null, 4)
-  console.log(__dirname)
   const fileName = path.join(__dirname, './public/arasaac.json')
   fs.writeFile(fileName, swaggerJSON, function(err) {
     if (err) return console.log(err)

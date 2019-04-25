@@ -1,29 +1,23 @@
 "use strict";
 
-var _config = require("./config");
+var mongoose = require('mongoose');
 
-var _mongoose = _interopRequireDefault(require("mongoose"));
+var databaseUrl = 'mongodb://mongodb/arasaac';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var logger = require('./utils/logger');
 
-_mongoose.default.Promise = global.Promise;
-
-_mongoose.default.connect(_config.databaseUrl);
-
-_mongoose.default.connection.on('connected', function () {
-  return console.log('Connected to database: ' + _config.databaseUrl);
+mongoose.Promise = global.Promise;
+mongoose.connect(databaseUrl, {
+  useNewUrlParser: true
+}).then(function () {
+  logger.info("Connected to database: ".concat(databaseUrl));
+}, function (err) {
+  logger.error("Database connection error: ".concat(err));
 });
-
-_mongoose.default.connection.on('error', function (err) {
-  return console.log('Database connection error: ' + err);
-});
-
-_mongoose.default.connection.on('disconnected', function () {
-  return console.log('Disconnected from database');
-});
-
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 process.on('SIGINT', function () {
-  return _mongoose.default.connection.close(function () {
+  return mongoose.connection.close(function () {
     console.log('Finished App and disconnected from database');
     process.exit(0);
   });

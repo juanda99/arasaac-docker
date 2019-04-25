@@ -8,6 +8,7 @@ const stopWords = require('../utils/stopWords')
 const { IMAGE_DIR, SVG_DIR, IMAGE_URL } = require('../config')
 
 const languages = require('../utils/languages')
+const logger = require('../utils/logger')
 const { convertSVG, getPNGFileName, modifySVG } = require('../utils/svg')
 
 const Synsets = require('../models/Synsets')
@@ -39,26 +40,36 @@ const getPictogramsBySynset = async (req, res) => {
   let wordnet = req.swagger.params.wordnet.value
   wordnet = wordnet.replace(/\./g, '')
 
+  logger.debug(`Searching pictogram by synset: wordnet ${wordnet}, id: ${synset}`)
+
   try {
     if (wordnet !== '31') {
       const key = `old_keys.pwn${wordnet}`
       // we neeed to get syncset for wordnet3.1
-      const auxSynset = synset
       const data = await Synsets.findOne({ [key]: synset }, { id: 1, _id: 0 })
-      if (!data) return res.status(404).json({
-        error: `Syncset ${auxSynset} not found for Wordnet ${wordnet} in our data`
-      })
-      data.id = synset
+      if (!data) {
+        logger.debug(`Syncset ${synset} not found for Wordnet ${wordnet} in our data`)
+        return res.status(404).json({
+          error: `Syncset ${synset} not found for Wordnet ${wordnet} in our data`
+        })
+      }
+      synset = data.id
+      logger.debug(`Obtained wordnet 3.1 id: ${synset}`)
     }
 
     let pictogram = await Pictograms[locale]
       .find({ synsets: synset })
       .populate('authors', '_id name')
-    if (!pictogram) return res.status(404).json({
-      error: `No pictogram found for Wordnet v3.1 syncset ${synset}`
-    })
+    if (!pictogram) {
+      logger.debug(`No pictogram found for Wordnet v3.1 id ${synset}`)
+      return res.status(404).json({
+        error: `No pictogram found for Wordnet v3.1 id ${synset}`
+      })
+    }
+    logger.debug(`Pictograms found for Wordnet v3.1 id ${synset}: JSON.stringify(pictogram)`)
     return res.json(pictogram)
   } catch (err) {
+    logger.err(`Error getting pictograms: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err

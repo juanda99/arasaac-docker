@@ -1,6 +1,7 @@
 "use strict";
 
-var path = require('path');
+var path = require('path'); // TODO: remove this config file
+
 
 var requireProcessEnv = function requireProcessEnv(name) {
   if (!process.env[name]) {
@@ -26,7 +27,6 @@ var config = {
     tokeninfoURL: 'http://auth/api/tokeninfo?access_token=',
     redirectURL: 'https://api.arasaac.org/receivetoken'
   },
-  databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac',
   IMAGE_DIR: '/app/pictograms',
   SVG_DIR: '/app/svg',
   IMAGE_URL: 'https://static.arasaac.org/pictograms'
