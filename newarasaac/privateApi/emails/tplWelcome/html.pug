@@ -17,7 +17,7 @@ html
       p= `${t('activateMessage')}`
       a(href=tokenUrl)
         .button= `${t('activateUserText')}`
-      .box
+      .logobox
         // icons from https://icons8.com/icons/set/social%20media
         a(href="https://www.facebook.com/arasaac/")
           img.icon(src='https://static.arasaac.org/images/facebook.png')
@@ -33,8 +33,9 @@ html
       hr
       .box
         // icons from https://icons8.com/icons/set/social%20media
-        a(href="https://creativecommons.org/licenses/by-nc-sa/3.0/")
-          img.icon(src='https://static.arasaac.org/images/by-nc-sa.png')
+        .logobox2
+          a(href="https://creativecommons.org/licenses/by-nc-sa/3.0/")
+            img.icon(src='https://static.arasaac.org/images/by-nc-sa.png')
         p © #{(new Date()).getFullYear()} ARASAAC (Gobierno de Aragón)
         p= `${t('contactar')}`
 

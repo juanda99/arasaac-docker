@@ -43,7 +43,25 @@ const email = new Email({
   send: true,
   transport,
   i18n: {
-    locales: ['en', 'es'],
+    locales: [
+      'ar',
+      'bg',
+      'br',
+      'ca',
+      'de',
+      'en',
+      'es',
+      'eu',
+      'fr',
+      'gl',
+      'hr',
+      'it',
+      'pl',
+      'pt',
+      'ro',
+      'ru',
+      'zh'
+    ],
     directory: path.resolve(__dirname, 'locales')
   }
 })
@@ -54,6 +72,8 @@ const sendWelcomeMail = user =>
     if (NODE_ENV === 'development') {
       tokenUrl = `http://localhost:3000/activate/${user.verifyToken}`
     } else tokenUrl = `https://beta.arasaac.org/activate/${user.verifyToken}`
+
+    if (user.locale === 'val') user.locale = 'ca'
     return email
       .send({
         template: 'tplWelcome',

@@ -25,6 +25,14 @@ p {
   max-width: 450px;
   margin: 0 auto;
 }
+.logobox {
+  width: 225px;
+  margin: 0 auto;
+}
+.logobox2 {
+  width: 142px;
+  margin: 0 auto;
+}
 .button{
   font-weight: 800;
   margin: 20px auto;
