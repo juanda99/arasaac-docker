@@ -6,5 +6,11 @@
     "ARASAAC è un sito Web che offre risorse e materiali per aiutare le persone con problemi di comunicazione.",
   "activateMessage":
     "Sei quasi pronto per unirti alla community di ARASAAC. Clicca sul seguente pulsante per attivare il tuo account utente.",
-  "contactar": "Puoi contattarci su arasaac@gmail.com"
+  "contactar": "Puoi contattarci su arasaac@gmail.com",
+  "passwordChangeSubject": "ARASAAC nova zaporka",
+  "introResetPassword":
+    "Prema vašem zahtjevu izmijenili smo vašu lozinku za pristup ARASAAC-u. Vaša nova zaporka je:",
+  "accessText": "Prijava na ARASAAC",
+  "rememberChangePassword":
+    "Ova je lozinka generirana slučajnim odabirom. Zapamtite da možete izmijeniti zaporku iz svog korisničkog profila."
 }

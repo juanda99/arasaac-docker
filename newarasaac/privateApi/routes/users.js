@@ -33,8 +33,13 @@ router.post('/:id/favorites/', (req, res) => {
 })
 
 /* set passwordlessToken so user then can get a token */
-router.post('/:id/passwordless/', (req, res) => {
-  usersController.createPasswordlessToken(req, res)
+// router.post('/:id/passwordless/', (req, res) => {
+//   usersController.createPasswordlessToken(req, res)
+// })
+
+/* set passwordlessToken so user then can get a token */
+router.post('/password/', (req, res) => {
+  usersController.resetPassword(req, res)
 })
 
 router.delete('/:id/favorites/', (req, res) => {

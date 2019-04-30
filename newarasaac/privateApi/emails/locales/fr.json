@@ -6,5 +6,11 @@
     "ARASAAC est un site Web qui offre des ressources et du matériel pour aider les personnes ayant des problèmes de communication.",
   "activateMessage":
     "Vous êtes presque prêt à rejoindre la communauté ARASAAC. Cliquez sur le bouton suivant pour activer votre compte utilisateur.",
-  "contactar": "Vous pouvez nous contacter à arasaac@gmail.com"
+  "contactar": "Vous pouvez nous contacter à arasaac@gmail.com",
+  "passwordChangeSubject": "ARASAAC nouveau mot de passe",
+  "introResetPassword":
+    "Selon votre demande, nous avons modifié votre mot de passe pour accéder à ARASAAC. Votre nouveau mot de passe est:",
+  "accessText": "Se connecter sur ARASAAC",
+  "rememberChangePassword":
+    "Ce mot de passe a été généré aléatoirement. N'oubliez pas que vous pouvez modifier votre mot de passe à partir de votre profil d'utilisateur."
 }

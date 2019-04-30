@@ -1,0 +1,44 @@
+doctype transitional
+html
+  head
+    link(href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet")
+    meta(charset='utf-8')
+    style
+      include style.css
+  </head>
+
+  body
+    .logo
+      img(src='https://static.arasaac.org/images/arasaac-logo.png', align='middle')
+    .box
+      h1= `${t('passwordChangeSubject')}`
+      p= `${t('Hi')} ${name},`
+      p= `${t('introResetPassword')}`
+      p.important= `${password}`
+      p= `${t('rememberChangePassword')}`
+      a(href=accessUrl)
+        .button= `${t('accessText')}`
+      .logobox
+        // icons from https://icons8.com/icons/set/social%20media
+        a(href="https://www.facebook.com/arasaac/")
+          img.icon(src='https://static.arasaac.org/images/facebook.png')
+        a(href="https://twitter.com/arasaac")
+          img.icon(src='https://static.arasaac.org/images/twitter.png')
+        a(href="https://www.youtube.com/channel/UCwzhptqPzLOxG7JpPJ8vO-Q")
+          img.icon(src='https://static.arasaac.org/images/youtube.png')
+        a(href="http://pinterest.com/arasaac//")
+          img.icon(src='https://static.arasaac.org/images/pinterest.png')
+        a(href="https://www.instagram.com/arasaac/")
+          img.icon(src='https://static.arasaac.org/images/instagram.png')
+
+      hr
+      .box
+        // icons from https://icons8.com/icons/set/social%20media
+        .logobox2
+          a(href="https://creativecommons.org/licenses/by-nc-sa/3.0/")
+            img.icon(src='https://static.arasaac.org/images/by-nc-sa.png')
+        p © #{(new Date()).getFullYear()} ARASAAC (Gobierno de Aragón)
+        p= `${t('contactar')}`
+
+
+

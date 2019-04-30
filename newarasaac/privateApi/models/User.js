@@ -18,6 +18,10 @@ const UserSchema = new Schema(
       trim: true,
       required: true
     },
+    active: {
+      type: Boolean,
+      default: false
+    },
     id: Number, // just for old data. New values with _id
     provider: String,
     locale: { type: String, default: 'en' },
@@ -26,6 +30,7 @@ const UserSchema = new Schema(
     passwordlessToken: String,
     created: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now },
+    verifyDate: { type: Date },
     url: String,
     company: String,
     role: { type: String, default: 'user' },
@@ -97,6 +102,7 @@ UserSchema.pre('save', function (next) {
   this.password = `${SHA256(this.password)}`
   // generate randomToken for user activation
   this.verifyToken = randomize('Aa0', 32)
+  this.verifyDate = Date.now()
   return next()
 })
 
