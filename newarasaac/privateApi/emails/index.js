@@ -96,7 +96,7 @@ const sendWelcomeMail = user =>
       .catch(error => {
         reject(
           new CustomError(
-            `Error sending ewlcome email OK to ${user.email}: ${error}`,
+            `Error sending welcome email to ${user.email}: ${error}`,
             500
           )
         )
