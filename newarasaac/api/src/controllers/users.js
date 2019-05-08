@@ -9,10 +9,20 @@ module.exports = {
     const token = req.headers.authorization.split(' ').pop()
     const decoded = jwtDecode(token)
     const id = decoded.sub
+    console.log(id)
     try {
       const user = await User.findOne(
         { _id: id },
-        { _id: 0, password: 0, authToken: 0, verifyToken: 0, __v: 0 }
+        {
+          _id: 0,
+          name: 1,
+          email: 1,
+          locale: 1,
+          role: 1,
+          targetLanguages: 1,
+          favorites: 1,
+          lastLogin: 1
+        }
       )
       if (!user) {
         return res.status(404).json({
