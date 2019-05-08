@@ -15,6 +15,20 @@ services:
     networks:
       - nginxproxy_frontend
 
+  admin:
+    image: nginx
+    hostname: admin
+    container_name: admin
+    volumes:
+      - ./admin/conf/:/etc/nginx/conf.d:ro
+      - ./admin/code/:/usr/share/nginx/html
+    environment:
+      LETSENCRYPT_HOST: "admin.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "admin.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+
   webstatic:
     image: nginx
     hostname: webstatic
