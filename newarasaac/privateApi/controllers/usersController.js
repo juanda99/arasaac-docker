@@ -44,7 +44,7 @@ const create = async (req, res) => {
     }
     user = new User(userData)
     const savedUser = await user.save()
-    logger.debug(`Create user with data: ${JSON.stringify(savedUser)}`)
+    logger.debug(`Created user with data: ${JSON.stringify(savedUser)}`)
     await sendWelcomeMail(user)
 
     // else send verification email based on its locale
@@ -117,6 +117,25 @@ const getAll = async (req, res) => {
     )
     return res.status(200).json(users)
   } catch (err) {
+    return res.status(500).json(err)
+  }
+}
+
+const findOne = async (req, res) => {
+  const { id } = req.params
+  logger.debug(`Getting data for user with _id: ${id}`)
+  try {
+    if (!ObjectID.isValid(id)) {
+      logger.debug(`Invalid id: ${id}`)
+      return res.status(404).json([])
+    }
+    const user = await User.findOne(
+      { _id: id },
+      '-password -idAuthor -authToken -google -facebook'
+    )
+    return res.status(200).json(user)
+  } catch (err) {
+    logger.debug(`Error getting data for user ${err.message}`)
     return res.status(500).json(err)
   }
 }
@@ -261,6 +280,7 @@ module.exports = {
   remove,
   activate,
   getAll,
+  findOne,
   addFavorite,
   getFavorites,
   deleteFavorite,

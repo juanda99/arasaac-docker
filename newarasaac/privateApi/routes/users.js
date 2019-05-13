@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const passport = require('passport')
 const usersController = require('../controllers/usersController')
+const { hasRole } = require('../middlewares')
 
 router.post('/', (req, res) => {
   usersController.create(req, res)
@@ -14,13 +15,23 @@ router.get('/activate/:code', (req, res) => {
 })
 router.get(
   '/',
-  (req, res, next) => {
-    console.log('Auth required. Starting...')
-    next()
-  },
   passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
   (req, res) => {
     usersController.getAll(req, res)
+  }
+)
+
+router.get(
+  '/:id',
+  (req, res, next) => {
+    console.log('ha entrado')
+    next()
+  },
+  // passport.authenticate('bearer', { session: false }),
+  // hasRole('admin'),
+  (req, res) => {
+    usersController.findOne(req, res)
   }
 )
 
