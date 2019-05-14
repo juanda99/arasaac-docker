@@ -26,6 +26,8 @@ var _require = require('../config'),
 
 var languages = require('../utils/languages');
 
+var logger = require('../utils/logger');
+
 var _require2 = require('../utils/svg'),
     convertSVG = _require2.convertSVG,
     getPNGFileName = _require2.getPNGFileName,
@@ -97,7 +99,7 @@ function () {
   var _ref2 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee2(req, res) {
-    var synset, locale, wordnet, key, auxSynset, data, pictogram;
+    var synset, locale, wordnet, key, data, pictogram;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -106,16 +108,16 @@ function () {
             locale = req.swagger.params.locale.value;
             wordnet = req.swagger.params.wordnet.value;
             wordnet = wordnet.replace(/\./g, '');
-            _context2.prev = 4;
+            logger.debug("Searching pictogram by synset: wordnet ".concat(wordnet, ", id: ").concat(synset));
+            _context2.prev = 5;
 
             if (!(wordnet !== '31')) {
-              _context2.next = 14;
+              _context2.next = 16;
               break;
             }
 
             key = "old_keys.pwn".concat(wordnet); // we neeed to get syncset for wordnet3.1
 
-            auxSynset = synset;
             _context2.next = 10;
             return Synsets.findOne(_defineProperty({}, key, synset), {
               id: 1,
@@ -126,52 +128,57 @@ function () {
             data = _context2.sent;
 
             if (data) {
-              _context2.next = 13;
+              _context2.next = 14;
               break;
             }
 
+            logger.debug("Syncset ".concat(synset, " not found for Wordnet ").concat(wordnet, " in our data"));
             return _context2.abrupt("return", res.status(404).json({
-              error: "Syncset ".concat(auxSynset, " not found for Wordnet ").concat(wordnet, " in our data")
+              error: "Syncset ".concat(synset, " not found for Wordnet ").concat(wordnet, " in our data")
             }));
 
-          case 13:
-            data.id = synset;
-
           case 14:
-            _context2.next = 16;
+            synset = data.id;
+            logger.debug("Obtained wordnet 3.1 id: ".concat(synset));
+
+          case 16:
+            _context2.next = 18;
             return Pictograms[locale].find({
               synsets: synset
             }).populate('authors', '_id name');
 
-          case 16:
+          case 18:
             pictogram = _context2.sent;
 
             if (pictogram) {
-              _context2.next = 19;
+              _context2.next = 22;
               break;
             }
 
+            logger.debug("No pictogram found for Wordnet v3.1 id ".concat(synset));
             return _context2.abrupt("return", res.status(404).json({
-              error: "No pictogram found for Wordnet v3.1 syncset ".concat(synset)
+              error: "No pictogram found for Wordnet v3.1 id ".concat(synset)
             }));
 
-          case 19:
+          case 22:
+            logger.debug("Pictograms found for Wordnet v3.1 id ".concat(synset, ": JSON.stringify(pictogram)"));
             return _context2.abrupt("return", res.json(pictogram));
 
-          case 22:
-            _context2.prev = 22;
-            _context2.t0 = _context2["catch"](4);
+          case 26:
+            _context2.prev = 26;
+            _context2.t0 = _context2["catch"](5);
+            logger.err("Error getting pictograms: ".concat(_context2.t0));
             return _context2.abrupt("return", res.status(500).json({
               message: 'Error getting pictograms. See error field for detail',
               error: _context2.t0
             }));
 
-          case 25:
+          case 30:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[4, 22]]);
+    }, _callee2, null, [[5, 26]]);
   }));
 
   return function getPictogramsBySynset(_x3, _x4) {
