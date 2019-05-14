@@ -21,6 +21,14 @@ const UserSchema = new Schema(
       trim: true,
       required: true
     },
+    active: {
+      type: Boolean,
+      default: false
+    },
+    suscription: {
+      type: Boolean,
+      default: true
+    },
     id: Number, // just for old data. New values with _id
     provider: String,
     locale: { type: String, default: 'en' },

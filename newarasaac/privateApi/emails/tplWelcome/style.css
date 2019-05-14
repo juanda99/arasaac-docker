@@ -25,6 +25,14 @@ p {
   max-width: 450px;
   margin: 0 auto;
 }
+.logobox {
+  width: 240px;
+  margin: 0 auto;
+}
+.logobox2 {
+  width: 142px;
+  margin: 0 auto;
+}
 .button{
   font-weight: 800;
   margin: 20px auto;
@@ -44,5 +52,5 @@ p {
   border-radius: 50%;
 }
 .icon {
-  height: 45px;
+  height: 45px !important;
 }

@@ -1,5 +1,7 @@
 const path = require('path')
 
+// TODO: remove this config file
+
 const requireProcessEnv = name => {
   if (!process.env[name]) {
     throw new Error('You must set the ' + name + ' environment variable')
@@ -22,7 +24,6 @@ const config = {
     tokeninfoURL: 'http://auth/api/tokeninfo?access_token=',
     redirectURL: 'https://api.arasaac.org/receivetoken'
   },
-  databaseUrl: process.env.MONGO_URL || 'mongodb://mongodb/arasaac',
   IMAGE_DIR: '/app/pictograms',
   SVG_DIR: '/app/svg',
   IMAGE_URL: 'https://static.arasaac.org/pictograms'

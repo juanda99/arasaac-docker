@@ -2,11 +2,12 @@ const User = require('../models/User')
 const { ObjectID } = require('mongodb')
 const moment = require('moment')
 const randomize = require('randomatic')
+const { SHA256 } = require('crypto-js')
 // TODO: use Joi or mongodb validation
 // const Joi = require('joi')
 const CustomError = require('../utils/CustomError')
 const { objectToDotNotation } = require('../utils/mongo')
-const { sendWelcomeMail } = require('../emails')
+const { sendWelcomeMail, sendPasswordRecoveryMail } = require('../emails')
 const logger = require('../utils/logger')
 
 const create = async (req, res) => {
@@ -38,14 +39,12 @@ const create = async (req, res) => {
     let user = await User.findOne({ email })
     if (user) {
       // it can be activated or not
-      if (user.isVerified) {
-        throw new CustomError('ALREADY_USER', 409)
-      }
+      if (user.isVerified) throw new CustomError('ALREADY_USER', 409)
       throw new CustomError(`NOT_ACTIVATED_USER`, 403)
     }
     user = new User(userData)
     const savedUser = await user.save()
-    logger.debug(`Create user with data: ${JSON.stringify(savedUser)}`)
+    logger.debug(`Created user with data: ${JSON.stringify(savedUser)}`)
     await sendWelcomeMail(user)
 
     // else send verification email based on its locale
@@ -65,23 +64,32 @@ const create = async (req, res) => {
 
 const activate = async (req, res) => {
   const verifyToken = req.params.code
+  logger.debug(`Activating user with verifyToken: ${verifyToken}`)
   try {
     const user = await User.findOne({ verifyToken })
-    if (!user) throw new CustomError('INVALID_CODE', 400)
-    const tokenDate = moment(user.lastLogin)
+    if (!user) {
+      logger.debug(`No user with token: ${verifyToken}`)
+      throw new CustomError('INVALID_CODE', 400)
+    }
+    const tokenDate = moment(user.verifyDate)
     const actualDate = moment()
     const EXPIRY_TIME = 1440 // minutes in one day
     if (actualDate.diff(tokenDate, 'minutes') > EXPIRY_TIME) {
+      logger.debug(`Expired token: ${verifyToken} generated ${tokenDate}`)
       await sendWelcomeMail(user)
       throw new CustomError('EXPIRED_CODE', 400)
     }
-    // user.verifyToken = ''
+    user.verifyToken = ''
+    user.verifyDate = ''
+    user.active = true
     user.save()
+    logger.debug(`User ${user._id} / ${user.email} activated`)
     res.status(200).json({
       message: 'User account verified.',
       _id: user._id
     })
   } catch (err) {
+    logger.error(`Error activating user: ${err.message}`)
     res.status(err.httpCode || 500).json({
       message: 'Error activating user. See error field for detail',
       error: err.message
@@ -109,6 +117,25 @@ const getAll = async (req, res) => {
     )
     return res.status(200).json(users)
   } catch (err) {
+    return res.status(500).json(err)
+  }
+}
+
+const findOne = async (req, res) => {
+  const { id } = req.params
+  logger.debug(`Getting data for user with _id: ${id}`)
+  try {
+    if (!ObjectID.isValid(id)) {
+      logger.debug(`Invalid id: ${id}`)
+      return res.status(404).json([])
+    }
+    const user = await User.findOne(
+      { _id: id },
+      '-password -idAuthor -authToken -google -facebook'
+    )
+    return res.status(200).json(user)
+  } catch (err) {
+    logger.debug(`Error getting data for user ${err.message}`)
     return res.status(500).json(err)
   }
 }
@@ -194,37 +221,69 @@ const getFavorites = async (req, res) => {
   }
 }
 
-const createPasswordlessToken = async (req, res) => {
-  const { id } = req.params
+const resetPassword = async (req, res) => {
+  const email = req.body.username
+  logger.debug(`Reset password to user with email: ${email}`)
 
+  /* we generate passwordless token */
+  const cleanPassword = randomize('Aa0', 8)
+  const password = `${SHA256(cleanPassword)}`
   try {
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).json([])
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      { password, verifyToken: '', verifyDate: '' }
+    )
+
+    if (!user) {
+      throw new CustomError(`USER_NOT_EXISTS`, 404)
     }
-
-    /* we generate passwordless token */
-    const passwordlessToken = randomize('Aa0', 32)
-
-    await User.findOneAndUpdate({ _id: id }, { passwordlessToken })
+    logger.debug(`User ${email} reset password OK`)
     /* generate mail with info */
-
-    return res.status(204).json()
+    await sendPasswordRecoveryMail(user, cleanPassword)
+    return res.status(200).json({ _id: user._id })
   } catch (err) {
-    return res.status(500).json({
-      message: 'Error generating passwordless token',
-      error: err
+    logger.error(
+      `Error resetting password for user with email ${email}: ${err.message}`
+    )
+    res.status(err.httpCode || 500).json({
+      message: 'Error resetting password',
+      error: err.message
     })
   }
 }
+
+// const createPasswordlessToken = async (req, res) => {
+//   const { id } = req.params
+
+//   try {
+//     if (!ObjectID.isValid(id)) {
+//       return res.status(404).json([])
+//     }
+
+//     /* we generate passwordless token */
+//     const passwordlessToken = randomize('Aa0', 32)
+
+//     await User.findOneAndUpdate({ _id: id }, { passwordlessToken })
+//     /* generate mail with info */
+
+//     return res.status(204).json()
+//   } catch (err) {
+//     return res.status(500).json({
+//       message: 'Error generating passwordless token',
+//       error: err
+//     })
+//   }
+// }
 
 module.exports = {
   create,
   remove,
   activate,
   getAll,
+  findOne,
   addFavorite,
   getFavorites,
   deleteFavorite,
   deleteFavoriteTag,
-  createPasswordlessToken
+  resetPassword
 }

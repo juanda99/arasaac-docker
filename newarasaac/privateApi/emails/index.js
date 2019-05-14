@@ -3,6 +3,7 @@ const path = require('path')
 const Email = require('email-templates')
 const logger = require('../utils/logger')
 const CustomError = require('../utils/CustomError')
+const { ARASAAC_URL, DEV_ARASAAC_URL } = require('../utils/constants')
 const {
   EMAIL_FROM,
   EMAIL_USER,
@@ -43,7 +44,25 @@ const email = new Email({
   send: true,
   transport,
   i18n: {
-    locales: ['en', 'es'],
+    locales: [
+      'ar',
+      'bg',
+      'br',
+      'ca',
+      'de',
+      'en',
+      'es',
+      'eu',
+      'fr',
+      'gl',
+      'hr',
+      'it',
+      'pl',
+      'pt',
+      'ro',
+      'ru',
+      'zh'
+    ],
     directory: path.resolve(__dirname, 'locales')
   }
 })
@@ -52,8 +71,10 @@ const sendWelcomeMail = user =>
   new Promise((resolve, reject) => {
     var tokenUrl = ''
     if (NODE_ENV === 'development') {
-      tokenUrl = `http://localhost:3000/activate/${user.verifyToken}`
-    } else tokenUrl = `https://beta.arasaac.org/activate/${user.verifyToken}`
+      tokenUrl = `${DEV_ARASAAC_URL}/activate/${user.verifyToken}`
+    } else tokenUrl = `${ARASAAC_URL}/activate/${user.verifyToken}`
+
+    if (user.locale === 'val') user.locale = 'ca'
     return email
       .send({
         template: 'tplWelcome',
@@ -69,39 +90,82 @@ const sendWelcomeMail = user =>
         htmlToText: true
       })
       .then(() => {
-        logger.debug(`Sent email OK`)
+        logger.debug(`Sent welcome email OK to ${user.email}`)
         resolve()
       })
       .catch(error => {
-        reject(new CustomError(`Error sending email: ${error}`, 500))
+        reject(
+          new CustomError(
+            `Error sending welcome email to ${user.email}: ${error}`,
+            500
+          )
+        )
       })
   })
 
-const sendPasswordlessMail = user =>
+const sendPasswordRecoveryMail = (user, password) =>
   new Promise((resolve, reject) => {
+    var accessUrl = ''
+    if (NODE_ENV === 'development') {
+      accessUrl = `${DEV_ARASAAC_URL}/signin`
+    } else accessUrl = `${ARASAAC_URL}/signin`
+    if (user.locale === 'val') user.locale = 'ca'
     return email
       .send({
-        template: 'tplAccess',
+        template: 'tplPasswordRecovery',
         message: {
           to: user.email
         },
         locals: {
           name: user.name,
           // if locale does not exist... it uses en by default
-          locale: user.locale
+          locale: user.locale,
+          accessUrl,
+          password
         },
         htmlToText: true
       })
       .then(() => {
-        logger.debug(`Sent email OK`)
+        logger.debug(`Sent password recovery email OK to ${user.email}`)
         resolve()
       })
       .catch(error => {
-        reject(new CustomError(`Error sending email: ${error}`, 500))
+        reject(
+          new CustomError(
+            `Error sending password recovery email OK to ${
+              user.email
+            }: ${error}`,
+            500
+          )
+        )
       })
   })
 
+// const sendPasswordlessMail = user =>
+//   new Promise((resolve, reject) => {
+//     return email
+//       .send({
+//         template: 'tplAccess',
+//         message: {
+//           to: user.email
+//         },
+//         locals: {
+//           name: user.name,
+//           // if locale does not exist... it uses en by default
+//           locale: user.locale
+//         },
+//         htmlToText: true
+//       })
+//       .then(() => {
+//         logger.debug(`Sent email OK`)
+//         resolve()
+//       })
+//       .catch(error => {
+//         reject(new CustomError(`Error sending email: ${error}`, 500))
+//       })
+//   })
+
 module.exports = {
   sendWelcomeMail,
-  sendPasswordlessMail
+  sendPasswordRecoveryMail
 }

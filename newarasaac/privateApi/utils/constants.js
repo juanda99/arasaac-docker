@@ -54,6 +54,8 @@ const hair = {
 
 /* websocket msg */
 const WS_CATALOG_STATUS = 'catalogStatus'
+const ARASAAC_URL = 'https://beta.arasaac.org'
+const DEV_ARASAAC_URL = 'http://localhost:3000'
 
 module.exports = {
   IMAGE_DIR,
@@ -64,5 +66,7 @@ module.exports = {
   hair,
   skin,
   WS_CATALOG_STATUS,
-  catalogProgress
+  catalogProgress,
+  ARASAAC_URL,
+  DEV_ARASAAC_URL
 }

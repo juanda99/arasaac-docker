@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const passport = require('passport')
 const usersController = require('../controllers/usersController')
+const { hasRole } = require('../middlewares')
 
 router.post('/', (req, res) => {
   usersController.create(req, res)
@@ -14,13 +15,23 @@ router.get('/activate/:code', (req, res) => {
 })
 router.get(
   '/',
-  (req, res, next) => {
-    console.log('Auth required. Starting...')
-    next()
-  },
   passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
   (req, res) => {
     usersController.getAll(req, res)
+  }
+)
+
+router.get(
+  '/:id',
+  (req, res, next) => {
+    console.log('ha entrado')
+    next()
+  },
+  // passport.authenticate('bearer', { session: false }),
+  // hasRole('admin'),
+  (req, res) => {
+    usersController.findOne(req, res)
   }
 )
 
@@ -33,8 +44,13 @@ router.post('/:id/favorites/', (req, res) => {
 })
 
 /* set passwordlessToken so user then can get a token */
-router.post('/:id/passwordless/', (req, res) => {
-  usersController.createPasswordlessToken(req, res)
+// router.post('/:id/passwordless/', (req, res) => {
+//   usersController.createPasswordlessToken(req, res)
+// })
+
+/* set passwordlessToken so user then can get a token */
+router.post('/password/', (req, res) => {
+  usersController.resetPassword(req, res)
 })
 
 router.delete('/:id/favorites/', (req, res) => {
