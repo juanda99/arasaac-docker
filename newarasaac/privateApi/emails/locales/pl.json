@@ -1,0 +1,16 @@
+{
+  "Hi": "Cześć",
+  "activateUserText": "Dołącz do ARASAAC",
+  "welcome": "Witamy w ARASAAC!",
+  "intro":
+    "ARASAAC to strona internetowa, która oferuje materiały i materiały pomagające osobom z problemami komunikacyjnymi.",
+  "activateMessage":
+    "Jesteś prawie gotowy dołączyć do społeczności ARASAAC. Kliknij poniższy przycisk, aby aktywować konto użytkownika.",
+  "contactar": "Możesz skontaktować się z nami pod adresem arasaac@gmail.com",
+  "passwordChangeSubject": "Nowe hasło ARASAAC",
+  "introResetPassword":
+    "Zgodnie z Twoją prośbą zmodyfikowaliśmy Twoje hasło, aby uzyskać dostęp do ARASAAC. Twoje nowe hasło to:",
+  "accessText": "Zaloguj się na ARASAAC",
+  "rememberChangePassword":
+    "To hasło zostało wygenerowane losowo. Pamiętaj, że możesz zmodyfikować swoje hasło z profilu użytkownika."
+}
