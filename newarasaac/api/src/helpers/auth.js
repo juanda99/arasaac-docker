@@ -1,4 +1,5 @@
 const { authorization } = require('../config')
+const logger = require('../utils/logger')
 const jwtDecode = require('jwt-decode')
 const passport = require('passport')
 const BearerStrategy = require('passport-http-bearer').Strategy
@@ -13,16 +14,20 @@ const request = require('request')
  * the authorizing user.
  */
 passport.use(new BearerStrategy((accessToken, done) => {
-  if (accessToken === null) throw new Error('No token')
+  if (accessToken === null) {
+    logger.debug('No token present in the resquest')
+    throw new Error('No token')
+  }
   const authUrl = authorization.tokeninfoURL + accessToken
   request.get(authUrl, (error, response /*, body*/) => {
     if (error) done(null, false)
     else if (response.statusCode !== 200) {
-      console.log(response.body.error)
+      logger.debug(`Error verifying token: ${response.body.error}`)
       done(null, false)
     } else {
       // get scope from token
       const decoded = jwtDecode(accessToken)
+      logger.debug(`Token ok with scope: ${decoded.scope}`)
       done(null, accessToken, { scopes: decoded.scope })
     }
   })
