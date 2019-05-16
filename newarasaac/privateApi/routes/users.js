@@ -9,6 +9,16 @@ router.post('/', (req, res) => {
 router.delete('/:id', (req, res) => {
   usersController.delete(req, res)
 })
+
+router.put(
+  '/:id',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    usersController.update(req, res)
+  }
+)
+
 router.get('/activate/:code', (req, res) => {
   console.log('activating...')
   usersController.activate(req, res)
@@ -24,12 +34,8 @@ router.get(
 
 router.get(
   '/:id',
-  (req, res, next) => {
-    console.log('ha entrado')
-    next()
-  },
-  // passport.authenticate('bearer', { session: false }),
-  // hasRole('admin'),
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
   (req, res) => {
     usersController.findOne(req, res)
   }

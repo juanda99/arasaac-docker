@@ -27,23 +27,27 @@ module.exports = {
               token = req.headers.authorization.split(' ').pop();
               decoded = (0, _jwtDecode.default)(token);
               id = decoded.sub;
-              _context.prev = 3;
-              _context.next = 6;
+              console.log(id);
+              _context.prev = 4;
+              _context.next = 7;
               return User.findOne({
                 _id: id
               }, {
                 _id: 0,
-                password: 0,
-                authToken: 0,
-                verifyToken: 0,
-                __v: 0
+                name: 1,
+                email: 1,
+                locale: 1,
+                role: 1,
+                targetLanguages: 1,
+                favorites: 1,
+                lastLogin: 1
               });
 
-            case 6:
+            case 7:
               user = _context.sent;
 
               if (user) {
-                _context.next = 9;
+                _context.next = 10;
                 break;
               }
 
@@ -51,22 +55,22 @@ module.exports = {
                 message: 'User does not exist. User Id: ' + id
               }));
 
-            case 9:
+            case 10:
               return _context.abrupt("return", res.status(200).json(user));
 
-            case 12:
-              _context.prev = 12;
-              _context.t0 = _context["catch"](3);
+            case 13:
+              _context.prev = 13;
+              _context.t0 = _context["catch"](4);
               return _context.abrupt("return", res.status(500).json({
                 message: 'Error getting user profile. ' + _context.t0
               }));
 
-            case 15:
+            case 16:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee, null, [[3, 12]]);
+      }, _callee, null, [[4, 13]]);
     }));
 
     function getProfile(_x, _x2) {

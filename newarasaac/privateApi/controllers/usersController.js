@@ -62,6 +62,38 @@ const create = async (req, res) => {
   }
 }
 
+const update = async (req, res) => {
+  const { id } = req.params
+
+  // some fields should not be updated here:
+  delete req.body._id
+  delete req.body.password
+  delete req.body.created
+  delete req.body.lastLogin
+  delete req.body.favorites
+  logger.debug(
+    `Updating user _id: ${id} with data: ${JSON.stringify(req.body)}`
+  )
+  try {
+    if (!ObjectID.isValid(id)) {
+      logger.debug(`Invalid id: ${id}`)
+      return res.status(404).json({})
+    }
+    // Updated at most one doc, `response.modifiedCount` contains the number
+    // of docs that MongoDB updated
+    const { modifiedCount } = await User.update({ _id: id }, req.body)
+    if (!modifiedCount) throw new CustomError('USER_NOT_FOUND', 404)
+    // else send verification email based on its locale
+    res.status(204).json({})
+  } catch (err) {
+    logger.error(`Error updating user: ${err.message}`)
+    res.status(err.httpCode || 500).json({
+      message: 'Error updating user. See error field for detail',
+      error: err.message
+    })
+  }
+}
+
 const activate = async (req, res) => {
   const verifyToken = req.params.code
   logger.debug(`Activating user with verifyToken: ${verifyToken}`)
@@ -113,7 +145,7 @@ const getAll = async (req, res) => {
   try {
     const users = await User.find(
       {},
-      '-password -idAuthor -authToken -google -facebook'
+      '-password -idAuthor -authToken -google -facebook -favorites'
     )
     return res.status(200).json(users)
   } catch (err) {
@@ -277,6 +309,7 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
   create,
+  update,
   remove,
   activate,
   getAll,
