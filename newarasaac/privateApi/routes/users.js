@@ -20,7 +20,6 @@ router.put(
 )
 
 router.get('/activate/:code', (req, res) => {
-  console.log('activating...')
   usersController.activate(req, res)
 })
 router.get(

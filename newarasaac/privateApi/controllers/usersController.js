@@ -71,6 +71,8 @@ const update = async (req, res) => {
   delete req.body.created
   delete req.body.lastLogin
   delete req.body.favorites
+
+  console.log(req.body)
   logger.debug(
     `Updating user _id: ${id} with data: ${JSON.stringify(req.body)}`
   )
@@ -81,8 +83,8 @@ const update = async (req, res) => {
     }
     // Updated at most one doc, `response.modifiedCount` contains the number
     // of docs that MongoDB updated
-    const { modifiedCount } = await User.update({ _id: id }, req.body)
-    if (!modifiedCount) throw new CustomError('USER_NOT_FOUND', 404)
+    const user = await User.findOneAndUpdate({ _id: id }, req.body)
+    if (!user) throw new CustomError('USER_NOT_FOUND', 404)
     // else send verification email based on its locale
     res.status(204).json({})
   } catch (err) {
@@ -165,10 +167,14 @@ const findOne = async (req, res) => {
       { _id: id },
       '-password -idAuthor -authToken -google -facebook'
     )
+    if (!user) throw new CustomError('USER_NOT_FOUND', 404)
     return res.status(200).json(user)
   } catch (err) {
-    logger.debug(`Error getting data for user ${err.message}`)
-    return res.status(500).json(err)
+    logger.error(`Error getting data for user ${err.message}`)
+    res.status(err.httpCode || 500).json({
+      message: 'Error getting data for user. See error field for detail',
+      error: err.message
+    })
   }
 }
 
