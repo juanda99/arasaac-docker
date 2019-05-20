@@ -33,6 +33,7 @@ const UserSchema = new Schema(
     verifyToken: String,
     passwordlessToken: String,
     created: { type: Date, default: Date.now },
+    updated: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now },
     verifyDate: { type: Date },
     url: String,

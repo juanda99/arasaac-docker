@@ -83,10 +83,24 @@ const update = async (req, res) => {
     }
     // Updated at most one doc, `response.modifiedCount` contains the number
     // of docs that MongoDB updated
-    const user = await User.findOneAndUpdate({ _id: id }, req.body)
+    const user = await User.findOneAndUpdate({ _id: id }, req.body, {
+      new: true
+    })
+    console.log(user)
+    console.log(typeof user)
     if (!user) throw new CustomError('USER_NOT_FOUND', 404)
-    // else send verification email based on its locale
-    res.status(204).json({})
+    console.log(user)
+    // else send modified doc:
+    delete user.password
+    delete user.idAuthor
+    delete user.authToken
+    delete user.google
+    delete user.facebook
+    delete user.favorites
+    delete user.updated
+    console.log('user returned:')
+    console.log(user)
+    res.status(200).json(user)
   } catch (err) {
     logger.error(`Error updating user: ${err.message}`)
     res.status(err.httpCode || 500).json({
@@ -116,6 +130,7 @@ const activate = async (req, res) => {
     user.verifyToken = ''
     user.verifyDate = ''
     user.active = true
+    user.updated = new Date()
     user.save()
     logger.debug(`User ${user._id} / ${user.email} activated`)
     res.status(200).json({
@@ -144,9 +159,26 @@ const remove = (req, res) => {
 }
 
 const getAll = async (req, res) => {
+  logger.debug(`Getting data from all users`)
   try {
     const users = await User.find(
       {},
+      '-password -idAuthor -authToken -google -facebook -favorites'
+    )
+    return res.status(200).json(users)
+  } catch (err) {
+    logger.err(`Error getting data from all users: ${err.message}`)
+    return res.status(500).json(err)
+  }
+}
+
+const getAllByDate = async (req, res) => {
+  const { date } = req.params
+  logger.debug(`Getting data from all users updated after ${date}`)
+  const query = date ? { updated: { $gte: date } } : {}
+  try {
+    const users = await User.find(
+      query,
       '-password -idAuthor -authToken -google -facebook -favorites'
     )
     return res.status(200).json(users)
@@ -319,6 +351,7 @@ module.exports = {
   remove,
   activate,
   getAll,
+  getAllByDate,
   findOne,
   addFavorite,
   getFavorites,

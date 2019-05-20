@@ -22,12 +22,22 @@ router.put(
 router.get('/activate/:code', (req, res) => {
   usersController.activate(req, res)
 })
+
 router.get(
   '/',
   passport.authenticate('bearer', { session: false }),
   hasRole('admin'),
   (req, res) => {
     usersController.getAll(req, res)
+  }
+)
+
+router.get(
+  '/date/:date?',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    usersController.getAllByDate(req, res)
   }
 )
 
