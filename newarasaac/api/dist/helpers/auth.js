@@ -3,6 +3,8 @@
 var _require = require('../config'),
     authorization = _require.authorization;
 
+var logger = require('../utils/logger');
+
 var jwtDecode = require('jwt-decode');
 
 var passport = require('passport');
@@ -21,17 +23,22 @@ var request = require('request');
 
 
 passport.use(new BearerStrategy(function (accessToken, done) {
-  if (accessToken === null) throw new Error('No token');
+  if (accessToken === null) {
+    logger.debug('No token present in the resquest');
+    throw new Error('No token');
+  }
+
   var authUrl = authorization.tokeninfoURL + accessToken;
   request.get(authUrl, function (error, response
   /*, body*/
   ) {
     if (error) done(null, false);else if (response.statusCode !== 200) {
-      console.log(response.body.error);
+      logger.debug("Error verifying token: ".concat(response.body.error));
       done(null, false);
     } else {
       // get scope from token
       var decoded = jwtDecode(accessToken);
+      logger.debug("Token ok with scope: ".concat(decoded.scope));
       done(null, accessToken, {
         scopes: decoded.scope
       });
