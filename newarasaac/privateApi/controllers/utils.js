@@ -3,7 +3,12 @@ const path = require('path')
 const MATERIALS = process.env.MATERIALS || '/app/materials'
 const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
-const { NO_VERB_CONJUGATION_AVAILABLE } = require('./constants')
+const {
+  NO_VERB_CONJUGATION_AVAILABLE,
+  PAST,
+  PRESENT,
+  FUTURE
+} = require('./constants')
 
 const saveFiles = async (files, dir) => {
   await fs.ensureDir(dir)
@@ -95,8 +100,26 @@ const saveFilesByType = async (formFiles, id) => {
   ])
 }
 
+const checkTense = (language, tense) => {
+  switch (tense) {
+    case '1':
+    case 1:
+    case 'Perfect':
+    case 'Past':
+    case 'Pluperfect':
+    case 'Preterite':
+    case 'Preterite Perfect':
+      return PAST
+    case 'Future':
+    case 'Future Perfect':
+      return FUTURE
+    default:
+      return PRESENT
+  }
+}
+
 const getVerbixConjugations = async (language, word) => {
-  const result = {}
+  let result = {}
   let verbos = []
   let tiempo
   let modo
@@ -108,29 +131,43 @@ const getVerbixConjugations = async (language, word) => {
   await page.goto(getUrl(language, word))
   const content = await page.content()
   const $ = cheerio.load(content)
-  const valores = $('#verbixConjugations div')
-  $(valores).each((i, element) => {
-    tiempo = $(element)
-      .children('h3')
-      .text()
-    modo = $(element)
-      .children('h2')
-      .text()
-    const scrapVerbTenses = $('.pure-u-1-2', element)
-    $(scrapVerbTenses).each((i, verbTense) => {
-      tiempo = $(verbTense)
-        .children('h3')
-        .text()
-      const scrapVerbos = $('.normal, .orto, .irregular', verbTense)
-      $(scrapVerbos).each((i, verb) => {
-        verbos.push($(verb).text())
-      })
-      if (tiempo && modo) {
-        if (!result[modo]) result[modo] = {}
-        result[modo][tiempo] = verbos
+
+  $('.columns-main>div').each(function (i, element) {
+    modo = $('h3', element).text()
+    if (modo) {
+      if (modo === 'Nominal Forms') {
+        $('.normal, .orto, .irregular', element).each((i, verb) => {
+          const verbo = $(verb).text()
+          console.log(verbo)
+          verbos = verbo.split(' - ')
+          console.log(verbos)
+          if (!result[modo]) result[modo] = {}
+          if (!result[modo][i]) result[modo][i] = {}
+          result[modo][i] = {
+            verbos,
+            considered: checkTense(language, i)
+          }
+          verbos = []
+        })
+      } else {
+        $('.columns-sub>div', this).each(function (i, element) {
+          tiempo = $('h4', element).text()
+          if (tiempo) {
+            $('.normal, .orto, .irregular', this).each((i, verb) => {
+              verbos.push($(verb).text())
+            })
+            if (!result[modo]) result[modo] = {}
+            if (!result[modo][tiempo]) result[modo][tiempo] = {}
+            result[modo][tiempo] = {
+              verbs: verbos,
+              considered: checkTense(language, tiempo)
+            }
+          }
+          verbos = []
+          tiempo = ''
+        })
       }
-      verbos = []
-    })
+    }
   })
   await browser.close()
   return { word, language, verbTenses: result }
