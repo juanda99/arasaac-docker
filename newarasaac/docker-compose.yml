@@ -15,6 +15,7 @@ services:
       - /app/.config
       - ${SVG_DIR}:/app/svg:ro
       - ${IMAGE_DIR}:/app/pictograms
+      - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -42,6 +43,7 @@ services:
       - ${IMAGE_DIR}:/app/pictograms
       - ./tmp:/app/tmp
       - /app/.config
+      - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "privateapi.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL

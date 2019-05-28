@@ -4,6 +4,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const cors = require('cors')
 const router = require('./routes')(io)
+
 const bodyParser = require('body-parser')
 
 // check all variables are defined

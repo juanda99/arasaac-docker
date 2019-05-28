@@ -18,6 +18,7 @@ const logger = createLogger({
 
 process.on('uncaughtException', function (err) {
   logger.error(err.message)
+  console.log(err)
 })
 
 module.exports = logger

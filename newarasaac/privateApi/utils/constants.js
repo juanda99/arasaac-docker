@@ -1,5 +1,6 @@
 const path = require('path')
 const IMAGE_DIR = '/app/pictograms'
+const CONJUGATIONS_DIR = '/app/conjugations'
 // catalogs must "depend" on IMAGE_DIR to prevent error with hard links: EXDEV: cross-device link not permitted
 const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
 const tmpCatalogDirRoot = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
@@ -60,6 +61,7 @@ const DEV_ARASAAC_URL = 'http://localhost:3000'
 module.exports = {
   IMAGE_DIR,
   CATALOG_DIR,
+  CONJUGATIONS_DIR,
   tmpCatalogDirRoot,
   tmpCatalogDir,
   schematic,

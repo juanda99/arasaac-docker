@@ -3,12 +3,14 @@ const path = require('path')
 const MATERIALS = process.env.MATERIALS || '/app/materials'
 const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
+const logger = require('../utils/logger')
 const {
   NO_VERB_CONJUGATION_AVAILABLE,
   PAST,
   PRESENT,
   FUTURE
 } = require('./constants')
+const { CONJUGATIONS_DIR } = require('../utils/constants')
 
 const saveFiles = async (files, dir) => {
   await fs.ensureDir(dir)
@@ -20,8 +22,8 @@ const saveFiles = async (files, dir) => {
       })
     )
   }
-  const destDir = path.resolve(dir, file.name)
-  return fs.move(file.path, destDir)
+  const destDir = path.resolve(dir, files.name)
+  return fs.move(files.path, destDir)
 }
 
 const getUrl = (language, word) => {
@@ -173,7 +175,40 @@ const getVerbixConjugations = async (language, word) => {
   return { word, language, verbTenses: result }
 }
 
+const getConjugationsFile = (language, word) =>
+  path.resolve(CONJUGATIONS_DIR, language, `${word}.json`)
+
+const readConjugations = async (language, word) => {
+  const conjugationsFile = getConjugationsFile(language, word)
+  logger.debug(`Got conjugations from file ${conjugationsFile}`)
+  try {
+    const conjugations = await fs.readJson(conjugationsFile)
+    return conjugations
+  } catch (err) {
+    logger.warn(
+      `No file for conjugations found for verb ${word} and language ${language}`
+    )
+    return false
+  }
+}
+
+const saveConjugations = async (language, word, content) => {
+  const conjugationsFile = getConjugationsFile(language, word)
+  try {
+    await fs.writeJson(conjugationsFile, content)
+    logger.debug(
+      `Saved conjugations file for verb ${word} and language ${language}`
+    )
+  } catch (err) {
+    logger.error(
+      `Can't save conjugations file for verb ${word} and language ${language}`
+    )
+  }
+}
+
 module.exports = {
   saveFilesByType,
-  getVerbixConjugations
+  getVerbixConjugations,
+  readConjugations,
+  saveConjugations
 }

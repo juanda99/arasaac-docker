@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start":
-      "DEBUG=email-templates nodemon --verbose --inspect=0.0.0.0:9229 --ignore '*.json' --ignore 'materials/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
+      "DEBUG=email-templates nodemon --verbose --inspect=0.0.0.0:9229 --ignore '*.json' --ignore 'materials/' --ignore 'conjugations/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
     "serve": "node app.js",
     "precommit": "lint-staged"
   },
