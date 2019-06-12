@@ -84,6 +84,7 @@ const getKeywordsById = async (req, res) => {
       },
       { keywords: 1, _id: 0 }
     )
+    // TODO: findOne does not return an array, text next line:
     if (pictograms.length === 0) return res.status(404).json([])
     else {
       // const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
@@ -93,6 +94,7 @@ const getKeywordsById = async (req, res) => {
     return res.json(pictograms)
   } catch (err) {
     console.log(err)
+    // TODO: return err o err.messsage?????
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err

@@ -4,6 +4,27 @@ const { merge } = require('lodash')
 const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 
+const get = async (req, res) => {
+  const { locale } = req.params
+  logger.debug(`Getting category for locale ${locale}`)
+  try {
+    const category = await Category.findOne({ locale: locale })
+    if (!category) {
+      logger.warn(`No categories found for locale ${locale}`)
+      return res.status(404).json([]) // send http code 404!!!
+    }
+    return res.json(category)
+  } catch (err) {
+    logger.error(
+      `Error getting cateogry data for locale ${locale}: ${err.message}`
+    )
+    return res.status(500).json({
+      message: `Error getting category data for locale ${locale}`,
+      error: err.message
+    })
+  }
+}
+
 const update = async (req, res) => {
   const { _id, lastUpdated, locale } = req.body
 
@@ -83,5 +104,7 @@ const updateAll = async (req, res) => {
 }
 
 module.exports = {
-  update
+  update,
+  updateAll,
+  get
 }

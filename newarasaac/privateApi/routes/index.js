@@ -4,7 +4,7 @@ const users = require('./users')
 const words = require('./words')
 const pictograms = require('./pictograms')
 const locutions = require('./locutions')
-const categories = require('./categories')
+const categories = require('./categories.js')
 
 const returnRouter = io => {
   const catalogs = require('./catalogs')(io)
