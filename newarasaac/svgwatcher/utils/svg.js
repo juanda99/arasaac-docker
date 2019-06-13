@@ -195,11 +195,19 @@ const getOptions = resolution => {
 }
 
 const skinsToRemove = `${skin.white}|${schematic}`
-// important ! regex without -g option because it's acumulative between interations
-const reSkin = new RegExp(skinsToRemove, 'gim')
-const modifySkin = (fileContent, key) =>
-  fileContent.replace(reSkin, skin[key] || key)
-const hasSkin = fileContent => reSkin.test(fileContent)
+
+const modifySkin = (fileContent, key) => {
+  // important ! regex without -g option because it's acumulative between interations
+  // see http://2ality.com/2013/08/regexp-g.html
+  // we define it every time we use it!!!!
+  const reSkin = new RegExp(skinsToRemove, 'gim')
+  return fileContent.replace(reSkin, skin[key] || key)
+}
+
+const hasSkin = fileContent => {
+  const reSkin = new RegExp(skinsToRemove, 'gim')
+  return reSkin.test(fileContent)
+}
 
 const hairToRemove = () => {
   let value = ''
@@ -208,11 +216,18 @@ const hairToRemove = () => {
   })
   return value.slice(0, -1)
 }
-const reHair = new RegExp(hairToRemove(), 'gim')
-const modifyHair = (fileContent, key) =>
-  fileContent.replace(reHair, hair[key] || key)
-const hasHair = fileContent => reSkin.test(fileContent)
 
+const modifyHair = (fileContent, key) => {
+  // important ! regex without -g option because it's acumulative between interations
+  // see http://2ality.com/2013/08/regexp-g.html
+  // we define it every time we use it!!!!
+  const reHair = new RegExp(hairToRemove(), 'gim')
+  return fileContent.replace(reHair, hair[key] || key)
+}
+const hasHair = fileContent => {
+  const reHair = new RegExp(hairToRemove(), 'gim')
+  return reHair.test(fileContent)
+}
 const modifySVG = (fileContent, options) => {
   let content = fileContent
   const { plural, color, backgroundColor, action, hair, skin } = options
