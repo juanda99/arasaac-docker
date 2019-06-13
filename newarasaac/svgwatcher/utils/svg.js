@@ -196,7 +196,7 @@ const getOptions = resolution => {
 
 const skinsToRemove = `${skin.white}|${schematic}`
 // important ! regex without -g option because it's acumulative between interations
-const reSkin = new RegExp(skinsToRemove, 'im')
+const reSkin = new RegExp(skinsToRemove, 'gim')
 const modifySkin = (fileContent, key) =>
   fileContent.replace(reSkin, skin[key] || key)
 const hasSkin = fileContent => reSkin.test(fileContent)
@@ -208,7 +208,7 @@ const hairToRemove = () => {
   })
   return value.slice(0, -1)
 }
-const reHair = new RegExp(hairToRemove(), 'im')
+const reHair = new RegExp(hairToRemove(), 'gim')
 const modifyHair = (fileContent, key) =>
   fileContent.replace(reHair, hair[key] || key)
 const hasHair = fileContent => reSkin.test(fileContent)
