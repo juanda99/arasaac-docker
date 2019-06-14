@@ -5,13 +5,30 @@ const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 
 const get = async (req, res) => {
-  const { locale } = req.params
-  logger.debug(`Getting category for locale ${locale}`)
+  const { locale, date } = req.params
+  var clientDate
+  if (date) {
+    clientDate = new Date(date)
+    logger.debug(
+      `Getting category for locale ${locale} and date: ${clientDate}`
+    )
+  } else logger.debug(`Getting category for locale ${locale}`)
   try {
     const category = await Category.findOne({ locale: locale })
     if (!category) {
       logger.warn(`No categories found for locale ${locale}`)
-      return res.status(404).json([]) // send http code 404!!!
+      return res.status(404).json({}) // send http code 404!!!
+    }
+    logger.debug(`Server date: ${category.lastUpdated}`)
+    logger.debug(`Client date: ${clientDate}`)
+    console.log(category.lastUpdated === clientDate)
+    console.log(typeof category.lastUpdated)
+    console.log(typeof clientDate)
+    if (clientDate && category.lastUpdated == clientDate) {
+      logger.debug(
+        `Category data for language ${locale} already in the client for date ${clientDate}`
+      )
+      return res.status(200).json({}) // send http code 404!!!
     }
     return res.json(category)
   } catch (err) {
