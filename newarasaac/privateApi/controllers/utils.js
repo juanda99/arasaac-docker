@@ -122,7 +122,7 @@ const checkTense = (language, tense) => {
 
 const getVerbixConjugations = async (language, word) => {
   let result = {}
-  let verbos = []
+  let verbs = []
   let tiempo
   let modo
   const browser = await puppeteer.launch({
@@ -141,31 +141,31 @@ const getVerbixConjugations = async (language, word) => {
         $('.normal, .orto, .irregular', element).each((i, verb) => {
           const verbo = $(verb).text()
           console.log(verbo)
-          verbos = verbo.split(' - ')
-          console.log(verbos)
+          verbs = verbo.split(' - ')
+          console.log(verbs)
           if (!result[modo]) result[modo] = {}
           if (!result[modo][i]) result[modo][i] = {}
           result[modo][i] = {
-            verbos,
+            verbs,
             considered: checkTense(language, i)
           }
-          verbos = []
+          verbs = []
         })
       } else {
         $('.columns-sub>div', this).each(function (i, element) {
           tiempo = $('h4', element).text()
           if (tiempo) {
             $('.normal, .orto, .irregular', this).each((i, verb) => {
-              verbos.push($(verb).text())
+              verbs.push($(verb).text())
             })
             if (!result[modo]) result[modo] = {}
             if (!result[modo][tiempo]) result[modo][tiempo] = {}
             result[modo][tiempo] = {
-              verbs: verbos,
+              verbs: verbs,
               considered: checkTense(language, tiempo)
             }
           }
-          verbos = []
+          verbs = []
           tiempo = ''
         })
       }
@@ -177,6 +177,7 @@ const getVerbixConjugations = async (language, word) => {
 
 const getConjugationsFile = (language, word) =>
   path.resolve(CONJUGATIONS_DIR, language, `${word}.json`)
+const getConjugationsDir = language => path.resolve(CONJUGATIONS_DIR, language)
 
 const readConjugations = async (language, word) => {
   const conjugationsFile = getConjugationsFile(language, word)
@@ -192,16 +193,27 @@ const readConjugations = async (language, word) => {
   }
 }
 
+// get verbs for a verbalTense (PRESENT, PAST, FUTURE) in a json file (verbs)
+const getDeclinations = (verbalTense, verbs) =>
+  Object.values(verbs.verbTenses).map(tenses =>
+    Object.values(tenses)
+      .filter(tense => tense.considered === verbalTense)
+      .map(tense => tense.verbs)
+  )
+
 const saveConjugations = async (language, word, content) => {
   const conjugationsFile = getConjugationsFile(language, word)
   try {
+    await fs.ensureDir(getConjugationsDir(language))
     await fs.writeJson(conjugationsFile, content)
     logger.debug(
       `Saved conjugations file for verb ${word} and language ${language}`
     )
   } catch (err) {
     logger.error(
-      `Can't save conjugations file for verb ${word} and language ${language}`
+      `Can't save conjugations file for verb ${word} and language ${language}: ${
+        err.message
+      }`
     )
   }
 }
@@ -210,5 +222,6 @@ module.exports = {
   saveFilesByType,
   getVerbixConjugations,
   readConjugations,
-  saveConjugations
+  saveConjugations,
+  getDeclinations
 }

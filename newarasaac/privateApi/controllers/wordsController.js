@@ -1,6 +1,7 @@
 // const User = require('../models/words')
 const {
   getVerbixConjugations,
+  getDeclinations,
   readConjugations,
   saveConjugations
 } = require('./utils')
@@ -22,6 +23,37 @@ const getConjugations = async (req, res) => {
     // getConjugations from local, if not exists, get from Verbix and save locally before sending
     let found = true
     let conjugations = await readConjugations(language, word)
+    console.log(`Conjugations: ${conjugations}`)
+    if (!conjugations) {
+      found = false
+      conjugations = await getVerbixConjugations(language, word)
+    }
+    if (!found) saveConjugations(language, word, conjugations)
+    return res.status(200).json(conjugations)
+  } catch (err) {
+    if (err.message === NO_VERB_CONJUGATION_AVAILABLE) {
+      return res.status(404).json({
+        message,
+        error: `${NO_VERB_CONJUGATION_AVAILABLE} ${language}`
+      })
+    }
+    return res.status(500).json({
+      message,
+      error: err.message
+    })
+  }
+}
+
+// TODO updateConjugations, now just a copy of getConjugations!!!
+const updateConjugations = async (req, res) => {
+  const message = 'Error updating conjugations'
+  const { word, language } = req.params
+
+  try {
+    // getConjugations from local, if not exists, get from Verbix and save locally before sending
+    let found = true
+    let conjugations = await readConjugations(language, word)
+    console.log(`Conjugations: ${conjugations}`)
     if (!conjugations) {
       found = false
       conjugations = await getVerbixConjugations(language, word)
