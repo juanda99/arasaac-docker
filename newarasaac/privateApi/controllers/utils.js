@@ -10,6 +10,7 @@ const {
   PRESENT,
   FUTURE
 } = require('./constants')
+const _ = require('lodash')
 const { CONJUGATIONS_DIR } = require('../utils/constants')
 
 const saveFiles = async (files, dir) => {
@@ -107,6 +108,7 @@ const checkTense = (language, tense) => {
     case '1':
     case 1:
     case 'Perfect':
+    case 'Imperfect': // english
     case 'Past':
     case 'Pluperfect':
     case 'Preterite':
@@ -193,12 +195,14 @@ const readConjugations = async (language, word) => {
   }
 }
 
-// get verbs for a verbalTense (PRESENT, PAST, FUTURE) in a json file (verbs)
+// get verbs for a verbalTense (PRESENT, PAST, FUTURE) in a json data (verbs)
 const getDeclinations = (verbalTense, verbs) =>
-  Object.values(verbs.verbTenses).map(tenses =>
-    Object.values(tenses)
-      .filter(tense => tense.considered === verbalTense)
-      .map(tense => tense.verbs)
+  _.flattenDeep(
+    Object.values(verbs.verbTenses).map(tenses =>
+      Object.values(tenses)
+        .filter(tense => tense.considered === verbalTense)
+        .map(tense => tense.verbs)
+    )
   )
 
 const saveConjugations = async (language, word, content) => {
