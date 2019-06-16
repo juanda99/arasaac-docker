@@ -41,6 +41,7 @@ services:
       - ./locutions:/app/locutions
       - ./certs:/root/.ssh
       - ${IMAGE_DIR}:/app/pictograms
+      - ${CONJUGATIONS_DIR}:/app/conjugations
       - ./tmp:/app/tmp
       - /app/.config
       - /app/node_modules

@@ -12,8 +12,6 @@ services:
     command: npm start
     ports:
       - "9227:9229"
-    volumes:
-      - ${CONJUGATIONS_DIR}:/app/conjugations
 
   auth:
     command: npm start
