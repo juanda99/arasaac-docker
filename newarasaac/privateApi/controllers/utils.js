@@ -3,13 +3,9 @@ const path = require('path')
 const MATERIALS = process.env.MATERIALS || '/app/materials'
 const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
+const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
-const {
-  NO_VERB_CONJUGATION_AVAILABLE,
-  PAST,
-  PRESENT,
-  FUTURE
-} = require('./constants')
+const { PAST, PRESENT, FUTURE } = require('./constants')
 const _ = require('lodash')
 const { CONJUGATIONS_DIR } = require('../utils/constants')
 
@@ -44,7 +40,14 @@ const getUrl = (language, word) => {
     cr: 204
   }
   const languageCode = verbixCodeLanguages[language]
-  if (!languageCode) throw Error(NO_VERB_CONJUGATION_AVAILABLE)
+  if (!languageCode) {
+    throw new CustomError(
+      `Can't get ${word} conjugation in language ${language}. Availabe languages: ${Object.keys(
+        verbixCodeLanguages
+      ).join(', ')} `,
+      404
+    )
+  }
   return `http://www.verbix.com/webverbix/go.php?T1=${word}&D1=${languageCode}`
 }
 const saveFilesByType = async (formFiles, id) => {
@@ -142,9 +145,7 @@ const getVerbixConjugations = async (language, word) => {
       if (modo === 'Nominal Forms') {
         $('.normal, .orto, .irregular', element).each((i, verb) => {
           const verbo = $(verb).text()
-          console.log(verbo)
           verbs = verbo.split(' - ')
-          console.log(verbs)
           if (!result[modo]) result[modo] = {}
           if (!result[modo][i]) result[modo][i] = {}
           result[modo][i] = {
@@ -174,6 +175,13 @@ const getVerbixConjugations = async (language, word) => {
     }
   })
   await browser.close()
+  // if empty verbalTenses, throw error:
+  if (Object.entries(result).length === 0 && result.constructor === Object) {
+    throw new CustomError(
+      `Can't get conjugations for verb ${word} in language ${language}`,
+      404
+    )
+  }
   return { word, language, verbTenses: result }
 }
 
@@ -183,13 +191,13 @@ const getConjugationsDir = language => path.resolve(CONJUGATIONS_DIR, language)
 
 const readConjugations = async (language, word) => {
   const conjugationsFile = getConjugationsFile(language, word)
-  logger.debug(`Got conjugations from file ${conjugationsFile}`)
+  logger.debug(`Trying to get conjugations from local file ${conjugationsFile}`)
   try {
     const conjugations = await fs.readJson(conjugationsFile)
     return conjugations
   } catch (err) {
-    logger.warn(
-      `No file for conjugations found for verb ${word} and language ${language}`
+    logger.info(
+      `No file for conjugations found for verb ${word} and language ${language}. We'll ask verbix`
     )
     return false
   }

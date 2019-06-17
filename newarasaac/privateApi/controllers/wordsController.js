@@ -6,7 +6,7 @@ const {
   readConjugations,
   saveConjugations
 } = require('./utils')
-const { NO_VERB_CONJUGATION_AVAILABLE } = require('./constants')
+const { PAST, PRESENT, FUTURE } = require('./constants')
 const axios = require('axios')
 const setPictogramModel = require('../models/Pictogram')
 const languages = require('../utils/languages')
@@ -24,19 +24,14 @@ const getConjugations = async (req, res) => {
     // getConjugations from local, if not exists, get from Verbix and save locally before sending
     let found = true
     let conjugations = await readConjugations(language, word)
-    console.log(`Conjugations: ${conjugations}`)
     if (!conjugations) {
       found = false
       conjugations = await getVerbixConjugations(language, word)
     }
     if (!found) saveConjugations(language, word, conjugations)
-
-    const present = getDeclinations('PRESENT', conjugations)
-    const past = getDeclinations('PAST', conjugations)
-    const future = getDeclinations('FUTURE', conjugations)
-    console.log(present)
-    console.log(past)
-    console.log(future)
+    const present = getDeclinations(PRESENT, conjugations)
+    const past = getDeclinations(PAST, conjugations)
+    const future = getDeclinations(FUTURE, conjugations)
     await Verb.findOneAndUpdate(
       { language, verb: word },
       { present, past, future, verb: word, language },
@@ -46,14 +41,8 @@ const getConjugations = async (req, res) => {
     return res.status(200).json(conjugations)
   } catch (err) {
     logger.error(`Error getting conjugations: ${err.message}`)
-    if (err.message === NO_VERB_CONJUGATION_AVAILABLE) {
-      return res.status(404).json({
-        message,
-        error: `${NO_VERB_CONJUGATION_AVAILABLE} ${language}`
-      })
-    }
-    return res.status(500).json({
-      message,
+    return res.status(err.httpCode || 500).json({
+      message: 'Error getting conjugations. See error field for detail',
       error: err.message
     })
   }
