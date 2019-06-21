@@ -39,7 +39,7 @@ const get = async (req, res) => {
 }
 
 const update = async (req, res) => {
-  const { _id, lastUpdated, locale } = req.body
+  const { _id, lastUpdated, locale, data } = req.body
 
   console.log(req.body)
 
@@ -47,14 +47,19 @@ const update = async (req, res) => {
 
   try {
     if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
-    const category = Category.findOne({ _id: _id })
-    console.log(category.lastUpdated)
-    console.log(lastUpdated)
-    if (category.lastUpdated !== lastUpdated) {
+    const category = await Category.findById(_id)
+    console.log(`category: ${category}`)
+    if (!category) throw new CustomError(`Category id not found: ${_id}`, 404)
+    const serverDate = new Date(category.lastUpdated)
+    const clientDate = new Date(lastUpdated)
+    console.log(`ClientDate: ${clientDate}`)
+    console.log(`ServerDate: ${serverDate}`)
+    if (clientDate.getTime() < serverDate.getTime()) {
       throw new CustomError(`Client data is outdated`, 409)
     }
     const now = Date.now()
     category.lastUpdated = now
+    category.data = data
     category.save()
     res.json({ lastUpdated: now })
   } catch (err) {
