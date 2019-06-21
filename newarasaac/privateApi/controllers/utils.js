@@ -37,7 +37,8 @@ const getUrl = (language, word) => {
     it: 4,
     de: 13,
     en: 20,
-    cr: 204
+    cr: 204,
+    nl: 24
   }
   const languageCode = verbixCodeLanguages[language]
   if (!languageCode) {
@@ -134,6 +135,8 @@ const getVerbixConjugations = async (language, word) => {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
     timeout: 3000000
   })
+  // if language is russian get word as verbix wants it
+
   const page = await browser.newPage()
   await page.goto(getUrl(language, word))
   const content = await page.content()

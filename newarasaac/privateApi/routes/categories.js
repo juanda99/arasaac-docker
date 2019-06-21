@@ -1,11 +1,11 @@
 const router = require('express').Router()
 const categoriesController = require('../controllers/categoriesController')
 
-router.get('/:locale/:date?', (req, res) => {
+router.get('/:locale/:lastUpdated?', (req, res) => {
   categoriesController.get(req, res)
 })
 
-router.put('/update/date/:date?', (req, res) => {
+router.put('/', (req, res) => {
   categoriesController.update(req, res)
 })
 
