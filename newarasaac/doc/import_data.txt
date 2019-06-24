@@ -1,0 +1,31 @@
+Importamos synsets, svgs y locutions:
+get-server-data.sh
+
+Copiamos synset folder a mongodb/data
+- Ejecutamos ./data.sh para importar synsets a bbdd
+
+Pictogramas y autores
+---------------------
+export de phpmyadmin
+
+db.pictos_ar.drop()
+db.pictos_bg.drop()
+db.pictos_br.drop()
+db.pictos_ca.drop()
+db.pictos_de.drop()
+db.pictos_en.drop()
+db.pictos_es.drop()
+db.pictos_eu.drop()
+db.pictos_fr.drop()
+db.pictos_gl.drop()
+db.pictos_hr.drop()
+db.pictos_it.drop()
+db.pictos_nl.drop()
+db.pictos_pl.drop()
+db.pictos_pt.drop()
+db.pictos_ro.drop()
+db.pictos_ru.drop()
+db.pictos_val.drop()
+db.pictos_zh.drop()
+
+
