@@ -17,7 +17,6 @@ const Pictograms = languages.reduce((dict, language) => {
 }, {})
 
 const getConjugations = async (req, res) => {
-  const message = 'Error getting conjugations'
   const { word, language } = req.params
 
   try {
@@ -29,9 +28,27 @@ const getConjugations = async (req, res) => {
       conjugations = await getVerbixConjugations(language, word)
     }
     if (!found) saveConjugations(language, word, conjugations)
-    const present = getDeclinations(PRESENT, conjugations)
-    const past = getDeclinations(PAST, conjugations)
-    const future = getDeclinations(FUTURE, conjugations)
+    let present = getDeclinations(PRESENT, conjugations)
+
+    // in spanish we remove negative and add reflexive
+    if (language === 'es') {
+      present = present.filter(word => word.indexOf('no ') !== 0)
+      const reflexive = ['me', 'te', 'se', 'nos', 'os', 'se']
+      const infinitive = present[0]
+      const gerund = present[1]
+      reflexive.forEach(pronoun => {
+        present.push(`${infinitive}${pronoun}`)
+        present.push(`${gerund}${pronoun}`)
+      })
+    }
+    let past = getDeclinations(PAST, conjugations)
+    let future = getDeclinations(FUTURE, conjugations)
+
+    // remove duplicates
+    present = [...new Set(present)]
+    past = [...new Set(past)]
+    future = [...new Set(future)]
+
     await Verb.findOneAndUpdate(
       { language, verb: word },
       { present, past, future, verb: word, language },
