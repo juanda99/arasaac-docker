@@ -35,8 +35,16 @@ var pictogramSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  status: Number,
+  // status: Number, // published (1), unpublished (0)
+  published: {
+    type: Boolean,
+    default: false
+  },
   // published (1), unpublished (0)
+  validated: {
+    type: Boolean,
+    default: false
+  },
   created: {
     type: Date,
     default: Date.now

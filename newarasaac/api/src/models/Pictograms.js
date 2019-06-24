@@ -39,7 +39,15 @@ const pictogramSchema = new Schema({
       ref: 'User'
     }
   ],
-  status: Number, // published (1), unpublished (0)
+  // status: Number, // published (1), unpublished (0)
+  published: {
+    type: Boolean,
+    default: false
+  }, // published (1), unpublished (0)
+  validated: {
+    type: Boolean,
+    default: false
+  },
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
   license: {
