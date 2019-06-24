@@ -140,13 +140,13 @@ class Imagenes(object):
         sql_images =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as status, synsets
+            estado as published, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         sql_images_es =  '''SELECT id_imagen as idPictogram,
             fecha_creacion as created, ultima_modificacion as lastUpdated,
             id_licencia as license, id_autor as authors, 
-            estado as status, synsets
+            estado as published, synsets
             FROM imagenes where id_tipo_imagen='10'
             '''
         # remove: tags_imagen as legacyTags
@@ -194,14 +194,19 @@ class Imagenes(object):
             im['keywords'] = list(word_col.find({'idPictogram': im['idPictogram']},
                         projection={'_id': 0, 'idPictogram':0} ))
                          
-            tags = im.get('legacyTags')
-            if tags:
-                im['legacyTags'] = separa_campos(im['legacyTags'])
-
+            # tags = im.get('legacyTags')
+            # if tags:
+            #    im['legacyTags'] = separa_campos(im['legacyTags'])
+            im['categories']=[]
             synsets = im.get('synsets')
             if synsets:
                 im['synsets'] = [s.strip() for s in im['synsets'].split(';') if s]
+            if im['published'] == 0:
+                im['published'] = False
+            else:
+                im['published'] = True
 
+            im['validated'] = False
         colimages.insert_many(data)
 
         # elimina colección aux de palabras

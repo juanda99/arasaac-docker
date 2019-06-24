@@ -119,6 +119,7 @@ def transformarMateriales():
        # newMaterial['fechaAlta'] = material['fecha_alta']
        # newMaterial['file'] = str(material['id_material']) + ".zip"
        # newMaterial['fechaActualizacion']=None
+        MyPrettyPrinter().pprint(material['material_idiomas'][0])
         newMaterial['language'] = str(mongoLanguage[material['material_idiomas'][0]])
         newMaterial['lang'] = str(idiomas[material['material_idiomas'][0]])
         material['material_idiomas'].pop(0) # not needed for translations
