@@ -108,7 +108,7 @@ def transformarMateriales():
         newMaterial['activity'] = list(set(newMaterial['activity'])) # delete duplicates
         newMaterial['title'] = material['material_titulo']
         newMaterial['created'] = fecha
-        newMaterial['lastUpdate'] = fecha
+        newMaterial['lastUpdated'] = fecha
         newMaterial['desc'] = material['material_descripcion']
         # newMaterial['files'] = material['material_archivos']
         # newMaterial['screenshot'] = [] 
@@ -119,7 +119,7 @@ def transformarMateriales():
        # newMaterial['fechaAlta'] = material['fecha_alta']
        # newMaterial['file'] = str(material['id_material']) + ".zip"
        # newMaterial['fechaActualizacion']=None
-        MyPrettyPrinter().pprint(material['material_idiomas'][0])
+       # MyPrettyPrinter().pprint(material['material_idiomas'][0])
         newMaterial['language'] = str(mongoLanguage[material['material_idiomas'][0]])
         newMaterial['lang'] = str(idiomas[material['material_idiomas'][0]])
         material['material_idiomas'].pop(0) # not needed for translations
@@ -132,7 +132,7 @@ def transformarMateriales():
             translation['title'] = material['material_titulo']
             translation['desc'] = material['material_descripcion']
             translation['created'] = fecha
-            translation['lastUpdate'] = fecha
+            translation['lastUpdated'] = fecha
             translation['downloads'] = 0
             newMaterial['translations'].append(translation)
 
