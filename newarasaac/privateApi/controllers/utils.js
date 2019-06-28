@@ -109,17 +109,49 @@ const saveFilesByType = async (formFiles, id) => {
 
 const checkTense = (language, tense) => {
   switch (tense) {
-    case '1':
-    case 1:
     case 'Perfect':
-    case 'Imperfect': // english
+    case 'Perfet': // ca
+    case 'Perfeito': // pt
+    case 'Imperfect': // en
+    case 'Imparfait': // fr
+    case 'Imperfet': // ca
+    case 'Imperfeito': // pt
+    case 'Mais-que-perfeito': // pt
+    case 'Pretérito': // pt
+    case 'Condicional perfeito': // pt
     case 'Past':
+    case 'Passé': // fr
+    case 'Passé simple': // fr
+    case 'Passat simple': // ca
     case 'Pluperfect':
     case 'Preterite':
     case 'Preterite Perfect':
+    case 'Passé composé': // fr
+    case 'Passé antérieur': // fr
+    case 'Passat anterior': // ca
+    case 'Passat perifràstic': // ca
+    case 'Passat anterior perifràstic': // ca
+    case 'Passat anterior perifràsticr': // ca bug, last r!
+    case 'Condicional perfet': // ca
+    case 'Plus-que-parfait': // fr
+    case 'Plusquamperfet': // ca
+    case 'Passato prossimo': // it
+    case 'Passato': // it
+    case 'Imperfetto': // it
+    case 'Trapassato prossimo': // it
+    case 'Passato remoto': // it
+    case 'Trapassato remoto': // it
       return PAST
     case 'Future':
+    case 'Futuro': // pt, it
+    case 'Futuro anterior': // pt
+    case 'Futuro anteriore': // it
+    case 'Futur simple': // fr, ca
+    case 'Futur antérieur': // fr
+    case 'Future I': // de
+    case 'Future II': // de
     case 'Future Perfect':
+    case 'Futur perfet': // ca
       return FUTURE
     default:
       return PRESENT
