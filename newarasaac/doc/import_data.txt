@@ -29,3 +29,11 @@ db.pictos_val.drop()
 db.pictos_zh.drop()
 
 
+Después de importar pictogramas, hay que generar índice
+load("./indexes.js")
+
+- Exportamos datos:
+mongodump --archive=arasaac.20190629.archive --db arasaac
+
+- Importamos datos:
+mongorestore --archive=arasaac.20190629.archive --db arasaac --drop
