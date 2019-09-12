@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-
   nginx-proxy:
     hostname: nginx-proxy
     image: jwilder/nginx-proxy
@@ -15,7 +14,6 @@ services:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "./vhost.d:/etc/nginx/vhost.d"
       - "./custom.conf:/etc/nginx/conf.d/custom.conf"
-      - "/usr/share/nginx/html"
       - "./certs:/etc/nginx/certs:ro"
       - html:/usr/share/nginx/html
     networks:
@@ -29,7 +27,7 @@ services:
       - "./certs:/etc/nginx/certs:rw"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./vhost.d:/etc/nginx/vhost.d"
-      - html:/usr/share/nginx/html 
+      - html:/usr/share/nginx/html
     networks:
       - frontend
 
@@ -38,4 +36,4 @@ networks:
     driver: bridge
 
 volumes:
-  html: 
+  html:
