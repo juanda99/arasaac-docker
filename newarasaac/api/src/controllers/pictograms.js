@@ -149,8 +149,25 @@ const searchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
   const searchText = stopWords(req.swagger.params.searchText.value, locale)
   console.log(`searchText filtered:  ${searchText}`)
+
+  /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
+  y por último categoría exacta */
   try {
-    let pictograms = await Pictograms[locale]
+    let pictogramsByKeyword = await Pictograms[locale]
+      .find({
+        $or: [
+          {
+            'keywords.keyword': searchText
+          },
+          {
+            'keywords.plural': searchText
+          }
+        ]
+      })
+      .populate('authors', '_id name')
+      .lean()
+
+    let pictogramsByText = await Pictograms[locale]
       .find(
         {
           $text: {
@@ -163,8 +180,23 @@ const searchPictograms = async (req, res) => {
       )
       .populate('authors', '_id name')
       .sort({ score: { $meta: 'textScore' } })
-    if (pictograms.length === 0) return res.status(404).json([])
-    return res.json(pictograms)
+      .lean()
+
+    // const pictogramsByTextFilterd = pictogramsByText.map(
+    //   ({ score, ...items }) => items
+    // )
+    pictogramsByText.forEach(pictogram =>
+      Reflect.deleteProperty(pictogram, 'score'))
+
+    let pictograms = [
+      ...pictogramsByKeyword,
+      ...pictogramsByText
+    ]
+
+    const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram.idPictogram))).map(idPictogram => pictograms.find(a => a.idPictogram === idPictogram))
+
+    if (uniquePictograms.length === 0) return res.status(404).json([])
+    return res.json(uniquePictograms)
   } catch (err) {
     console.log(err)
     return res.status(500).json({
