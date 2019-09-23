@@ -40,7 +40,21 @@ const create = async (req, res) => {
     if (user) {
       // it can be activated or not
       if (user.isVerified) throw new CustomError('ALREADY_USER', 409)
-      throw new CustomError(`NOT_ACTIVATED_USER`, 403)
+      // send again the email, because it may be lost, update the password
+      // throw new CustomError(`NOT_ACTIVATED_USER`, 403)
+      user.password = userData.password
+      user.name = userData.name
+      user.url = userData.url
+      user.company = userData.company
+      const savedUser = await user.save()
+      logger.debug(
+        `Updated user not activated with data: ${JSON.stringify(savedUser)}`
+      )
+      res.status(201).json({
+        message:
+          'An email has been sent to you. Please check it to verify your account.',
+        _id: savedUser._id
+      })
     }
     user = new User(userData)
     const savedUser = await user.save()
