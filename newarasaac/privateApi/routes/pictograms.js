@@ -31,4 +31,8 @@ router.get('/:locale/:lastUpdated', (req, res) => {
   pictogramsController.getPictogramsFromDate(req, res)
 })
 
+router.put('/:locale', (req, res) => {
+  pictogramsController.update(req, res)
+})
+
 module.exports = router

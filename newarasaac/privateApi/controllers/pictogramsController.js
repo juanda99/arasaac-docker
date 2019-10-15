@@ -2,7 +2,10 @@ const fs = require('fs-extra')
 const randomize = require('randomatic')
 const filenamify = require('filenamify')
 const formidable = require('formidable')
+const { ObjectID } = require('mongodb')
 const path = require('path')
+const CustomError = require('../utils/CustomError')
+const logger = require('../utils/logger')
 const { IMAGE_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
@@ -39,8 +42,39 @@ const getAll = async (req, res) => {
     return res.json(pictograms)
   } catch (err) {
     return res.status(500).json({
-      message: 'Error getting pictograms See error field for detail',
+      message: 'Error getting pictograms. See error field for detail',
       error: err
+    })
+  }
+}
+
+const update = async (req, res) => {
+  const { locale } = req.params
+  const updateData = req.body
+  const { _id } = updateData
+  console.log(updateData)
+  const now = Date.now()
+  updateData.lastUpdated = now
+  try {
+    if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
+    const pictogram = await Pictograms[locale].findById(_id)
+    if (!pictogram) {
+      throw new CustomError(
+        `No pictogram found with id: ${_id} for locale: ${locale}`,
+        404
+      )
+    }
+    Object.assign(pictogram, updateData)
+    console.log('*************************00')
+    console.log(pictogram)
+    console.log('*******************')
+    pictogram.save()
+    res.json({ lastUpdated: now })
+  } catch (err) {
+    logger.error(`Error updating pictogram: ${err.message}`)
+    res.status(err.httpCode || 500).json({
+      message: 'Error updating pictogram. See error field for detail',
+      error: err.message
     })
   }
 }
@@ -167,5 +201,6 @@ module.exports = {
   getPictogramsIdBySearch,
   postCustomPictogramFromBase64,
   getCustomPictogramByName,
-  getLocutionById
+  getLocutionById,
+  update
 }

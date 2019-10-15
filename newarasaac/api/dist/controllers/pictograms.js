@@ -1,5 +1,13 @@
 "use strict";
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -318,7 +326,7 @@ function () {
   var _ref4 = _asyncToGenerator(
   /*#__PURE__*/
   regeneratorRuntime.mark(function _callee4(req, res) {
-    var locale, searchText, pictograms;
+    var locale, searchText, pictogramsByKeyword, pictogramsByText, pictograms, uniquePictograms;
     return regeneratorRuntime.wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -326,8 +334,22 @@ function () {
             locale = req.swagger.params.locale.value;
             searchText = stopWords(req.swagger.params.searchText.value, locale);
             console.log("searchText filtered:  ".concat(searchText));
+            /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
+            y por último categoría exacta */
+
             _context4.prev = 3;
             _context4.next = 6;
+            return Pictograms[locale].find({
+              $or: [{
+                'keywords.keyword': searchText
+              }, {
+                'keywords.plural': searchText
+              }]
+            }).populate('authors', '_id name').lean();
+
+          case 6:
+            pictogramsByKeyword = _context4.sent;
+            _context4.next = 9;
             return Pictograms[locale].find({
               $text: {
                 $search: searchText,
@@ -342,23 +364,37 @@ function () {
               score: {
                 $meta: 'textScore'
               }
+            }).lean();
+
+          case 9:
+            pictogramsByText = _context4.sent;
+            // const pictogramsByTextFilterd = pictogramsByText.map(
+            //   ({ score, ...items }) => items
+            // )
+            pictogramsByText.forEach(function (pictogram) {
+              return Reflect.deleteProperty(pictogram, 'score');
+            });
+            pictograms = [].concat(_toConsumableArray(pictogramsByKeyword), _toConsumableArray(pictogramsByText));
+            uniquePictograms = Array.from(new Set(pictograms.map(function (pictogram) {
+              return pictogram.idPictogram;
+            }))).map(function (idPictogram) {
+              return pictograms.find(function (a) {
+                return a.idPictogram === idPictogram;
+              });
             });
 
-          case 6:
-            pictograms = _context4.sent;
-
-            if (!(pictograms.length === 0)) {
-              _context4.next = 9;
+            if (!(uniquePictograms.length === 0)) {
+              _context4.next = 15;
               break;
             }
 
             return _context4.abrupt("return", res.status(404).json([]));
 
-          case 9:
-            return _context4.abrupt("return", res.json(pictograms));
+          case 15:
+            return _context4.abrupt("return", res.json(uniquePictograms));
 
-          case 12:
-            _context4.prev = 12;
+          case 18:
+            _context4.prev = 18;
             _context4.t0 = _context4["catch"](3);
             console.log(_context4.t0);
             return _context4.abrupt("return", res.status(500).json({
@@ -366,12 +402,12 @@ function () {
               error: _context4.t0
             }));
 
-          case 16:
+          case 22:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[3, 12]]);
+    }, _callee4, null, [[3, 18]]);
   }));
 
   return function searchPictograms(_x7, _x8) {
