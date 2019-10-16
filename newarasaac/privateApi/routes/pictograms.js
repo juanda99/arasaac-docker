@@ -35,4 +35,8 @@ router.put('/:locale', (req, res) => {
   pictogramsController.update(req, res)
 })
 
+router.post('/', (req, res) => {
+  pictogramsController.upload(req, res)
+})
+
 module.exports = router

@@ -9,7 +9,7 @@ const { PAST, PRESENT, FUTURE } = require('./constants')
 const _ = require('lodash')
 const { CONJUGATIONS_DIR } = require('../utils/constants')
 
-const saveFiles = async (files, dir) => {
+export const saveFiles = async (files, dir) => {
   await fs.ensureDir(dir)
   if (Array.isArray(files)) {
     return Promise.all(
@@ -59,7 +59,7 @@ const saveFilesByType = async (formFiles, id) => {
   const langScreenshotsPattern = new RegExp(`^[A-z]{2,3}langScreenshots$`, 'i')
 
   if (formFiles.files) {
-    filePromise = saveFiles(
+    filesPromise = saveFiles(
       formFiles.files,
       path.resolve(MATERIALS, `${id}`, 'files')
     )

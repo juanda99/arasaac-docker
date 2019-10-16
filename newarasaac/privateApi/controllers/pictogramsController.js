@@ -10,6 +10,9 @@ const { IMAGE_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
 const languages = require('../utils/languages')
+const { saveFiles } = requier('./utils')
+
+const SVG_TEMP_DIR = '/app/svgTemp'
 
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
@@ -46,6 +49,27 @@ const getAll = async (req, res) => {
       error: err
     })
   }
+}
+
+const upload = async (req, res, next) => {
+  const form = new formidable.IncomingForm()
+  form.encoding = 'utf-8'
+  form.keepExtensions = true
+  form.multiples = true
+  // form.uploadDir = `${__dirname}/uploads`
+  form.parse(req, async (err, fields, files) => {
+    if (err) next(err)
+    try {
+      await saveFiles(files, SVG_TEMP_DIR)
+      return res.status(201).json({})
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: 'Error uploading pictograms',
+        error: err
+      })
+    }
+  })
 }
 
 const update = async (req, res) => {
@@ -202,5 +226,6 @@ module.exports = {
   postCustomPictogramFromBase64,
   getCustomPictogramByName,
   getLocutionById,
-  update
+  update,
+  upload
 }
