@@ -42,8 +42,8 @@ services:
       - ./certs:/root/.ssh
       - ${IMAGE_DIR}:/app/pictograms
       - ${CONJUGATIONS_DIR}:/app/conjugations
+      - ${SVG_DIR}:/app/svg:rw
       - ./tmp:/app/tmp
-      - ${SVG_TMP_DIR}:/app/tmpSVG
       - /app/.config
       - /app/node_modules
     environment:

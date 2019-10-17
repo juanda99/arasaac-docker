@@ -6,7 +6,7 @@ const { ObjectID } = require('mongodb')
 const path = require('path')
 const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
-const { IMAGE_DIR, SVG_TMP_DIR } = require('../utils/constants')
+const { IMAGE_DIR, SVG_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
 const languages = require('../utils/languages')
@@ -56,9 +56,30 @@ const upload = async (req, res, next) => {
   form.multiples = true
   // form.uploadDir = `${__dirname}/uploads`
   form.parse(req, async (err, fields, files) => {
-    if (err) logger.error(`ERROR UPLOADING PICTOGRAMSS: ${err.message}`)
+    if (err) logger.error(`ERROR UPLOADING PICTOGRAMS: ${err.message}`)
     try {
-      await saveFiles(files, SVG_TMP_DIR)
+      // get last file id:
+      const svgFiles = await fs.readdir(SVG_DIR)
+      const EXTENSION = '.svg'
+      /* filter only *.svg files with numeric basename */
+      const targetFiles = svgFiles
+        .filter(
+          file =>
+            path.extname(file).toLowerCase() === EXTENSION &&
+            !isNaN(path.basename(file, EXTENSION))
+        )
+        .map(file => path.basename(file, EXTENSION))
+      let number = Math.max(...targetFiles)
+      let i = 1
+      for (const file of files.files) {
+        // if filename is a number, it means we are updating previous file...
+        if (isNaN(path.basename(file.name, EXTENSION))) {
+          await saveFiles(file, SVG_DIR, `${number + i}.svg`)
+          i += 1
+        } else {
+          await saveFiles(file, SVG_DIR)
+        }
+      }
       return res.status(201).json({})
     } catch (err) {
       console.log(err)

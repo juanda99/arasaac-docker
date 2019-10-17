@@ -4,15 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "DEBUG=email-templates nodemon --verbose --inspect=0.0.0.0:9229 --ignore '*.json' --ignore 'materials/' --ignore 'conjugations/' --ignore 'locutions/' --ignore 'pictograms/' app.js",
+    "start":
+      "DEBUG=email-templates nodemon --verbose --inspect=0.0.0.0:9229 --ignore '*.json' --ignore 'materials/' --ignore 'conjugations/' --ignore 'locutions/' --ignore 'svg/' --ignore 'tmpSVG' --ignore 'pictograms/' app.js",
     "serve": "node app.js",
     "precommit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
-    ]
+    "*.js": ["prettier --write", "git add"]
   },
   "author": "",
   "license": "ISC",

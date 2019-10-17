@@ -9,18 +9,18 @@ const { PAST, PRESENT, FUTURE } = require('./constants')
 const _ = require('lodash')
 const { CONJUGATIONS_DIR } = require('../utils/constants')
 
-const saveFiles = async (files, dir) => {
+const saveFiles = async (files, dir, newName) => {
   await fs.ensureDir(dir)
   if (Array.isArray(files)) {
     return Promise.all(
       files.map(file => {
-        const destDir = path.resolve(dir, file.name)
-        return fs.move(file.path, destDir)
+        const destDir = path.resolve(dir, newName || file.name)
+        return fs.move(file.path, destDir, { overwrite: true })
       })
     )
   }
-  const destDir = path.resolve(dir, files.name)
-  return fs.move(files.path, destDir)
+  const destDir = path.resolve(dir, newName || files.name)
+  return fs.move(files.path, destDir, { overwrite: true })
 }
 
 const getUrl = (language, word) => {
@@ -52,7 +52,7 @@ const getUrl = (language, word) => {
   return `http://www.verbix.com/webverbix/go.php?T1=${word}&D1=${languageCode}`
 }
 const saveFilesByType = async (formFiles, id) => {
-  const filePromises = []
+  // const filePromises = []
   let filesPromise
   let screenshotsPromise
   const langFilesPattern = new RegExp(`^[A-z]{2,3}langFiles$`, 'i')

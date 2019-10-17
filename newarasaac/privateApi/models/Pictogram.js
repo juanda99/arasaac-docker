@@ -11,30 +11,13 @@ const pictogramSchema = new Schema({
       },
       locution: Number,
       meaning: String,
-      type: {
-        type: String,
-        required: true,
-        enum: [
-          'Proper Names',
-          'Common names',
-          'Verbs',
-          'Descriptives (adj and adv)',
-          'Social content',
-          'Miscellaneous'
-        ]
-      },
+      type: Number,
       lse: Number,
       downloads: {
         type: Number,
         default: 0
       },
       sinonyms: [String]
-    }
-  ],
-  authors: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
     }
   ],
   // status: Number, // published (1), unpublished (0)
@@ -46,18 +29,18 @@ const pictogramSchema = new Schema({
     type: Boolean,
     default: false
   },
+  visible: {
+    type: Boolean,
+    default: false
+  },
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
-  license: {
-    type: String,
-    enum: ['Creative Commons BY-NC-SA'], // just one license right now
-    default: 'Creative Commons BY-NC-SA'
-  },
   downloads: {
     type: Number,
     default: 0
   },
   tags: [String],
+  searchTags: [String], // add by language, used by keyword index
   legacyTags: [String], // old tags just in case,
   type: {
     // from tipo_pictograma, 1 descriptivos, 2 esquemáticos
