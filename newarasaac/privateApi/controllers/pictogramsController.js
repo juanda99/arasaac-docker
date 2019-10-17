@@ -6,13 +6,11 @@ const { ObjectID } = require('mongodb')
 const path = require('path')
 const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
-const { IMAGE_DIR } = require('../utils/constants')
+const { IMAGE_DIR, SVG_TMP_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
 const languages = require('../utils/languages')
-const { saveFiles } = requier('./utils')
-
-const SVG_TEMP_DIR = '/app/svgTemp'
+const { saveFiles } = require('./utils')
 
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
@@ -58,9 +56,9 @@ const upload = async (req, res, next) => {
   form.multiples = true
   // form.uploadDir = `${__dirname}/uploads`
   form.parse(req, async (err, fields, files) => {
-    if (err) next(err)
+    if (err) logger.error(`ERROR UPLOADING PICTOGRAMSS: ${err.message}`)
     try {
-      await saveFiles(files, SVG_TEMP_DIR)
+      await saveFiles(files, SVG_TMP_DIR)
       return res.status(201).json({})
     } catch (err) {
       console.log(err)

@@ -43,6 +43,7 @@ services:
       - ${IMAGE_DIR}:/app/pictograms
       - ${CONJUGATIONS_DIR}:/app/conjugations
       - ./tmp:/app/tmp
+      - ${SVG_TMP_DIR}:/app/tmpSVG
       - /app/.config
       - /app/node_modules
     environment:

@@ -9,7 +9,7 @@ const { PAST, PRESENT, FUTURE } = require('./constants')
 const _ = require('lodash')
 const { CONJUGATIONS_DIR } = require('../utils/constants')
 
-export const saveFiles = async (files, dir) => {
+const saveFiles = async (files, dir) => {
   await fs.ensureDir(dir)
   if (Array.isArray(files)) {
     return Promise.all(
@@ -266,6 +266,7 @@ const saveConjugations = async (language, word, content) => {
 }
 
 module.exports = {
+  saveFiles,
   saveFilesByType,
   getVerbixConjugations,
   readConjugations,
