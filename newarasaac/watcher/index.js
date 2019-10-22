@@ -22,6 +22,7 @@ const SCREENSHOTS_DIR = process.env.SCREENSHOTS_DIR || "screenshots";
 const MATERIALS = process.env.MATERIALS || "/app/materials";
 const RESOLUTION = process.env.RESOLUTION || 300;
 const NODE_ENV = process.env.NODE_ENV || "development";
+const usePolling = parseInt(process.env.CHOKIDAR_USEPOLLING) || 1;
 const TIME = process.env.TIME || 3000;
 
 logger.info("ARASAAC WATCHER STARTED");
@@ -42,7 +43,7 @@ var watcher = chokidar.watch(MATERIALS, {
   ignoreInitial: true,
   cwd: MATERIALS,
   // move to env variable, 0 for mac, 1 for server
-  usePolling: true,
+  usePolling,
   awaitWriteFinish: {
     stabilityThreshold: 3000,
     pollInterval: 300

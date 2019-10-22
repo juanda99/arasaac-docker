@@ -34,7 +34,7 @@ services:
     hostname: webstatic
     container_name: webstatic
     volumes:
-      - ./materials:/usr/share/nginx/html/materials:ro
+      - ${MATERIAL_DIR}:/usr/share/nginx/html/materials:ro
       - ./images:/usr/share/nginx/html/images:ro
       - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
       - ./locutions:/usr/share/nginx/html/locutions:ro
@@ -58,7 +58,7 @@ services:
     command: npm run serve
     volumes:
       - ./watcher:/app
-      - ./materials:/app/materials
+      - ${MATERIAL_DIR}:/app/materials
       - /app/node_modules
       - /app/.config
     environment:
@@ -92,8 +92,9 @@ services:
     volumes:
       - ./ssh_keys/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key
       - ./ssh_keys/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key
-      - ./svg:/home/betaarasaac/svg
-      - ./materials:/home/betaarasaac/materials
+      - ${SVG_DIR}:/home/betaarasaac/svg
+      - ${MATERIAL_DIR}:/home/betaarasaac/materials
+      - ${IMAGE_DIR}:/home/betaarasaac/pictograms
     ports:
       - "8005:22"
     command: betaarasaac:${SFTP_PASSWORD}
