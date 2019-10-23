@@ -14,6 +14,7 @@ services:
       VIRTUAL_HOST: "beta.arasaac.org"
     networks:
       - nginxproxy_frontend
+    restart: always
 
   admin:
     image: nginx
@@ -28,6 +29,7 @@ services:
       VIRTUAL_HOST: "admin.arasaac.org"
     networks:
       - nginxproxy_frontend
+    restart: always
 
   webstatic:
     image: nginx
@@ -45,10 +47,12 @@ services:
       VIRTUAL_HOST: "static.arasaac.org"
     networks:
       - nginxproxy_frontend
+    restart: always
 
   auth:
     volumes:
       - /app/node_modules
+    restart: always
 
   watcher:
     hostname: watcher
@@ -63,6 +67,7 @@ services:
       - /app/.config
     environment:
       NODE_ENV: $NODE_ENV
+    restart: always
 
   svgwatcher:
     hostname: svgwatcher
@@ -82,6 +87,7 @@ services:
       OVERWRITE: $OVERWRITE
     ports:
       - "9226:9229"
+    restart: always
 
   sftp:
     hostname: sftp
@@ -99,6 +105,7 @@ services:
     command: betaarasaac:${SFTP_PASSWORD}
     networks:
       - nginxproxy_frontend
+    restart: always
 
 networks:
   nginxproxy_frontend:
