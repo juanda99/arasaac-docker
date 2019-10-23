@@ -212,14 +212,16 @@ server.exchange(
 server.exchange(
   oauth2orizeFacebook(function(client, profile, scope, done) {
     //if user does not exists we create it
-    const query = { "facebook.id": profile.id };
+    const query = {
+      $or: [{ "facebook.id": profile.id }, { email: profile.email }]
+    };
+    // const query = { "facebook.id": profile.id };
     const update = {
       lastLogin: new Date(),
       "facebook.name": profile.name,
       "facebook.id": profile.id,
-      "facebook.picture": `https://graph.facebook.com/${
-        profile.id
-      }/picture?type=large`
+      email: profile.email,
+      "facebook.picture": `https://graph.facebook.com/${profile.id}/picture?type=large`
     };
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -388,6 +390,8 @@ exports.token = [
     const allow_origins = [
       "http://localhost:3000",
       "https://beta.arasaac.org",
+      "https://arasaac.org",
+      "https://www.arasaac.org",
       "https://www.beta.arasaac.org",
       "https://admin.arasaac.org",
       "https://www.admin.arasaac.org"
