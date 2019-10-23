@@ -25,6 +25,7 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
+    restart: always
 
   privateapi:
     hostname: privateapi
@@ -60,6 +61,7 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
+    restart: always
 
   auth:
     hostname: auth
@@ -80,6 +82,7 @@ services:
     networks:
       - nginxproxy_frontend
       - backend
+    restart: always
 
   mongodb:
     hostname: mongodb
@@ -90,6 +93,7 @@ services:
       - ./mongodb/dbdata:/data/db
     networks:
       - backend
+    restart: always
 
 networks:
   nginxproxy_frontend:

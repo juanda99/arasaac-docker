@@ -171,8 +171,6 @@ server.exchange(
  */
 server.exchange(
   oauth2orize.exchange.clientCredentials((client, scope, done) => {
-    console.log("kkkkkkkkkk");
-
     const token = createToken({
       sub: client.name,
       aud: client.name,
@@ -212,17 +210,23 @@ server.exchange(
 server.exchange(
   oauth2orizeFacebook(function(client, profile, scope, done) {
     //if user does not exists we create it
-    const query = { "facebook.id": profile.id };
+    const query = {
+      $or: [{ "facebook.id": profile.id }, { email: profile.email }]
+    };
+    // const query = { "facebook.id": profile.id };
     const update = {
       lastLogin: new Date(),
       "facebook.name": profile.name,
       "facebook.id": profile.id,
-      "facebook.picture": `https://graph.facebook.com/${
-        profile.id
-      }/picture?type=large`
+      email: profile.email,
+      $setOnInsert: { locale: profile.locale },
+      "facebook.picture": `https://graph.facebook.com/${profile.id}/picture?type=large`
     };
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
+    const options = {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true
+    };
     User.findOneAndUpdate(query, update, options)
       .then(user => {
         const scope = getScopes(user);
@@ -257,12 +261,17 @@ var option = {
 server.exchange(
   oauth2orizeGoogle(option, function(client, profile, scope, done) {
     //if user does not exists we create it
-    const query = { "google.id": profile.id };
+    const query = {
+      $or: [{ "google.id": profile.sub }, { email: profile.email }]
+    };
+
     const update = {
       lastLogin: new Date(),
       "google.name": profile.name,
       "google.id": profile.sub,
-      "google.picture": profile.picture
+      "google.picture": profile.picture,
+      email: profile.email,
+      $setOnInsert: { locale: profile.locale }
     };
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
@@ -388,12 +397,14 @@ exports.token = [
     const allow_origins = [
       "http://localhost:3000",
       "https://beta.arasaac.org",
+      "https://arasaac.org",
+      "https://www.arasaac.org",
       "https://www.beta.arasaac.org",
       "https://admin.arasaac.org",
       "https://www.admin.arasaac.org"
     ];
     if (allow_origins.includes(req.headers.origin)) next();
-    else res.status(401).json({ error: "Only allowed for beta.arasaac.org" });
+    else res.status(401).json({ error: "Only allowed for arasaac.org" });
   },
   // changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
   passport.authenticate(["basic", "oauth2-client-password"], {

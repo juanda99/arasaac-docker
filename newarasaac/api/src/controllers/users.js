@@ -21,7 +21,9 @@ module.exports = {
           role: 1,
           targetLanguages: 1,
           favorites: 1,
-          lastLogin: 1
+          lastLogin: 1,
+          facebook: 1,
+          google: 1
         }
       )
       if (!user) {
