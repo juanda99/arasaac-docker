@@ -18,6 +18,7 @@ services:
       - html:/usr/share/nginx/html
     networks:
       - frontend
+    restart: always
   letsencrypt:
     hostname: letsencrypt
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -30,6 +31,7 @@ services:
       - html:/usr/share/nginx/html
     networks:
       - frontend
+    restart: always
 
 networks:
   frontend:
