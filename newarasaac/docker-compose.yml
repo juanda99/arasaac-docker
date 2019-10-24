@@ -11,7 +11,7 @@ services:
       - mongodb
       - auth
     volumes:
-      - ./materials:/app/materials
+      - ${MATERIAL_DIR}:/app/materials
       - /app/.config
       - ${SVG_DIR}:/app/svg:ro
       - ${IMAGE_DIR}:/app/pictograms
@@ -38,7 +38,7 @@ services:
       - auth
     volumes:
       - ./privateApi:/app
-      - ./materials:/app/materials
+      - ${MATERIAL_DIR}:/app/materials
       - ./locutions:/app/locutions
       - ./certs:/root/.ssh
       - ${IMAGE_DIR}:/app/pictograms

@@ -232,6 +232,7 @@ server.exchange(
         return validate.generateTokens({
           scope,
           userID: user._id,
+          role: user.role,
           clientID: client.clientId
         });
       })
@@ -278,6 +279,7 @@ server.exchange(
         const scope = getScopes(user);
         return validate.generateTokens({
           scope,
+          role: user.role,
           userID: user._id,
           clientID: client.clientId
         });

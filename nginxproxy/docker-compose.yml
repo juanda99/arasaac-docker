@@ -19,6 +19,11 @@ services:
     networks:
       - frontend
     restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
   letsencrypt:
     hostname: letsencrypt
     image: jrcs/letsencrypt-nginx-proxy-companion
