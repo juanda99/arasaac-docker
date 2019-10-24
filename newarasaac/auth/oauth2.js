@@ -239,7 +239,7 @@ server.exchange(
           scope,
           userID: user._id,
           role: user.role,
-          clientID: client.clientId
+          clientID: client.name
         });
       })
       .then(tokens => {
@@ -293,7 +293,7 @@ server.exchange(
           scope,
           role: user.role,
           userID: user._id,
-          clientID: client.clientId
+          clientID: client.name
         });
       })
       .then(tokens => {
