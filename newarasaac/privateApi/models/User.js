@@ -3,7 +3,6 @@ const { SHA256 } = require('crypto-js')
 const { Schema } = mongoose
 const CustomError = require('../utils/CustomError')
 
-const oAuthTypes = ['facebook', 'google']
 const randomize = require('randomatic')
 
 const UserSchema = new Schema(
@@ -31,24 +30,30 @@ const UserSchema = new Schema(
     locale: { type: String, default: 'en' },
     password: String,
     verifyToken: String,
-    passwordlessToken: String,
     created: { type: Date, default: Date.now },
+    // to control which docs should be downloaded to the client
     updated: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now },
     verifyDate: { type: Date },
-    url: String,
-    company: String,
+    url: {
+      type: String,
+      default: ''
+    },
+    company: {
+      type: String,
+      default: ''
+    },
     role: { type: String, default: 'user' },
     targetLanguages: [String],
     facebook: {
       id: String,
-      token: String,
+      picture: String,
       email: String,
       name: String
     },
     google: {
       id: String,
-      token: String,
+      picture: String,
       email: String,
       name: String
     },
@@ -68,30 +73,21 @@ const validatePresenceOf = value => value && value.length
 // the below 5 validations only apply if you are signing up traditionally
 
 UserSchema.path('name').validate(function (name) {
-  if (this.skipValidation()) return true
   return name.length
 }, 'Name cannot be blank')
 
 UserSchema.path('email').validate(function (email) {
-  if (this.skipValidation()) return true
   return email.length
 }, 'Email cannot be blank')
 
 UserSchema.path('email').validate(function (email) {
   const User = mongoose.model('User')
-  if (this.skipValidation()) return true
-
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
     return User.find({ email }).exec((err, users) => !err && users.length === 0)
   }
   return true
 }, 'Email already exists')
-
-UserSchema.path('password').validate(function (password) {
-  if (this.skipValidation()) return true
-  return password.length
-}, 'Password cannot be blank')
 
 /**
  * Pre-save hook
@@ -100,7 +96,7 @@ UserSchema.path('password').validate(function (password) {
 UserSchema.pre('save', function (next) {
   if (!this.isNew) return next()
 
-  if (!validatePresenceOf(this.password) && !this.skipValidation()) {
+  if (!validatePresenceOf(this.password)) {
     return next(new CustomError('Invalid password', 400))
   }
   // override password with the hashed one:
@@ -119,15 +115,6 @@ UserSchema.methods = {
   authenticate (plainText) {
     // if user is not activate return false, otherwise check password
     return this.verifyToken ? false : `${SHA256(plainText)}` === this.password
-  },
-
-  /**
-   * Validation is not required if using OAuth
-   */
-
-  skipValidation () {
-    return !!this.passwordlessToken
-    // return ~oAuthTypes.indexOf(this.provider)
   },
 
   activate (verifyToken) {
