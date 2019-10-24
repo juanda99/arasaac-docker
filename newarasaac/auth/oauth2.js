@@ -218,9 +218,8 @@ server.exchange(
       lastLogin: new Date(),
       "facebook.name": profile.name,
       "facebook.id": profile.id,
-      email: profile.email,
-      $setOnInsert: { locale: profile.locale },
-      "facebook.picture": `https://graph.facebook.com/${profile.id}/picture?type=large`
+      "facebook.picture": `https://graph.facebook.com/${profile.id}/picture?type=large`,
+      $setOnInsert: { locale: profile.locale, email: profile.email }
     };
     const options = {
       upsert: true,
@@ -270,8 +269,7 @@ server.exchange(
       "google.name": profile.name,
       "google.id": profile.sub,
       "google.picture": profile.picture,
-      email: profile.email,
-      $setOnInsert: { locale: profile.locale }
+      $setOnInsert: { locale: profile.locale, email: profile.email }
     };
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
