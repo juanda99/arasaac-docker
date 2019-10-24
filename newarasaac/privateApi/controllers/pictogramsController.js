@@ -71,13 +71,37 @@ const upload = async (req, res, next) => {
         .map(file => path.basename(file, EXTENSION))
       let number = Math.max(...targetFiles)
       let i = 1
-      for (const file of files.files) {
+      // can upload one file or more... when just one we don't receive an array.
+      const imageFiles = Array.isArray(files.files)
+        ? files.files
+        : [files.files]
+      const pictograms = []
+
+      for (const file of imageFiles) {
         // if filename is a number, it means we are updating previous file...
         if (isNaN(path.basename(file.name, EXTENSION))) {
-          await saveFiles(file, SVG_DIR, `${number + i}.svg`)
+          const idPicto = number + i
+          pictograms.push({ idPictogram: idPicto })
+          logger.debug(`Saving file ${idPicto}.svg`)
+          await saveFiles(file, SVG_DIR, `${idPicto}.svg`)
+          logger.debug(`Saved OK file ${idPicto}.svg`)
           i += 1
         } else {
+          logger.debug(`Updating file ${file.name}`)
           await saveFiles(file, SVG_DIR)
+          logger.debug(`Updated OK file ${file.name}`)
+        }
+      }
+      if (pictograms.length) {
+        // if new, we insert them into all picto collections
+        for (const language of languages) {
+          logger.debug(
+            `Inserting new pictograms into mongodb with language ${language}`
+          )
+          await Pictograms[language].insertMany(pictograms)
+          logger.debug(
+            `Inserted OK new pictograms into mongodb with language ${language}`
+          )
         }
       }
       return res.status(201).json({})
