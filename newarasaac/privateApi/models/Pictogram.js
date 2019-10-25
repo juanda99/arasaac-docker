@@ -4,20 +4,24 @@ const pictogramSchema = new Schema({
   idPictogram: Number, // autogerated by mongoose-plugin-autoinc
   keywords: [
     {
-      idKeyword: Number, // for legacy purposes, not used
+      idKeyword: Number, // for lse video
       keyword: {
         type: String,
         required: true
       },
-      locution: Number,
+      plural: String,
+      idLocution: Number,
       meaning: String,
-      type: Number,
-      lse: Number,
-      downloads: {
-        type: Number,
-        default: 0
+      type: {
+        type: Number
       },
-      sinonyms: [String]
+      // 1-Proper Names
+      // 2-Common names
+      // 3-Verbs
+      // 4-Descriptives (adj and adv)
+      // 5-Social content
+      // 6-Miscellaneous
+      lse: Number // for lse video
     }
   ],
   // status: Number, // published (1), unpublished (0)
@@ -29,7 +33,19 @@ const pictogramSchema = new Schema({
     type: Boolean,
     default: false
   },
-  visible: {
+  available: {
+    type: Boolean,
+    default: false
+  },
+  schematic: {
+    type: Boolean,
+    default: false
+  },
+  sex: {
+    type: Boolean,
+    default: false
+  },
+  violence: {
     type: Boolean,
     default: false
   },
@@ -39,16 +55,9 @@ const pictogramSchema = new Schema({
     type: Number,
     default: 0
   },
+  categories: [String],
   tags: [String],
-  searchTags: [String], // add by language, used by keyword index
-  legacyTags: [String], // old tags just in case,
-  type: {
-    // from tipo_pictograma, 1 descriptivos, 2 esquemáticos
-    type: Number,
-    min: 1,
-    max: 2,
-    default: 1
-  }
+  desc: String // add by language, used by keyword index
 })
 
 module.exports = locale =>
