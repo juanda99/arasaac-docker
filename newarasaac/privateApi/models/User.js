@@ -124,7 +124,7 @@ UserSchema.methods = {
 }
 
 UserSchema.virtual('isVerified').get(function () {
-  return !this.verifyToken
+  return !this.verifyToken // && !!this.password
 })
 
 const User = mongoose.model('User', UserSchema, 'users')

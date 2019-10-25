@@ -100,10 +100,7 @@ const update = async (req, res) => {
     const user = await User.findOneAndUpdate({ _id: id }, req.body, {
       new: true
     })
-    console.log(user)
-    console.log(typeof user)
     if (!user) throw new CustomError('USER_NOT_FOUND', 404)
-    console.log(user)
     // else send modified doc:
     delete user.password
     delete user.idAuthor
@@ -112,8 +109,6 @@ const update = async (req, res) => {
     delete user.facebook
     delete user.favorites
     delete user.updated
-    console.log('user returned:')
-    console.log(user)
     res.status(200).json(user)
   } catch (err) {
     logger.error(`Error updating user: ${err.message}`)
