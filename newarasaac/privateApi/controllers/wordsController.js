@@ -101,7 +101,6 @@ const updateKeywords = async (req, res) => {
 const getWordnetById = async (req, res) => {
   const { idSynset } = req.params
   const url = `http://wordnet-rdf.princeton.edu/json/id/${idSynset}`
-  console.log(url)
   try {
     const response = await axios.get(url)
     if (response.data === 'Synset Not Found') throw Error('Synset not found')
