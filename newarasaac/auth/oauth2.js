@@ -135,7 +135,11 @@ server.exchange(
   oauth2orize.exchange.password(
     async (client, username, password, scope, done) => {
       try {
-        const user = await User.findOne({ email: username });
+        // active: true for old users, otherwise it's set active by activate endpoint
+        const user = await User.findOneAndUpdate(
+          { email: username },
+          { lastLogin: new Date(), active: true }
+        );
         if (!user) return done(null, false);
         if (!user.authenticate(password)) return done(null, false);
         const scope = getScopes(user);
