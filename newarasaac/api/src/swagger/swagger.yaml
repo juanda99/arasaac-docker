@@ -467,6 +467,7 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /users/profile:
     x-swagger-router-controller: users
+    # not used right now
     post:
       operationId: setProfile
       description: Update user profile
