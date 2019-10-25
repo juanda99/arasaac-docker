@@ -22,9 +22,10 @@ const Pictograms = languages.reduce((dict, language) => {
 const getPictogramsFromDate = async (req, res) => {
   const { lastUpdated, locale } = req.params
   try {
-    const pictograms = await Pictograms[locale]
-      .find({ lastUpdated: { $gt: new Date(lastUpdated) } })
-      .populate('authors')
+    const pictograms = await Pictograms[locale].find({
+      lastUpdated: { $gt: new Date(lastUpdated) }
+    })
+    console.log(pictograms)
     if (pictograms.length === 0) return res.status(404).json([]) // send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
@@ -119,7 +120,6 @@ const update = async (req, res) => {
   const { locale } = req.params
   const updateData = req.body
   const { _id } = updateData
-  console.log(updateData)
   const now = Date.now()
   updateData.lastUpdated = now
   try {
@@ -132,9 +132,6 @@ const update = async (req, res) => {
       )
     }
     Object.assign(pictogram, updateData)
-    console.log('*************************00')
-    console.log(pictogram)
-    console.log('*******************')
     pictogram.save()
     res.json({ lastUpdated: now })
   } catch (err) {
@@ -150,7 +147,6 @@ const update = async (req, res) => {
 const getPictogramsIdBySearch = async (req, res) => {
   const { locale, searchText } = req.params
   const filterSearchText = stopWords(searchText, locale)
-  console.log(`searchText filtered:  ${searchText}`)
   try {
     const pictograms = await Pictograms[locale]
       .find(
@@ -187,12 +183,9 @@ const getKeywordsById = async (req, res) => {
     )
     // TODO: findOne does not return an array, text next line:
     if (pictograms.length === 0) return res.status(404).json([])
-    else {
-      // const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
-      // return res.status(200).json({keywords})
-      return res.status(200).json(pictograms.keywords)
-    }
-    return res.json(pictograms)
+    // const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
+    // return res.status(200).json({keywords})
+    return res.status(200).json(pictograms.keywords)
   } catch (err) {
     console.log(err)
     // TODO: return err o err.messsage?????
