@@ -10,11 +10,11 @@
     "url": "https://github.com/FrankHassanabad/Oauth2orizeRecipes.git"
   },
   "dependencies": {
-    "bcrypt": "^1.0.3",
     "body-parser": "^1.9.x",
     "connect-ensure-login": "^0.1.x",
     "cookie-parser": "^1.3.x",
     "cors": "^2.8.4",
+    "crypto-js": "^3.1.9-1",
     "ejs": "^2.5.x",
     "error-ex": "^1.3.1",
     "express": "^4.10.x",
@@ -29,12 +29,13 @@
     "passport-local": "^1.0.x",
     "passport-oauth2-client-password": "^0.1.x",
     "pretty-error": "^2.1.1",
+    "randomatic": "^3.1.1",
     "uuid": "^3.0.1"
   },
   "scripts": {
     "lint": "eslint *.js config db test",
-    "start": "nodemon --watch . --watch views --watch config --watch db -e js,ejs app.js --exec babel-node  --presets stage-2",
-    "debug": "nodemon --inspect=0.0.0.0:9229 --watch . --watch views --watch config --watch db -e js,ejs app.js --exec babel-node  --presets stage-2",
+    "serve": "node app.js",
+    "start": "nodemon --inspect=0.0.0.0:9229 --watch . --watch views --watch config --watch db -e js,ejs app.js",
     "test": "mocha test test/db test/config",
     "test:watch": "npm run test -- --watch",
     "test:integration": "mocha test/integration"
@@ -44,9 +45,6 @@
     "npm": ">=3.10.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
     "chai": "^3.5.0",
     "es6-promisify": "^5.0.x",
     "eslint": "^3.10.x",

@@ -1,55 +1,116 @@
-var mongoose = require('mongoose')
-var bcrypt = require('bcrypt')
-const { logAndThrow } = require('../utils')
+const mongoose = require("mongoose");
+const { SHA256 } = require("crypto-js");
+const { Schema } = mongoose;
 
-var UserSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    trim: true
+const randomize = require("randomatic");
+
+const UserSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true
+    },
+    email: {
+      type: String,
+      trim: true,
+      required: true
+    },
+    active: {
+      type: Boolean,
+      default: false //true for facebook and google, we do it through oauth2.js
+    },
+    suscription: {
+      type: Boolean,
+      default: true
+    },
+    id: Number, // just for old data. New values with _id
+    provider: String,
+    locale: { type: String, default: "en" },
+    password: String,
+    verifyToken: String,
+    created: { type: Date, default: Date.now },
+    // to control which docs should be downloaded to the client
+    updated: { type: Date, default: Date.now },
+    lastLogin: { type: Date, default: Date.now },
+    verifyDate: { type: Date },
+    url: {
+      type: String,
+      default: ""
+    },
+    company: {
+      type: String,
+      default: ""
+    },
+    role: { type: String, default: "user" },
+    targetLanguages: [String],
+    facebook: {
+      id: String,
+      picture: String,
+      email: String,
+      name: String
+    },
+    google: {
+      id: String,
+      picture: String,
+      email: String,
+      name: String
+    },
+    favorites: []
   },
-  id: {
-    // just for old data. New values with _id
-    type: Number
-  },
-  role: {
-    type: String,
-    trim: true,
-    default: 'user'
-  },
-  /* name is needed for decision screen: Dear <name>.... */
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  facebook: {
-    id: String,
-    token: String,
-    name: String,
-    email: String
-  },
-  google: {
-    id: String,
-    token: String,
-    name: String,
-    email: String
+  {
+    strict: false
+  } /* so we can insert later providers like facebook or google if needed, also for favorites... */
+);
+
+const validatePresenceOf = value => value && value.length;
+
+/**
+ * Validations
+ */
+
+// the below 5 validations only apply if you are signing up traditionally
+
+UserSchema.path("name").validate(function(name) {
+  return name.length;
+}, "Name cannot be blank");
+
+UserSchema.path("email").validate(function(email) {
+  return email.length;
+}, "Email cannot be blank");
+
+UserSchema.path("email").validate(function(email) {
+  const User = mongoose.model("User");
+
+  // Check only when it is a new user or when email field is modified
+  if (this.isNew || this.isModified("email")) {
+    return User.find({ email }).exec(
+      (err, users) => !err && users.length === 0
+    );
   }
-},
-{ strict: false } /* so we can insert later providers like facebook or google if needed */
-)
+  return true;
+}, "Email already exists");
 
-/* Do not declare methods using ES6 arrow functions (=>). Arrow functions explicitly prevent binding this, 
-so your method will not have access to the document */
+/**
+ * Methods
+ */
+
 UserSchema.methods = {
-  validate: function (password) {
-    if (bcrypt.compareSync(password, this.password)) return this
-    logAndThrow(`Wrong password for user ${this.username}`)
-  }
-}
+  authenticate(plainText) {
+    // if user is not activate return false, otherwise check password
+    return this.verifyToken ? false : `${SHA256(plainText)}` === this.password;
+  },
 
-var User = mongoose.model('User', UserSchema);
+  activate(verifyToken) {
+    if (verifyToken === this.verifyToken) this.verifyToken = "";
+    return "";
+  }
+};
+
+UserSchema.virtual("isVerified").get(function() {
+  return !this.verifyToken;
+});
+
+const User = mongoose.model("User", UserSchema, "users");
+
 module.exports = User;

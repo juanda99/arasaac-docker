@@ -1,15 +1,18 @@
-'use strict';
+"use strict";
 
-const db = require('./db');
-const User = require ('./db/users')
-const Client = require('./db/clients')
-const passport = require('passport');
-const { Strategy: LocalStrategy } = require('passport-local');
-const { BasicStrategy } = require('passport-http');
-const { Strategy: ClientPasswordStrategy } = require('passport-oauth2-client-password');
-const { Strategy: BearerStrategy } = require('passport-http-bearer');
-const validate = require('./validate');
-const { logAndThrow } = require ('./utils')
+const db = require("./db");
+const User = require("./db/users");
+const Client = require("./db/clients");
+const passport = require("passport");
+const { Strategy: LocalStrategy } = require("passport-local");
+const { BasicStrategy } = require("passport-http");
+const {
+  Strategy: ClientPasswordStrategy
+} = require("passport-oauth2-client-password");
+const { Strategy: BearerStrategy } = require("passport-http-bearer");
+const validate = require("./validate");
+const ObjectID = require("mongodb").ObjectID;
+const { logAndThrow } = require("./utils");
 
 /**
  * LocalStrategy
@@ -18,16 +21,22 @@ const { logAndThrow } = require ('./utils')
  * Anytime a request is made to authorize an application, we must ensure that
  * a user is logged in before asking them to approve the request.
  */
-passport.use(new LocalStrategy((username, password, done) => {
-  console.log(username);
-  User.findOne({ email: username })
-    .then(user =>  user ? user.validate(password): logAndThrow(`User ${username} not found`))
-    .then(user => done(null, user))
-    .catch((error) => {
-      console.log(`Login error: ${error.message}`)
-      done(null, false)
-    })
-}))
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    console.log("kkzzzzzzzzzzzzzzzzzzzzzzzzzzzkkkkkkkkkkkkkkk3");
+    User.findOne({ email: username, verifyToken: "" })
+      .then(user =>
+        user
+          ? user.validate(password)
+          : logAndThrow(`User ${username} not found`)
+      )
+      .then(user => done(null, user))
+      .catch(error => {
+        console.log(`Login error: ${error.message}`);
+        done(null, false);
+      });
+  })
+);
 
 /**
  * BasicStrategy & ClientPasswordStrategy
@@ -40,16 +49,23 @@ passport.use(new LocalStrategy((username, password, done) => {
  * to the `Authorization` header).  While this approach is not recommended by
  * the specification, in practice it is quite common.
  */
-passport.use(new BasicStrategy((clientId, clientSecret, done) => {
-  Client.findOne({ clientId: clientId })
-    .then(client => client ? client.validate(clientSecret) : logAndThrow(`Client with id ${clientId} not found`))
-    .then(client => done(null, client))
-    .catch((error) => {
-      console.log(`Login error: ${error.message}`)
-      done(null, false)
-    })
-}))
-  /*
+passport.use(
+  new BasicStrategy((clientId, clientSecret, done) => {
+    console.log("kkkkkkkkkkkkkkkkk3");
+    Client.findOne({ clientId: clientId })
+      .then(client =>
+        client
+          ? client.validate(clientSecret)
+          : logAndThrow(`Client with id ${clientId} not found`)
+      )
+      .then(client => done(null, client))
+      .catch(error => {
+        console.log(`Login error: ${error.message}`);
+        done(null, false);
+      });
+  })
+);
+/*
   console.log('enter client login....')
   Client.findOne({ clientId: clientId }, (err, client) => {
     if (err) { return done(err) }
@@ -66,7 +82,6 @@ passport.use(new BasicStrategy((clientId, clientSecret, done) => {
   })
   */
 
-
 /**
  * Client Password strategy
  *
@@ -74,15 +89,21 @@ passport.use(new BasicStrategy((clientId, clientSecret, done) => {
  * using a client ID and client secret. The strategy requires a verify callback,
  * which accepts those credentials and calls done providing a client.
  */
-passport.use(new ClientPasswordStrategy((clientId, clientSecret, done) => {
-  Client.findOne({ clientId: clientId })
-    .then(client => client ? client.validate(clientSecret) : logAndThrow(`Client with id ${clientId} not2 found`))
-    .then(client => done(null, client))
-    .catch((error) => {
-      console.log(`Login error: ${error.message}`)
-      done(null, false)
-    })
-}))
+passport.use(
+  new ClientPasswordStrategy((clientId, clientSecret, done) => {
+    Client.findOne({ clientId: clientId })
+      .then(client =>
+        client
+          ? client.validate(clientSecret)
+          : logAndThrow(`Client with id ${clientId} not2 found`)
+      )
+      .then(client => done(null, client))
+      .catch(error => {
+        console.log(`Login error: ${error.message}`);
+        done(null, false);
+      });
+  })
+);
 
 /**
  * BearerStrategy
@@ -95,12 +116,15 @@ passport.use(new ClientPasswordStrategy((clientId, clientSecret, done) => {
  * To keep this example simple, restricted scopes are not implemented, and this is just for
  * illustrative purposes
  */
-passport.use(new BearerStrategy((accessToken, done) => {
-  db.accessTokens.find(accessToken)
-  .then(token => validate.token(token, accessToken))
-  .then(token => done(null, token, { scope: '*' }))
-  .catch(() => done(null, false));
-}));
+passport.use(
+  new BearerStrategy((accessToken, done) => {
+    db.accessTokens
+      .find(accessToken)
+      .then(token => validate.token(token, accessToken))
+      .then(token => done(null, token, { scope: "*" }))
+      .catch(() => done(null, false));
+  })
+);
 
 // Register serialialization and deserialization functions.
 //
@@ -120,11 +144,9 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findOne({ _id: ObjectId(id) }, (err, user) => {
-    if (err) done(err)
-    if (!user) done(null, null)
-    done(null, user)
-  })
-})
-
-
+  User.findOne({ _id: ObjectID(id) }, (err, user) => {
+    if (err) done(err);
+    if (!user) done(null, null);
+    done(null, user);
+  });
+});

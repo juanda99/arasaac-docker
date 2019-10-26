@@ -1,0 +1,10 @@
+{
+  "presets": [
+    "@babel/preset-env"
+  ],
+  "plugins" : [
+    "plugin-transform-modules-commonjs"
+  ],
+  "sourceMaps": "inline",
+  "retainLines": true
+}

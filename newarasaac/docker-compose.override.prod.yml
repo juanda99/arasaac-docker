@@ -1,0 +1,115 @@
+version: "3"
+
+services:
+  frontend:
+    image: nginx
+    hostname: frontend
+    container_name: frontend
+    volumes:
+      - ./frontend/conf/:/etc/nginx/conf.d:ro
+      - ./frontend/code/:/usr/share/nginx/html
+    environment:
+      LETSENCRYPT_HOST: "beta.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "beta.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
+  admin:
+    image: nginx
+    hostname: admin
+    container_name: admin
+    volumes:
+      - ./admin/conf/:/etc/nginx/conf.d:ro
+      - ./admin/code/:/usr/share/nginx/html
+    environment:
+      LETSENCRYPT_HOST: "admin.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "admin.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
+  webstatic:
+    image: nginx
+    hostname: webstatic
+    container_name: webstatic
+    volumes:
+      - ${MATERIAL_DIR}:/usr/share/nginx/html/materials:ro
+      - ./images:/usr/share/nginx/html/images:ro
+      - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
+      - ./locutions:/usr/share/nginx/html/locutions:ro
+      - ./webstatic-conf/:/etc/nginx/conf.d:ro
+    environment:
+      LETSENCRYPT_HOST: "static.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "static.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
+  auth:
+    volumes:
+      - /app/node_modules
+    restart: always
+
+  watcher:
+    hostname: watcher
+    container_name: watcher
+    build:
+      context: ./watcher
+    command: npm run serve
+    volumes:
+      - ./watcher:/app
+      - ${MATERIAL_DIR}:/app/materials
+      - /app/node_modules
+      - /app/.config
+    environment:
+      NODE_ENV: $NODE_ENV
+    restart: always
+
+  svgwatcher:
+    hostname: svgwatcher
+    container_name: svgwatcher
+    build:
+      context: ./svgwatcher
+    command: npm run serve
+    volumes:
+      - ./svgwatcher:/app
+      - ${SVG_DIR}:/app/svg:ro
+      - /app/node_modules
+      - /app/.config
+      - ${IMAGE_DIR}:/app/pictograms
+    environment:
+      NODE_ENV: $NODE_ENV
+      CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING
+      OVERWRITE: $OVERWRITE
+    ports:
+      - "9226:9229"
+    restart: always
+
+  sftp:
+    hostname: sftp
+    container_name: sftp
+    image: atmoz/sftp
+    env_file:
+      - ./.env
+    volumes:
+      - ./ssh_keys/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key
+      - ./ssh_keys/ssh_host_rsa_key:/etc/ssh/ssh_host_rsa_key
+      - ${SVG_DIR}:/home/betaarasaac/svg
+      - ${MATERIAL_DIR}:/home/betaarasaac/materials
+      - ${IMAGE_DIR}:/home/betaarasaac/pictograms
+    ports:
+      - "8005:22"
+    command: betaarasaac:${SFTP_PASSWORD}
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
+networks:
+  nginxproxy_frontend:
+    external: true
+  backend:
+    driver: bridge

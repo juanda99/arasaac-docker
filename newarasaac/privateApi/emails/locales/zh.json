@@ -1,0 +1,15 @@
+{
+  "Hi": "你好",
+  "activateUserText": "加入ARASAAC",
+  "welcome": "欢迎来到ARASAAC！",
+  "intro": "ARASAAC是一个网站，提供资源和材料，以帮助有沟通问题的人。",
+  "activateMessage":
+    "您几乎已准备好加入ARASAAC社区。单击以下按钮以激活您的用户帐户。",
+  "contactar": "您可以通过arasaac@gmail.com与我们联系",
+  "passwordChangeSubject": "ARASAAC新密码",
+  "introResetPassword":
+    "根据您的要求，我们已修改您的密码以访问ARASAAC。您的新密码是：",
+  "accessText": "登录ARASAAC",
+  "rememberChangePassword":
+    "此密码已随机生成。请记住，您可以从用户个人资料中修改密码。"
+}

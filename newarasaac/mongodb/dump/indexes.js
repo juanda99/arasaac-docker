@@ -1,5 +1,5 @@
 db = db.getSiblingDB('arasaac')
-const languages = ['ar', 'bg', 'br', 'ca', 'cr', 'de', 'en', 'es', 'eu', 'fr', 'ga', 'it', 'pl', 'pt', 'ro', 'ru', 'val', 'zh'];
+const languages = ['ar', 'bg', 'br', 'ca', 'hr', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'it', 'pl', 'pt', 'ro', 'ru', 'val', 'zh'];
 languages.forEach(language => {
   const collectionName = `pictos_${language}`
   db[collectionName].createIndex(
@@ -11,3 +11,12 @@ languages.forEach(language => {
     }
   );
 });
+db.materials.createIndex(
+  { "title": "text", "desc": "text", "translations.title": "text", "translations.desc": "text"},
+  {
+    "weights": 
+      { "title": 3, "desc":1, "translations.title": 3, "translations.desc": 1 }, 
+    "default_language": "spanish" ,
+    language_override: "language" 
+  }
+);

@@ -1,23 +1,9 @@
-# ***** NGINX-PROXY CERTIFICATES *****
-nginxproxy/certs/**/
-nginxproxy/certs/*.key
-nginxproxy/certs/*.crt
-nginxproxy/certs/*.pem
-
 # ***** SFTP *****
 newarasaac/ssh_keys/*key
 newarasaac/ssh_keys/*pub
 
-
 # ***** FRONTEND *****
 #newarasaac/frontend/code/
-
-# ***** MATERIALS *****
-newarasaac/materials
-newarasaac/svg/*.svg
-newarasaac/pictograms/**/
-newarasaac/pictograms/*
-newarasaac/locutions
 
 # ***** API *****
 # Runtime configuration for swagger app
@@ -38,16 +24,8 @@ newarasaac/watcher/.config
 # ***** WATCHER *****
 newarasaac/svgwatcher/.config
 
-# ***** MONGODB *****
-newarasaac/mongodb/dbdata/*
-newarasaac/mongodb/dump
-!newarasaac/mongodb/dbdata/.gitkeep
 
 # ***** OLDARASAAC *****
-oldarasaac/dump/*
-oldarasaac/bbdd/*
-!oldarasaac/dump/.gitkeep
-!oldarasaac/bbdd/.gitkeep
 oldarasaac/data
 
 # ***** GENERIC CONFIGURATION *****
@@ -55,6 +33,7 @@ oldarasaac/data
 .env
 .v8flags*
 .babel.json
+.npm
 # MAC-OS
 .DS_Store
 

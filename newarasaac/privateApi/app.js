@@ -1,22 +1,42 @@
 const express = require('express')
+const app = express()
+const server = require('http').Server(app)
+const io = require('socket.io')(server)
 const cors = require('cors')
-const router = require('./routes')
+const router = require('./routes')(io)
+
 const bodyParser = require('body-parser')
 
-const app = express()
+// check all variables are defined
+require('./checkEnv.js')
+
 const port = process.env.port || 80
+
+// whenever we receive a `connection` event
+// our async function is then called
+io.on('connection', async socket => {
+  console.log('Client Successfully Connected')
+})
 
 /* bbdd config */
 require('./db')
 
+// Passport configuration
+require('./auth')
+
 app.use(cors())
+io.set('origins', '*:*')
 app.set('etag', false)
 
-app.use(bodyParser.json())
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }))
 
 app.use('/api', router)
 
-app.listen(port, () => {
+// not express but http server so socket-io can work
+server.listen(port, () => {
   console.log(`App running on port ${port}`)
 })
 

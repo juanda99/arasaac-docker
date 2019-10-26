@@ -108,7 +108,7 @@ def transformarMateriales():
         newMaterial['activity'] = list(set(newMaterial['activity'])) # delete duplicates
         newMaterial['title'] = material['material_titulo']
         newMaterial['created'] = fecha
-        newMaterial['lastUpdate'] = fecha
+        newMaterial['lastUpdated'] = fecha
         newMaterial['desc'] = material['material_descripcion']
         # newMaterial['files'] = material['material_archivos']
         # newMaterial['screenshot'] = [] 
@@ -119,6 +119,7 @@ def transformarMateriales():
        # newMaterial['fechaAlta'] = material['fecha_alta']
        # newMaterial['file'] = str(material['id_material']) + ".zip"
        # newMaterial['fechaActualizacion']=None
+       # MyPrettyPrinter().pprint(material['material_idiomas'][0])
         newMaterial['language'] = str(mongoLanguage[material['material_idiomas'][0]])
         newMaterial['lang'] = str(idiomas[material['material_idiomas'][0]])
         material['material_idiomas'].pop(0) # not needed for translations
@@ -131,7 +132,7 @@ def transformarMateriales():
             translation['title'] = material['material_titulo']
             translation['desc'] = material['material_descripcion']
             translation['created'] = fecha
-            translation['lastUpdate'] = fecha
+            translation['lastUpdated'] = fecha
             translation['downloads'] = 0
             newMaterial['translations'].append(translation)
 
@@ -181,7 +182,8 @@ actividades = {
     '23': [27],  # smart notebook
     '16': [5],  # tablero
     '22': [28, 5],  # tablero tico
-    '13': [29]  # test de evaluación
+    '13': [29],  # test de evaluación
+    '36': [36]  # Teacch
 }
 
 
@@ -211,7 +213,7 @@ estados = {
 }
 
 idiomas = {
-    'ar': 'ara', # arabe
+    'ar': 'ar', # arabe
     'bg': 'bg', # change for english
     'br': 'br', # brasileño not in mongo, change for pt
     'ca': 'ca', # change for spanish
@@ -219,14 +221,17 @@ idiomas = {
     'en': 'en',
     'eu': 'eu', # change for spanish
     'fr': 'fr',
-    'ga': 'ga', # change for spanish
+    'ga': 'gl', # change for spanish
     'it': 'it',
     'pl': 'pl', 
     'pt': 'pt',
     'ro': 'ro', 
     'ru': 'ru',
-    'zh': 'zhs', # zht????
-    'es': 'es'
+    'zh': 'zh', # zht???? zhs???
+    'es': 'es',
+    'cr': 'hr',
+    'val': 'va',
+    'nl': 'nl'
 }
 
 mongoLanguage = {
@@ -245,7 +250,10 @@ mongoLanguage = {
     'ro': 'ro', 
     'ru': 'ru',
     'zh': 'none', # zht????
-    'es': 'es'
+    'es': 'es',
+    'cr': 'none',
+    'val': 'none',
+    'nl': 'nl'
 }
 
 licencias = {

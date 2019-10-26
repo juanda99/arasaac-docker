@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  api:
+    command: npm start
+    ports:
+      - "9229:9229"
+    volumes:
+      - ./api:/app
+
+  privateapi:
+    command: npm start
+    ports:
+      - "9227:9229"
+
+  auth:
+    command: npm start
+    depends_on:
+      - mongodb
+    ports:
+      - "9228:9229"
+      - "5000:80"
+    volumes:
+      - ./auth/node_modules:/app/node_modules
+    environment:
+      DEBUG: "oauth2orize"
+
+  mongodb:
+    ports:
+      - "27000:27017"
+
+  svgwatcher:
+    hostname: svgwatcher
+    container_name: svgwatcher
+    build:
+      context: ./svgwatcher
+    command: npm run serve
+    volumes:
+      - ./svgwatcher:/app
+      - ${SVG_DIR}:/app/svg:ro
+      - /app/node_modules
+      - /app/.config
+      - ${IMAGE_DIR}:/app/pictograms
+    restart: always
+
+networks:
+  nginxproxy_frontend:
+    external: true
+  backend:
+    driver: bridge

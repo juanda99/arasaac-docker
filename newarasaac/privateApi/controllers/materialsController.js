@@ -1,4 +1,4 @@
-const Materials = require('../models/materials')
+const Materials = require('../models/Material')
 const formidable = require('formidable')
 const { saveFilesByType } = require('./utils')
 
@@ -9,7 +9,7 @@ module.exports = {
     form.keepExtensions = true
     form.multiples = true
     // form.uploadDir = `${__dirname}/uploads`
-    form.parse(req, async (err, fields, files) => {
+    form.parse(req, async (_err, fields, files) => {
       let material
       const formData = JSON.parse(fields.formData)
       if (!formData.translations) {

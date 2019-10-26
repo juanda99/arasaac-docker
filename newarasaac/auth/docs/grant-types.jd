@@ -1,0 +1,44 @@
+# Grant types
+
+
+## Arasaac API
+
+- Our API needs to be open
+
+  ```
+  https://community.auth0.com/t/what-grant-endpoint-to-use-for-authentication-in-a-react-spa-that-accesses-external-api/6568
+  ```
+
+## Grant types
+
+- We should use implicit or ROPC for our app when user needs to authenticate:
+```
+https://stackoverflow.com/questions/40873263/what-type-of-grant-is-adequate-for-a-react-application
+```
+
+
+- Used by Arasaac for example for creating user.
+- Used by other apps????
+
+```
+https://auth.arasaac.org/oauth/token
+grant_type=client_credentials
+```
+
+server.exchange(oauth2orize.exchange.password((client, username, password, scope, done) => {
+
+
+
+
+## Implicit grants
+- Used by Arasaac when user is implied
+  - See profile
+  - Add picto to favorites
+  - ....
+- Used by other apps on behalf of a user (maybe also instead of client credentials)
+
+```
+https://auth.arasaac.org/dialog/authorize?redirect_uri=https://localhost:3000&response_type=token&client_id=12345
+```
+
+## Resource owner password credentials

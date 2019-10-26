@@ -1,7 +1,6 @@
-version: '3'
+version: "3"
 
 services:
-
   nginx-proxy:
     hostname: nginx-proxy
     image: jwilder/nginx-proxy
@@ -15,11 +14,16 @@ services:
       - "/var/run/docker.sock:/tmp/docker.sock:ro"
       - "./vhost.d:/etc/nginx/vhost.d"
       - "./custom.conf:/etc/nginx/conf.d/custom.conf"
-      - "/usr/share/nginx/html"
       - "./certs:/etc/nginx/certs:ro"
       - html:/usr/share/nginx/html
     networks:
       - frontend
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200m"
+        max-file: "5"
   letsencrypt:
     hostname: letsencrypt
     image: jrcs/letsencrypt-nginx-proxy-companion
@@ -29,13 +33,14 @@ services:
       - "./certs:/etc/nginx/certs:rw"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./vhost.d:/etc/nginx/vhost.d"
-      - html:/usr/share/nginx/html 
+      - html:/usr/share/nginx/html
     networks:
       - frontend
+    restart: always
 
 networks:
   frontend:
     driver: bridge
 
 volumes:
-  html: 
+  html:

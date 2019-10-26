@@ -1,18 +1,19 @@
 const mongoose = require('mongoose')
-const config = require('./config')
-
-const { databaseUrl } = config
+const databaseUrl = 'mongodb://mongodb/arasaac'
+const logger = require('./utils/logger')
 
 mongoose.Promise = global.Promise
-
-mongoose.connect(databaseUrl).then(
+mongoose.connect(databaseUrl, { useNewUrlParser: true }).then(
   () => {
-    console.log(`Connected to database: ${databaseUrl}`)
+    logger.info(`Connected to database: ${databaseUrl}`)
   },
   err => {
-    console.log(`Database connection error: ${err}`)
+    logger.error(`Database connection error: ${err}`)
   }
 )
+
+mongoose.set('useFindAndModify', false)
+mongoose.set('useCreateIndex', true)
 
 process.on('SIGINT', () =>
   mongoose.connection.close(() => {
