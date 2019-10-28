@@ -36,7 +36,8 @@ const createToken = ({
   sub = "",
   aud = "",
   scope = "",
-  role = ""
+  role = "",
+  targetLanguages = ""
 } = {}) => {
   const token = jwt.sign(
     {
@@ -46,7 +47,8 @@ const createToken = ({
       aud,
       role,
       exp: Math.floor(Date.now() / 1000) + exp,
-      scope
+      scope,
+      targetLanguages
     },
     privateKey,
     {

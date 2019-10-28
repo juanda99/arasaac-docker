@@ -138,11 +138,18 @@ validate.generateRefreshToken = ({ userId, clientID, scope }) => {
  * @param   {scope}    scope    - The scope
  * @returns {Promise}  The resolved refresh token after saved
  */
-validate.generateToken = ({ userID, clientID, role, scope }) => {
+validate.generateToken = ({
+  userID,
+  clientID,
+  targetLanguages,
+  role,
+  scope
+}) => {
   return utils.createToken({
     sub: userID,
     aud: clientID,
     role,
+    targetLanguages,
     exp: config.token.expiresIn,
     scope
   });

@@ -147,6 +147,7 @@ server.exchange(
           scope,
           userID: user._id,
           clientID: client.name,
+          targetLanguages: user.targetLanguages,
           role: user.role
         });
         if (tokens === false) {
@@ -242,6 +243,7 @@ server.exchange(
         return validate.generateTokens({
           scope,
           userID: user._id,
+          targetLanguages: user.targetLanguages,
           role: user.role,
           clientID: client.name
         });
@@ -297,6 +299,7 @@ server.exchange(
           scope,
           role: user.role,
           userID: user._id,
+          targetLanguages: user.targetLanguages,
           clientID: client.name
         });
       })
