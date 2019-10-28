@@ -1,6 +1,7 @@
 const Category = require('../models/Category')
 const { ObjectID } = require('mongodb')
-const { merge, pick } = require('lodash')
+const { merge } = require('lodash')
+const jp = require('jsonpath')
 const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 const CustomError = require('../utils/CustomError')
@@ -19,6 +20,7 @@ const get = async (req, res) => {
     if (!category) {
       throw new CustomError(`No categories found for locale ${locale}`, 404)
     }
+
     if (lastUpdated) {
       const serverDate = new Date(category.lastUpdated)
       if (clientDate.getTime() === serverDate.getTime()) {
@@ -41,10 +43,9 @@ const get = async (req, res) => {
 }
 
 const update = async (req, res) => {
-  const { _id, lastUpdated, locale, data } = req.body
+  const { lastUpdated, locale, item, text, tags, keywords } = req.body
   logger.debug(`Updating category for locale ${locale}`)
   try {
-    if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
     const category = await Category.findOne({ locale })
     if (!category) {
       throw new CustomError(`Category not found for locale: ${locale}`, 404)
@@ -54,11 +55,35 @@ const update = async (req, res) => {
     if (clientDate.getTime() < serverDate.getTime()) {
       throw new CustomError(`Client data is outdated`, 409)
     }
+
     const now = Date.now()
     category.lastUpdated = now
-    category.data = data
+    const partialData = jp.value(category.data, `$..["${item}"]`)
+    let tagsModified = false
+    if (tags && !equalsArray(partialData.tags, tags)) {
+      if (req.user.role !== 'admin') {
+        throw new CustomError(`Not enough role`, 403)
+      }
+      tagsModified = true
+      partialData.tags = tags
+    }
+    if (keywords) partialData.keywords = keywords
+    partialData.text = text
+    // nested json we need no notify mongoose about changes, othewise save has no effect
+    category.markModified('data')
     category.save()
-    res.json({ lastUpdated: now })
+
+    /* we now update tags in all categories */
+    if (tagsModified) {
+      const categories = await Category.find({ locale: { $ne: locale } })
+      categories.forEach(category => {
+        const partialData = jp.value(category.data, `$..["${item}"]`)
+        partialData.tags = tags
+        category.markModified('data')
+        category.save()
+      })
+    }
+    res.json(category)
   } catch (err) {
     logger.error(`Error updating category: ${err.message}`)
     res.status(err.httpCode || 500).json({
@@ -170,6 +195,12 @@ const remove = async (req, res) => {
   })
   res.json({ lastUpdated: now })
 }
+
+const equalsArray = (array1, array2) =>
+  array1.length === array2.length &&
+  array1.sort().every(function (value, index) {
+    return value === array2.sort()[index]
+  })
 
 module.exports = {
   update,
