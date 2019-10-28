@@ -19,8 +19,10 @@ passport.use(
         return cb(null, false)
       }
       await axios.get(url) // no error (20X code), go on
-      const { iss, sub, aud, role, exp, scope } = jwt.decode(token)
-      const user = { user: sub, role, scope, iss, aud, exp }
+      const { iss, sub, aud, role, exp, scope, targetLanguages } = jwt.decode(
+        token
+      )
+      const user = { user: sub, role, scope, iss, aud, exp, targetLanguages }
       logger.debug(`Authentication ok for user ${sub}`)
       return cb(null, user)
     } catch (error) {

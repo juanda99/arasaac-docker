@@ -44,8 +44,16 @@ const get = async (req, res) => {
 
 const update = async (req, res) => {
   const { lastUpdated, locale, item, text, tags, keywords } = req.body
+  const { role, targetLanguages } = req.user
+  // if user is translator but locale is not in targetLanguages forbidden!
   logger.debug(`Updating category for locale ${locale}`)
   try {
+    if (role === 'translator' && !targetLanguages.includes(locale)) {
+      throw new CustomError(
+        `Modifications forbidden for language ${locale}`,
+        403
+      )
+    }
     const category = await Category.findOne({ locale })
     if (!category) {
       throw new CustomError(`Category not found for locale: ${locale}`, 404)
