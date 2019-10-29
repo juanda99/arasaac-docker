@@ -55,6 +55,23 @@ services:
       - "../newarasaac/svg:/app/svg"
     ports:
       - 5005:5000
+  upgrade:
+    hostname: upgrade
+    container_name: upgrade
+    build:
+      context: ./upgrade
+      dockerfile: Dockerfile
+    working_dir: /app
+    command: python upgrade_pictos_lse.py
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - "./data:/app/data"
+    networks:
+      - backend
+      - newarasaac_backend
 networks:
   nginxproxy_frontend:
     external: true
