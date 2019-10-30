@@ -1,5 +1,4 @@
 const Category = require('../models/Category')
-const { ObjectID } = require('mongodb')
 const { merge } = require('lodash')
 const jp = require('jsonpath')
 const logger = require('../utils/logger')
@@ -16,7 +15,7 @@ const get = async (req, res) => {
     )
   } else logger.debug(`Getting category for data locale ${locale}`)
   try {
-    const category = await Category.findOne({ locale: locale })
+    const category = await Category.findOne({ locale: locale }, { _id: 0 })
     if (!category) {
       throw new CustomError(`No categories found for locale ${locale}`, 404)
     }
@@ -47,6 +46,7 @@ const update = async (req, res) => {
   const { role, targetLanguages } = req.user
   // if user is translator but locale is not in targetLanguages forbidden!
   logger.debug(`Updating category for locale ${locale}`)
+  let targetCategory
   try {
     if (role === 'translator' && !targetLanguages.includes(locale)) {
       throw new CustomError(
@@ -54,19 +54,19 @@ const update = async (req, res) => {
         403
       )
     }
-    const category = await Category.findOne({ locale })
-    if (!category) {
+    targetCategory = await Category.findOne({ locale })
+    if (!targetCategory) {
       throw new CustomError(`Category not found for locale: ${locale}`, 404)
     }
-    const serverDate = new Date(category.lastUpdated)
+    const serverDate = new Date(targetCategory.lastUpdated)
     const clientDate = new Date(lastUpdated)
     if (clientDate.getTime() < serverDate.getTime()) {
       throw new CustomError(`Client data is outdated`, 409)
     }
 
     const now = Date.now()
-    category.lastUpdated = now
-    const partialData = jp.value(category.data, `$..["${item}"]`)
+    targetCategory.lastUpdated = now
+    const partialData = jp.value(targetCategory.data, `$..["${item}"]`)
     let tagsModified = false
     if (tags && !equalsArray(partialData.tags, tags)) {
       if (req.user.role !== 'admin') {
@@ -78,20 +78,34 @@ const update = async (req, res) => {
     if (keywords) partialData.keywords = keywords
     partialData.text = text
     // nested json we need no notify mongoose about changes, othewise save has no effect
-    category.markModified('data')
-    category.save()
+    targetCategory.markModified('data')
+    targetCategory.save()
 
-    /* we now update tags in all categories */
     if (tagsModified) {
-      const categories = await Category.find({ locale: { $ne: locale } })
-      categories.forEach(category => {
-        const partialData = jp.value(category.data, `$..["${item}"]`)
-        partialData.tags = tags
-        category.markModified('data')
-        category.save()
-      })
+      languages
+        .filter(language => language !== locale)
+        .forEach(async locale => {
+          let category = await Category.findOne({ locale })
+          if (!category) {
+            // new language?
+            const newCategory = { data: targetCategory.data, locale }
+            category = new Category(newCategory)
+          } else {
+            const partialData = jp.value(category.data, `$..["${item}"]`)
+            partialData.tags = tags
+            category.markModified('data')
+          }
+          category.lastUpdated = now
+          await category.save()
+          logger.info(`Remove category ${item} from ${locale}`)
+        })
     }
-    res.json(category)
+
+    res.json({
+      data: targetCategory.data,
+      lastUpdated: targetCategory.lastUpdated,
+      locale: targetCategory.locale
+    })
   } catch (err) {
     logger.error(`Error updating category: ${err.message}`)
     res.status(err.httpCode || 500).json({
