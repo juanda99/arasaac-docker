@@ -22,6 +22,8 @@ services:
       VIRTUAL_HOST: "api.arasaac.org"
       NODE_ENV: $NODE_ENV
       LOG_LEVEL: $LOG_LEVEL
+      MONGO_DB_USER: $MONGO_DB_USER
+      MONGO_DB_PWD: $MONGO_DB_PWD
     networks:
       - nginxproxy_frontend
       - backend
@@ -58,6 +60,8 @@ services:
       EMAIL_SMTP: $EMAIL_SMTP
       SFTP_SERVER: $SFTP_SERVER
       LOG_LEVEL: $LOG_LEVEL
+      MONGO_DB_USER: $MONGO_DB_USER
+      MONGO_DB_PWD: $MONGO_DB_PWD
     networks:
       - nginxproxy_frontend
       - backend
@@ -91,6 +95,9 @@ services:
     volumes:
       - ./mongodb/dump:/docker-entrypoint-initdb.d
       - ./mongodb/dbdata:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: $MONGO_DB_USER
+      MONGO_INITDB_ROOT_PASSWORD: $MONGO_DB_PWD
     networks:
       - backend
     restart: always

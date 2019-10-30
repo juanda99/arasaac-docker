@@ -2,7 +2,9 @@
 
 var mongoose = require('mongoose');
 
-var databaseUrl = 'mongodb://mongodb/arasaac';
+var MONGO_DB_USER = process.env.MONGO_DB_USER;
+var MONGO_DB_PWD = process.env.MONGO_DB_PWD;
+var databaseUrl = "mongodb://".concat(MONGO_DB_USER, ":").concat(MONGO_DB_PWD, "@mongodb/arasaac?authSource=admin");
 
 var logger = require('./utils/logger');
 
