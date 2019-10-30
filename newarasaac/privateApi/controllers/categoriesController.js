@@ -102,27 +102,40 @@ const update = async (req, res) => {
 }
 
 const add = async (req, res) => {
-  const { _id, lastUpdated, locale, data } = req.body
+  const { parentItem, data, locale, lastUpdated } = req.body
   logger.debug(
     `Add category for all locales. Merging data from locale: ${locale}`
   )
-
   // first we update lang
   const now = Date.now()
+  let targetCategory
   try {
-    if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
-    const category = await Category.findOne({ locale })
-    if (!category) {
+    targetCategory = await Category.findOne({ locale })
+    if (!targetCategory) {
       throw new CustomError(`Category not found for locale: ${locale}`, 404)
     }
-    const serverDate = new Date(category.lastUpdated)
+    const serverDate = new Date(targetCategory.lastUpdated)
     const clientDate = new Date(lastUpdated)
     if (clientDate.getTime() < serverDate.getTime()) {
       throw new CustomError(`Client data is outdated`, 409)
     }
-    category.lastUpdated = now
-    category.data = data
-    category.save()
+    /* now we add new data */
+    targetCategory.lastUpdated = now
+
+    const parentData = jp.value(targetCategory.data, `$..["${parentItem}"]`)
+    const key = data.key
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // removing accents and diacritics
+      // .replace(/\s/g, '') // without blank spaces
+      .toLowerCase()
+    const keyExists = jp.value(targetCategory, `$..["${key}"]`)
+    if (keyExists) throw new Error(`key ${key} already exists in category tree`)
+    if (!parentData.children) parentData.children = {}
+    // remove key from data
+    delete data.key
+    parentData.children[key] = data
+    targetCategory.markModified('data')
+    targetCategory.save()
     logger.info(`Updated category ${locale}`)
   } catch (err) {
     logger.error(`Error updating category: ${err.message}`)
@@ -137,12 +150,15 @@ const add = async (req, res) => {
   languages.filter(language => language !== locale).forEach(async locale => {
     try {
       let category = await Category.findOne({ locale })
-      // new language?
-      if (!category) category = new Category({ locale, data: {} })
-      // we don't check lastupdate values
+
+      if (!category) {
+        // new language?
+        const newCategory = { data: targetCategory.data, locale }
+        category = new Category(newCategory)
+      } else {
+        category.data = merge(targetCategory.data, category.data)
+      }
       category.lastUpdated = now
-      category.data = merge(data, category.data)
-      // in case of delete, we remove extra keys:
       await category.save()
       logger.info(`Updated category ${locale}`)
     } catch (err) {
@@ -150,27 +166,32 @@ const add = async (req, res) => {
       // as main locale was ok, we continue with rest of languages
     }
   })
-  res.json({ lastUpdated: now })
+  res.json({
+    data: targetCategory.data,
+    lastUpdated: targetCategory.lastUpdated,
+    locale: targetCategory.locale
+  })
 }
 
 const remove = async (req, res) => {
-  const { _id, lastUpdated, locale, data, item } = req.body
+  const { lastUpdated, locale, item } = req.body
   logger.debug(`Removing category ${item} from all locales`)
   const now = Date.now()
+  let targetCategory
   try {
-    if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
-    const category = await Category.findOne({ locale })
-    if (!category) {
+    targetCategory = await Category.findOne({ locale })
+    if (!targetCategory) {
       throw new CustomError(`Category not found for locale: ${locale}`, 404)
     }
-    const serverDate = new Date(category.lastUpdated)
+    const serverDate = new Date(targetCategory.lastUpdated)
     const clientDate = new Date(lastUpdated)
     if (clientDate.getTime() < serverDate.getTime()) {
       throw new CustomError(`Client data is outdated`, 409)
     }
-    category.lastUpdated = now
-    category.data = data
-    category.save()
+    targetCategory.lastUpdated = now
+    removeKeys(targetCategory.data, item)
+    targetCategory.markModified('data')
+    targetCategory.save()
     logger.info(`Removed category ${item} from ${locale}`)
   } catch (err) {
     logger.error(`Error removing category ${item}: ${err.message}`)
@@ -179,19 +200,18 @@ const remove = async (req, res) => {
       error: err.message
     })
   }
-
-  /* if everything ok, we do rest of languages */
-  /* now we mergeDeep rest of languages */
+  /* if everything ok, we sync rest of languages */
   languages.filter(language => language !== locale).forEach(async locale => {
     try {
       let category = await Category.findOne({ locale })
-      // new language?
-      if (!category) category = new Category({ locale, data: {} })
-      // we sync categories just in case...
-      category.data = merge(data, category.data)
+      if (!category) {
+        // new language?
+        const newCategory = { data: targetCategory.data, locale }
+        category = new Category(newCategory)
+      } else {
+        removeKeys(category.data, item)
+      }
       category.lastUpdated = now
-      removeKeys(category.data, item)
-      // in case of delete, we remove extra keys:
       await category.save()
       logger.info(`Remove category ${item} from ${locale}`)
     } catch (err) {
@@ -201,7 +221,11 @@ const remove = async (req, res) => {
       )
     }
   })
-  res.json({ lastUpdated: now })
+  res.json({
+    data: targetCategory.data,
+    lastUpdated: targetCategory.lastUpdated,
+    locale: targetCategory.locale
+  })
 }
 
 const equalsArray = (array1, array2) =>
