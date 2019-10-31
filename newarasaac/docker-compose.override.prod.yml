@@ -49,11 +49,6 @@ services:
       - nginxproxy_frontend
     restart: always
 
-  auth:
-    volumes:
-      - /app/node_modules
-    restart: always
-
   watcher:
     hostname: watcher
     container_name: watcher

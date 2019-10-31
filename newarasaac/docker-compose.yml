@@ -78,11 +78,14 @@ services:
     volumes:
       - ./auth:/app
       - /app/.config
+      - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "auth.arasaac.org"
       NODE_ENV: $NODE_ENV
+      MONGO_DB_USER: $MONGO_DB_USER
+      MONGO_DB_PWD: $MONGO_DB_PWD
     networks:
       - nginxproxy_frontend
       - backend
