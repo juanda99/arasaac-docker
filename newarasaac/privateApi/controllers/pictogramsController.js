@@ -173,19 +173,60 @@ const getPictogramsIdBySearch = async (req, res) => {
 
 const getKeywordsById = async (req, res) => {
   const { id, locale } = req.params
-
+  logger.debug(`Getting keywords for pictogram id ${id} and locale ${locale}`)
   try {
-    const pictograms = await Pictograms[locale].findOne(
+    const pictogram = await Pictograms[locale].findOne(
       {
         idPictogram: id
       },
       { keywords: 1, _id: 0 }
     )
-    // TODO: findOne does not return an array, text next line:
-    if (pictograms.length === 0) return res.status(404).json([])
-    // const keywords = pictograms.keywords.map((keywordReg) => keywordReg.keyword)
-    // return res.status(200).json({keywords})
-    return res.status(200).json(pictograms.keywords)
+    if (!pictogram) {
+      logger.debug(`Pictogram with id ${id} not found`)
+      return res.status(404).json([])
+    }
+    if (pictogram && pictogram.keywords) {
+      const keywords = pictogram.keywords.map(keyword => keyword.keyword)
+      logger.debug(`Keywords pictogram id ${id}: ${keywords.join()}`)
+      return res.status(200).json({ keywords })
+    } else {
+      logger.debug(`No keywords found for pictogram id ${id}`)
+      return res.status(404).json([])
+    }
+  } catch (err) {
+    console.log(err)
+    // TODO: return err o err.messsage?????
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const getTypesById = async (req, res) => {
+  const { id } = req.params
+  logger.debug(
+    `Getting keyword ty pes for pictogram id ${id} searching in es locale`
+  )
+  try {
+    const pictogram = await Pictograms['es'].findOne(
+      {
+        idPictogram: id
+      },
+      { keywords: 1, _id: 0 }
+    )
+    if (!pictogram) {
+      logger.debug(`Pictogram with id ${id} not found`)
+      return res.status(404).json([])
+    }
+    if (pictogram && pictogram.keywords) {
+      const foundTypes = pictogram.keywords.map(keyword => keyword.type)
+      const types = Array.from(new Set(foundTypes))
+      return res.status(200).json({ types })
+    } else {
+      logger.debug(`No types found for pictogram id ${id}`)
+      return res.status(404).json([])
+    }
   } catch (err) {
     console.log(err)
     // TODO: return err o err.messsage?????
@@ -258,6 +299,7 @@ module.exports = {
   getPictogramsFromDate,
   getAll,
   getKeywordsById,
+  getTypesById,
   getPictogramsIdBySearch,
   postCustomPictogramFromBase64,
   getCustomPictogramByName,

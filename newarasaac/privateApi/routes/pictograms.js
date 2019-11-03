@@ -1,8 +1,12 @@
 const router = require('express').Router()
 const pictogramsController = require('../controllers/pictogramsController')
 
-router.get('/:locale/searchId/:searchText', (req, res) => {
-  pictogramsController.getPictogramsIdBySearch(req, res)
+router.get('/keywords/:locale/:id', (req, res) => {
+  pictogramsController.getKeywordsById(req, res)
+})
+
+router.get('/types/:id', (req, res) => {
+  pictogramsController.getTypesById(req, res)
 })
 
 router.get('/custom/:fileName', (req, res) => {
@@ -13,8 +17,8 @@ router.post('/custom/base64', (req, res) => {
   pictogramsController.postCustomPictogramFromBase64(req, res)
 })
 
-router.get('/keywords/:locale/:id', (req, res) => {
-  pictogramsController.getKeywordsById(req, res)
+router.get('/:locale/searchId/:searchText', (req, res) => {
+  pictogramsController.getPictogramsIdBySearch(req, res)
 })
 
 router.get('/:id/locutions/:locale/:text', (req, res) => {
