@@ -186,8 +186,15 @@ const getKeywordsById = async (req, res) => {
       return res.status(404).json([])
     }
     if (pictogram && pictogram.keywords) {
-      const keywords = pictogram.keywords.map(keyword => keyword.keyword)
-      logger.debug(`Keywords pictogram id ${id}: ${keywords.join()}`)
+      const keywords = pictogram.keywords.map(keyword => ({
+        keyword: keyword.keyword,
+        type: keyword.type
+      }))
+      logger.debug(
+        `Keywords pictogram id ${id}: ${keywords
+          .map(keyword => keyword.keyword)
+          .join()}`
+      )
       return res.status(200).json({ keywords })
     } else {
       logger.debug(`No keywords found for pictogram id ${id}`)
