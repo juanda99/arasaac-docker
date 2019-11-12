@@ -17,6 +17,9 @@ const Pictograms = languages.reduce((dict, language) => {
   return dict
 }, {})
 
+const isEmptyObject = obj =>
+  Object.entries(obj).length === 0 && obj.constructor === Object
+
 // similar to getNewPictograms (publicApi) but with time instead of days
 
 const getPictogramsFromDate = async (req, res) => {
@@ -118,10 +121,24 @@ const upload = async (req, res, next) => {
 
 const update = async (req, res) => {
   const { locale } = req.params
-  const updateData = req.body
-  const { _id } = updateData
+  const { _id } = req.body
+
   const now = Date.now()
-  updateData.lastUpdated = now
+  const globalData = [
+    'published',
+    'available',
+    'validated',
+    'tags',
+    'categories',
+    'schematic',
+    'violence',
+    'sex',
+    'synsets'
+  ]
+  const specificData = ['keywords', 'desc']
+  const globalUpdate = {}
+  const specificUpdate = {}
+
   try {
     if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
     const pictogram = await Pictograms[locale].findById(_id)
@@ -131,8 +148,41 @@ const update = async (req, res) => {
         404
       )
     }
-    Object.assign(pictogram, updateData)
-    pictogram.save()
+    for (const data of specificData) {
+      if (req.body[data] !== pictogram[data]) {
+        specificUpdate[data] = req.body[data]
+      }
+    }
+    if (!isEmptyObject(specificUpdate)) {
+      specificUpdate.lastUpdated = now
+      Object.assign(pictogram, specificUpdate)
+      pictogram.save()
+    }
+
+    /* we get data from specific fields for all languages if modified, only with admin role */
+    if (req.user.role === 'admin') {
+      for (const data of globalData) {
+        if (req.body[data] !== pictogram[data]) {
+          globalUpdate[data] = req.body[data]
+        }
+      }
+
+      /* if modified.. we upgrade */
+      if (!isEmptyObject(globalUpdate)) {
+        globalUpdate.lastUpdated = now
+        for (const language of languages) {
+          logger.debug(
+            `Upgrading general pictogram data into mongodb with language ${language}`
+          )
+          await Pictograms[language].findByIdAndUpdate(_id, globalUpdate, {
+            new: true
+          })
+          logger.debug(
+            `Update OK pictogram into mongodb with language ${language}`
+          )
+        }
+      }
+    }
     res.json({ lastUpdated: now })
   } catch (err) {
     logger.error(`Error updating pictogram: ${err.message}`)
