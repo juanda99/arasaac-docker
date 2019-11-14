@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 source .env
 export CONTAINER_NAME="mongodb"
 export DATABASE_NAME="arasaac"
