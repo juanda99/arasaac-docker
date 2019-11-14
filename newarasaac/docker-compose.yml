@@ -98,6 +98,7 @@ services:
     volumes:
       - ./mongodb/dump:/docker-entrypoint-initdb.d
       - ./mongodb/dbdata:/data/db
+      - ./mongodb/backup:/data/backup
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_DB_USER
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_DB_PWD
