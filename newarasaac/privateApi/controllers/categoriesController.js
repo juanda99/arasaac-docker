@@ -45,7 +45,7 @@ const update = async (req, res) => {
   const { lastUpdated, locale, item, text, tags, keywords } = req.body
   const { role, targetLanguages } = req.user
   // if user is translator but locale is not in targetLanguages forbidden!
-  logger.debug(`Updating category for locale ${locale}`)
+  logger.debug(`Updating category ${item} for locale ${locale}`)
   let targetCategory
   try {
     if (role === 'translator' && !targetLanguages.includes(locale)) {
@@ -80,6 +80,7 @@ const update = async (req, res) => {
     // nested json we need no notify mongoose about changes, othewise save has no effect
     targetCategory.markModified('data')
     targetCategory.save()
+    logger.info(`Updated category ${item} from ${locale}`)
 
     if (tagsModified) {
       languages
@@ -97,7 +98,7 @@ const update = async (req, res) => {
           }
           category.lastUpdated = now
           await category.save()
-          logger.info(`Remove category ${item} from ${locale}`)
+          logger.info(`Updated category ${item} from ${locale}`)
         })
     }
 
@@ -227,11 +228,12 @@ const remove = async (req, res) => {
           const newCategory = { data: targetCategory.data, locale }
           category = new Category(newCategory)
         } else {
+          category.markModified('data')
           removeKeys(category.data, [item])
         }
         category.lastUpdated = now
         await category.save()
-        logger.info(`Remove category ${item} from ${locale}`)
+        logger.info(`Removed category ${item} from ${locale}`)
       } catch (err) {
         // as main locale was ok, we continue with rest of languages
         logger.error(
