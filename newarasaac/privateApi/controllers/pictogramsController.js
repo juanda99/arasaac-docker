@@ -11,6 +11,7 @@ const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
 const languages = require('../utils/languages')
 const { saveFiles } = require('./utils')
+const _ = require('lodash')
 
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
@@ -120,14 +121,13 @@ const upload = async (req, res, next) => {
 }
 
 const update = async (req, res) => {
-  const { locale } = req.params
-  const { _id } = req.body
+  const { locale, pictogram } = req.body
+  const { _id, idPictogram } = pictogram
 
   const now = Date.now()
   const globalData = [
     'published',
     'available',
-    'validated',
     'tags',
     'categories',
     'schematic',
@@ -135,55 +135,68 @@ const update = async (req, res) => {
     'sex',
     'synsets'
   ]
-  const specificData = ['keywords', 'desc']
+  // specificData = ['keywords', 'desc']
   const globalUpdate = {}
   const specificUpdate = {}
 
   try {
     if (!ObjectID.isValid(_id)) throw new CustomError(`Invalid id: ${_id}`, 404)
-    const pictogram = await Pictograms[locale].findById(_id)
-    if (!pictogram) {
+    const Pictogram = await Pictograms[locale].findById(_id).lean()
+    if (!Pictogram) {
       throw new CustomError(
         `No pictogram found with id: ${_id} for locale: ${locale}`,
         404
       )
     }
-    for (const data of specificData) {
-      if (req.body[data] !== pictogram[data]) {
-        specificUpdate[data] = req.body[data]
-      }
-    }
-    if (!isEmptyObject(specificUpdate)) {
-      specificUpdate.lastUpdated = now
-      Object.assign(pictogram, specificUpdate)
-      pictogram.save()
+    if (!isArrayEqual(pictogram.keywords, Pictogram.keywords)) {
+      specificUpdate.keywords = pictogram.keywords
     }
 
-    /* we get data from specific fields for all languages if modified, only with admin role */
+    if (pictogram.desc !== Pictogram.desc) specificUpdate.desc = pictogram.desc
+    if (pictogram.validated !== Pictogram.validated) {
+      specificUpdate.validated = pictogram.validated
+    }
     if (req.user.role === 'admin') {
       for (const data of globalData) {
-        if (req.body[data] !== pictogram[data]) {
-          globalUpdate[data] = req.body[data]
-        }
-      }
-
-      /* if modified.. we upgrade */
-      if (!isEmptyObject(globalUpdate)) {
-        globalUpdate.lastUpdated = now
-        for (const language of languages) {
-          logger.debug(
-            `Upgrading general pictogram data into mongodb with language ${language}`
-          )
-          await Pictograms[language].findByIdAndUpdate(_id, globalUpdate, {
-            new: true
-          })
-          logger.debug(
-            `Update OK pictogram into mongodb with language ${language}`
-          )
+        if (Array.isArray(pictogram[data])) {
+          if (!isArrayEqual(Pictogram[data], pictogram[data])) {
+            globalUpdate[data] = pictogram[data]
+          }
+        } else if (Pictogram[data] !== pictogram[data]) {
+          globalUpdate[data] = pictogram[data]
         }
       }
     }
-    res.json({ lastUpdated: now })
+    if (!isEmptyObject(specificUpdate) || !isEmptyObject(globalUpdate)) {
+      Object.assign(specificUpdate, globalUpdate, { lastUpdated: now })
+      var modifiedPictogram = await Pictograms[locale]
+        .findByIdAndUpdate(_id, specificUpdate, { new: true })
+        .lean()
+    }
+
+    /* if changes, we update */
+
+    /* we get data from specific fields for all languages if modified, only with admin role */
+
+    /* if modified.. we upgrade */
+    if (!isEmptyObject(globalUpdate)) {
+      globalUpdate.lastUpdated = now
+      for (const language of languages) {
+        if (language === locale) continue
+        logger.debug(
+          `Upgrading general pictogram data into mongodb with language ${language}`
+        )
+
+        await Pictograms[language].findOneAndUpdate(
+          { idPictogram },
+          globalUpdate
+        )
+        logger.debug(
+          `Update OK pictogram into mongodb with language ${language}`
+        )
+      }
+    }
+    res.json(modifiedPictogram)
   } catch (err) {
     logger.error(`Error updating pictogram: ${err.message}`)
     res.status(err.httpCode || 500).json({
@@ -350,6 +363,12 @@ const getLocutionById = (req, res) => {
       error: err
     })
   }
+}
+
+const isArrayEqual = (x, y) => {
+  return _(x)
+    .xorWith(y, _.isEqual)
+    .isEmpty()
 }
 
 module.exports = {

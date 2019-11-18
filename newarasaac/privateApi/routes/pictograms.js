@@ -1,5 +1,7 @@
 const router = require('express').Router()
 const pictogramsController = require('../controllers/pictogramsController')
+const passport = require('passport')
+const { hasRole } = require('../middlewares')
 
 router.get('/keywords/:locale/:id', (req, res) => {
   pictogramsController.getKeywordsById(req, res)
@@ -35,12 +37,22 @@ router.get('/:locale/:lastUpdated', (req, res) => {
   pictogramsController.getPictogramsFromDate(req, res)
 })
 
-router.put('/:locale', (req, res) => {
-  pictogramsController.update(req, res)
-})
+router.put(
+  '/',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    pictogramsController.update(req, res)
+  }
+)
 
-router.post('/', (req, res) => {
-  pictogramsController.upload(req, res)
-})
+router.post(
+  '/',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    pictogramsController.upload(req, res)
+  }
+)
 
 module.exports = router

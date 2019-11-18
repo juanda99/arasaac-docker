@@ -174,7 +174,7 @@ const getVerbixConjugations = async (language, word) => {
   const content = await page.content()
   const $ = cheerio.load(content)
 
-  $('.columns-main>div').each(function (i, element) {
+  $('.columns-main>div').each(function(i, element) {
     modo = $('h3', element).text()
     if (modo) {
       if (modo === 'Nominal Forms') {
@@ -190,7 +190,7 @@ const getVerbixConjugations = async (language, word) => {
           verbs = []
         })
       } else {
-        $('.columns-sub>div', this).each(function (i, element) {
+        $('.columns-sub>div', this).each(function(i, element) {
           tiempo = $('h4', element).text()
           if (tiempo) {
             $('.normal, .orto, .irregular', this).each((i, verb) => {
@@ -258,9 +258,7 @@ const saveConjugations = async (language, word, content) => {
     )
   } catch (err) {
     logger.error(
-      `Can't save conjugations file for verb ${word} and language ${language}: ${
-        err.message
-      }`
+      `Can't save conjugations file for verb ${word} and language ${language}: ${err.message}`
     )
   }
 }

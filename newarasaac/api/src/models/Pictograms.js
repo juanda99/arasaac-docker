@@ -11,7 +11,7 @@ const pictogramSchema = new Schema({
         required: true
       },
       plural: String,
-      idLocution: Number,
+      idLocution: String,
       meaning: String,
       type: {
         type: Number
