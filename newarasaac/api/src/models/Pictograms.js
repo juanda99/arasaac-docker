@@ -1,45 +1,30 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
-let { userSchema } = require('./User')
 
 const pictogramSchema = new Schema({
   idPictogram: Number, // autogerated by mongoose-plugin-autoinc
   keywords: [
     {
-      idKeyword: Number, //for legacy purposes, not used
+      idKeyword: Number, // for lse video
       keyword: {
         type: String,
         required: true
       },
-      locution: Number,
+      plural: String,
+      idLocution: Number,
       meaning: String,
       type: {
-        type: String,
-        required: true,
-        enum: [
-          'Proper Names',
-          'Common names',
-          'Verbs',
-          'Descriptives (adj and adv)',
-          'Social content',
-          'Miscellaneous'
-        ]
+        type: Number
       },
-      lse: Number,
-      downloads: {
-        type: Number,
-        default: 0
-      },
-      sinonyms: [String]
+      // 1-Proper Names
+      // 2-Common names
+      // 3-Verbs
+      // 4-Descriptives (adj and adv)
+      // 5-Social content
+      // 6-Miscellaneous
+      lse: Number // for lse video
     }
   ],
-  authors: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
-  // status: Number, // published (1), unpublished (0)
   published: {
     type: Boolean,
     default: false
@@ -48,26 +33,31 @@ const pictogramSchema = new Schema({
     type: Boolean,
     default: false
   },
+  available: {
+    type: Boolean,
+    default: false
+  },
+  schematic: {
+    type: Boolean,
+    default: false
+  },
+  sex: {
+    type: Boolean,
+    default: false
+  },
+  violence: {
+    type: Boolean,
+    default: false
+  },
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
-  license: {
-    type: String,
-    enum: ['Creative Commons BY-NC-SA'], //just one license right now
-    default: 'Creative Commons BY-NC-SA'
-  },
   downloads: {
     type: Number,
     default: 0
   },
+  categories: [String],
   tags: [String],
-  legacyTags: [String], // old tags just in case,
-  type: {
-    // from tipo_pictograma, 1 descriptivos, 2 esquemáticos
-    type: Number,
-    min: 1,
-    max: 2,
-    default: 1
-  }
+  desc: String // add by language, used by keyword index
 })
 
 module.exports = locale =>
