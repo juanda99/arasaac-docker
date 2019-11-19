@@ -56,6 +56,7 @@ const pictogramSchema = new Schema({
     default: 0
   },
   categories: [String],
+  synsets: [String],
   tags: [String],
   desc: String // add by language, used by keyword index
 })
