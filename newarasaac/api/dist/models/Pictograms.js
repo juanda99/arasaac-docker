@@ -14,7 +14,7 @@ var pictogramSchema = new Schema({
       required: true
     },
     plural: String,
-    idLocution: Number,
+    idLocution: String,
     meaning: String,
     type: {
       type: Number
@@ -66,6 +66,7 @@ var pictogramSchema = new Schema({
     default: 0
   },
   categories: [String],
+  synsets: [String],
   tags: [String],
   desc: String // add by language, used by keyword index
 
