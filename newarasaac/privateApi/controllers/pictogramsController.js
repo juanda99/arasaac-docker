@@ -176,6 +176,9 @@ const update = async (req, res) => {
         .findByIdAndUpdate(_id, specificUpdate, { new: true })
         .lean()
       logger.debug(`Update OK pictogram into mongodb with language ${locale}`)
+    } else {
+      // should never be here but autosave in admin frontend when changing language need this fix:
+      res.json(Pictogram)
     }
 
     /* if changes, we update */
