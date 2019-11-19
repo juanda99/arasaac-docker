@@ -169,9 +169,13 @@ const update = async (req, res) => {
     }
     if (!isEmptyObject(specificUpdate) || !isEmptyObject(globalUpdate)) {
       Object.assign(specificUpdate, globalUpdate, { lastUpdated: now })
+      logger.debug(
+        `Updating general pictogram data into mongodb with language ${locale}`
+      )
       var modifiedPictogram = await Pictograms[locale]
         .findByIdAndUpdate(_id, specificUpdate, { new: true })
         .lean()
+      logger.debug(`Update OK pictogram into mongodb with language ${locale}`)
     }
 
     /* if changes, we update */
@@ -184,7 +188,7 @@ const update = async (req, res) => {
       for (const language of languages) {
         if (language === locale) continue
         logger.debug(
-          `Upgrading general pictogram data into mongodb with language ${language}`
+          `Updating general pictogram data into mongodb with language ${language}`
         )
 
         await Pictograms[language].findOneAndUpdate(
