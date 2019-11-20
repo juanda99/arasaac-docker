@@ -93,8 +93,36 @@ const upload = async (req, res, next) => {
           i += 1
         } else {
           logger.debug(`Updating file ${file.name}`)
-          await saveFiles(file, SVG_DIR)
-          logger.debug(`Updated OK file ${file.name}`)
+          // we delete previousely so modified svg can get new pngs
+          const idPicto = path.basename(file.name, EXTENSION)
+          const fileExists = await fs.pathExists(
+            path.resolve(SVG_DIR, file.name)
+          )
+          if (fileExists) {
+            logger.debug(
+              `Removing previous file and associated pngs ${path.resolve(
+                SVG_DIR,
+                file.name
+              )}`
+            )
+            await fs.remove(path.resolve(SVG_DIR, file.name))
+            await fs.remove(path.resolve(IMAGE_DIR, idPicto))
+            logger.debug(
+              `Removed OK previous file and associated pngs ${path.resolve(
+                SVG_DIR,
+                file.name
+              )}`
+            )
+            await saveFiles(file, SVG_DIR)
+            logger.debug(`Updated OK file ${file.name}`)
+          } else {
+            // file does not exist
+            const idPicto = path.basename(file.name, EXTENSION)
+            logger.debug(`Saving file ${file.name}`)
+            pictograms.push({ idPictogram: idPicto })
+            await saveFiles(file, SVG_DIR)
+            logger.debug(`Saved OK file ${file.name}`)
+          }
         }
       }
       if (pictograms.length) {
