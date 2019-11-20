@@ -21,10 +21,6 @@ services:
     environment:
       DEBUG: "oauth2orize"
 
-  mongodb:
-    ports:
-      - "27000:27017"
-
   svgwatcher:
     hostname: svgwatcher
     container_name: svgwatcher

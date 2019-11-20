@@ -105,6 +105,8 @@ services:
     networks:
       - backend
     restart: always
+    ports:
+      - "27000:27017"
 
 networks:
   nginxproxy_frontend:
