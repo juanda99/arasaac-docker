@@ -21,7 +21,7 @@
   "dependencies": {
     "arr-flatten": "^1.1.0",
     "async": "^2.6.2",
-    "chokidar": "^2.1.1",
+    "chokidar": "^3.3.0",
     "d3-queue": "^3.0.7",
     "dotenv": "^6.0.0",
     "fs-extra": "^7.0.1",
