@@ -8,7 +8,6 @@
   "license": "",
   "main": "app.js",
   "scripts": {
-    "prestart": "npm run build",
     "serve": "node app.js",
     "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' app.js",
     "edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
