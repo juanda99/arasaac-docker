@@ -1,13 +1,13 @@
-import cors from 'cors'
-import express from 'express'
-import fs from 'fs'
-import yaml from 'js-yaml'
-import morgan from 'morgan'
-import passport from 'passport'
-import path from 'path'
-import SwaggerExpress from 'swagger-express-mw'
+const cors = require('cors')
+const express = require('express')
+const fs = require('fs')
+const yaml = require('js-yaml')
+const morgan = require('morgan')
+const passport = require('passport')
+const path = require('path')
+const SwaggerExpress = require('swagger-express-mw')
 
-import { port } from './config'
+const { port } = require('./config')
 var app = express()
 
 // generate json for swagger-ui

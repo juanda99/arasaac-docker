@@ -11,6 +11,7 @@ services:
       - mongodb
       - auth
     volumes:
+      - ./api:/app
       - ${MATERIAL_DIR}:/app/materials
       - /app/.config
       - ${SVG_DIR}:/app/svg:ro

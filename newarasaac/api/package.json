@@ -9,12 +9,11 @@
   "main": "app.js",
   "scripts": {
     "prestart": "npm run build",
-    "serve": "node dist/prodapp.js",
-    "build": "rimraf ./dist; cp -r src dist; babel dist --out-dir dist --presets @babel/preset-env",
-    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'src/public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' src/app.js --exec babel-node  --presets @babel/preset-env",
-    "edit": "swagger_swagger_fileName=src/swagger/swagger.yaml swagger project edit",
+    "serve": "node app.js",
+    "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' app.js",
+    "edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
     "test": "swagger project test",
-    "compile": "yaml2json src/api/swagger/swagger.yaml > src/swagger.json"
+    "compile": "yaml2json api/swagger/swagger.yaml > swagger.json"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

@@ -5,8 +5,6 @@ services:
     command: npm start
     ports:
       - "9229:9229"
-    volumes:
-      - ./api:/app
 
   privateapi:
     command: npm start
