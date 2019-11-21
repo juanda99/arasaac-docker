@@ -176,8 +176,10 @@ const update = async (req, res) => {
         404
       )
     }
-    if (!isArrayEqual(pictogram.keywords, Pictogram.keywords)) {
-      specificUpdate.keywords = pictogram.keywords
+    // if keyword == null we remove it
+    const keywords = pictogram.keywords.filter(keyword => keyword !== null)
+    if (!isArrayEqual(keywords, Pictogram.keywords)) {
+      specificUpdate.keywords = keywords
     }
 
     if (pictogram.desc !== Pictogram.desc) specificUpdate.desc = pictogram.desc
@@ -206,6 +208,8 @@ const update = async (req, res) => {
       logger.debug(`Update OK pictogram into mongodb with language ${locale}`)
     } else {
       // should never be here but autosave in admin frontend when changing language need this fix:
+      // in case of null keywords, we put them again here
+      Pictogram.keywords = pictogram.keywords
       res.json(Pictogram)
     }
 
@@ -231,6 +235,8 @@ const update = async (req, res) => {
         )
       }
     }
+    // so we can leave null items for form, but not in mongo
+    modifiedPictogram.keywords = pictogram.keywords
     res.json(modifiedPictogram)
   } catch (err) {
     logger.error(`Error updating pictogram: ${err.message}`)

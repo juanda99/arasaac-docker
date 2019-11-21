@@ -1,29 +1,33 @@
 const mongoose = require('mongoose')
 const { Schema } = mongoose
+
+const keywordSchema = mongoose.Schema(
+  {
+    idKeyword: Number, // for lse video
+    keyword: {
+      type: String,
+      required: true
+    },
+    plural: String,
+    idLocution: String,
+    meaning: String,
+    type: {
+      type: Number
+    },
+    // 1-Proper Names
+    // 2-Common names
+    // 3-Verbs
+    // 4-Descriptives (adj and adv)
+    // 5-Social content
+    // 6-Miscellaneous
+    lse: Number // for lse video
+  },
+  { _id: false }
+)
+
 const pictogramSchema = new Schema({
   idPictogram: Number, // autogerated by mongoose-plugin-autoinc
-  keywords: [
-    {
-      idKeyword: Number, // for lse video
-      keyword: {
-        type: String,
-        required: true
-      },
-      plural: String,
-      idLocution: String,
-      meaning: String,
-      type: {
-        type: Number
-      },
-      // 1-Proper Names
-      // 2-Common names
-      // 3-Verbs
-      // 4-Descriptives (adj and adv)
-      // 5-Social content
-      // 6-Miscellaneous
-      lse: Number // for lse video
-    }
-  ],
+  keywords: [keywordSchema],
   // status: Number, // published (1), unpublished (0)
   published: {
     type: Boolean,
