@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 
-const keywordSchema = mongoose.Schema(
+const keywordSchema = new Schema(
   {
     idKeyword: Number, // for lse video
     keyword: {

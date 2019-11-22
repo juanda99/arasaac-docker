@@ -21,12 +21,18 @@ const getPictogramById = async (req, res) => {
   const id = req.swagger.params.idPictogram.value
   const locale = req.swagger.params.locale.value
   try {
-    let pictogram = await Pictograms[locale]
-      .findOne({ idPictogram: id })
-      .populate('authors', '_id name')
-    if (!pictogram) return res.status(404).json()
+    let pictogram = await Pictograms[locale].findOne(
+      { idPictogram: id },
+      { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+    )
+    logger.debug(`Search pictogram with id ${id} and locale ${locale}`)
+    if (!pictogram) {
+      logger.debug(`Not found pictogram with id ${id} and locale ${locale}`)
+      return res.status(404).json()
+    }
     return res.json(pictogram)
   } catch (err) {
+    logger.err(`Error getting pictogram with id ${id} and locale ${locale}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -57,19 +63,20 @@ const getPictogramsBySynset = async (req, res) => {
       logger.debug(`Obtained wordnet 3.1 id: ${synset}`)
     }
 
-    let pictogram = await Pictograms[locale]
-      .find({ synsets: synset })
-      .populate('authors', '_id name')
+    let pictogram = await Pictograms[locale].find(
+      { synsets: synset },
+      { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+    )
     if (!pictogram) {
       logger.debug(`No pictogram found for Wordnet v3.1 id ${synset}`)
       return res.status(404).json({
         error: `No pictogram found for Wordnet v3.1 id ${synset}`
       })
     }
-    logger.debug(`Pictograms found for Wordnet v3.1 id ${synset}: JSON.stringify(pictogram)`)
+    logger.debug(`Pictograms found for Wordnet v3.1 id ${synset}`)
     return res.json(pictogram)
   } catch (err) {
-    logger.err(`Error getting pictograms: ${err}`)
+    logger.err(`Error getting pictograms. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -78,7 +85,6 @@ const getPictogramsBySynset = async (req, res) => {
 }
 
 const getPictogramFileById = async (req, res) => {
-  console.log('kkkkkkk')
   const file = `${req.swagger.params.idPictogram.value}.svg`
   /* eslint-disable multiline-ternary */
   const url = req.swagger.params.url.value === true
@@ -101,12 +107,10 @@ const getPictogramFileById = async (req, res) => {
   try {
     const fileName = await getPNGFileName(file, options)
     const exists = await fs.pathExists(fileName)
-    console.log(exists)
-    console.log(`Download: ${JSON.stringify(download)}`)
     if (exists) {
       if (url) return res.json({
-        image: fileName.replace(IMAGE_DIR, IMAGE_URL)
-      })
+          image: fileName.replace(IMAGE_DIR, IMAGE_URL)
+        })
       if (!download) return res.sendFile(fileName)
       return res.download(fileName)
     }
@@ -128,8 +132,8 @@ const getPictogramFileById = async (req, res) => {
             fs.close(fd, function() {
               console.log(`IMAGE GENERATED: ${fileName}`)
               if (url) res.json({
-                image: fileName.replace(IMAGE_DIR, IMAGE_URL)
-              })
+                  image: fileName.replace(IMAGE_DIR, IMAGE_URL)
+                })
               else if (download) res.download(fileName)
               else res.sendFile(fileName)
             })
@@ -137,7 +141,7 @@ const getPictogramFileById = async (req, res) => {
         })
       })
   } catch (err) {
-    console.log(err)
+    logger.err(`Error generating pictogram. See error: ${err}`)
     return res.status(500).json({
       message: 'Error generating pictogram. See error field for details',
       error: err
@@ -148,7 +152,6 @@ const getPictogramFileById = async (req, res) => {
 const searchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
   const searchText = stopWords(req.swagger.params.searchText.value, locale)
-  console.log(`searchText filtered:  ${searchText}`)
 
   /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
   y por último categoría exacta */
@@ -164,7 +167,7 @@ const searchPictograms = async (req, res) => {
           }
         ]
       })
-      .populate('authors', '_id name')
+      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .lean()
 
     let pictogramsByText = await Pictograms[locale]
@@ -178,27 +181,22 @@ const searchPictograms = async (req, res) => {
         },
         { score: { $meta: 'textScore' } }
       )
-      .populate('authors', '_id name')
+      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .sort({ score: { $meta: 'textScore' } })
       .lean()
 
-    // const pictogramsByTextFilterd = pictogramsByText.map(
-    //   ({ score, ...items }) => items
-    // )
     pictogramsByText.forEach(pictogram =>
       Reflect.deleteProperty(pictogram, 'score'))
 
-    let pictograms = [
-      ...pictogramsByKeyword,
-      ...pictogramsByText
-    ]
+    let pictograms = [...pictogramsByKeyword,
+...pictogramsByText]
 
     const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram.idPictogram))).map(idPictogram => pictograms.find(a => a.idPictogram === idPictogram))
 
     if (uniquePictograms.length === 0) return res.status(404).json([])
     return res.json(uniquePictograms)
   } catch (err) {
-    console.log(err)
+    logger.err(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -211,16 +209,21 @@ const getNewPictograms = async (req, res) => {
   var locale = req.swagger.params.locale.value
   let startDate = new Date()
   startDate.setDate(startDate.getDate() - days)
+  logger.debug(`Searching new pictograms in the last ${days} days with locale ${locale}`)
   try {
     let pictograms = await Pictograms[locale]
       .find({ lastUpdated: { $gt: startDate } })
+      .select({ published: 0, validated: 0, available: 0, __v: 0 })
       .sort({ lastUpdated: -1 })
-      .populate('authors', '_id name')
-    if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
+    if (pictograms.length === 0) {
+      logger.debug(`No new pictograms in the last ${days} days with locale ${locale}`)
+      return res.status(404).json([]) //send http code 404!!!
+    }
     return res.json(pictograms)
   } catch (err) {
+    logger.err(`Error getting new pictograms. See error: ${err}`)
     return res.status(500).json({
-      message: 'Error searching pictogram. See error field for detail',
+      message: 'Error gettings new pictogram. See error field for detail',
       error: err
     })
   }
@@ -229,15 +232,20 @@ const getNewPictograms = async (req, res) => {
 const getLastPictograms = async (req, res) => {
   const numItems = req.swagger.params.numItems.value
   var locale = req.swagger.params.locale.value
+  logger.info(`Getting last {numItems} pictograms for locale ${locale}.`)
   try {
     let pictograms = await Pictograms[locale]
       .find()
+      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .sort({ lastUpdated: -1 })
       .limit(numItems)
-      .populate('authors', '_id name')
-    if (pictograms.length === 0) return res.status(404).json([]) //send http code 404!!!
+    if (pictograms.length === 0) {
+      logger.info(`No pictograms found for locale ${locale}.`)
+      return res.status(404).json([])
+    } //send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
+    logger.err(`Error getting last {numItems} pictograms for locale ${locale}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error searching pictogram. See error field for detail',
       error: err
