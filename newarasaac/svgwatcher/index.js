@@ -62,7 +62,6 @@ watcher
 
 const addTask = (file, operation) => {
   if (operation === INCLUDE_FILE) {
-    logger.info(`ADD FILE : ${file}`);
     // resize just when size is bigger than 1500
     RESOLUTIONS.forEach(resolution => createPNGFiles(file, resolution));
   }
