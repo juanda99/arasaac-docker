@@ -15,10 +15,15 @@ router.get('/custom/:fileName', (req, res) => {
   pictogramsController.getCustomPictogramByName(req, res)
 })
 
-router.post('/custom/base64', (req, res) => {
-  pictogramsController.postCustomPictogramFromBase64(req, res)
+router.get('/:locale/search/:searchText', (req, res) => {
+  pictogramsController.searchPictograms(req, res)
 })
 
+router.get('/:locale/:idPictogram', (req, res) => {
+  pictogramsController.getPictogramById(req, res)
+})
+
+// not used
 router.get('/:locale/searchId/:searchText', (req, res) => {
   pictogramsController.getPictogramsIdBySearch(req, res)
 })
@@ -33,8 +38,12 @@ router.get('/:locale', (req, res) => {
 })
 
 /* pictograms created or modified later than lastUpdated parameter */
-router.get('/:locale/:lastUpdated', (req, res) => {
+router.get('/:locale/lastUpdated/:lastUpdated', (req, res) => {
   pictogramsController.getPictogramsFromDate(req, res)
+})
+
+router.post('/custom/base64', (req, res) => {
+  pictogramsController.postCustomPictogramFromBase64(req, res)
 })
 
 router.put(

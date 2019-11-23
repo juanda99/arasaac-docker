@@ -40,6 +40,65 @@ const getPictogramsFromDate = async (req, res) => {
   }
 }
 
+const searchPictograms = async (req, res) => {
+  const locale = req.params.locale
+  const searchText = stopWords(req.params.searchText, locale)
+
+  /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
+  y por último categoría exacta */
+  try {
+    let pictogramsByKeyword = await Pictograms[locale]
+      .find({
+        $or: [
+          {
+            'keywords.keyword': searchText
+          },
+          {
+            'keywords.plural': searchText
+          }
+        ]
+      })
+      .select({ __v: 0 })
+      .lean()
+
+    let pictogramsByText = await Pictograms[locale]
+      .find(
+        {
+          $text: {
+            $search: searchText,
+            $language: 'none',
+            $diacriticSensitive: false
+          }
+        },
+        { score: { $meta: 'textScore' } }
+      )
+      .select({ __v: 0 })
+      .sort({ score: { $meta: 'textScore' } })
+      .lean()
+
+    pictogramsByText.forEach(pictogram =>
+      Reflect.deleteProperty(pictogram, 'score')
+    )
+
+    let pictograms = [...pictogramsByKeyword, ...pictogramsByText]
+
+    const uniquePictograms = Array.from(
+      new Set(pictograms.map(pictogram => pictogram.idPictogram))
+    ).map(idPictogram => pictograms.find(a => a.idPictogram === idPictogram))
+
+    if (uniquePictograms.length === 0) return res.status(404).json([])
+    return res.json(uniquePictograms)
+  } catch (err) {
+    logger.err(
+      `Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`
+    )
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
 const getAll = async (req, res) => {
   const { locale } = req.params
   try {
@@ -47,6 +106,31 @@ const getAll = async (req, res) => {
     if (pictograms.length === 0) return res.status(404).json([]) // send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const getPictogramById = async (req, res) => {
+  const id = req.params.idPictogram
+  const locale = req.params.locale
+  try {
+    let pictogram = await Pictograms[locale].findOne(
+      { idPictogram: id },
+      { __v: 0 }
+    )
+    logger.debug(`Search pictogram with id ${id} and locale ${locale}`)
+    if (!pictogram) {
+      logger.debug(`Not found pictogram with id ${id} and locale ${locale}`)
+      return res.status(404).json()
+    }
+    return res.json(pictogram)
+  } catch (err) {
+    logger.err(
+      `Error getting pictogram with id ${id} and locale ${locale}. See error: ${err}`
+    )
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -415,6 +499,7 @@ const isArrayEqual = (x, y) => {
 module.exports = {
   getPictogramsFromDate,
   getAll,
+  getPictogramById,
   getKeywordsById,
   getTypesById,
   getPictogramsIdBySearch,
@@ -422,5 +507,6 @@ module.exports = {
   getCustomPictogramByName,
   getLocutionById,
   update,
-  upload
+  upload,
+  searchPictograms
 }
