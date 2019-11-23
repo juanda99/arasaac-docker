@@ -22,7 +22,7 @@ const getPictogramById = async (req, res) => {
   const locale = req.swagger.params.locale.value
   try {
     let pictogram = await Pictograms[locale].findOne(
-      { idPictogram: id },
+      { idPictogram: id, published: true },
       { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
     )
     logger.debug(`Search pictogram with id ${id} and locale ${locale}`)
@@ -64,7 +64,7 @@ const getPictogramsBySynset = async (req, res) => {
     }
 
     let pictogram = await Pictograms[locale].find(
-      { synsets: synset },
+      { synsets: synset, published: true },
       { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
     )
     if (!pictogram) {
@@ -165,7 +165,8 @@ const searchPictograms = async (req, res) => {
           {
             'keywords.plural': searchText
           }
-        ]
+        ],
+        published: true
       })
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .lean()
@@ -177,7 +178,8 @@ const searchPictograms = async (req, res) => {
             $search: searchText,
             $language: 'none',
             $diacriticSensitive: false
-          }
+          },
+          published: true
         },
         { score: { $meta: 'textScore' } }
       )
@@ -212,7 +214,7 @@ const getNewPictograms = async (req, res) => {
   logger.debug(`Searching new pictograms in the last ${days} days with locale ${locale}`)
   try {
     let pictograms = await Pictograms[locale]
-      .find({ lastUpdated: { $gt: startDate } })
+      .find({ lastUpdated: { $gt: startDate }, published: true })
       .select({ published: 0, validated: 0, available: 0, __v: 0 })
       .sort({ lastUpdated: -1 })
     if (pictograms.length === 0) {
@@ -235,7 +237,7 @@ const getLastPictograms = async (req, res) => {
   logger.info(`Getting last {numItems} pictograms for locale ${locale}.`)
   try {
     let pictograms = await Pictograms[locale]
-      .find()
+      .find({ published: true })
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .sort({ lastUpdated: -1 })
       .limit(numItems)
