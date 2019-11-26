@@ -183,7 +183,8 @@ actividades = {
     '16': [5],  # tablero
     '22': [28, 5],  # tablero tico
     '13': [29],  # test de evaluación
-    '36': [36]  # Teacch
+    '36': [36],  # Teacch
+    '35': [35]  # Teacch
 }
 
 
