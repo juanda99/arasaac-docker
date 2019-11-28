@@ -217,6 +217,9 @@ class Imagenes(object):
             else:
                 im['published'] = True
 
+            im['_id'] = im['idPictogram']
+            del im['idPictogram']
+
             im['validated'] = False
             im['available'] = False
             im['sex'] = False
@@ -373,10 +376,13 @@ def genera_colecciones_palabras():
     MONGO_DATABASE = os.getenv('MONGO_DATABASE')
     MYSQL_USER = os.getenv('MYSQL_USER')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+    MONGO_USER = os.getenv('MONGO_USER')
+    MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
     HOST_MONGO = os.getenv('HOST_MONGO')
     HOST_MYSQL = os.getenv('HOST_MYSQL')
 
-    client = MongoClient(host=HOST_MONGO, port=27017)
+    client = MongoClient(host=HOST_MONGO, port=27017,
+                         username=MONGO_USER, password=MONGO_PASSWORD)
     db_mongo = getattr(client, MONGO_DATABASE)
 
     cnx = MySQLdb.connect(host=HOST_MYSQL, port=3306, user=MYSQL_USER,

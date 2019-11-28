@@ -16,7 +16,8 @@ const languages = [
   'gl', // not available
   'br', // not available, should we use pt?
   'hr', // not available
-  'val' // not available
+  'val', // not available
+  'iw' // hebreo
 ]
 
 module.exports = languages

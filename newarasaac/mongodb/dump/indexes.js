@@ -1,22 +1,50 @@
-db = db.getSiblingDB('arasaac')
-const languages = ['ar', 'bg', 'br', 'ca', 'hr', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'it', 'pl', 'pt', 'ro', 'ru', 'val', 'zh'];
+db = db.getSiblingDB("arasaac");
+const languages = [
+  "ar",
+  "bg",
+  "br",
+  "ca",
+  "hr",
+  "de",
+  "en",
+  "es",
+  "eu",
+  "fr",
+  "gl",
+  "it",
+  "nl",
+  "pl",
+  "pt",
+  "ro",
+  "ru",
+  "val",
+  "zh"
+];
 languages.forEach(language => {
-  const collectionName = `pictos_${language}`
+  const collectionName = `pictos_${language}`;
   db[collectionName].createIndex(
-    { "keywords.keyword": "text", "tags": "text"},
+    { "keywords.keyword": "text", tags: "text" },
     {
-      "weights":
-        { "keywords.keyword": 10, "tags":1 },
-      "default_language": "None"
+      weights: { "keywords.keyword": 10, tags: 1 },
+      default_language: "None"
     }
   );
 });
 db.materials.createIndex(
-  { "title": "text", "desc": "text", "translations.title": "text", "translations.desc": "text"},
   {
-    "weights": 
-      { "title": 3, "desc":1, "translations.title": 3, "translations.desc": 1 }, 
-    "default_language": "spanish" ,
-    language_override: "language" 
+    title: "text",
+    desc: "text",
+    "translations.title": "text",
+    "translations.desc": "text"
+  },
+  {
+    weights: {
+      title: 3,
+      desc: 1,
+      "translations.title": 3,
+      "translations.desc": 1
+    },
+    default_language: "spanish",
+    language_override: "language"
   }
 );
