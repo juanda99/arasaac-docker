@@ -338,7 +338,7 @@
                     "200": {
                         "description": "An object with the list of keywords for the specified language.",
                         "schema": {
-                            "$ref": "#/definitions/Keywords"
+                            "$ref": "#/definitions/Suggestions"
                         }
                     },
                     "500": {
@@ -767,7 +767,7 @@
         }
     },
     "definitions": {
-        "Keywords": {
+        "Suggestions": {
             "type": "object",
             "properties": {
                 "locale": {
@@ -896,12 +896,32 @@
                 }
             }
         },
+        "Keyword": {
+            "properties": {
+                "idKeyword": {
+                    "type": "integer"
+                },
+                "keyword": {
+                    "type": "string"
+                },
+                "plural": {
+                    "type": "string"
+                },
+                "idLocution": {
+                    "type": "string"
+                },
+                "meaning": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "lse": {
+                    "type": "integer"
+                }
+            }
+        },
         "Pictogram": {
-            "required": [
-                "keywords",
-                "authors"
-            ],
-            "type": "object",
             "properties": {
                 "_id": {
                     "type": "integer"
@@ -909,37 +929,49 @@
                 "keywords": {
                     "type": "array",
                     "items": {
-                        "type": "object"
+                        "$ref": "#/definitions/Keyword"
                     }
                 },
-                "status": {
-                    "type": "string"
+                "schematic": {
+                    "type": "boolean"
                 },
-                "lastUpdate": {
-                    "type": "string",
-                    "format": "date-time"
+                "sex": {
+                    "type": "boolean"
+                },
+                "violence": {
+                    "type": "boolean"
                 },
                 "created": {
                     "type": "string",
                     "format": "date-time"
                 },
-                "license": {
-                    "type": "string"
+                "lastUpdated": {
+                    "type": "string",
+                    "format": "date-time"
                 },
                 "downloads": {
                     "type": "integer"
                 },
-                "authors": {
+                "categories": {
                     "type": "array",
                     "items": {
-                        "type": "object"
+                        "type": "string"
+                    }
+                },
+                "synsets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 },
                 "tags": {
                     "type": "array",
                     "items": {
-                        "type": "object"
+                        "type": "string"
                     }
+                },
+                "desc": {
+                    "type": "string"
                 }
             }
         },
