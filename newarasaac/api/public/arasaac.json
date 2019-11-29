@@ -773,26 +773,28 @@
                 "locale": {
                     "type": "string",
                     "enum": [
-                        "es",
-                        "ru",
-                        "ro",
                         "ar",
-                        "zh",
                         "bg",
-                        "pl",
-                        "en",
-                        "fr",
-                        "ca",
-                        "eu",
-                        "de",
-                        "it",
-                        "pt",
-                        "gl",
                         "br",
+                        "ca",
+                        "de",
+                        "en",
+                        "es",
+                        "eu",
+                        "fr",
+                        "gl",
                         "hr",
-                        "val"
+                        "it",
+                        "iw",
+                        "nl",
+                        "pl",
+                        "pt",
+                        "ro",
+                        "ru",
+                        "val",
+                        "zh"
                     ],
-                    "description": "Language of the keywords (two letters code), same as requested locale parameter."
+                    "description": "Language of the keywords, same as requested locale parameter."
                 },
                 "words": {
                     "type": "array",
@@ -902,9 +904,6 @@
             "type": "object",
             "properties": {
                 "_id": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "integer"
                 },
                 "keywords": {

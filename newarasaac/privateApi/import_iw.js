@@ -33,11 +33,11 @@ const now = Date.now()
 const importFile = async () => {
   await Promise.all(
     iwKeywords.map(async picto => {
-      const idPictogram = picto.idPictogram
+      const _id = picto.idPictogram
       const keywords = picto.keywords
-      console.log(`Saving pictogram ${idPictogram}`)
+      console.log(`Saving pictogram ${_id}`)
       await Pictograms['iw'].findOneAndUpdate(
-        { idPictogram },
+        { _id },
         { keywords, lastUpdated: now }
       )
     })

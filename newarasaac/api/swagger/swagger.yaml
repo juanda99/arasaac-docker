@@ -204,7 +204,7 @@ paths:
         "200":
           description: An object with the list of keywords for the specified language.
           schema:
-            $ref: '#/definitions/Keywords'
+            $ref: '#/definitions/Suggestions'
         500:
           description: Error
           schema:
@@ -505,13 +505,13 @@ paths:
 # complex objects have schema definitions
 definitions:
 
-  Keywords:
+  Suggestions:
     type: object
     properties:
       locale:
         type: string
-        enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
-        description: Language of the keywords (two letters code), same as requested locale parameter.
+        enum: ["ar", "bg", "br", "ca", "de", "en", "es", "eu", "fr", "gl", "hr", "it", "iw", "nl", "pl", "pt", "ro", "ru", "val", "zh"]
+        description: Language of the keywords, same as requested locale parameter.
       words:
         type: array
         items:
@@ -578,40 +578,58 @@ definitions:
     properties:
       material:
         type: object
+  Keyword:
+    properties:
+      idKeyword:
+        type: integer
+      keyword:
+        type: string
+      plural:
+        type: string
+      idLocution:
+        type: string
+      meaning:
+        type: string
+      type:
+        type: integer
+      lse:
+        type: integer
   Pictogram:
-    required:
-      - keywords
-      - authors
-    type: object
     properties: 
       _id:
-        type: string
-      id:
         type: integer
       keywords: 
         type: array
         items: 
-          type: object
-      status: 
-        type: string
-      lastUpdate:
-        type: string
-        format: date-time
+           $ref: "#/definitions/Keyword"
+      schematic:
+        type: boolean
+      sex:
+        type: boolean
+      violence:
+        type: boolean
       created:
         type: string
         format: date-time
-      license:
+      lastUpdated:
         type: string
+        format: date-time
       downloads:
         type: integer
-      authors: 
+      categories:
         type: array
-        items: 
-          type: object
+        items:
+          type: string
+      synsets:
+        type: array
+        items:
+          type: string
       tags:
         type: array
         items:
-          type: object
+          type: string
+      desc:
+        type: string
   Pictograms: 
     type: array
     items: 

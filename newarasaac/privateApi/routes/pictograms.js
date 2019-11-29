@@ -3,11 +3,11 @@ const pictogramsController = require('../controllers/pictogramsController')
 const passport = require('passport')
 const { hasRole } = require('../middlewares')
 
-router.get('/keywords/:locale/:id', (req, res) => {
+router.get('/keywords/:locale/:_id', (req, res) => {
   pictogramsController.getKeywordsById(req, res)
 })
 
-router.get('/types/:id', (req, res) => {
+router.get('/types/:_id', (req, res) => {
   pictogramsController.getTypesById(req, res)
 })
 
@@ -19,7 +19,7 @@ router.get('/:locale/search/:searchText', (req, res) => {
   pictogramsController.searchPictograms(req, res)
 })
 
-router.get('/:locale/:idPictogram', (req, res) => {
+router.get('/:locale/:_id', (req, res) => {
   pictogramsController.getPictogramById(req, res)
 })
 

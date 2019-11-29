@@ -26,7 +26,7 @@ const keywordSchema = mongoose.Schema(
 )
 
 const pictogramSchema = new Schema({
-  idPictogram: Number, // autogerated by mongoose-plugin-autoinc
+  _id: Number,
   keywords: [keywordSchema],
   // status: Number, // published (1), unpublished (0)
   published: {

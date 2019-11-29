@@ -18,21 +18,21 @@ const Pictograms = languages.reduce((dict, language) => {
 }, {})
 
 const getPictogramById = async (req, res) => {
-  const id = req.swagger.params.idPictogram.value
+  const _id = req.swagger.params.idPictogram.value
   const locale = req.swagger.params.locale.value
   try {
     let pictogram = await Pictograms[locale].findOne(
-      { idPictogram: id, published: true },
+      { _id, published: true },
       { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
     )
-    logger.debug(`Search pictogram with id ${id} and locale ${locale}`)
+    logger.debug(`Search pictogram with id ${_id} and locale ${locale}`)
     if (!pictogram) {
-      logger.debug(`Not found pictogram with id ${id} and locale ${locale}`)
+      logger.debug(`Not found pictogram with id ${_id} and locale ${locale}`)
       return res.status(404).json()
     }
     return res.json(pictogram)
   } catch (err) {
-    logger.err(`Error getting pictogram with id ${id} and locale ${locale}. See error: ${err}`)
+    logger.err(`Error getting pictogram with id ${_id} and locale ${locale}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -152,6 +152,7 @@ const getPictogramFileById = async (req, res) => {
 const searchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
   const searchText = stopWords(req.swagger.params.searchText.value, locale)
+  logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${searchText}`)
 
   /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
   y por último categoría exacta */
@@ -193,9 +194,10 @@ const searchPictograms = async (req, res) => {
     let pictograms = [...pictogramsByKeyword,
 ...pictogramsByText]
 
-    const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram.idPictogram))).map(idPictogram => pictograms.find(a => a.idPictogram === idPictogram))
+    const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram._id))).map(_id => pictograms.find(a => a._id === _id))
 
     if (uniquePictograms.length === 0) return res.status(404).json([])
+    logger.debug(`Found ${uniquePictograms.length} pictograms`)
     return res.json(uniquePictograms)
   } catch (err) {
     logger.err(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
