@@ -36,7 +36,7 @@ const importFile = async () => {
       const _id = picto.idPictogram
       const keywords = picto.keywords
       console.log(`Saving pictogram ${_id}`)
-      await Pictograms['iw'].findOneAndUpdate(
+      await Pictograms['he'].findOneAndUpdate(
         { _id },
         { keywords, lastUpdated: now }
       )
