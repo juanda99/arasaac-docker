@@ -36,8 +36,11 @@ MYSQL_USER = os.getenv('MYSQL_USER')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
 HOST_MONGO = os.getenv('HOST_MONGO')
 HOST_MYSQL = os.getenv('HOST_MYSQL')
+MONGO_USER = os.getenv('MONGO_USER')
+MONGO_PASSWORD = os.getenv('MONGO_PASSWORD')
 
-client = MongoClient(host=HOST_MONGO, port=27017)
+client = MongoClient(host=HOST_MONGO, port=27017,
+                     username=MONGO_USER, password=MONGO_PASSWORD)
 
 cnx = MySQLdb.connect(host=HOST_MYSQL, port=3306, user=MYSQL_USER,
                       passwd=MYSQL_PASSWORD, db=MYSQL_DATABASE)
