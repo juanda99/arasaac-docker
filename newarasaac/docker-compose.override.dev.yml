@@ -2,17 +2,17 @@ version: "3"
 
 services:
   api:
-    command: npm start
+    command: sh -c "./wait && npm start"
     ports:
       - "9229:9229"
 
   privateapi:
-    command: npm start
+    command: sh -c "./wait && npm start"
     ports:
       - "9227:9229"
 
   auth:
-    command: npm start
+    command: sh -c "./wait && npm start"
     ports:
       - "9228:9229"
       - "5000:80"

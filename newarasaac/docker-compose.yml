@@ -35,7 +35,7 @@ services:
     container_name: privateapi
     build:
       context: ./privateApi
-    command: npm run serve
+    command: sh -c "wait && npm run serve"
     depends_on:
       - mongodb
       - auth
@@ -63,6 +63,7 @@ services:
       LOG_LEVEL: $LOG_LEVEL
       MONGO_DB_USER: $MONGO_DB_USER
       MONGO_DB_PWD: $MONGO_DB_PWD
+      WAIT_HOSTS: mongodb:27017
     networks:
       - nginxproxy_frontend
       - backend
@@ -73,7 +74,7 @@ services:
     container_name: auth
     build:
       context: ./auth
-    command: npm run serve
+    command: sh -c "./wait && npm run serve"
     depends_on:
       - mongodb
     volumes:
@@ -87,6 +88,7 @@ services:
       NODE_ENV: $NODE_ENV
       MONGO_DB_USER: $MONGO_DB_USER
       MONGO_DB_PWD: $MONGO_DB_PWD
+      WAIT_HOSTS: mongodb:27017
     networks:
       - nginxproxy_frontend
       - backend
