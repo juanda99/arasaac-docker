@@ -4,8 +4,6 @@ var User = require('../models/User')
 
 module.exports = {
   getProfile: async (req, res) => {
-    //console.log(req)
-    console.log('kkkkkkSSS')
     // we obtain the user id from token to get his profile
     const token = req.headers.authorization.split(' ').pop()
     const decoded = jwtDecode(token)

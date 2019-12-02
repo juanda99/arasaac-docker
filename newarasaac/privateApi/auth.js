@@ -22,7 +22,7 @@ passport.use(
       const { iss, sub, aud, role, exp, scope, targetLanguages } = jwt.decode(
         token
       )
-      const user = { user: sub, role, scope, iss, aud, exp, targetLanguages }
+      const user = { id: sub, role, scope, iss, aud, exp, targetLanguages }
       logger.debug(`Authentication ok for user ${sub}`)
       return cb(null, user)
     } catch (error) {
