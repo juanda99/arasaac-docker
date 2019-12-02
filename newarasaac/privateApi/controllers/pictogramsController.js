@@ -44,6 +44,19 @@ const getPictogramsFromDate = async (req, res) => {
   }
 }
 
+const downloadPictogram = async (req, res) => {
+  const { fileName } = req.params
+  logger.debug(`EXEC downloadPictogram for filename: ${fileName}`)
+  const filePath = path.resolve(IMAGE_DIR, fileName, `${fileName}_500.png`)
+  const exists = await fs.pathExists(filePath)
+  if (exists) {
+    logger.debug(`downloadPictogram ok for filename: ${fileName}`)
+    return res.download(filePath)
+  } else {
+    logger.error(`ERROR executing downloadPictogram for file: ${filePath}`)
+  }
+}
+
 const searchPictograms = async (req, res) => {
   const locale = req.params.locale
   const searchText = stopWords(req.params.searchText, locale)
@@ -178,7 +191,7 @@ const upload = async (req, res, next) => {
         // if filename is a number, it means we are updating previous file...
         if (isNaN(path.basename(file.name, EXTENSION))) {
           const idPicto = number + i
-          pictograms.push({ idPictogram: idPicto })
+          pictograms.push({ _id: idPicto })
           logger.debug(`Saving file ${idPicto}.svg`)
           await saveFiles(file, SVG_DIR, `${idPicto}.svg`)
           logger.debug(`Saved OK file ${idPicto}.svg`)
@@ -211,7 +224,7 @@ const upload = async (req, res, next) => {
             // file does not exist
             const idPicto = path.basename(file.name, EXTENSION)
             logger.debug(`Saving file ${file.name}`)
-            pictograms.push({ idPictogram: idPicto })
+            pictograms.push({ _id: idPicto })
             await saveFiles(file, SVG_DIR)
             logger.debug(`Saved OK file ${file.name}`)
           }
@@ -526,5 +539,6 @@ module.exports = {
   getLocutionById,
   update,
   upload,
-  searchPictograms
+  searchPictograms,
+  downloadPictogram
 }

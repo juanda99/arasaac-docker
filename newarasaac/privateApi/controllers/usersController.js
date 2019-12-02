@@ -62,14 +62,14 @@ const create = async (req, res) => {
     await sendWelcomeMail(user)
 
     // else send verification email based on its locale
-    res.status(201).json({
+    return res.status(201).json({
       message:
         'An email has been sent to you. Please check it to verify your account.',
       _id: savedUser._id
     })
   } catch (err) {
     logger.error(`Error creating user: ${err.message}`)
-    res.status(err.httpCode || 500).json({
+    return res.status(err.httpCode || 500).json({
       message: 'Error creating user. See error field for detail',
       error: err.message
     })
@@ -109,10 +109,10 @@ const update = async (req, res) => {
     delete user.facebook
     delete user.favorites
     delete user.updated
-    res.status(200).json(user)
+    return res.status(200).json(user)
   } catch (err) {
     logger.error(`Error updating user: ${err.message}`)
-    res.status(err.httpCode || 500).json({
+    return res.status(err.httpCode || 500).json({
       message: 'Error updating user. See error field for detail',
       error: err.message
     })
@@ -142,13 +142,13 @@ const activate = async (req, res) => {
     user.updated = new Date()
     user.save()
     logger.debug(`User ${user._id} / ${user.email} activated`)
-    res.status(200).json({
+    return res.status(200).json({
       message: 'User account verified.',
       _id: user._id
     })
   } catch (err) {
     logger.error(`Error activating user: ${err.message}`)
-    res.status(err.httpCode || 500).json({
+    return res.status(err.httpCode || 500).json({
       message: 'Error activating user. See error field for detail',
       error: err.message
     })
@@ -212,89 +212,81 @@ const findOne = async (req, res) => {
     return res.status(200).json(user)
   } catch (err) {
     logger.error(`Error getting data for user ${err.message}`)
-    res.status(err.httpCode || 500).json({
+    return res.status(err.httpCode || 500).json({
       message: 'Error getting data for user. See error field for detail',
       error: err.message
     })
   }
 }
 
-const deleteFavorite = async (req, res) => {
-  const { id } = req.params
-  const { pictogram, tag } = req.body
+// const deleteFavorite = async (req, res) => {
+//   const { id } = req.params
+//   const { pictogram, tag } = req.body
 
-  try {
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).json([])
-    }
+//   try {
+//     if (!ObjectID.isValid(id)) {
+//       return res.status(404).json([])
+//     }
 
-    let params = {}
-    if (tag) {
-      params.favorites = {}
-      params.favorites[tag] = pictogram
-    }
-    const dotNotated = objectToDotNotation(params)
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: id },
-      { $pull: dotNotated },
-      { new: true }
-    )
-    return res.status(201).json({ updatedUser })
-  } catch (err) {
-    return res.status(500).json({
-      message: 'Error updating favorites. See error field for detail',
-      error: err
-    })
-  }
-}
-
-const deleteFavoriteTag = async (req, res) => {}
+//     let params = {}
+//     if (tag) {
+//       params.favorites = {}
+//       params.favorites[tag] = pictogram
+//     }
+//     const dotNotated = objectToDotNotation(params)
+//     const updatedUser = await User.findOneAndUpdate(
+//       { _id: id },
+//       { $pull: dotNotated },
+//       { new: true }
+//     )
+//     return res.status(201).json({ updatedUser })
+//   } catch (err) {
+//     return res.status(500).json({
+//       message: 'Error updating favorites. See error field for detail',
+//       error: err
+//     })
+//   }
+// }
 
 const addFavorite = async (req, res) => {
-  const { id } = req.params
-  const { pictogram, tag } = req.body
+  const { fileName, listName } = req.params
+  const { id } = req.user
 
   try {
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).json([])
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(`USER_NOT_EXISTS`, 404)
     }
-
-    let params = {}
-    if (tag) {
-      params.favorites = {}
-      params.favorites[tag] = pictogram
-      params.favorites.all = pictogram
-    }
-    const dotNotated = objectToDotNotation(params)
-    // console.log(JSON.stringify(dotNotated, null, 4))
-
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: id },
-      { $addToSet: dotNotated },
-      { new: true }
-    )
-    return res.status(201).json({ updatedUser })
+    if (!user.favorites) user.favorites = { defaultList: [] }
+    if (!listName) user.favorites['defaultList'].push(fileName)
+    else user.favorites[listName].push(fileName)
+    await user.save()
+    return res.status(204).json({})
   } catch (err) {
-    return res.status(500).json({
-      message: 'Error updating favorites. See error field for detail',
+    return res.status(err.httpCode || 500).json({
+      message: 'Error updating favorites.   See error field for detail',
       error: err
     })
   }
 }
 
-const getFavorites = async (req, res) => {
-  const { id } = req.params
+const removeFavorite = async (req, res) => {
+  const { fileName, listName } = req.params
+  const { id } = req.user
 
   try {
-    if (!ObjectID.isValid(id)) {
-      return res.status(404).json([])
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(`USER_NOT_EXISTS`, 404)
     }
-    const userFavorites = await User.find({ _id: id }, 'favorites -_id')
-    if (userFavorites.length === 0) return res.status(404).json([]) // send http code 404!!!
-    return res.json(userFavorites)
+    if (!user.favorites) user.favorites = { defaultList: [] }
+    if (!listName) user.favorites['defaultList'].pull(fileName)
+    else user.favorites[listName].push(fileName)
+    await user.save()
+    return res.status(204).json({})
   } catch (err) {
-    return res.status(500).json({
-      message: 'Error searching user. See error field for detail',
+    return res.status(err.httpCode || 500).json({
+      message: 'Error removing favorite. See error field for detail',
       error: err
     })
   }
@@ -363,8 +355,6 @@ module.exports = {
   getAllByDate,
   findOne,
   addFavorite,
-  getFavorites,
-  deleteFavorite,
-  deleteFavoriteTag,
+  removeFavorite,
   resetPassword
 }

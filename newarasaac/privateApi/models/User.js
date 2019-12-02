@@ -57,7 +57,7 @@ const UserSchema = new Schema(
       email: String,
       name: String
     },
-    favorites: []
+    favorites: {}
   },
   {
     strict: false
