@@ -158,6 +158,41 @@ const getPictogramById = async (req, res) => {
   }
 }
 
+/* Used to get favorites from user, providing id's from redux store */
+/* Not moved to public api yet... */
+const getPictogramsById = async (req, res) => {
+  const { locale } = req.params
+  const { favoriteIds } = req.body
+  logger.debug(
+    `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale}`
+  )
+  try {
+    const pictograms = await Pictograms[locale].find(
+      {
+        _id: { $in: favoriteIds },
+        published: true
+      },
+      { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+    )
+    logger.debug(`Search pictogram with id ${favoriteIds} and locale ${locale}`)
+    if (!pictograms.length) {
+      logger.debug(
+        `Not found pictograms with ids ${favoriteIds} and locale ${locale}`
+      )
+      return res.status(404).json()
+    }
+    return res.json(pictograms)
+  } catch (err) {
+    logger.error(
+      `Error getting pictogram with id ${favoriteIds} and locale ${locale}. See error: ${err}`
+    )
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
 const upload = async (req, res, next) => {
   logger.debug(`EXEC upload in pictogramsController`)
   const form = new formidable.IncomingForm()
@@ -531,6 +566,7 @@ module.exports = {
   getPictogramsFromDate,
   getAll,
   getPictogramById,
+  getPictogramsById,
   getKeywordsById,
   getTypesById,
   getPictogramsIdBySearch,
