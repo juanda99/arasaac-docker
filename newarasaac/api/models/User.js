@@ -3,10 +3,6 @@ const { SHA256 } = require('crypto-js')
 const { Schema } = mongoose
 const CustomError = require('../utils/CustomError')
 
-const oAuthTypes = [
-  'facebook',
-  'google'
-]
 const randomize = require('randomatic')
 
 const UserSchema = new Schema(
@@ -53,7 +49,11 @@ const UserSchema = new Schema(
       email: String,
       name: String
     },
-    favorites: []
+    favorites: { defaultList: [] },
+    favoritesLimit: {
+      type: Number,
+      default: 10
+    }
   },
   {
     strict: false
@@ -131,8 +131,8 @@ UserSchema.methods = {
   },
 
   activate(verifyToken) {
-    if (verifyToken === this.verifyToken) this.verifyToken = ''
-    return ''
+    if (verifyToken === this.verifyToken) this.verifyToken = '';
+    return '';
   }
 }
 

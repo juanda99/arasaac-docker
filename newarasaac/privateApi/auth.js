@@ -23,7 +23,7 @@ passport.use(
         token
       )
       const user = { id: sub, role, scope, iss, aud, exp, targetLanguages }
-      logger.debug(`Authentication ok for user ${sub}`)
+      logger.debug(`Authentication ok. Token valid for user ${sub}`)
       return cb(null, user)
     } catch (error) {
       logger.debug(`Authentication failed ${error.message}`)

@@ -1,7 +1,14 @@
 const logger = require('./utils/logger')
+
+const acl = {
+  user: ['user', 'translator', 'admin'],
+  translator: ['translator', 'admin'],
+  admin: ['admin']
+}
+
 const hasRole = role => (req, res, next) => {
   const currentRole = req.user.role
-  if (currentRole === role || currentRole === 'admin') {
+  if (acl[role] && acl[role].indexOf(currentRole) !== -1) {
     logger.debug(`Role auth ok. Needs ${role} role and has ${currentRole} role`)
     return next()
   } else {

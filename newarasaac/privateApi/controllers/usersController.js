@@ -249,7 +249,7 @@ const findOne = async (req, res) => {
 // }
 
 const addFavorite = async (req, res) => {
-  const { fileName, listName } = req.params
+  const { fileName, listName } = req.body
   const { id } = req.user
 
   try {
@@ -261,7 +261,7 @@ const addFavorite = async (req, res) => {
     if (!listName) user.favorites['defaultList'].push(fileName)
     else user.favorites[listName].push(fileName)
     await user.save()
-    return res.status(204).json({})
+    return res.status(204).json({ resultado: 'ok' })
   } catch (err) {
     return res.status(err.httpCode || 500).json({
       message: 'Error updating favorites.   See error field for detail',

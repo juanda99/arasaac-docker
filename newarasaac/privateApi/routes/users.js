@@ -50,13 +50,32 @@ router.get(
   }
 )
 
-router.get('/:id/favorites/', (req, res) => {
-  usersController.getFavorites(req, res)
-})
+router.get(
+  '/favorites',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.getFavorites(req, res)
+  }
+)
 
-router.post('/:id/favorites/', (req, res) => {
-  usersController.addFavorite(req, res)
-})
+router.post(
+  '/favorites',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.addFavorite(req, res)
+  }
+)
+
+router.delete(
+  '/favorites',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.deleteFavorite(req, res)
+  }
+)
 
 /* set passwordlessToken so user then can get a token */
 // router.post('/:id/passwordless/', (req, res) => {
@@ -66,10 +85,6 @@ router.post('/:id/favorites/', (req, res) => {
 /* set passwordlessToken so user then can get a token */
 router.post('/password/', (req, res) => {
   usersController.resetPassword(req, res)
-})
-
-router.delete('/:id/favorites/', (req, res) => {
-  usersController.deleteFavorite(req, res)
 })
 
 module.exports = router
