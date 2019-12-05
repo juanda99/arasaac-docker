@@ -19,6 +19,15 @@ router.get('/custom/:fileName', (req, res) => {
   pictogramsController.getCustomPictogramByName(req, res)
 })
 
+router.get(
+  '/favorites/:locale',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    pictogramsController.getPictogramsById(req, res)
+  }
+)
+
 router.get('/:locale/search/:searchText', (req, res) => {
   pictogramsController.searchPictograms(req, res)
 })
