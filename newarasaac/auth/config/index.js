@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 //
 // The configuration options of the server
@@ -12,9 +12,12 @@
  * calculateExpirationDate - A simple function to calculate the absolute time that the token is
  *                           going to expire in.
  */
+
+// TODO: adjust tokens, now for a week so it's better for my tests, instead of an hour
 exports.token = {
-  expiresIn               : 60 * 60,
-  calculateExpirationDate : () =>  new Date(Date.now() + (this.token.expiresIn * 1000))
+  expiresIn: 7 * 24 * 60 * 60,
+  calculateExpirationDate: () =>
+    new Date(Date.now() + this.token.expiresIn * 1000)
 };
 
 /**
@@ -22,7 +25,7 @@ exports.token = {
  * expiresIn - The time in minutes before the code token expires.  Default is 5 minutes.
  */
 exports.codeToken = {
-  expiresIn : 5 * 60,
+  expiresIn: 5 * 60
 };
 
 /**
@@ -32,7 +35,7 @@ exports.codeToken = {
  *             life instead.
  */
 exports.refreshToken = {
-  expiresIn : 52560000,
+  expiresIn: 52560000
 };
 
 /**
@@ -43,7 +46,7 @@ exports.refreshToken = {
  *                            expired access tokens.
  */
 exports.db = {
-  timeToCheckExpiredTokens : 3600,
+  timeToCheckExpiredTokens: 3600
 };
 
 /**
@@ -54,6 +57,6 @@ exports.db = {
  * secret - The session secret that you should change to what you want
  */
 exports.session = {
-  maxAge : 3600000 * 24 * 7 * 52,
-  secret : 'A Secret That Should Be Changed', // TODO: You need to change this secret to something that you choose for your secret
+  maxAge: 3600000 * 24 * 7 * 52,
+  secret: "A Secret That Should Be Changed" // TODO: You need to change this secret to something that you choose for your secret
 };
