@@ -6,9 +6,6 @@ const { hasRole } = require('../middlewares')
 router.post('/', (req, res) => {
   usersController.create(req, res)
 })
-router.delete('/:id', (req, res) => {
-  usersController.delete(req, res)
-})
 
 router.put(
   '/:id',
@@ -77,6 +74,33 @@ router.delete(
   }
 )
 
+router.post(
+  '/favorites/list/:listName',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.addFavoriteList(req, res)
+  }
+)
+
+router.delete(
+  '/favorites/list/:listName',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.deleteFavoriteList(req, res)
+  }
+)
+
+router.put(
+  '/favorites/list/:listName',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.renameFavoriteList(req, res)
+  }
+)
+
 /* set passwordlessToken so user then can get a token */
 // router.post('/:id/passwordless/', (req, res) => {
 //   usersController.createPasswordlessToken(req, res)
@@ -86,5 +110,9 @@ router.delete(
 router.post('/password/', (req, res) => {
   usersController.resetPassword(req, res)
 })
+
+// router.delete('/:id', (req, res) => {
+//   usersController.delete(req, res)
+// })
 
 module.exports = router

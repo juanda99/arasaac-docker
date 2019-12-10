@@ -6,9 +6,10 @@ const { SHA256 } = require('crypto-js')
 // TODO: use Joi or mongodb validation
 // const Joi = require('joi')
 const CustomError = require('../utils/CustomError')
-const { objectToDotNotation } = require('../utils/mongo')
 const { sendWelcomeMail, sendPasswordRecoveryMail } = require('../emails')
 const logger = require('../utils/logger')
+const USER_NOT_EXISTS = 'USER_NOT_EXISTS'
+const USER_NOT_FOUND = 'USER_NOT_FOUND'
 
 const create = async (req, res) => {
   const {
@@ -100,7 +101,7 @@ const update = async (req, res) => {
     const user = await User.findOneAndUpdate({ _id: id }, req.body, {
       new: true
     })
-    if (!user) throw new CustomError('USER_NOT_FOUND', 404)
+    if (!user) throw new CustomError(USER_NOT_FOUND, 404)
     // else send modified doc:
     delete user.password
     delete user.idAuthor
@@ -208,7 +209,7 @@ const findOne = async (req, res) => {
       { _id: id },
       '-password -idAuthor -authToken -google -facebook'
     )
-    if (!user) throw new CustomError('USER_NOT_FOUND', 404)
+    if (!user) throw new CustomError(USER_NOT_FOUND, 404)
     return res.status(200).json(user)
   } catch (err) {
     logger.error(`Error getting data for user ${err.message}`)
@@ -251,18 +252,29 @@ const findOne = async (req, res) => {
 const addFavorite = async (req, res) => {
   const { fileName, listName } = req.body
   const { id } = req.user
-
+  const now = Date.now()
+  logger.debug(
+    `EXEC addFavorite for user ${id}, listName ${listName} and file ${fileName}`
+  )
   try {
     const user = await User.findById(id)
     if (!user) {
-      throw new CustomError(`USER_NOT_EXISTS`, 404)
+      throw new CustomError(USER_NOT_EXISTS, 404)
     }
     if (!user.favorites) user.favorites = { defaultList: [] }
     if (!listName) user.favorites['defaultList'].push(fileName)
     else user.favorites[listName].push(fileName)
+    user.markModified('favorites')
+    user.updated = now
     await user.save()
+    logger.debug(
+      `DONE addFavorite for user ${id}, listName ${listName} and file ${fileName}`
+    )
     return res.status(204).json({ resultado: 'ok' })
   } catch (err) {
+    logger.debug(
+      `ERROR addFavorite for user ${id}, listName ${listName} and file ${fileName}: ${err}`
+    )
     return res.status(err.httpCode || 500).json({
       message: 'Error updating favorites.   See error field for detail',
       error: err
@@ -270,21 +282,44 @@ const addFavorite = async (req, res) => {
   }
 }
 
-const removeFavorite = async (req, res) => {
-  const { fileName, listName } = req.params
+const deleteFavorite = async (req, res) => {
+  const { fileName, listName } = req.body
   const { id } = req.user
+  const now = Date.now()
+  logger.debug(
+    `EXEC deleteFavorite for user ${id}, listName ${listName} and file ${fileName}`
+  )
 
   try {
     const user = await User.findById(id)
     if (!user) {
-      throw new CustomError(`USER_NOT_EXISTS`, 404)
+      throw new CustomError(USER_NOT_EXISTS, 404)
     }
     if (!user.favorites) user.favorites = { defaultList: [] }
-    if (!listName) user.favorites['defaultList'].pull(fileName)
-    else user.favorites[listName].push(fileName)
-    await user.save()
+    else {
+      const index = user.favorites[listName].indexOf(fileName)
+      if (index !== -1) {
+        user.favorites[listName].splice(
+          user.favorites[listName].indexOf(fileName),
+          1
+        )
+        user.markModified('favorites')
+        user.updated = now
+        await user.save()
+        logger.debug(
+          `DONE deleteFavorite for user ${id}, listName ${listName} and file ${fileName}`
+        )
+      } else {
+        logger.debug(
+          `NOT DONE deleteFavorite for user ${id}, listName ${listName} and file ${fileName}: File not found`
+        )
+      }
+    }
     return res.status(204).json({})
   } catch (err) {
+    logger.debug(
+      `ERROR deleteFavorite for user ${id}, listName ${listName} and file ${fileName}: ${err}`
+    )
     return res.status(err.httpCode || 500).json({
       message: 'Error removing favorite. See error field for detail',
       error: err
@@ -306,7 +341,7 @@ const resetPassword = async (req, res) => {
     )
 
     if (!user) {
-      throw new CustomError(`USER_NOT_EXISTS`, 404)
+      throw new CustomError(USER_NOT_EXISTS, 404)
     }
     logger.debug(`User ${email} reset password OK`)
     /* generate mail with info */
@@ -319,6 +354,98 @@ const resetPassword = async (req, res) => {
     res.status(err.httpCode || 500).json({
       message: 'Error resetting password',
       error: err.message
+    })
+  }
+}
+
+const addFavoriteList = async (req, res) => {
+  const { listName } = req.params
+  const { id } = req.user
+  const now = Date.now()
+  logger.debug(`EXEC addFavoriteList for user ${id} and listName ${listName}`)
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(USER_NOT_EXISTS, 404)
+    }
+    if (!user.favorites) user.favorites = { defaultList: [], listName: [] }
+    else user.favorites[listName] = []
+    user.markModified('favorites')
+    user.updated = now
+    await user.save()
+    logger.debug(`DONE addFavoriteList for user ${id} and listName ${listName}`)
+    return res.status(204).json()
+  } catch (err) {
+    logger.error(
+      `ERROR addFavoriteList for user ${id} and listName ${listName}: ${err}`
+    )
+    return res.status(err.httpCode || 500).json({
+      message: 'Error updating favorites.   See error field for detail',
+      error: err
+    })
+  }
+}
+
+const deleteFavoriteList = async (req, res) => {
+  const { listName } = req.params
+  const { id } = req.user
+  const now = Date.now()
+  logger.debug(
+    `EXEC deleteFavoriteList for user ${id} and listName ${listName}`
+  )
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(USER_NOT_EXISTS, 404)
+    }
+    delete user.favorites[listName]
+    user.markModified('favorites')
+    user.updated = now
+    await user.save()
+    logger.debug(
+      `DONE deleteFavoriteList for user ${id} and listName ${listName}`
+    )
+    return res.status(204).json()
+  } catch (err) {
+    logger.error(
+      `ERROR deleteFavoriteList for user ${id} and listName ${listName}: ${err}`
+    )
+    return res.status(err.httpCode || 500).json({
+      message: 'Error updating favorites.   See error field for detail',
+      error: err
+    })
+  }
+}
+
+const renameFavoriteList = async (req, res) => {
+  const { listName } = req.params
+  const { newListName } = req.body
+  const { id } = req.user
+  const now = Date.now()
+  logger.debug(
+    `EXEC renameFavoriteList for user ${id} and listName ${listName}`
+  )
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(USER_NOT_EXISTS, 404)
+    }
+    user.favorites[newListName] = user.favorites[listName]
+    delete user.favorites[listName]
+    user.markModified('favorites')
+    user.updated = now
+    await user.save()
+    logger.debug(
+      `DONE renameFavoriteList for user ${id} from listName ${listName} to ${newListName}`
+    )
+    return res.status(204).json()
+  } catch (err) {
+    logger.error(
+      `ERROR renameFavoriteList for user ${id} and listName ${listName} to ${newListName}: ${err}`
+    )
+    return res.status(err.httpCode || 500).json({
+      message: 'Error updating favorites.   See error field for detail',
+      error: err
     })
   }
 }
@@ -355,6 +482,9 @@ module.exports = {
   getAllByDate,
   findOne,
   addFavorite,
-  removeFavorite,
-  resetPassword
+  deleteFavorite,
+  resetPassword,
+  addFavoriteList,
+  deleteFavoriteList,
+  renameFavoriteList
 }

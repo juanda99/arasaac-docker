@@ -19,7 +19,8 @@ router.get('/custom/:fileName', (req, res) => {
   pictogramsController.getCustomPictogramByName(req, res)
 })
 
-router.get(
+/* GET method not considered as url can get longer than 2000chars */
+router.post(
   '/favorites/:locale',
   passport.authenticate('bearer', { session: false }),
   hasRole('user'),

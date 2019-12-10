@@ -57,7 +57,11 @@ const UserSchema = new Schema(
       email: String,
       name: String
     },
-    favorites: { defaultList: [] },
+    favorites: {
+      type: Object,
+      required: true,
+      default: { defaultList: [] }
+    },
     favoritesLimit: {
       type: Number,
       default: 10

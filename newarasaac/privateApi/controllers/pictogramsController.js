@@ -162,6 +162,7 @@ const getPictogramById = async (req, res) => {
 /* Not moved to public api yet... */
 const getPictogramsById = async (req, res) => {
   const { locale } = req.params
+  console.log(req.body)
   const { favoriteIds } = req.body
   logger.debug(
     `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale}`
