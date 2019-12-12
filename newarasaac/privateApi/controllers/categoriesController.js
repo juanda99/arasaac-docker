@@ -1,5 +1,4 @@
 const Category = require('../models/Category')
-const { merge } = require('lodash')
 const jp = require('jsonpath')
 const logger = require('../utils/logger')
 const languages = require('../utils/languages')
@@ -123,6 +122,11 @@ const add = async (req, res) => {
   )
   // first we update lang
   const now = Date.now()
+  const key = data.key
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // removing accents and diacritics
+    // .replace(/\s/g, '') // without blank spaces
+    .toLowerCase()
   let targetCategory
   try {
     targetCategory = await Category.findOne({ locale })
@@ -136,13 +140,7 @@ const add = async (req, res) => {
     }
     /* now we add new data */
     targetCategory.lastUpdated = now
-
     const parentData = jp.value(targetCategory.data, `$..["${parentItem}"]`)
-    const key = data.key
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // removing accents and diacritics
-      // .replace(/\s/g, '') // without blank spaces
-      .toLowerCase()
     const keyExists = jp.value(targetCategory, `$..["${key}"]`)
     if (keyExists) throw new Error(`key ${key} already exists in category tree`)
     if (!parentData.children) parentData.children = {}
@@ -173,7 +171,17 @@ const add = async (req, res) => {
           const newCategory = { data: targetCategory.data, locale }
           category = new Category(newCategory)
         } else {
-          category.data = merge(targetCategory.data, category.data)
+          /* now we add new data */
+          const parentData = jp.value(category.data, `$..["${parentItem}"]`)
+          const keyExists = jp.value(category, `$..["${key}"]`)
+          if (keyExists) {
+            throw new Error(`key ${key} already exists in category tree`)
+          }
+          if (!parentData.children) parentData.children = {}
+          // remove key from data
+          delete data.key
+          parentData.children[key] = data
+          category.markModified('data')
         }
         category.lastUpdated = now
         await category.save()
@@ -250,7 +258,7 @@ const remove = async (req, res) => {
 
 const equalsArray = (array1, array2) =>
   array1.length === array2.length &&
-  array1.sort().every(function(value, index) {
+  array1.sort().every(function (value, index) {
     return value === array2.sort()[index]
   })
 
