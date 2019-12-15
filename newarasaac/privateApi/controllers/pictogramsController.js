@@ -144,7 +144,7 @@ const getPictogramById = async (req, res) => {
     logger.debug(`Search pictogram with id ${_id} and locale ${locale}`)
     if (!pictogram) {
       logger.debug(`Not found pictogram with id ${_id} and locale ${locale}`)
-      return res.status(404).json()
+      return res.status(404).json({})
     }
     return res.json(pictogram)
   } catch (err) {
@@ -298,6 +298,18 @@ const update = async (req, res) => {
       pictogram
     )}, _id: ${_id}`
   )
+
+  /* first we test auth for translators */
+  if (
+    req.user.role === 'translator' &&
+    req.user.targetLanguages.indexOf(locale) === -1
+  ) {
+    logger.debug(`Role is translator but can't translate to ${locale}`)
+    return res.status(403).json({
+      message: 'Error getting user data',
+      error: `Role is translator but can't translat to ${locale} language`
+    })
+  }
 
   const now = Date.now()
   const globalData = [
@@ -500,6 +512,36 @@ const getTypesById = async (req, res) => {
   }
 }
 
+const remove = async (req, res) => {
+  const { _id } = req.params
+  logger.debug(`EXEC remove for pictogram id ${_id}`)
+  try {
+    for (const language of languages) {
+      logger.debug(`Deleting pictogram id ${_id} in language ${language}`)
+      await Pictograms[language].deleteOne({ _id })
+      logger.debug(`Deleted pictogram id ${_id} in language ${language}`)
+    }
+    logger.debug(
+      `Deleting svg and png files if exist for pictogram with id ${_id}`
+    )
+    await Promise.all([
+      fs.remove(path.resolve(SVG_DIR, `${_id}.svg`)),
+      fs.remove(path.resolve(IMAGE_DIR, _id))
+    ])
+    logger.debug(
+      `Deleted svg and png files if exist for pictogram with id ${_id}`
+    )
+    return res.status(204).json()
+  } catch (err) {
+    logger.err(`ERROR executing remove for pictogram with id: ${_id}`)
+    // TODO: return err o err.messsage?????
+    return res.status(500).json({
+      message: 'Error removing pictogram. See error field for detail',
+      error: err
+    })
+  }
+}
+
 /*
      Use for downloading custom pictograms made with canvas
 */
@@ -577,5 +619,6 @@ module.exports = {
   update,
   upload,
   searchPictograms,
-  downloadPictogram
+  downloadPictogram,
+  remove
 }

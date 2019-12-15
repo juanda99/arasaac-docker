@@ -63,9 +63,18 @@ router.post('/custom/base64', (req, res) => {
 router.put(
   '/',
   passport.authenticate('bearer', { session: false }),
-  hasRole('admin'),
+  hasRole('translator'),
   (req, res) => {
     pictogramsController.update(req, res)
+  }
+)
+
+router.delete(
+  '/:_id',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    pictogramsController.remove(req, res)
   }
 )
 
