@@ -104,8 +104,8 @@ const searchPictograms = async (req, res) => {
     let pictograms = [...pictogramsByKeyword, ...pictogramsByText]
 
     const uniquePictograms = Array.from(
-      new Set(pictograms.map(pictogram => pictogram.idPictogram))
-    ).map(idPictogram => pictograms.find(a => a.idPictogram === idPictogram))
+      new Set(pictograms.map(pictogram => pictogram._id))
+    ).map(_id => pictograms.find(a => a._id === _id))
 
     if (uniquePictograms.length === 0) return res.status(404).json([])
     return res.json(uniquePictograms)
