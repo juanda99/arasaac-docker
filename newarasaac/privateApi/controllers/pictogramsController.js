@@ -32,7 +32,6 @@ const getPictogramsFromDate = async (req, res) => {
     const pictograms = await Pictograms[locale].find({
       lastUpdated: { $gt: new Date(lastUpdated) }
     })
-    console.log(pictograms)
     if (pictograms.length === 0) return res.status(404).json([]) // send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
@@ -61,6 +60,8 @@ const searchPictograms = async (req, res) => {
   const locale = req.params.locale
   const searchText = stopWords(req.params.searchText, locale)
 
+  console.log(req.params.searchText)
+
   logger.debug(
     `EXEC searchPictograms with searchText ${searchText} and locale ${locale}`
   )
@@ -68,6 +69,24 @@ const searchPictograms = async (req, res) => {
   /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
   y por último categoría exacta */
   try {
+    let pictogramsById
+    let pictograms
+    if (isNaN(searchText)) {
+      pictogramsById = await Pictograms[locale]
+        .find({
+          synsets: req.params.searchText
+        })
+        .select({ __v: 0 })
+        .lean()
+    } else {
+      pictogramsById = await Pictograms[locale]
+        .find({
+          _id: req.params.searchText
+        })
+        .select({ __v: 0 })
+        .lean()
+    }
+
     let pictogramsByKeyword = await Pictograms[locale]
       .find({
         $or: [
@@ -82,26 +101,28 @@ const searchPictograms = async (req, res) => {
       .select({ __v: 0 })
       .lean()
 
-    let pictogramsByText = await Pictograms[locale]
-      .find(
-        {
-          $text: {
-            $search: searchText,
-            $language: 'none',
-            $diacriticSensitive: false
-          }
-        },
-        { score: { $meta: 'textScore' } }
+    if (pictogramsById.length === 0) {
+      let pictogramsByText = await Pictograms[locale]
+        .find(
+          {
+            $text: {
+              $search: searchText,
+              $language: 'none',
+              $diacriticSensitive: false
+            }
+          },
+          { score: { $meta: 'textScore' } }
+        )
+        .select({ __v: 0 })
+        .sort({ score: { $meta: 'textScore' } })
+        .lean()
+      pictogramsByText.forEach(pictogram =>
+        Reflect.deleteProperty(pictogram, 'score')
       )
-      .select({ __v: 0 })
-      .sort({ score: { $meta: 'textScore' } })
-      .lean()
-
-    pictogramsByText.forEach(pictogram =>
-      Reflect.deleteProperty(pictogram, 'score')
-    )
-
-    let pictograms = [...pictogramsByKeyword, ...pictogramsByText]
+      pictograms = [...pictogramsByKeyword, ...pictogramsByText]
+    } else {
+      pictograms = [...pictogramsById, ...pictogramsByKeyword]
+    }
 
     const uniquePictograms = Array.from(
       new Set(pictograms.map(pictogram => pictogram._id))
@@ -162,7 +183,6 @@ const getPictogramById = async (req, res) => {
 /* Not moved to public api yet... */
 const getPictogramsById = async (req, res) => {
   const { locale } = req.params
-  console.log(req.body)
   const { favoriteIds } = req.body
   logger.debug(
     `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale}`
