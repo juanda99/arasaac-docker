@@ -72,10 +72,10 @@ const searchPictograms = async (req, res) => {
       .find({
         $or: [
           {
-            'keywords.keyword': searchText
+            'keywords.keyword': req.params.searchText
           },
           {
-            'keywords.plural': searchText
+            'keywords.plural': req.params.searchText
           }
         ]
       })

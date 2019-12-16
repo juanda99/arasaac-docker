@@ -161,16 +161,18 @@ const searchPictograms = async (req, res) => {
       .find({
         $or: [
           {
-            'keywords.keyword': searchText
+            'keywords.keyword': req.swagger.params.searchText.value
           },
           {
-            'keywords.plural': searchText
+            'keywords.plural': req.swagger.params.searchText.value
           }
         ],
         published: true
       })
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .lean()
+
+    console.log(pictogramsByKeyword, '******')
 
     let pictogramsByText = await Pictograms[locale]
       .find(
@@ -188,8 +190,8 @@ const searchPictograms = async (req, res) => {
       .sort({ score: { $meta: 'textScore' } })
       .lean()
 
-    pictogramsByText.forEach(pictogram =>
-      Reflect.deleteProperty(pictogram, 'score'))
+    // pictogramsByText.forEach(pictogram =>
+    //   Reflect.deleteProperty(pictogram, 'score'))
 
     let pictograms = [...pictogramsByKeyword,
 ...pictogramsByText]
