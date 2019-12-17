@@ -60,8 +60,6 @@ const searchPictograms = async (req, res) => {
   const locale = req.params.locale
   const searchText = stopWords(req.params.searchText, locale)
 
-  console.log(req.params.searchText)
-
   logger.debug(
     `EXEC searchPictograms with searchText ${searchText} and locale ${locale}`
   )
@@ -100,7 +98,6 @@ const searchPictograms = async (req, res) => {
       })
       .select({ __v: 0 })
       .lean()
-
     if (pictogramsById.length === 0) {
       let pictogramsByText = await Pictograms[locale]
         .find(
