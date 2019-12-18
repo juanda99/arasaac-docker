@@ -109,8 +109,8 @@ const getPictogramFileById = async (req, res) => {
     const exists = await fs.pathExists(fileName)
     if (exists) {
       if (url) return res.json({
-          image: fileName.replace(IMAGE_DIR, IMAGE_URL)
-        })
+        image: fileName.replace(IMAGE_DIR, IMAGE_URL)
+      })
       if (!download) return res.sendFile(fileName)
       return res.download(fileName)
     }
@@ -122,18 +122,18 @@ const getPictogramFileById = async (req, res) => {
           plugins: [imageminPngquant({ quality: '65-80', speed: 10 })]
         }))
       .then(buffer => {
-        fs.open(fileName, 'w', function(err, fd) {
+        fs.open(fileName, 'w', function (err, fd) {
           if (err) {
             throw 'could not open file: ' + err
           }
           // write the contents of the buffer, from position 0 to the end, to the file descriptor returned in opening our file
-          fs.write(fd, buffer, 0, buffer.length, null, function(err) {
+          fs.write(fd, buffer, 0, buffer.length, null, function (err) {
             if (err) throw 'error writing file: ' + err
-            fs.close(fd, function() {
+            fs.close(fd, function () {
               console.log(`IMAGE GENERATED: ${fileName}`)
               if (url) res.json({
-                  image: fileName.replace(IMAGE_DIR, IMAGE_URL)
-                })
+                image: fileName.replace(IMAGE_DIR, IMAGE_URL)
+              })
               else if (download) res.download(fileName)
               else res.sendFile(fileName)
             })
@@ -193,14 +193,50 @@ const searchPictograms = async (req, res) => {
     // pictogramsByText.forEach(pictogram =>
     //   Reflect.deleteProperty(pictogram, 'score'))
 
-    let pictograms = [...pictogramsByKeyword,
-...pictogramsByText]
+    let pictograms = [
+      ...pictogramsByKeyword,
+      ...pictogramsByText
+    ]
 
     const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram._id))).map(_id => pictograms.find(a => a._id === _id))
 
     if (uniquePictograms.length === 0) return res.status(404).json([])
     logger.debug(`Found ${uniquePictograms.length} pictograms`)
     return res.json(uniquePictograms)
+  } catch (err) {
+    logger.err(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
+const bestSearchPictograms = async (req, res) => {
+  const locale = req.swagger.params.locale.value
+  logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${req.swagger.params.searchText.value}`)
+
+  /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
+  y por último categoría exacta */
+  try {
+    let pictogramsByKeyword = await Pictograms[locale]
+      .find({
+        $or: [
+          {
+            'keywords.keyword': req.swagger.params.searchText.value
+          },
+          {
+            'keywords.plural': req.swagger.params.searchText.value
+          }
+        ],
+        published: true
+      })
+      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+      .lean()
+
+    if (pictogramsByKeyword.length === 0) return res.status(404).json([])
+    logger.debug(`Found ${pictogramsByKeyword.length} pictograms`)
+    return res.json(pictogramsByKeyword)
   } catch (err) {
     logger.err(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
     return res.status(500).json({
@@ -264,6 +300,7 @@ module.exports = {
   getPictogramFileById,
   getPictogramsBySynset,
   searchPictograms,
+  bestSearchPictograms,
   getNewPictograms,
   getLastPictograms
 }
