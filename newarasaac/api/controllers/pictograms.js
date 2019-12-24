@@ -32,7 +32,7 @@ const getPictogramById = async (req, res) => {
     }
     return res.json(pictogram)
   } catch (err) {
-    logger.err(`Error getting pictogram with id ${_id} and locale ${locale}. See error: ${err}`)
+    logger.error(`Error getting pictogram with id ${_id} and locale ${locale}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -76,7 +76,7 @@ const getPictogramsBySynset = async (req, res) => {
     logger.debug(`Pictograms found for Wordnet v3.1 id ${synset}`)
     return res.json(pictogram)
   } catch (err) {
-    logger.err(`Error getting pictograms. See error: ${err}`)
+    logger.error(`Error getting pictograms. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -141,7 +141,7 @@ const getPictogramFileById = async (req, res) => {
         })
       })
   } catch (err) {
-    logger.err(`Error generating pictogram. See error: ${err}`)
+    logger.error(`Error generating pictogram. See error: ${err}`)
     return res.status(500).json({
       message: 'Error generating pictogram. See error field for details',
       error: err
@@ -204,7 +204,7 @@ const searchPictograms = async (req, res) => {
     logger.debug(`Found ${uniquePictograms.length} pictograms`)
     return res.json(uniquePictograms)
   } catch (err) {
-    logger.err(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
+    logger.error(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -238,7 +238,7 @@ const bestSearchPictograms = async (req, res) => {
     logger.debug(`Found ${pictogramsByKeyword.length} pictograms`)
     return res.json(pictogramsByKeyword)
   } catch (err) {
-    logger.err(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
+    logger.error(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -263,7 +263,7 @@ const getNewPictograms = async (req, res) => {
     }
     return res.json(pictograms)
   } catch (err) {
-    logger.err(`Error getting new pictograms. See error: ${err}`)
+    logger.error(`Error getting new pictograms. See error: ${err}`)
     return res.status(500).json({
       message: 'Error gettings new pictogram. See error field for detail',
       error: err
@@ -287,7 +287,7 @@ const getLastPictograms = async (req, res) => {
     } //send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
-    logger.err(`Error getting last {numItems} pictograms for locale ${locale}. See error: ${err}`)
+    logger.error(`Error getting last {numItems} pictograms for locale ${locale}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error searching pictogram. See error field for detail',
       error: err

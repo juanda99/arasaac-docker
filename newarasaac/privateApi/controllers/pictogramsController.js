@@ -352,10 +352,19 @@ const update = async (req, res) => {
         404
       )
     }
+
     // if keyword == null we remove it
     const keywords = pictogram.keywords.filter(keyword => keyword !== null)
     if (!isArrayEqual(keywords, Pictogram.keywords)) {
-      specificUpdate.keywords = keywords
+      const locutionsFiles = req.app.get('locutionsFiles')
+      specificUpdate.keywords = keywords.map(keyword => {
+        if (locutionsFiles[locale].indexOf(keyword.keyword) === -1) {
+          keyword.hasLocution = false
+        } else {
+          keyword.hasLocution = true
+        }
+        return keyword
+      })
     }
 
     if (pictogram.desc !== Pictogram.desc) specificUpdate.desc = pictogram.desc
@@ -604,9 +613,9 @@ const getLocutionById = (req, res) => {
   const { id, locale, text } = req.params
   try {
     const locution = `/app/locutions/${locale}/${id}.mp3`
-    let locutionName = sanitize(text)
-    locutionName = locutionName ? `${locutionName}.mp3` : `{$id}.mp3`
-    res.download(locution, locutionName)
+    // let locutionName = sanitize(text)
+    // locutionName = locutionName ? `${locutionName}.mp3` : `{$id}.mp3`
+    res.download(locution, `${id}.mp4`)
   } catch (err) {
     console.log(err)
     return res.status(500).json({

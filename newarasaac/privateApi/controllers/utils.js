@@ -1,5 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
+const languages = require('../utils/languages')
 const MATERIALS = process.env.MATERIALS || '/app/materials'
 const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
@@ -174,7 +175,7 @@ const getVerbixConjugations = async (language, word) => {
   const content = await page.content()
   const $ = cheerio.load(content)
 
-  $('.columns-main>div').each(function(i, element) {
+  $('.columns-main>div').each(function (i, element) {
     modo = $('h3', element).text()
     if (modo) {
       if (modo === 'Nominal Forms') {
@@ -190,7 +191,7 @@ const getVerbixConjugations = async (language, word) => {
           verbs = []
         })
       } else {
-        $('.columns-sub>div', this).each(function(i, element) {
+        $('.columns-sub>div', this).each(function (i, element) {
           tiempo = $('h4', element).text()
           if (tiempo) {
             $('.normal, .orto, .irregular', this).each((i, verb) => {
@@ -262,6 +263,27 @@ const saveConjugations = async (language, word, content) => {
     )
   }
 }
+const loadLocutionsFiles = () => {
+  const locutions = {}
+  logger.debug(`Loading locutions files`)
+  languages.forEach((language) => {
+    let files
+    locutions[language] = []
+    try {
+      files = fs.readdirSync(`/app/locutions/${language}`)
+      files.forEach((file) => {
+        locutions[language].push(path.basename(file, '.mp3'))
+      })
+      logger.debug(`Loaded locutions files for ${language} language`)
+    } catch (e) {
+      logger.warn(`No directory for language ${language}: ${e.message}. We don't get locutions`)
+      locutions[language] = []
+    }
+  })
+
+  logger.debug(`Loaded locutions files`)
+  return locutions
+}
 
 module.exports = {
   saveFiles,
@@ -269,5 +291,6 @@ module.exports = {
   getVerbixConjugations,
   readConjugations,
   saveConjugations,
-  getDeclinations
+  getDeclinations,
+  loadLocutionsFiles
 }

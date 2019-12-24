@@ -4,6 +4,7 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const cors = require('cors')
 const router = require('./routes')(io)
+const { loadLocutionsFiles } = require('./controllers/utils')
 
 const bodyParser = require('body-parser')
 
@@ -28,6 +29,8 @@ app.use(cors())
 io.set('origins', '*:*')
 app.set('etag', false)
 
+// const locutionsFiles = loadLocutionsFiles()
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -40,4 +43,5 @@ server.listen(port, () => {
   console.log(`App running on port ${port}`)
 })
 
+app.set('locutionsFiles', loadLocutionsFiles())
 module.exports = app // for testing
