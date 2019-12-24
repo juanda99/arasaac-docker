@@ -19,10 +19,15 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
   # See https://crbug.com/795759
   && apt-get install -yq libgconf-2-4 \
   && apt-get install -y google-chrome-unstable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst ttf-freefont \
-  --no-install-recommends \
+  --no-install-recommends locales locales-all \
   && rm -rf /var/lib/apt/lists/* \
   && apt-get purge --auto-remove -y curl \
   && rm -rf /src/*.deb
+
+# set locale
+ENV LC_ALL es_ES.UTF-8
+ENV LANG es_ES.UTF-8
+ENV LANGUAGE es_ES.UTF-8
 
 
 # Set working directory
