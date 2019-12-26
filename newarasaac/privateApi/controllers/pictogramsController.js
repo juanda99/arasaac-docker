@@ -358,7 +358,7 @@ const update = async (req, res) => {
     if (!isArrayEqual(keywords, Pictogram.keywords)) {
       const locutionsFiles = req.app.get('locutionsFiles')
       specificUpdate.keywords = keywords.map(keyword => {
-        if (locutionsFiles[locale].indexOf(keyword.keyword) === -1) {
+        if (locutionsFiles[locale].indexOf(keyword.keyword.toString().toLowerCase()) === -1) {
           keyword.hasLocution = false
         } else {
           keyword.hasLocution = true
