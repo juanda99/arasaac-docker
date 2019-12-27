@@ -52,7 +52,7 @@ parameters:
     in: path
     required: true
     description: Language associated with the searchText and the results.
-    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
+    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he", "nl"]
   Wordnet:
     name: wordnet
     type: string

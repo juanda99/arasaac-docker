@@ -12,7 +12,7 @@
     "start": "cross-env DEBUG=swagger-tools:middleware:* nodemon --inspect=0.0.0.0:9229 --ignore 'public/arasaac.json' --ignore 'materials/' --ignore 'pictograms/' --ignore 'svg/' api.js",
     "edit": "swagger_swagger_fileName=swagger/swagger.yaml swagger project edit",
     "test": "swagger project test",
-    "compile": "yaml2json api/swagger/swagger.yaml > swagger.json"
+    "compile": "yaml2json swagger/swagger.yaml > swagger.json"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -40,6 +40,8 @@
     "sharp": "^0.20.2",
     "stopword": "0.1.10",
     "stopwords-iso": "0.4.0",
+    "swagger": "^0.7.5",
+    "swagger-cli": "^2.3.4",
     "swagger-express-mw": "^0.7.0",
     "winston": "^3.2.1",
     "yamljs": "^0.2.8"
@@ -54,6 +56,7 @@
     "morgan": "^1.7.0",
     "nodemon": "^1.9.1",
     "should": "^7.1.0",
-    "supertest": "^1.0.0"
+    "supertest": "^1.0.0",
+    "swagger-editor": "^3.7.1"
   }
 }
