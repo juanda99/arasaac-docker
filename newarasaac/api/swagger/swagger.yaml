@@ -92,7 +92,7 @@ parameters:
           type: string
         locale:
           type: string
-          enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
+          enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he", "nl"]
         company:
           type: string
         website:
@@ -165,7 +165,7 @@ parameters:
     type: string
     in: path
     required: true
-    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val"]
+    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he"]
   Days:
     name: days
     description: Material identifier

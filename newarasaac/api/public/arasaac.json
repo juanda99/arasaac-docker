@@ -70,7 +70,9 @@
                 "gl",
                 "br",
                 "hr",
-                "val"
+                "val",
+                "he",
+                "nl"
             ]
         },
         "Wordnet": {
@@ -146,7 +148,9 @@
                             "gl",
                             "br",
                             "hr",
-                            "val"
+                            "val",
+                            "he",
+                            "nl"
                         ]
                     },
                     "company": {
@@ -283,7 +287,8 @@
                 "gl",
                 "br",
                 "hr",
-                "val"
+                "val",
+                "he"
             ]
         },
         "Days": {
