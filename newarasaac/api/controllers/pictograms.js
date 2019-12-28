@@ -58,10 +58,11 @@ const getPictogramByIdWithLocales = async (req, res) => {
       return res.status(404).json({ error: `Not found pictograms with id ${_id} and languages ${languages.join(', ')}` })
     }
     let pictogramData = pictograms[0]
+    pictogramData.keywordsByLocale = {}
     let i = 0
     for (const pictogram of pictograms) {
       console.log(pictogram)
-      pictogramData[languages[i]] = pictogram.keywords
+      pictogramData.keywordsByLocale[languages[i]] = pictogram.keywords
       i += 1
     }
     logger.debug(`Search pictograms with id ${_id} and languages ${languages.join(', ')}`)
