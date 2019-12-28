@@ -40,6 +40,43 @@ const getPictogramById = async (req, res) => {
   }
 }
 
+const getPictogramByIdWithLocales = async (req, res) => {
+  const _id = req.swagger.params.idPictogram.value
+  const languages = req.swagger.params.languages.value
+  const results = []
+  try {
+    for (const language of languages) {
+      results.push(Pictograms[language].findOne(
+        { _id, published: true },
+        { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+      ).lean())
+    }
+    const pictograms = await Promise.all(results)
+    console.log(pictograms[0], 'entra????')
+    if (!pictograms[0]) {
+      logger.debug(`Not found pictograms with id ${_id} and languages ${languages.join(', ')}`)
+      return res.status(404).json({ error: `Not found pictograms with id ${_id} and languages ${languages.join(', ')}` })
+    }
+    let pictogramData = pictograms[0]
+    let i = 0
+    for (const pictogram of pictograms) {
+      console.log(pictogram)
+      pictogramData[languages[i]] = pictogram.keywords
+      i += 1
+    }
+    logger.debug(`Search pictograms with id ${_id} and languages ${languages.join(', ')}`)
+    // eslint-disable-next-line prefer-reflect
+    delete pictogramData.keywords
+    return res.json(pictogramData)
+  } catch (err) {
+    logger.error(`Error getting pictogram with id ${_id} and languages ${languages.join(', ')}. See error: ${err}`)
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
 const getPictogramsBySynset = async (req, res) => {
   let synset = req.swagger.params.synset.value
   const locale = req.swagger.params.locale.value
@@ -297,6 +334,7 @@ const getLastPictograms = async (req, res) => {
 
 module.exports = {
   getPictogramById,
+  getPictogramByIdWithLocales,
   getPictogramFileById,
   getPictogramsBySynset,
   searchPictograms,

@@ -19,6 +19,7 @@ ENV LC_ALL es_ES.UTF-8
 ENV LANG es_ES.UTF-8
 ENV LANGUAGE es_ES.UTF-8
 
+
 # Install dependencies
 COPY package.json package-lock.json $HOME/
 RUN npm install

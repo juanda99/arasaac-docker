@@ -291,6 +291,38 @@
                 "he"
             ]
         },
+        "Languages": {
+            "name": "languages",
+            "description": "Languages than we currently use for pictograms searches.",
+            "type": "array",
+            "collectionFormat": "csv",
+            "in": "path",
+            "required": true,
+            "items": {
+                "type": "string",
+                "enum": [
+                    "es",
+                    "ru",
+                    "ro",
+                    "ar",
+                    "zh",
+                    "bg",
+                    "pl",
+                    "en",
+                    "fr",
+                    "ca",
+                    "eu",
+                    "de",
+                    "it",
+                    "pt",
+                    "gl",
+                    "br",
+                    "hr",
+                    "val",
+                    "he"
+                ]
+            }
+        },
         "Days": {
             "name": "days",
             "description": "Material identifier",
@@ -425,7 +457,7 @@
             "x-swagger-router-controller": "pictograms",
             "get": {
                 "operationId": "getPictogramById",
-                "description": "Obtain pictogram data based on its key (idPictogram). The pictogram image url can be generated based on pictogram key value and the desired resolution (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340_2500.png for pictogram with key 2350 and resolution 2500px.",
+                "description": "Obtain pictogram data based on its key (idPictogram). The pictogram image url can be generated based on pictogram key value and the desired resolution (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340/2340_2500.png for pictogram with key 2350 and resolution 2500px.",
                 "tags": [
                     "pictograms"
                 ],
@@ -435,6 +467,35 @@
                     },
                     {
                         "$ref": "#/parameters/IdPictogram"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "500": {
+                        "description": "Error generating pictograms data",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/pictogramss/{idPictogram}/languages/{languages}": {
+            "x-swagger-router-controller": "pictograms",
+            "get": {
+                "operationId": "getPictogramByIdWithLocales",
+                "description": "Obtain pictogram data based on its key (idPictogram) for several languages. The pictogram image url can be generated based on pictogram key value and the desired resolution (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340/2340_2500.png for pictogram with key 2350 and resolution 2500px.",
+                "tags": [
+                    "pictograms"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/IdPictogram"
+                    },
+                    {
+                        "$ref": "#/parameters/Languages"
                     }
                 ],
                 "responses": {
