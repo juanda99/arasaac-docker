@@ -180,7 +180,8 @@ const getPictogramById = async (req, res) => {
 /* Not moved to public api yet... */
 const getPictogramsById = async (req, res) => {
   const { locale } = req.params
-  const { favoriteIds } = req.body
+  const favoriteIds = [].concat.apply([], req.body.favoriteIds)
+  console.log(favoriteIds, '***********')
   logger.debug(
     `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale}`
   )
@@ -358,7 +359,11 @@ const update = async (req, res) => {
     if (!isArrayEqual(keywords, Pictogram.keywords)) {
       const locutionsFiles = req.app.get('locutionsFiles')
       specificUpdate.keywords = keywords.map(keyword => {
-        if (locutionsFiles[locale].indexOf(keyword.keyword.toString().toLowerCase()) === -1) {
+        if (
+          locutionsFiles[locale].indexOf(
+            keyword.keyword.toString().toLowerCase()
+          ) === -1
+        ) {
           keyword.hasLocution = false
         } else {
           keyword.hasLocution = true
