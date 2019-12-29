@@ -9,7 +9,7 @@ router.get('/synsets/:idSynset', (req, res) => {
   wordsController.getWordnetById(req, res)
 })
 
-router.get('/keywords/:locale', (req, res) => {
+router.get('/keywords/:language', (req, res) => {
   wordsController.updateKeywords(req, res)
 })
 

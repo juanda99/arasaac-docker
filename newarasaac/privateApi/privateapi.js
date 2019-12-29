@@ -22,6 +22,9 @@ io.on('connection', async socket => {
 /* bbdd config */
 require('./db')
 
+/* crontab config */
+require('./crontab')
+
 // Passport configuration
 require('./auth')
 
