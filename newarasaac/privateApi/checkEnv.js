@@ -14,7 +14,11 @@ checkEnvs([
   'EMAIL_PASSWORD',
   'EMAIL_SMTP',
   'SFTP_SERVER',
-  'LOG_LEVEL'
+  'LOG_LEVEL',
+  'CROWDIN_ARASAAC_API_KEY',
+  'CROWDIN_ADMIN_ARASAAC_API_KEY',
+  'MONGO_DB_USER',
+  'MONGO_DB_PWD'
 ])
 
 module.exports = checkEnvs

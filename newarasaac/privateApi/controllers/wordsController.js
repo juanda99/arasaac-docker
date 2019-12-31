@@ -17,6 +17,8 @@ const Pictograms = languages.reduce((dict, language) => {
   return dict
 }, {})
 
+const { CROWDIN_ARASAAC_API_KEY, CROWDIN_ADMIN_ARASAAC_API_KEY } = process.env
+
 const getConjugations = async (req, res) => {
   const { word, language } = req.params
 
@@ -203,7 +205,14 @@ const getWordnetById = async (req, res) => {
   const { idSynset } = req.params
   const url = `http://wordnet-rdf.princeton.edu/json/id/${idSynset}`
   try {
-    const response = await axios.get(url)
+    const response = await axios({
+      method: 'post',
+      url: `https://api.crowdin.com/api/project/arasaac/language-status?key=63a6c0cbffcc28b98de4ef26b0296f23`,
+      data: {
+        firstName: 'Fred',
+        lastName: 'Flintstone'
+      }
+    })
     if (response.data === 'Synset Not Found') throw Error('Synset not found')
     return res.status(200).json(response.data)
   } catch (err) {
