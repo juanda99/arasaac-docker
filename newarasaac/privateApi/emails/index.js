@@ -67,6 +67,45 @@ const email = new Email({
   }
 })
 
+const contactEmail = (userEmail) => new Email({
+  message: {
+    from: EMAIL_FROM,
+    replyTo: userEmail
+  },
+  // uncomment below to send emails in development/test env:
+  send: true,
+  transport
+})
+
+const sendContactMail = data =>
+  new Promise((resolve, reject) => {
+    return contactEmail(data.email)
+      .send({
+        template: 'tplContact',
+        message: {
+          to: 'juandacorreo@gmail.com'
+        },
+        locals: {
+          name: data.name,
+          email: data.email,
+          message: data.message
+        },
+        htmlToText: true
+      })
+      .then(() => {
+        logger.debug(`Sent contact email from user ${data.email}`)
+        resolve()
+      })
+      .catch(error => {
+        reject(
+          new CustomError(
+            `Error sending contact email from user ${data.email}: ${error}`,
+            500
+          )
+        )
+      })
+  })
+
 const sendWelcomeMail = user =>
   new Promise((resolve, reject) => {
     var tokenUrl = ''
@@ -133,7 +172,7 @@ const sendPasswordRecoveryMail = (user, password) =>
         reject(
           new CustomError(
             `Error sending password recovery email OK to ${
-              user.email
+            user.email
             }: ${error}`,
             500
           )
@@ -141,31 +180,8 @@ const sendPasswordRecoveryMail = (user, password) =>
       })
   })
 
-// const sendPasswordlessMail = user =>
-//   new Promise((resolve, reject) => {
-//     return email
-//       .send({
-//         template: 'tplAccess',
-//         message: {
-//           to: user.email
-//         },
-//         locals: {
-//           name: user.name,
-//           // if locale does not exist... it uses en by default
-//           locale: user.locale
-//         },
-//         htmlToText: true
-//       })
-//       .then(() => {
-//         logger.debug(`Sent email OK`)
-//         resolve()
-//       })
-//       .catch(error => {
-//         reject(new CustomError(`Error sending email: ${error}`, 500))
-//       })
-//   })
-
 module.exports = {
   sendWelcomeMail,
-  sendPasswordRecoveryMail
+  sendPasswordRecoveryMail,
+  sendContactMail
 }

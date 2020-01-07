@@ -6,7 +6,7 @@ const { SHA256 } = require('crypto-js')
 // TODO: use Joi or mongodb validation
 // const Joi = require('joi')
 const CustomError = require('../utils/CustomError')
-const { sendWelcomeMail, sendPasswordRecoveryMail } = require('../emails')
+const { sendWelcomeMail, sendPasswordRecoveryMail, sendContactMail } = require('../emails')
 const logger = require('../utils/logger')
 const USER_NOT_EXISTS = 'USER_NOT_EXISTS'
 const USER_NOT_FOUND = 'USER_NOT_FOUND'
@@ -220,35 +220,6 @@ const findOne = async (req, res) => {
   }
 }
 
-// const deleteFavorite = async (req, res) => {
-//   const { id } = req.params
-//   const { pictogram, tag } = req.body
-
-//   try {
-//     if (!ObjectID.isValid(id)) {
-//       return res.status(404).json([])
-//     }
-
-//     let params = {}
-//     if (tag) {
-//       params.favorites = {}
-//       params.favorites[tag] = pictogram
-//     }
-//     const dotNotated = objectToDotNotation(params)
-//     const updatedUser = await User.findOneAndUpdate(
-//       { _id: id },
-//       { $pull: dotNotated },
-//       { new: true }
-//     )
-//     return res.status(201).json({ updatedUser })
-//   } catch (err) {
-//     return res.status(500).json({
-//       message: 'Error updating favorites. See error field for detail',
-//       error: err
-//     })
-//   }
-// }
-
 const addFavorite = async (req, res) => {
   const { fileName, listName } = req.body
   const { id } = req.user
@@ -353,6 +324,35 @@ const resetPassword = async (req, res) => {
     )
     res.status(err.httpCode || 500).json({
       message: 'Error resetting password',
+      error: err.message
+    })
+  }
+}
+
+const sendContactForm = async (req, res) => {
+  const _id = req.params._id
+  const data = req.body
+  logger.debug(`EXEC contact with data: ${JSON.stringify(data)} and user ${_id}`)
+
+  try {
+    // const user = await User.findOneAndUpdate(
+    //   { email: email },
+    //   { password, verifyToken: '', verifyDate: '' }
+    // )
+
+    // if (!user) {
+    //   throw new CustomError(USER_NOT_EXISTS, 404)
+    // }
+    // logger.debug(`User ${email} reset password OK`)
+    // /* generate mail with info */
+    await sendContactMail(data)
+    return res.status(200).json({})
+  } catch (err) {
+    logger.error(
+      `Error sending contact form for user with data ${JSON.stringify(data)}: ${err.message}`
+    )
+    res.status(err.httpCode || 500).json({
+      message: 'Error sending contact forms',
       error: err.message
     })
   }
@@ -475,6 +475,7 @@ const renameFavoriteList = async (req, res) => {
 
 module.exports = {
   create,
+  sendContactForm,
   update,
   remove,
   activate,

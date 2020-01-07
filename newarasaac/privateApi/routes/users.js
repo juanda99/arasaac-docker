@@ -7,6 +7,11 @@ router.post('/', (req, res) => {
   usersController.create(req, res)
 })
 
+// just for the contact form
+router.post('/contact/:_id?', (req, res) => {
+  usersController.sendContactForm(req, res)
+})
+
 router.put(
   '/:id',
   passport.authenticate('bearer', { session: false }),
