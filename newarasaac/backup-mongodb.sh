@@ -1,5 +1,5 @@
 #!/bin/bash
-source .env
+source /data/arasaac-docker/newarasaac/.env
 export CONTAINER_NAME="mongodb"
 export DATABASE_NAME="arasaac"
 
