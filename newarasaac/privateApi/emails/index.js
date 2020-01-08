@@ -83,7 +83,7 @@ const sendContactMail = data =>
       .send({
         template: 'tplContact',
         message: {
-          to: 'juandacorreo@gmail.com'
+          to: 'arasaac@gmail.com'
         },
         locals: {
           name: data.name,
