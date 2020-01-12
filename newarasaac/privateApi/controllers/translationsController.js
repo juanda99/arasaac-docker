@@ -101,7 +101,7 @@ const getTranslationStatus = async (req, res) => {
     })
   } catch (error) {
     logger.error(
-      `Error getting translationStatus for language ${language}. See error: ${err}`
+      `Error getting translationStatus for language ${language}. See error: ${error}`
     )
     return res.status(500).json({
       error: error.message
