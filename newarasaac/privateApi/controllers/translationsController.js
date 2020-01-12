@@ -1,6 +1,9 @@
 const axios = require('axios')
 const { CROWDIN_ARASAAC_API_KEY, CROWDIN_ADMIN_ARASAAC_API_KEY } = process.env
 const qs = require('qs')
+const Translations = require('../models/Translation')
+const CustomError = require('../utils/CustomError')
+const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 const setPictogramModel = require('../models/Pictogram')
 
@@ -11,6 +14,9 @@ const Pictograms = languages.reduce((dict, language) => {
 
 const getTranslationStatus = async (req, res) => {
   const { language } = req.params
+  logger.debug(
+    `EXEC getTranslationsStatus for language ${language}`
+  )
 
   try {
     const config = {
@@ -54,7 +60,7 @@ const getTranslationStatus = async (req, res) => {
       .countDocuments()
       .exec()
 
-    const getPictogramsTranslated = Pictograms[language]
+    const getPictogramsValidated = Pictograms[language]
       .find({ available: true, validated: true })
       .countDocuments()
       .exec()
@@ -63,29 +69,40 @@ const getTranslationStatus = async (req, res) => {
       arasaacCrowdin,
       adminArasaacCrowdin,
       totalPictograms,
-      pictogramsTranslated
+      pictogramsValidated
     ] = await Promise.all([
       getArasaacCrowdin,
       getAdminArasaacCrowdin,
       getTotalPictograms,
-      getPictogramsTranslated
+      getPictogramsValidated
     ])
 
     const arasaacPhrases = arasaacCrowdin.data.files[0].phrases
     const arasaacTranslated = arasaacCrowdin.data.files[0].translated
-    const arasaacPhrases2 = adminArasaacCrowdin.data.files[0].phrases
-    const arasaacTranslated2 = adminArasaacCrowdin.data.files[0].translated
+    const adminPhrases = adminArasaacCrowdin.data.files[0].phrases
+    const adminTranslated = adminArasaacCrowdin.data.files[0].translated
+    const updated = Date.now()
+    await Translations.findOneAndUpdate(
+      { language },
+      { language, arasaacPhrases, arasaacTranslated, adminPhrases, adminTranslated, updated },
+      { upsert: true }
+    )
+
+    logger.debug(`DONE getting translationStatus for language ${language}.`)
 
     return res.status(200).json({
       totalPictograms,
-      pictogramsTranslated,
+      pictogramsValidated,
       arasaacPhrases,
       arasaacTranslated,
-      arasaacPhrases2,
-      arasaacTranslated2
+      adminPhrases,
+      adminTranslated,
+      updated
     })
   } catch (error) {
-    console.log(error)
+    logger.error(
+      `Error getting translationStatus for language ${language}. See error: ${err}`
+    )
     return res.status(500).json({
       error: error.message
     })
