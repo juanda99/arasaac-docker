@@ -2,7 +2,7 @@ const axios = require('axios')
 const { CROWDIN_ARASAAC_API_KEY, CROWDIN_ADMIN_ARASAAC_API_KEY } = process.env
 const qs = require('qs')
 const Translations = require('../models/Translation')
-const CustomError = require('../utils/CustomError')
+// const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 const setPictogramModel = require('../models/Pictogram')
@@ -12,10 +12,10 @@ const Pictograms = languages.reduce((dict, language) => {
   return dict
 }, {})
 
-const getTranslationStatus = async (req, res) => {
+const postTranslationStatus = async (req, res) => {
   const { language } = req.params
   logger.debug(
-    `EXEC getTranslationsStatus for language ${language}`
+    `EXEC postTranslationsStatus for language ${language}`
   )
 
   try {
@@ -88,7 +88,7 @@ const getTranslationStatus = async (req, res) => {
       { upsert: true }
     )
 
-    logger.debug(`DONE getting translationStatus for language ${language}.`)
+    logger.debug(`DONE postTranslationStatus for language ${language}.`)
 
     return res.status(200).json({
       totalPictograms,
@@ -101,6 +101,29 @@ const getTranslationStatus = async (req, res) => {
     })
   } catch (error) {
     logger.error(
+      `Error executing postTranslationStatus for language ${language}. See error: ${error}`
+    )
+    return res.status(500).json({
+      error: error.message
+    })
+  }
+}
+
+const getTranslationStatus = async (req, res) => {
+  const { language } = req.params
+  logger.debug(
+    `EXEC getTranslationStatus for language ${language}`
+  )
+
+  try {
+    const translation = await Translations.findOne({ language }, { __v: 0 })
+    if (!translation) {
+      logger.debug(`Not found translation for language ${language}`)
+      return res.status(404).json({})
+    }
+    return res.json(translation)
+  } catch (error) {
+    logger.error(
       `Error getting translationStatus for language ${language}. See error: ${error}`
     )
     return res.status(500).json({
@@ -110,5 +133,6 @@ const getTranslationStatus = async (req, res) => {
 }
 
 module.exports = {
+  postTranslationStatus,
   getTranslationStatus
 }
