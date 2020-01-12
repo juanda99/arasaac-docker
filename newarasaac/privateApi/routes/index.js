@@ -6,6 +6,7 @@ const pictograms = require('./pictograms')
 const locutions = require('./locutions')
 const categories = require('./categories.js')
 const translations = require('./translations.js')
+const keywords = require('./keywords.js')
 
 const returnRouter = io => {
   const catalogs = require('./catalogs')(io)
@@ -17,6 +18,7 @@ const returnRouter = io => {
   router.use('/catalogs', catalogs)
   router.use('/categories', categories)
   router.use('/translations', translations)
+  router.use('/keywords', keywords)
 
   router.get('/', (req, res) => {
     res.status(200).json({ message: 'Connected to ARASAAC private API' })

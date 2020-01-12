@@ -1,6 +1,6 @@
 const logger = require('../utils/logger')
 const Verb = require('../models/Verb')
-const Keywords = require('../models/Keyword')
+
 const {
   getVerbixConjugations,
   getDeclinations,
@@ -9,15 +9,6 @@ const {
 } = require('./utils')
 const { PAST, PRESENT, FUTURE } = require('./constants')
 const axios = require('axios')
-const setPictogramModel = require('../models/Pictogram')
-const languages = require('../utils/languages')
-
-const Pictograms = languages.reduce((dict, language) => {
-  dict[language] = setPictogramModel(language)
-  return dict
-}, {})
-
-const { CROWDIN_ARASAAC_API_KEY, CROWDIN_ADMIN_ARASAAC_API_KEY } = process.env
 
 const getConjugations = async (req, res) => {
   const { word, language } = req.params
@@ -68,139 +59,7 @@ const getConjugations = async (req, res) => {
   }
 }
 
-const updateKeywords = async (req, res) => {
-  const { language } = req.params
-  logger.debug(`EXEC updateKeywords for language  ${language}`)
-  try {
-    const pictograms = await Pictograms[language]
-      .find({}, { 'keywords.keyword': 1, _id: 0 })
-      .lean()
-
-    const words = []
-    if (pictograms.length !== 0) {
-      for (const pictogram of pictograms) {
-        for (const keyword of pictogram.keywords) {
-          if (keyword.keyword) {
-            words.push(keyword.keyword)
-          }
-        }
-      }
-    }
-
-    let merged = [].concat(...words)
-    merged = [].concat(...merged).sort()
-    // remove duplicates
-    merged = [...new Set(merged)]
-
-    // now we compare it to saved data, and update if necessary:
-    const keywords = await Keywords.findOne(
-      { language },
-      { words: 1, _id: 0 }
-    ).lean()
-    const oldKeywords = keywords ? keywords.words : []
-    if (JSON.stringify(merged) !== JSON.stringify(oldKeywords)) {
-      logger.debug(`Keywords are new, updating for language  ${language}`)
-      const data = {
-        language,
-        words: merged,
-        updated: new Date()
-      }
-      const updateKeywords = await Keywords.findOneAndUpdate(
-        { language },
-        { $set: data },
-        {
-          new: true,
-          upsert: true
-        }
-      )
-      if (updateKeywords) {
-        logger.debug(`DONE updated keywords for language  ${language}`)
-        return res
-          .status(200)
-          .json({ msg: `DONE updated keywords for language  ${language}` })
-      } else {
-        logger.error(`FAILED updating keywords for language  ${language}`)
-        return res
-          .status(500)
-          .json({ msg: `FAILED updating keywords for language  ${language}` })
-      }
-    }
-    return res.status(200).json({
-      msg: `DONE but not need to update keywords for language  ${language}`
-    })
-  } catch (err) {
-    logger.error(
-      `FAILED updating keywords for language  ${language}: ${err.message}`
-    )
-    return res.status(500).json({
-      msg: `FAILED updating keywords for language  ${language}: ${err.msg}`
-    })
-  }
-}
-
-const updateKeywordsByCrontab = async language => {
-  logger.debug(`EXEC updateKeywords for language  ${language}`)
-  try {
-    const pictograms = await Pictograms[language]
-      .find({}, { 'keywords.keyword': 1, _id: 0 })
-      .lean()
-    const words = []
-    if (pictograms.length !== 0) {
-      for (const pictogram of pictograms) {
-        for (const keyword of pictogram.keywords) {
-          if (keyword.keyword) {
-            words.push(keyword.keyword)
-          }
-        }
-      }
-    }
-
-    let merged = [].concat(...words)
-    merged = [].concat(...merged).sort()
-    // remove duplicates
-    merged = [...new Set(merged)]
-
-    // now we compare it to saved data, and update if necessary:
-    const keywords = await Keywords.findOne(
-      { language },
-      { words: 1, _id: 0 }
-    ).lean()
-    const oldKeywords = keywords ? keywords.words : []
-    if (JSON.stringify(merged) !== JSON.stringify(oldKeywords)) {
-      logger.debug(`Keywords are new, updating for language  ${language}`)
-      const data = {
-        language,
-        words: merged,
-        updated: new Date()
-      }
-      const updateKeywords = await Keywords.findOneAndUpdate(
-        { language },
-        { $set: data },
-        {
-          new: true,
-          upsert: true
-        }
-      )
-      if (updateKeywords) {
-        logger.debug(`DONE updated keywords for language  ${language}`)
-        return true
-      } else {
-        logger.error(`FAILED updating keywords for language  ${language}`)
-        return false
-      }
-    }
-    logger.debug(
-      `DONE but not need to update keywords for language  ${language}`
-    )
-    return true
-  } catch (err) {
-    logger.error(
-      `FAILED updating keywords for language  ${language}: ${err.message}`
-    )
-    return false
-  }
-}
-
+// TODO: check if this is working ?????
 const getWordnetById = async (req, res) => {
   const { idSynset } = req.params
   const url = `http://wordnet-rdf.princeton.edu/json/id/${idSynset}`
@@ -222,7 +81,5 @@ const getWordnetById = async (req, res) => {
 
 module.exports = {
   getConjugations,
-  getWordnetById,
-  updateKeywords,
-  updateKeywordsByCrontab
+  getWordnetById
 }

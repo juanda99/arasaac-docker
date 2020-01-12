@@ -1,6 +1,6 @@
 const CronJob = require('cron').CronJob
 const logger = require('./utils/logger')
-const updateKeywordsByCrontab = require('./controllers/wordsController')
+const updateKeywordsByCrontab = require('./controllers/keywordsController')
   .updateKeywordsByCrontab
 const languages = require('./utils/languages')
 const job = new CronJob('00 30 03 * * *', () => {
