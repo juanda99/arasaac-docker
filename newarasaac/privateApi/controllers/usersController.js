@@ -162,6 +162,10 @@ const changePassword = async (req, res) => {
   console.log(req.user)
   logger.debug(`EXEC changePassword for user with id: ${id}`)
   try {
+    if (!ObjectID.isValid(id)) {
+      logger.debug(`Invalid id: ${id}`)
+      throw new CustomError('NOT FOUND', 404)
+    }
     const user = await User.findOne({ _id: id })
     if (!user) {
       logger.debug(`ERROR: No user found with id: ${id}`)
@@ -476,29 +480,6 @@ const renameFavoriteList = async (req, res) => {
     })
   }
 }
-
-// const createPasswordlessToken = async (req, res) => {
-//   const { id } = req.params
-
-//   try {
-//     if (!ObjectID.isValid(id)) {
-//       return res.status(404).json([])
-//     }
-
-//     /* we generate passwordless token */
-//     const passwordlessToken = randomize('Aa0', 32)
-
-//     await User.findOneAndUpdate({ _id: id }, { passwordlessToken })
-//     /* generate mail with info */
-
-//     return res.status(204).json()
-//   } catch (err) {
-//     return res.status(500).json({
-//       message: 'Error generating passwordless token',
-//       error: err
-//     })
-//   }
-// }
 
 module.exports = {
   create,
