@@ -156,12 +156,39 @@ const activate = async (req, res) => {
   }
 }
 
+const changePassword = async (req, res) => {
+  const { id } = req.user
+  const { password } = req.body
+  console.log(req.user)
+  logger.debug(`EXEC changePassword for user with id: ${id}`)
+  try {
+    const user = await User.findOne({ _id: id })
+    if (!user) {
+      logger.debug(`ERROR: No user found with id: ${id}`)
+      throw new CustomError('NOT FOUND', 404)
+    }
+    user.password = `${SHA256(password)}`
+    user.save()
+    logger.debug(`DONE changePassword for user with id: ${id} `)
+    return res.status(200).json({
+      message: 'User password changed',
+      _id: user._id
+    })
+  } catch (err) {
+    logger.error(`ERROR changePassword for user with id ${id}:  ${err.message} `)
+    return res.status(err.httpCode || 500).json({
+      message: `Error changing password to user with id ${id}.See error field for detail`,
+      error: err.message
+    })
+  }
+}
+
 const remove = (req, res) => {
   const id = req.swagger.params.id.value
   User.findByIdAndRemove(id, (err, users) => {
     if (err) {
       return res.status(404).json({
-        message: `User not found. User Id: ${id}`
+        message: `User not found.User Id: ${id} `
       })
     }
     return res.status(200).json(users)
@@ -177,14 +204,14 @@ const getAll = async (req, res) => {
     )
     return res.status(200).json(users)
   } catch (err) {
-    logger.err(`Error getting data from all users: ${err.message}`)
+    logger.err(`Error getting data from all users: ${err.message} `)
     return res.status(500).json(err)
   }
 }
 
 const getAllByDate = async (req, res) => {
   const { date } = req.params
-  logger.debug(`Getting data from all users updated after ${date}`)
+  logger.debug(`Getting data from all users updated after ${date} `)
   const query = date ? { updated: { $gte: date } } : {}
   try {
     const users = await User.find(
@@ -199,10 +226,10 @@ const getAllByDate = async (req, res) => {
 
 const findOne = async (req, res) => {
   const { id } = req.params
-  logger.debug(`Getting data for user with _id: ${id}`)
+  logger.debug(`Getting data for user with _id: ${id} `)
   try {
     if (!ObjectID.isValid(id)) {
-      logger.debug(`Invalid id: ${id}`)
+      logger.debug(`Invalid id: ${id} `)
       return res.status(404).json([])
     }
     const user = await User.findOne(
@@ -225,7 +252,7 @@ const addFavorite = async (req, res) => {
   const { id } = req.user
   const now = Date.now()
   logger.debug(
-    `EXEC addFavorite for user ${id}, listName ${listName} and file ${fileName}`
+    `EXEC addFavorite for user ${id}, listName ${listName} and file ${fileName} `
   )
   try {
     const user = await User.findById(id)
@@ -239,12 +266,12 @@ const addFavorite = async (req, res) => {
     user.updated = now
     await user.save()
     logger.debug(
-      `DONE addFavorite for user ${id}, listName ${listName} and file ${fileName}`
+      `DONE addFavorite for user ${id}, listName ${listName} and file ${fileName} `
     )
     return res.status(204).json({ resultado: 'ok' })
   } catch (err) {
     logger.debug(
-      `ERROR addFavorite for user ${id}, listName ${listName} and file ${fileName}: ${err}`
+      `ERROR addFavorite for user ${id}, listName ${listName} and file ${fileName}: ${err} `
     )
     return res.status(err.httpCode || 500).json({
       message: 'Error updating favorites.   See error field for detail',
@@ -258,7 +285,7 @@ const deleteFavorite = async (req, res) => {
   const { id } = req.user
   const now = Date.now()
   logger.debug(
-    `EXEC deleteFavorite for user ${id}, listName ${listName} and file ${fileName}`
+    `EXEC deleteFavorite for user ${id}, listName ${listName} and file ${fileName} `
   )
 
   try {
@@ -278,7 +305,7 @@ const deleteFavorite = async (req, res) => {
         user.updated = now
         await user.save()
         logger.debug(
-          `DONE deleteFavorite for user ${id}, listName ${listName} and file ${fileName}`
+          `DONE deleteFavorite for user ${id}, listName ${listName} and file ${fileName} `
         )
       } else {
         logger.debug(
@@ -289,7 +316,7 @@ const deleteFavorite = async (req, res) => {
     return res.status(204).json({})
   } catch (err) {
     logger.debug(
-      `ERROR deleteFavorite for user ${id}, listName ${listName} and file ${fileName}: ${err}`
+      `ERROR deleteFavorite for user ${id}, listName ${listName} and file ${fileName}: ${err} `
     )
     return res.status(err.httpCode || 500).json({
       message: 'Error removing favorite. See error field for detail',
@@ -300,11 +327,11 @@ const deleteFavorite = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   const email = req.body.username
-  logger.debug(`Reset password to user with email: ${email}`)
+  logger.debug(`Reset password to user with email: ${email} `)
 
   /* we generate passwordless token */
   const cleanPassword = randomize('Aa0', 8)
-  const password = `${SHA256(cleanPassword)}`
+  const password = `${SHA256(cleanPassword)} `
   try {
     const user = await User.findOneAndUpdate(
       { email: email },
@@ -320,7 +347,7 @@ const resetPassword = async (req, res) => {
     return res.status(200).json({ _id: user._id })
   } catch (err) {
     logger.error(
-      `Error resetting password for user with email ${email}: ${err.message}`
+      `Error resetting password for user with email ${email}: ${err.message} `
     )
     res.status(err.httpCode || 500).json({
       message: 'Error resetting password',
@@ -332,7 +359,7 @@ const resetPassword = async (req, res) => {
 const sendContactForm = async (req, res) => {
   const _id = req.params._id
   const data = req.body
-  logger.debug(`EXEC contact with data: ${JSON.stringify(data)} and user ${_id}`)
+  logger.debug(`EXEC contact with data: ${JSON.stringify(data)} and user ${_id} `)
 
   try {
     // const user = await User.findOneAndUpdate(
@@ -343,13 +370,13 @@ const sendContactForm = async (req, res) => {
     // if (!user) {
     //   throw new CustomError(USER_NOT_EXISTS, 404)
     // }
-    // logger.debug(`User ${email} reset password OK`)
+    // logger.debug(`User ${ email } reset password OK`)
     // /* generate mail with info */
     await sendContactMail(data)
     return res.status(200).json({})
   } catch (err) {
     logger.error(
-      `Error sending contact form for user with data ${JSON.stringify(data)}: ${err.message}`
+      `Error sending contact form for user with data ${JSON.stringify(data)}: ${err.message} `
     )
     res.status(err.httpCode || 500).json({
       message: 'Error sending contact forms',
@@ -362,7 +389,7 @@ const addFavoriteList = async (req, res) => {
   const { listName } = req.params
   const { id } = req.user
   const now = Date.now()
-  logger.debug(`EXEC addFavoriteList for user ${id} and listName ${listName}`)
+  logger.debug(`EXEC addFavoriteList for user ${id} and listName ${listName} `)
   try {
     const user = await User.findById(id)
     if (!user) {
@@ -373,11 +400,11 @@ const addFavoriteList = async (req, res) => {
     user.markModified('favorites')
     user.updated = now
     await user.save()
-    logger.debug(`DONE addFavoriteList for user ${id} and listName ${listName}`)
+    logger.debug(`DONE addFavoriteList for user ${id} and listName ${listName} `)
     return res.status(204).json()
   } catch (err) {
     logger.error(
-      `ERROR addFavoriteList for user ${id} and listName ${listName}: ${err}`
+      `ERROR addFavoriteList for user ${id} and listName ${listName}: ${err} `
     )
     return res.status(err.httpCode || 500).json({
       message: 'Error updating favorites.   See error field for detail',
@@ -391,7 +418,7 @@ const deleteFavoriteList = async (req, res) => {
   const { id } = req.user
   const now = Date.now()
   logger.debug(
-    `EXEC deleteFavoriteList for user ${id} and listName ${listName}`
+    `EXEC deleteFavoriteList for user ${id} and listName ${listName} `
   )
   try {
     const user = await User.findById(id)
@@ -403,12 +430,12 @@ const deleteFavoriteList = async (req, res) => {
     user.updated = now
     await user.save()
     logger.debug(
-      `DONE deleteFavoriteList for user ${id} and listName ${listName}`
+      `DONE deleteFavoriteList for user ${id} and listName ${listName} `
     )
     return res.status(204).json()
   } catch (err) {
     logger.error(
-      `ERROR deleteFavoriteList for user ${id} and listName ${listName}: ${err}`
+      `ERROR deleteFavoriteList for user ${id} and listName ${listName}: ${err} `
     )
     return res.status(err.httpCode || 500).json({
       message: 'Error updating favorites.   See error field for detail',
@@ -423,7 +450,7 @@ const renameFavoriteList = async (req, res) => {
   const { id } = req.user
   const now = Date.now()
   logger.debug(
-    `EXEC renameFavoriteList for user ${id} and listName ${listName}`
+    `EXEC renameFavoriteList for user ${id} and listName ${listName} `
   )
   try {
     const user = await User.findById(id)
@@ -436,12 +463,12 @@ const renameFavoriteList = async (req, res) => {
     user.updated = now
     await user.save()
     logger.debug(
-      `DONE renameFavoriteList for user ${id} from listName ${listName} to ${newListName}`
+      `DONE renameFavoriteList for user ${id} from listName ${listName} to ${newListName} `
     )
     return res.status(204).json()
   } catch (err) {
     logger.error(
-      `ERROR renameFavoriteList for user ${id} and listName ${listName} to ${newListName}: ${err}`
+      `ERROR renameFavoriteList for user ${id} and listName ${listName} to ${newListName}: ${err} `
     )
     return res.status(err.httpCode || 500).json({
       message: 'Error updating favorites.   See error field for detail',
@@ -476,6 +503,7 @@ const renameFavoriteList = async (req, res) => {
 module.exports = {
   create,
   sendContactForm,
+  changePassword,
   update,
   remove,
   activate,

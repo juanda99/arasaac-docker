@@ -12,6 +12,14 @@ router.post('/contact/:_id?', (req, res) => {
   usersController.sendContactForm(req, res)
 })
 
+router.post(
+  '/password',
+  passport.authenticate('bearer', { session: false }),
+  (req, res) => {
+    usersController.changePassword(req, res)
+  }
+)
+
 router.put(
   '/:id',
   passport.authenticate('bearer', { session: false }),
