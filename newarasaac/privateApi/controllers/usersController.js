@@ -79,6 +79,8 @@ const create = async (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params
+  /* prevent changing role by not admin user: */
+  if (req.role !== 'admin') delete req.body.role
 
   // some fields should not be updated here:
   delete req.body._id
@@ -87,7 +89,6 @@ const update = async (req, res) => {
   delete req.body.lastLogin
   delete req.body.favorites
 
-  console.log(req.body)
   logger.debug(
     `Updating user _id: ${id} with data: ${JSON.stringify(req.body)}`
   )
@@ -100,16 +101,15 @@ const update = async (req, res) => {
     // of docs that MongoDB updated
     const user = await User.findOneAndUpdate({ _id: id }, req.body, {
       new: true
-    })
+    }).lean()
     if (!user) throw new CustomError(USER_NOT_FOUND, 404)
     // else send modified doc:
     delete user.password
-    delete user.idAuthor
-    delete user.authToken
+    delete user._id
+    delete user.favorites
+    delete user.__v
     delete user.google
     delete user.facebook
-    delete user.favorites
-    delete user.updated
     return res.status(200).json(user)
   } catch (err) {
     logger.error(`Error updating user: ${err.message}`)

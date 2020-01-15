@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const passport = require('passport')
 const usersController = require('../controllers/usersController')
-const { hasRole } = require('../middlewares')
+const { hasRole, ownThisData } = require('../middlewares')
 
 router.post('/', (req, res) => {
   usersController.create(req, res)
@@ -12,7 +12,7 @@ router.post('/contact/:_id?', (req, res) => {
   usersController.sendContactForm(req, res)
 })
 
-router.post(
+router.put(
   '/password',
   passport.authenticate('bearer', { session: false }),
   (req, res) => {
@@ -23,7 +23,8 @@ router.post(
 router.put(
   '/:id',
   passport.authenticate('bearer', { session: false }),
-  hasRole('admin'),
+  // use for user management but also for its own user profile
+  ownThisData(),
   (req, res) => {
     usersController.update(req, res)
   }

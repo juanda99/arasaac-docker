@@ -22,6 +22,19 @@ const hasRole = role => (req, res, next) => {
   }
 }
 
+const ownThisData = () => (req, res, next) => {
+  // current role and user
+  const { role, id } = req.user
+  const userId = req.params.id || req.params._id
+  if (role === 'admin') return next()
+  if (id && id === userId) return next()
+  return res.status(403).json({
+    message: 'Error getting user data',
+    error: `Need the admin role. Current role: ${req.user.role}`
+  })
+}
+
 module.exports = {
-  hasRole
+  hasRole,
+  ownThisData
 }
