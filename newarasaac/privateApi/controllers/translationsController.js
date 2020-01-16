@@ -84,7 +84,7 @@ const postTranslationStatus = async (req, res) => {
     const updated = Date.now()
     await Translations.findOneAndUpdate(
       { language },
-      { language, arasaacPhrases, arasaacTranslated, adminPhrases, adminTranslated, updated },
+      { language, arasaacPhrases, arasaacTranslated, adminPhrases, adminTranslated, totalPictograms, pictogramsValidated, updated },
       { upsert: true }
     )
 
