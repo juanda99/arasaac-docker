@@ -26,7 +26,7 @@ services:
         max-file: "5"
   letsencrypt:
     hostname: letsencrypt
-    image: jrcs/letsencrypt-nginx-proxy-companion
+    image: jrcs/letsencrypt-nginx-proxy-companion:v1.12
     container_name: letsencrypt
     depends_on: [nginx-proxy]
     volumes:
