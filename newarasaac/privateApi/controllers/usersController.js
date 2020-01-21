@@ -80,7 +80,7 @@ const create = async (req, res) => {
 const update = async (req, res) => {
   const { id } = req.params
   /* prevent changing role by not admin user: */
-  if (req.role !== 'admin') delete req.body.role
+  if (req.user.role !== 'admin') delete req.body.role
 
   // some fields should not be updated here:
   delete req.body._id
