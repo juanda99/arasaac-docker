@@ -109,11 +109,15 @@ const sendContactMail = data =>
 const sendWelcomeMail = user =>
   new Promise((resolve, reject) => {
     var tokenUrl = ''
+    var direction = 'ltr'
     if (NODE_ENV === 'development') {
       tokenUrl = `${DEV_ARASAAC_URL}/activate/${user.verifyToken}`
     } else tokenUrl = `${ARASAAC_URL}/activate/${user.verifyToken}`
 
     if (user.locale === 'val') user.locale = 'ca'
+    if (user.locale === 'ar' || user.locale === 'he') {
+      direction = 'rtl'
+    }
     return email
       .send({
         template: 'tplWelcome',
@@ -122,6 +126,7 @@ const sendWelcomeMail = user =>
         },
         locals: {
           name: user.name,
+          direction,
           // if locale does not exist... it uses en by default
           locale: user.locale,
           tokenUrl
@@ -145,10 +150,14 @@ const sendWelcomeMail = user =>
 const sendPasswordRecoveryMail = (user, password) =>
   new Promise((resolve, reject) => {
     var accessUrl = ''
+    var direction = 'ltr'
     if (NODE_ENV === 'development') {
       accessUrl = `${DEV_ARASAAC_URL}/signin`
     } else accessUrl = `${ARASAAC_URL}/signin`
     if (user.locale === 'val') user.locale = 'ca'
+    if (user.locale === 'ar' || user.locale === 'he') {
+      direction = 'rtl'
+    }
     return email
       .send({
         template: 'tplPasswordRecovery',
@@ -157,6 +166,7 @@ const sendPasswordRecoveryMail = (user, password) =>
         },
         locals: {
           name: user.name,
+          direction,
           // if locale does not exist... it uses en by default
           locale: user.locale,
           accessUrl,
