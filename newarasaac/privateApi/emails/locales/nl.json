@@ -1,0 +1,12 @@
+{
+  "Hi": "Hi",
+  "welcome": "welcome",
+  "intro": "intro",
+  "activateMessage": "activateMessage",
+  "activateUserText": "activateUserText",
+  "contactar": "contactar",
+  "passwordChangeSubject": "passwordChangeSubject",
+  "introResetPassword": "introResetPassword",
+  "rememberChangePassword": "rememberChangePassword",
+  "accessText": "accessText"
+}

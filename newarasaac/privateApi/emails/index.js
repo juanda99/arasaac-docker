@@ -4,6 +4,7 @@ const Email = require('email-templates')
 const logger = require('../utils/logger')
 const CustomError = require('../utils/CustomError')
 const { ARASAAC_URL, DEV_ARASAAC_URL } = require('../utils/constants')
+const languages = require('../utils/languages')
 const {
   EMAIL_FROM,
   EMAIL_USER,
@@ -36,6 +37,8 @@ const transport = nodemailer.createTransport({
 //   }
 // })
 
+// remove val, it does not work, we will use ca
+const locales = languages.filter(language => language !== 'val')
 const email = new Email({
   message: {
     from: EMAIL_FROM
@@ -44,25 +47,7 @@ const email = new Email({
   send: true,
   transport,
   i18n: {
-    locales: [
-      'ar',
-      'bg',
-      'br',
-      'ca',
-      'de',
-      'en',
-      'es',
-      'eu',
-      'fr',
-      'gl',
-      'hr',
-      'it',
-      'pl',
-      'pt',
-      'ro',
-      'ru',
-      'zh'
-    ],
+    locales,
     directory: path.resolve(__dirname, 'locales')
   }
 })
