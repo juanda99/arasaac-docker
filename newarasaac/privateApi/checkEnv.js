@@ -18,7 +18,8 @@ checkEnvs([
   'CROWDIN_ARASAAC_API_KEY',
   'CROWDIN_ADMIN_ARASAAC_API_KEY',
   'MONGO_DB_USER',
-  'MONGO_DB_PWD'
+  'MONGO_DB_PWD',
+  'CRONTAB'
 ])
 
 module.exports = checkEnvs
