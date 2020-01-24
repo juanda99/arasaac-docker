@@ -38,6 +38,7 @@ services:
     volumes:
       - ${MATERIAL_DIR}:/usr/share/nginx/html/materials:ro
       - ./images:/usr/share/nginx/html/images:ro
+      - ./docs:/usr/share/nginx/html/docs:ro
       - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
       - ./locutions:/usr/share/nginx/html/locutions:ro
       - ./webstatic-conf/:/etc/nginx/conf.d:ro
@@ -96,6 +97,7 @@ services:
       - ${SVG_DIR}:/home/betaarasaac/svg
       - ${MATERIAL_DIR}:/home/betaarasaac/materials
       - ${IMAGE_DIR}:/home/betaarasaac/pictograms
+      - ./docs:/home/betaarasaac/docs
     ports:
       - "8005:22"
     command: betaarasaac:${SFTP_PASSWORD}
