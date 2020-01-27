@@ -44,6 +44,14 @@ router.get(
 )
 
 router.get(
+  '/email/:email',
+  passport.authenticate('bearer', { session: false }),
+  (req, res) => {
+    usersController.getUserByEmail(req, res)
+  }
+)
+
+router.get(
   '/date/:date?',
   passport.authenticate('bearer', { session: false }),
   hasRole('admin'),
