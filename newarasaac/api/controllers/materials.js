@@ -15,21 +15,21 @@ module.exports = {
     var id = req.swagger.params.idMaterial.value
     // Use lean to get a plain JS object to modify it, instead of a full model instance
     // Materials.findOne({idMaterial: id}, function(err, material){
-    Materials.findOne({idMaterial: id}).lean().exec(async (err, material) => {
-      if(err) {
+    Materials.findOne({ idMaterial: id }).populate('authors', 'name email company url facebook google').lean().exec(async (err, material) => {
+      if (err) {
         return res.status(500).json({
           message: 'Se ha producido un error al obtener el material',
           error: err
         })
       }
-      if(!material) {
-        return res.status(404).json( {
+      if (!material) {
+        return res.status(404).json({
           message: 'No tenemos este material',
           err
         })
       }
       // getImages(material, ()=>(res.json(material)))
-      const response =  await getFiles(material)
+      const response = await getFiles(material)
       return res.json(response)
     })
   },
@@ -41,19 +41,20 @@ module.exports = {
     var searchText = req.swagger.params.searchText.value
     console.log('k*********************')
     Materials
-      .find({ $text: { $search: searchText, $language: locale } }, {score: {$meta: 'textScore'}})
-      .sort({'score': { '$meta': 'textScore'} })
+      .find({ $text: { $search: searchText, $language: locale } }, { score: { $meta: 'textScore' } })
+      .sort({ 'score': { '$meta': 'textScore' } })
+      .populate('authors', 'name email company url facebook google')
       .lean()
-      .exec (async (err, materials) => {
-        if(err) {
+      .exec(async (err, materials) => {
+        if (err) {
           return res.status(500).json({
             message: 'Error buscando el material',
             error: err
           })
-        } 
+        }
         // if no items, return empty array
-        if (materials.length===0) return res.status(404).json([]) //send http code 404!!!
-        const response = await Promise.all(materials.map( async material => (await getFiles(material)))) // not async&await as we want to get all material images in parallel
+        if (materials.length === 0) return res.status(404).json([]) //send http code 404!!!
+        const response = await Promise.all(materials.map(async material => (await getFiles(material)))) // not async&await as we want to get all material images in parallel
         return res.json(response)
       })
   },
@@ -62,10 +63,11 @@ module.exports = {
     let startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
     Materials
-      .find({lastUpdate: {$gt: startDate}})
-      .sort({lastUpdate: -1})
+      .find({ lastUpdate: { $gt: startDate } })
+      .sort({ lastUpdate: -1 })
+      .populate('authors', 'name email company url facebook google')
       .lean()
-      .exec(async(err, materials) => {
+      .exec(async (err, materials) => {
         if (err) {
           return res.status(500).json({
             message: 'Error buscando el material',
@@ -82,10 +84,11 @@ module.exports = {
     const numItems = req.swagger.params.numItems.value
     Materials
       .find()
-      .sort({lastUpdate: -1})
+      .sort({ lastUpdate: -1 })
       .limit(numItems)
+      .populate('authors', 'name email company url facebook google')
       .lean()
-      .exec(async(err, materials) => {
+      .exec(async (err, materials) => {
         if (err) {
           return res.status(500).json({
             message: 'Error buscando el material',
@@ -98,59 +101,10 @@ module.exports = {
         return res.json(response)
       })
   },
-  createMaterials: function(req, res) {
-    var material = new Materials (req.body)
-    material.save(function(err, material){
-      if(err) {
-        return res.status(500).json( {
-          message: 'Error al guardar el material',
-          error: err
-        })
-      }
-      return res.status(201).json({
-        message: 'saved',
-        _id: material._id
-      })
-    })
-  },
-  updateMaterials: function(req, res) {
+  removeMaterials: function (req, res) {
     var id = req.params.id
-    Materials.findOne({_id: id}, function(err, material){
-      if(err) {
-        return res.status(500).json({
-          message: 'Se ha producido un error al guardar el material',
-          error: err
-        })
-      }
-      if(!material) {
-        return res.status(404).json({
-          message: 'No hemos encontrado el material'
-        })
-      }
-      material.Nombre = req.body.nombre
-      material.Descripción =  req.body.descripcion
-      material.Graduacion = req.body.graduacion
-      material.Envase = req.body.envase
-      material.Precio = req.body.precio
-      material.save(function(err, material){
-        if(err) {
-          return res.status(500).json({
-            message: 'Error al guardar el material'
-          })
-        }
-        if(!material) {
-          return res.status(404).json({
-            message: 'No hemos encontrado el material'
-          })
-        }
-        return res.json(material)
-      })
-    })
-  },
-  removeMaterials: function(req, res) {
-    var id = req.params.id
-    Materials.findByIdAndRemove(id, function(err, material){
-      if(err) {
+    Materials.findByIdAndRemove(id, function (err, material) {
+      if (err) {
         return res.json(500, {
           message: 'No hemos encontrado el  material',
           error: err
@@ -162,37 +116,37 @@ module.exports = {
 }
 
 const initMaterial = material => {
-  material.commonFiles=[]
-  material.screenshots={}
-  material.commonScreenshots=[]
-  material.files={}
-  material.file={}
+  material.commonFiles = []
+  material.screenshots = {}
+  material.commonScreenshots = []
+  material.files = {}
+  material.file = {}
 }
 
 
 const getFiles = material => {
   initMaterial(material)
-  return new Promise (resolve => {
-    let materialLocales=[material.lang]
+  return new Promise(resolve => {
+    let materialLocales = [material.lang]
     let baseDir = `${config.materialsDir}${path.sep}${material.idMaterial}${path.sep}`
-    material.translations.map(translation=>materialLocales.push(translation.lang))
+    material.translations.map(translation => materialLocales.push(translation.lang))
     recursive(baseDir, (err, files) => {
       // if err return material, if err is different from no screenshots dir, warning through console
-      if (err) err.code !== 'ENOENT' && console.warn (err) 
+      if (err) err.code !== 'ENOENT' && console.warn(err)
       if (files) {
         console.log(`Files: ${files}`)
-        files.map(file =>{
+        files.map(file => {
           let relativeFile = file.replace(baseDir, '')
           let fileName = path.basename(file)
           if (fileName === 'index.html') return // extra files from previous app
           let dir = path.dirname(relativeFile)
           let subdir = path.dirname(relativeFile).split(path.sep).pop()
-          if (dir==='.'){
+          if (dir === '.') {
             //if file is tar.gz, put it inside file json  {es: xxx-es.tgz, fr: xxx.fr.tgz...}
             let filePattern = new RegExp('^index-[A-z]{2,3}-[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}.tgz$', 'i')
             if (filePattern.test(fileName)) {
               let fileLocale = fileName.split('-')[1]
-              material.file[fileLocale]=fileName
+              material.file[fileLocale] = fileName
             } else material.commonFiles.push(fileName)
           } else if (dir.match(/screenshots_300$/)) material.commonScreenshots.push(fileName)
           else if (dir.match(/screenshots_300\/[A-z]{2,3}$/)) {
@@ -201,7 +155,7 @@ const getFiles = material => {
               : material.screenshots[subdir] = [fileName]
           } else if (dir.match(/^[A-z]{2,3}$/)) {
             material.files[subdir]
-              ? material.files[subdir].push (fileName)
+              ? material.files[subdir].push(fileName)
               : material.files[subdir] = [fileName]
           }
         })
