@@ -28,7 +28,7 @@ const TIME = process.env.TIME || 3000;
 logger.info("ARASAAC WATCHER STARTED");
 logger.info(
   `It will wait ${parseInt(TIME) /
-    1000} seconds on every material before starting processing it`
+  1000} seconds on every material before starting processing it`
 );
 logger.info(`Using folder: ${MATERIALS}`);
 logger.info(`Start scanning....`);
@@ -217,7 +217,7 @@ const prueba = (message, data) => {
 };
 
 const resizeImage = (file, materialId, size) => {
-  let extension = path.extname(file);
+  let extension = path.extname(file).toLowerCase();
   if (
     extension === ".png" ||
     extension === ".jpg" ||
@@ -235,7 +235,7 @@ const resizeImage = (file, materialId, size) => {
         let fileName = path.basename(file);
         sharp(`${MATERIALS}/${file}`)
           .resize(null, parseInt(size))
-          .toFile(`${newDir}/${fileName}`, function(err) {
+          .toFile(`${newDir}/${fileName}`, function (err) {
             if (err) logger.error(`Error generating screenshotfile:${err}`);
             else logger.info(`GENERATE SCREENSHOT: ${newDir}/${fileName}`);
           });
