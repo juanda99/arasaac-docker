@@ -52,7 +52,7 @@ parameters:
     in: path
     required: true
     description: Language associated with the searchText and the results.
-    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he", "nl"]
+    enum: ['ar', 'bg', 'br', 'ca', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'he', 'hr', 'it', 'nl', 'pl', 'pt', 'ro', 'ru', 'val', 'zh']
   Wordnet:
     name: wordnet
     type: string
@@ -92,7 +92,7 @@ parameters:
           type: string
         locale:
           type: string
-          enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he", "nl"]
+          enum: ['ar', 'bg', 'br', 'ca', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'he', 'hr', 'it', 'nl', 'pl', 'pt', 'ro', 'ru', 'val', 'zh']
         company:
           type: string
         website:
@@ -165,7 +165,7 @@ parameters:
     type: string
     in: path
     required: true
-    enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he"]
+    enum: ['ar', 'bg', 'br', 'ca', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'he', 'hr', 'it', 'nl', 'pl', 'pt', 'ro', 'ru', 'val', 'zh']
   Languages:
     name: languages
     description: Languages than we currently use for pictograms searches.
@@ -175,7 +175,7 @@ parameters:
     required: true
     items:
       type: string
-      enum: ["es", "ru", "ro", "ar", "zh", "bg", "pl", "en", "fr", "ca", "eu", "de", "it", "pt", "gl", "br", "hr", "val", "he"]
+      enum: ['ar', 'bg', 'br', 'ca', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'he', 'hr', 'it', 'nl', 'pl', 'pt', 'ro', 'ru', 'val', 'zh']
   Days:
     name: days
     description: Material identifier
@@ -595,7 +595,7 @@ definitions:
     properties:
       locale:
         type: string
-        enum: ["ar", "bg", "br", "ca", "de", "en", "es", "eu", "fr", "gl", "hr", "it", "iw", "nl", "pl", "pt", "ro", "ru", "val", "zh"]
+        enum: ['ar', 'bg', 'br', 'ca', 'de', 'en', 'es', 'eu', 'fr', 'gl', 'he', 'hr', 'it', 'nl', 'pl', 'pt', 'ro', 'ru', 'val', 'zh']
         description: Language of the keywords, same as requested locale parameter.
       words:
         type: array
