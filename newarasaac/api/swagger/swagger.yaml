@@ -277,7 +277,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
             
-  /pictogramss/{idPictogram}/languages/{languages}:
+  /pictograms/{idPictogram}/languages/{languages}:
     x-swagger-router-controller: pictograms
     get:
       operationId: getPictogramByIdWithLocales
