@@ -121,7 +121,7 @@ const addTask = (file, operation) => {
           const relativeDir = path.basename(file)
           if (file.match(/^[0-9]+\/[A-z]{2,3}$/)) {
             logger.info(`REMOVE LANGUAGE: ${relativeDir} from material ${materialId}, generating new material zip files...`);
-            debouncedSync(materialId);
+            debouncedSync({ materialId });
             // check if file is related to screenshots folders
           } else if ((file.match(/^[0-9]+\/screenshots$/)) || (file.match(/^[0-9]+\/screenshots\/[A-z]{2,3}$/))) {
             const dirToRemove = file.replace("screenshots", `screenshots_${RESOLUTION}`);
@@ -145,7 +145,7 @@ const addTask = (file, operation) => {
         // check if file is inside materialId or inside a language forlder
         if (dir.match(/^[0-9]+$/) || dir.match(/^[0-9]+\/[A-z]{2,3}$/)) {
           logger.info(`ADD FILE: ${file}, generating new material zip files...`);
-          debouncedSync(materialId);
+          debouncedSync({ materialId });
           // check if file is related to screenshots folders
         } else if ((dir.match(/^[0-9]+\/screenshots$/)) || (dir.match(/^[0-9]+\/screenshots\/[A-z]{2,3}$/))) {
           resizeImage(file, RESOLUTION)
@@ -162,7 +162,7 @@ const addTask = (file, operation) => {
         // check if file is inside materialId or inside a language forlder
         if (dir.match(/^[0-9]+$/) || dir.match(/^[0-9]+\/[A-z]{2,3}$/)) {
           logger.info(`REMOVE FILE: ${file}, generating new material zip file...`);
-          debouncedSync(materialId);
+          debouncedSync({ materialId });
           // check if file is related to screenshots folders
         } else if ((dir.match(/^[0-9]+\/screenshots$/)) || (dir.match(/^[0-9]+\/screenshots\/[A-z]{2,3}$/))) {
           const fileToRemove = file.replace("screenshots", `screenshots_${RESOLUTION}`);
@@ -181,44 +181,49 @@ const addTask = (file, operation) => {
   }
 };
 
-const debouncedSync = _.debounce(
-  async idMaterial => {
-    logger.info(`GENERATING zip files for material ${idMaterial}...`)
-    try {
-      // get previous files and remove all of them:
-      const zipFiles = await getZipFiles(idMaterial);
-      await Promise.all(zipFiles.map((zipFile) => fs.remove(path.resolve(MATERIALS, idMaterial, zipFile))))
+// https://stackoverflow.com/questions/28787436/debounce-a-function-with-argument
+var debouncedSync = _.wrap(
+  _.memoize(() => _.debounce(generateFiles, (wait = 10000)), _.property("materialId")),
+  (func, obj) => func(obj)(obj)
+);
 
-      // get all languages to generate new zip files:
-      const languages = getLanguagesFromDir(path.resolve(MATERIALS, idMaterial))
-      if (languages.length === 0) languages.push('xx')
-      // case no language defined, we take a default one, called 'xx'
-      languages.forEach(async language => {
-        const newZip = path.resolve(
-          MATERIALS,
-          idMaterial,
-          `index-${language}-${uuidv4()}.tgz`
-        );
-        let files = listFiles(path.resolve(MATERIALS, idMaterial));
-        let copyFiles = language == "xx" ? [...files] : [...files, language];
-        // if language doesn't exist (xx case) it throws an error
-        tar.c(
-          {
-            gzip: true,
-            sync: true,
-            onwarn: prueba,
-            file: newZip,
-            cwd: path.resolve(MATERIALS, idMaterial)
-          },
-          copyFiles
-        );
-        logger.info(`ZIP GENERATED: ${newZip}`);
-      });
-    } catch (err) {
-      logger.error(`Error executing debouncedSync for material ${idMaterial}: ${err}`);
-    }
-  }, (wait = 10000)
-)
+const generateFiles = async material => {
+  const idMaterial = material.materialId
+  logger.info(`GENERATING zip files for material ${idMaterial}...`)
+  try {
+    // get previous files and remove all of them:
+    const zipFiles = await getZipFiles(idMaterial);
+    await Promise.all(zipFiles.map((zipFile) => fs.remove(path.resolve(MATERIALS, idMaterial, zipFile))))
+
+    // get all languages to generate new zip files:
+    const languages = getLanguagesFromDir(path.resolve(MATERIALS, idMaterial))
+    if (languages.length === 0) languages.push('xx')
+    // case no language defined, we take a default one, called 'xx'
+    languages.forEach(async language => {
+      const newZip = path.resolve(
+        MATERIALS,
+        idMaterial,
+        `index-${language}-${uuidv4()}.tgz`
+      );
+      let files = listFiles(path.resolve(MATERIALS, idMaterial));
+      let copyFiles = language == "xx" ? [...files] : [...files, language];
+      // if language doesn't exist (xx case) it throws an error
+      tar.c(
+        {
+          gzip: true,
+          sync: true,
+          onwarn: prueba,
+          file: newZip,
+          cwd: path.resolve(MATERIALS, idMaterial)
+        },
+        copyFiles
+      );
+      logger.info(`ZIP GENERATED: ${newZip}`);
+    });
+  } catch (err) {
+    logger.error(`Error executing debouncedSync for material ${idMaterial}: ${err}`);
+  }
+}
 
 // function to get all languages from a directory
 const getLanguagesFromDir = p =>
