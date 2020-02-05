@@ -37,7 +37,7 @@ const watcher = chokidar.watch(`${SVG_DIR}/*.svg`, {
   cwd: SVG_DIR,
   awaitWriteFinish: {
     stabilityThreshold: 3000,
-    pollInterval: 50
+    pollInterval: 300
   }
 });
 
