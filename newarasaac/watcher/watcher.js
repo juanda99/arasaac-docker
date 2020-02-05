@@ -36,11 +36,11 @@ logger.info(`Start scanning....`);
 
 // Initialize watcher.
 var watcher = chokidar.watch(MATERIALS, {
-  // ignored: [
-  //   /(^|[\/\\])\../,
-  //   "**/screenshots_*/*",
-  //   /index-[A-z]{2,3}-(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}.tgz/
-  // ],
+  ignored: [
+    /(^|[\/\\])\../,
+    "**/screenshots_*/*",
+    /index-[A-z]{2,3}-(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}.tgz/
+  ],
   ignoreInitial: true,
   cwd: MATERIALS,
   // move to env variable, 0 for mac, 1 for server
