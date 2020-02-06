@@ -13,7 +13,6 @@ module.exports = {
       const user = await User.findOne(
         { _id: id },
         {
-          _id: 0,
           verifyToken: 0,
           verifyDate: 0,
           password: 0,
