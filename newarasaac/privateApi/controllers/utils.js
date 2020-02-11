@@ -56,20 +56,22 @@ const saveFilesByType = async (formFiles, id) => {
   // const filePromises = []
   let filesPromise
   let screenshotsPromise
-  const langFilesPattern = new RegExp(`^[A-z]{2,3}langFiles$`, 'i')
-  const langScreenshotsPattern = new RegExp(`^[A-z]{2,3}langScreenshots$`, 'i')
+  const langFilesPattern = new RegExp(`^[A-z]{2,3}_files$`, 'i')
+  const langScreenshotsPattern = new RegExp(`^[A-z]{2,3}_screenshotfiles$`, 'i')
+
+  await fs.ensureDir(path.resolve(MATERIALS, `${id}`))
 
   if (formFiles.files) {
     filesPromise = saveFiles(
       formFiles.files,
-      path.resolve(MATERIALS, `${id}`, 'files')
+      path.resolve(MATERIALS, `${id}`)
     )
   }
 
   if (formFiles.screnshots) {
     screenshotsPromise = saveFiles(
       formFiles.screenshots,
-      path.resolve(MATERIALS, `${id}`, 'files')
+      path.resolve(MATERIALS, `${id}`, 'screenshots')
     )
   }
 
@@ -78,10 +80,10 @@ const saveFilesByType = async (formFiles, id) => {
   )
 
   const langFilesPromises = langFiles.map(langFile => {
-    const locale = langFile.substr(0, langFile.indexOf('langFile'))
+    const locale = langFile.substr(0, langFile.indexOf('_files'))
     return saveFiles(
       formFiles[langFile],
-      path.resolve(MATERIALS, `${id}`, locale, 'files')
+      path.resolve(MATERIALS, `${id}`, locale)
     )
   })
 
@@ -92,11 +94,11 @@ const saveFilesByType = async (formFiles, id) => {
   const langScreenshotsPromises = langScreenshotsFiles.map(langScreenshot => {
     const locale = langScreenshot.substr(
       0,
-      langScreenshot.indexOf('langScreenshot')
+      langScreenshot.indexOf('_screenshotfiles')
     )
     return saveFiles(
       formFiles[langScreenshot],
-      path.resolve(MATERIALS, `${id}`, locale, 'screenshots')
+      path.resolve(MATERIALS, `${id}`, 'screenshots', locale)
     )
   })
 
