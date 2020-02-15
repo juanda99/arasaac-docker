@@ -11,6 +11,7 @@ const create = (req, res, io) => {
   form.encoding = 'utf-8'
   form.keepExtensions = true
   form.multiples = true
+  form.maxFileSize = 600 * 1024 * 1024 // 600MB instead of 200MB (default value)
   // form.uploadDir = `${__dirname}/uploads`
   let oldValue = 0
   form.on('progress', (bytesReceived, bytesExpected) => {
@@ -18,12 +19,15 @@ const create = (req, res, io) => {
     if ((currentValue - oldValue) > 1 || currentValue === 100) {
       oldValue = currentValue
       io.emit('FILE_UPLOAD_STATUS', currentValue)
+      console.log('FILE_UPLOAD_STATUS', currentValue)
     }
   })
 
+  form.on('error', (err) => {
+    logger.error(`Error updating pictogram: ${err.message}`)
+  })
+
   form.parse(req, async (_err, fields, files) => {
-    console.log(fields.formData)
-    console.log(typeof files)
     let material
     const formData = JSON.parse(fields.formData)
     if (!formData.translations) {
@@ -66,7 +70,7 @@ const create = (req, res, io) => {
         id: material.idMaterial
       })
     } catch (err) {
-      console.log(err)
+      logger.error(`Error creating material: ${err}`)
       return res.status(500).json({
         message: 'Error saving material',
         error: err
