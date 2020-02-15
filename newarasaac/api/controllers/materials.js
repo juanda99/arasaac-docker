@@ -4,11 +4,12 @@
 // mandar json cuandto todo acabe:
 // https://stackoverflow.com/questions/2727167/how-do-you-get-a-list-of-the-names-of-all-files-present-in-a-directory-in-node-j/37532027#37532027
 
-var Materials = require('../models/Materials')
+const Materials = require('../models/Materials')
 const config = require('../config')
-var recursive = require('recursive-readdir')
-var path = require('path')
-var Promise = require('bluebird')
+const recursive = require('recursive-readdir')
+const path = require('path')
+const logger = require('../utils/logger')
+const Promise = require('bluebird')
 
 module.exports = {
   getMaterialById: (req, res) => {
@@ -39,7 +40,6 @@ module.exports = {
   searchMaterials: (req, res) => {
     var locale = req.swagger.params.locale.value
     var searchText = req.swagger.params.searchText.value
-    console.log('k*********************')
     Materials
       .find({ $text: { $search: searchText, $language: locale } }, { score: { $meta: 'textScore' } })
       .sort({ 'score': { '$meta': 'textScore' } })
@@ -62,29 +62,32 @@ module.exports = {
     let days = req.swagger.params.days.value
     let startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
+    logger.debug(`EXEC getNewMaterials for last ${days}, with startDate: ${startDate}`)
     Materials
-      .find({ lastUpdate: { $gt: startDate } })
-      .sort({ lastUpdate: -1 })
+      .find({ lastUpdated: { $gt: startDate } })
+      .sort({ lastUpdated: -1 })
       .populate('authors', 'name email company url facebook google')
       .lean()
       .exec(async (err, materials) => {
         if (err) {
           return res.status(500).json({
-            message: 'Error buscando el material',
+            message: 'Error getting new materials',
             error: err
           })
         }
         // if no items, return empty array
         if (materials.length === 0) return res.status(404).json([]) //send http code 404!!!
         const response = await Promise.all(materials.map(material => (getFiles(material))))
+        logger.debug(response)
         return res.json(response)
       })
   },
   getLastMaterials: (req, res) => {
     const numItems = req.swagger.params.numItems.value
+    logger.debug(`EXEC getLastMaterials, total number: ${numItems}`)
     Materials
       .find()
-      .sort({ lastUpdate: -1 })
+      .sort({ lastUpdated: -1 })
       .limit(numItems)
       .populate('authors', 'name email company url facebook google')
       .lean()
