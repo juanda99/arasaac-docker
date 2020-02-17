@@ -7,11 +7,13 @@ const { MATERIAL_DIR } = require('../utils/constants')
 
 const create = (req, res, io) => {
   logger.debug(`EXEC create material`)
-  const form = new formidable.IncomingForm()
-  form.encoding = 'utf-8'
-  form.keepExtensions = true
-  form.multiples = true
-  form.maxFileSize = 600 * 1024 * 1024 // 600MB instead of 200MB (default value)
+  const form = formidable({
+    encoding: 'utf-8',
+    keepExtensions: true,
+    multiples: true,
+    maxFileSize: 600 * 1024 * 1024 // 600MB instead of 200MB (default value)
+  })
+
   // form.uploadDir = `${__dirname}/uploads`
   let oldValue = 0
   form.on('progress', (bytesReceived, bytesExpected) => {
