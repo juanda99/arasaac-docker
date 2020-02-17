@@ -15,6 +15,7 @@ const create = (req, res, io) => {
   // form.uploadDir = `${__dirname}/uploads`
   let oldValue = 0
   form.on('progress', (bytesReceived, bytesExpected) => {
+    console.log(bytesReceived, 'bytesReceived')
     let currentValue = (parseFloat(bytesReceived) / parseFloat(bytesExpected)) * 100
     if ((currentValue - oldValue) > 1 || currentValue === 100) {
       oldValue = currentValue
