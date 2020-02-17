@@ -38,10 +38,36 @@ module.exports = {
   // https://docs.mongodb.com/v3.0/reference/operator/query/text/
   // more complex search: http://stackoverflow.com/questions/28891165/using-weights-for-searching-in-mongoose
   searchMaterials: (req, res) => {
-    var locale = req.swagger.params.locale.value
-    var searchText = req.swagger.params.searchText.value
+    const locale = req.swagger.params.locale.value
+    const searchText = req.swagger.params.searchText.value
+    logger.debug(`EXEC searchMaterials with locale ${locale} and searchText ${searchText}`)
+    // depending on language we can use $text index or we should set $language to none, so no stopwords 
+    let customLanguage
+    switch (locale) {
+      case 'da':
+      case 'nl':
+      case 'en':
+      case 'fi':
+      case 'fr':
+      case 'de':
+      case 'hu':
+      case 'it':
+      case 'nb':
+      case 'pt':
+      case 'ro':
+      case 'ru':
+      case 'es':
+      case 'sv':
+      case 'tr':
+        customLanguage = locale
+        break
+      default:
+        customLanguage = 'none'
+        break
+    }
+    logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage}`)
     Materials
-      .find({ $text: { $search: searchText, $language: locale } }, { score: { $meta: 'textScore' } })
+      .find({ $text: { $search: searchText, $language: customLanguage } }, { score: { $meta: 'textScore' } })
       .sort({ 'score': { '$meta': 'textScore' } })
       .populate('authors', 'name email company url facebook google')
       .lean()
@@ -55,6 +81,7 @@ module.exports = {
         // if no items, return empty array
         if (materials.length === 0) return res.status(404).json([]) //send http code 404!!!
         const response = await Promise.all(materials.map(async material => (await getFiles(material)))) // not async&await as we want to get all material images in parallel
+        logger.debug(`DONE: ${JSON.stringify(response)}`)
         return res.json(response)
       })
   },
