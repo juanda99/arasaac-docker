@@ -4,6 +4,8 @@ const materialsController = require('../controllers/materialsController')
 const passport = require('passport')
 const { hasRole } = require('../middlewares')
 
+// TODO:  websockets not used now in materialController, need to remove io
+
 const returnRouter = io => {
   router.post('/',
     passport.authenticate('bearer', { session: false }),
