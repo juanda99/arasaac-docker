@@ -97,6 +97,7 @@ services:
       - ${SVG_DIR}:/home/betaarasaac/svg
       - ${MATERIAL_DIR}:/home/betaarasaac/materials
       - ${IMAGE_DIR}:/home/betaarasaac/pictograms
+      - ./images:/home/betaarasaac/images
       - ./docs:/home/betaarasaac/docs
     ports:
       - "8005:22"
