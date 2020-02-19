@@ -155,36 +155,36 @@ class MyPrettyPrinter(pprint.PrettyPrinter):
 
 time.sleep(5)
 actividades = {
-    '24': [31],  # actividad lim
-    '29': [1],  # actividad picaa
+    '24': [31, 3],  # lim, software
+    '29': [1, 3],  # picaa, software
     '14': [2],  # animación
-    '2': [3],  # aplicación informática
-    '31': [4, 5],  # araboard
-    '32': [6], # bingo
+    '2': [3],  # software
+    '31': [4, 38],  # araboard, communication
+    '32': [6, 37], # bingo, game
     '20': [7],  # canción
-    '19': [8],  # cuaderno
+    '19': [8, 38],  # cuaderno, communication
     '1': [9],  # cuento
-    '34': [11, 12, 13],  # dominos
+    '34': [11, 37],  # dominos, game
     '15': [14],  # ficha
-    '28': [15],  # jclic
-    '6': [12, 13],  # juego colectivo
-    '33': [12, 13, 16],  # juego de la oca
-    '5': [12],  # juego individual
-    '18': [17],  # libro
-    '3': [14, 18, 19, 22],  # material audiovisual
-    '30': [5, 20],  # pictodroid Lite
-    '21': [21],  # pizarra digital
+    '28': [15, 3],  # jclic, software
+    '6': [13, 37],  # juego colectivo, game
+    '33': [16, 37],  # juego de la oca, game
+    '5': [12, 37],  # juego individual, game
+    '18': [17, 38],  # libro, communication
+    '3': [10],  # Material audiovisual - se harán luego a mano
+    '30': [20, 38],  # pictodroid Lite, communication
+    '21': [21, 3],  # pizarra digital, software
     '4': [22],  # presentación
     '12': [23],  # protocolo
-    '26': [24],  # rutinas
+    '26': [24],  # rutina
     '25': [25],  # señaléctica
-    '27': [26],  # secuencias
-    '23': [27],  # smart notebook
-    '16': [5],  # tablero
-    '22': [28, 5],  # tablero tico
+    '27': [26],  # secuencia
+    '23': [27, 3],  # smart notebook, add software
+    '16': [5, 38],  # tablero, add communication
+    '22': [28, 38],  # tablero tico, add communication
     '13': [29],  # test de evaluación
-    '36': [36],  # Teacch
-    '35': [35]  # Teacch
+    '36': [36],  # TeacchMaterial
+    '35': [35]  # Kitchen recipes
 }
 
 
@@ -198,19 +198,19 @@ areasCurriculares = {
     '9': [21],   # Educación física
     '10':  [22],  # Religión,
     '14': [3, 4],  # Fonética - fonología
-    '13': [1, 2],  # Habilidades prelingüísticas
-    '18': [3, 8, 9],  # Lectura y escritura
+    '13': [28],  # Habilidades prelingüísticas -> priorSkills
+    '18': [3, 8, 9],  # Lectura y escritura ¿quitamos uno?
     '19': [19],  # Música
-    '16': [5],  # Morfosintaxis
+    '16': [3, 5],  # Morfosintaxis
     '20': [20],  # Plástica
     '17': [3, 7],  # Pragmática
     '15': [3, 6]  # Semántica
 }
 
 estados = {
-    0: 1,   # Lengua y literatura
-    1: 2,   # Matemáticas
-    2: 3,   #
+    0: 0,   # No published
+    1: 1,   # Published
+    2: 2,   # not validated
 }
 
 idiomas = {
@@ -231,7 +231,7 @@ idiomas = {
     'zh': 'zh', # zht???? zhs???
     'es': 'es',
     'cr': 'hr',
-    'val': 'va',
+    'val': 'val',
     'nl': 'nl'
 }
 
