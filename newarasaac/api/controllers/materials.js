@@ -16,7 +16,7 @@ module.exports = {
     var id = req.swagger.params.idMaterial.value
     // Use lean to get a plain JS object to modify it, instead of a full model instance
     // Materials.findOne({idMaterial: id}, function(err, material){
-    Materials.findOne({ idMaterial: id }).populate('authors', 'name email company url facebook google').lean().exec(async (err, material) => {
+    Materials.findOne({ idMaterial: id }).populate('authors.author', 'name email company url facebook google').lean().exec(async (err, material) => {
       if (err) {
         return res.status(500).json({
           message: 'Se ha producido un error al obtener el material',
@@ -61,6 +61,10 @@ module.exports = {
       case 'tr':
         customLanguage = locale
         break
+      case 'br':
+        customLanguage = 'pt'
+        break
+
       default:
         customLanguage = 'none'
         break
@@ -69,10 +73,11 @@ module.exports = {
     Materials
       .find({ $text: { $search: searchText, $language: customLanguage } }, { score: { $meta: 'textScore' } })
       .sort({ 'score': { '$meta': 'textScore' } })
-      .populate('authors', 'name email company url facebook google')
+      .populate('authors.author', 'name email company url facebook google')
       .lean()
       .exec(async (err, materials) => {
         if (err) {
+          logger.error(`searchMaterials with locale ${locale} and searchText ${searchText}: ${err} `)
           return res.status(500).json({
             message: 'Error buscando el material',
             error: err
@@ -93,7 +98,7 @@ module.exports = {
     Materials
       .find({ lastUpdated: { $gt: startDate } })
       .sort({ lastUpdated: -1 })
-      .populate('authors', 'name email company url facebook google')
+      .populate('authors.author', 'name email company url facebook google')
       .lean()
       .exec(async (err, materials) => {
         if (err) {
@@ -116,7 +121,7 @@ module.exports = {
       .find()
       .sort({ lastUpdated: -1 })
       .limit(numItems)
-      .populate('authors', 'name email company url facebook google')
+      .populate('authors.author', 'name email company url facebook google')
       .lean()
       .exec(async (err, materials) => {
         if (err) {

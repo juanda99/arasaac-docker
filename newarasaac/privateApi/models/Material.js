@@ -12,8 +12,11 @@ const translationSchema = new Schema({
   desc: String,
   lang: String,
   language: String,
-  status: Number
+  validated: { type: Boolean, default: true },
+  authors: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 })
+
+// status: 0 no published, 1 published, 2 need review
 
 const materialSchema = new Schema({
   activities: {
@@ -24,17 +27,18 @@ const materialSchema = new Schema({
     type: [Number],
     required: true
   },
-  authors: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  authors: [{
+    author: { type: Schema.Types.ObjectId, ref: 'User' },
+    role: { type: String, default: 'author' }
+  }],
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
-  title: String,
-  desc: String,
   downloads: Number,
   idMaterial: Number,
-  lang: String,
-  language: String,
   status: Number,
-  translations: [translationSchema]
+  translations: [translationSchema],
+  published: { type: Boolean, default: false },
+  validated: { type: Boolean, default: false }
 })
 
 const Material = mongoose.model('Material', materialSchema)
