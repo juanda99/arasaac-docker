@@ -44,16 +44,17 @@ const getPictogramsFromDate = async (req, res) => {
 }
 
 const downloadPictogram = async (req, res) => {
-  const { fileName } = req.params
+  const { fileName, keyword } = req.params
+  const newName = keyword === null ? fileName : keyword
   logger.debug(`EXEC downloadPictogram for filename: ${fileName}`)
   const filePath = path.resolve(IMAGE_DIR, fileName, `${fileName}_500.png`)
   const exists = await fs.pathExists(filePath)
-  if (exists) {
-    logger.debug(`downloadPictogram ok for filename: ${fileName}`)
-    return res.download(filePath)
-  } else {
-    logger.error(`ERROR executing downloadPictogram for file: ${filePath}`)
+  if (!exists) {
+    logger.error(`ERROR executing downloadPictogram for file: ${filePath} `)
+    return res.status(404).json({})
   }
+  logger.debug(`downloadPictogram ok for file: ${filePath}`)
+  return res.download(filePath, `${newName}.png`)
 }
 
 const searchPictograms = async (req, res) => {
@@ -61,7 +62,7 @@ const searchPictograms = async (req, res) => {
   const searchText = stopWords(req.params.searchText, locale)
 
   logger.debug(
-    `EXEC searchPictograms with searchText ${searchText} and locale ${locale}`
+    `EXEC searchPictograms with searchText ${searchText} and locale ${locale} `
   )
 
   /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
@@ -129,7 +130,7 @@ const searchPictograms = async (req, res) => {
     return res.json(uniquePictograms)
   } catch (err) {
     logger.error(
-      `Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`
+      `Error getting pictograms with locale ${locale} and searchText ${searchText}.See error: ${err} `
     )
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
@@ -140,13 +141,13 @@ const searchPictograms = async (req, res) => {
 
 const getAll = async (req, res) => {
   const { locale } = req.params
-  logger.debug(`EXEC getAll with locale ${locale}`)
+  logger.debug(`EXEC getAll with locale ${locale} `)
   try {
     const pictograms = await Pictograms[locale].find()
     if (pictograms.length === 0) return res.status(404).json([]) // send http code 404!!!
     return res.json(pictograms)
   } catch (err) {
-    logger.error(`Error getting all pictograms ${err}`)
+    logger.error(`Error getting all pictograms ${err} `)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
@@ -156,18 +157,18 @@ const getAll = async (req, res) => {
 
 const getPictogramById = async (req, res) => {
   const { _id, locale } = req.params
-  logger.debug(`EXEC getPictogramById with id ${_id} and locale ${locale}`)
+  logger.debug(`EXEC getPictogramById with id ${_id} and locale ${locale} `)
   try {
     let pictogram = await Pictograms[locale].findOne({ _id }, { __v: 0 })
-    logger.debug(`Search pictogram with id ${_id} and locale ${locale}`)
+    logger.debug(`Search pictogram with id ${_id} and locale ${locale} `)
     if (!pictogram) {
-      logger.debug(`Not found pictogram with id ${_id} and locale ${locale}`)
+      logger.debug(`Not found pictogram with id ${_id} and locale ${locale} `)
       return res.status(404).json({})
     }
     return res.json(pictogram)
   } catch (err) {
     logger.error(
-      `Error getting pictogram with id ${_id} and locale ${locale}. See error: ${err}`
+      `Error getting pictogram with id ${_id} and locale ${locale}.See error: ${err} `
     )
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
@@ -183,7 +184,7 @@ const getPictogramsById = async (req, res) => {
   const favoriteIds = [].concat.apply([], req.body.favoriteIds)
   console.log(favoriteIds, '***********')
   logger.debug(
-    `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale}`
+    `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale} `
   )
   try {
     const pictograms = await Pictograms[locale].find(
@@ -193,17 +194,17 @@ const getPictogramsById = async (req, res) => {
       },
       { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
     )
-    logger.debug(`Search pictogram with id ${favoriteIds} and locale ${locale}`)
+    logger.debug(`Search pictogram with id ${favoriteIds} and locale ${locale} `)
     if (!pictograms.length) {
       logger.debug(
-        `Not found pictograms with ids ${favoriteIds} and locale ${locale}`
+        `Not found pictograms with ids ${favoriteIds} and locale ${locale} `
       )
       return res.status(404).json()
     }
     return res.json(pictograms)
   } catch (err) {
     logger.error(
-      `Error getting pictogram with id ${favoriteIds} and locale ${locale}. See error: ${err}`
+      `Error getting pictogram with id ${favoriteIds} and locale ${locale}.See error: ${err} `
     )
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
@@ -218,7 +219,7 @@ const upload = async (req, res, next) => {
   form.encoding = 'utf-8'
   form.keepExtensions = true
   form.multiples = true
-  // form.uploadDir = `${__dirname}/uploads`
+  // form.uploadDir = `${ __dirname } /uploads`
   form.parse(req, async (err, fields, files) => {
     if (err) logger.error(`ERROR UPLOADING PICTOGRAMS: ${err.message}`)
     try {
