@@ -317,7 +317,8 @@ const getLastPictograms = async (req, res) => {
     let pictograms = await Pictograms[locale]
       .find({ published: true })
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
-      .sort({ lastUpdated: -1 })
+      // .sort({ lastUpdated: -1 }) modifing a lot, doesn't make sense
+      .sort({ created: -1 })
       .limit(numItems)
     if (pictograms.length === 0) {
       logger.info(`No pictograms found for locale ${locale}.`)
