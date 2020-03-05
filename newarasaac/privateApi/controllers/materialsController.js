@@ -49,7 +49,7 @@ const create = (req, res, io) => {
         dirName =>
           !isNaN(dirName)
       )
-    const idMaterial = materialDirs.length ? Math.max(...materialDirs) : 1
+    const idMaterial = materialDirs.length ? Math.max(...materialDirs) + 1 : 1
     const data = { ...formData, idMaterial }
 
     const Material = new Materials(data)
