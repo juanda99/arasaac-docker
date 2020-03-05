@@ -68,7 +68,7 @@ const saveFilesByType = async (formFiles, id) => {
     )
   }
 
-  if (formFiles.screnshots) {
+  if (formFiles.screenshots) {
     screenshotsPromise = saveFiles(
       formFiles.screenshots,
       path.resolve(MATERIALS, `${id}`, 'screenshots')
