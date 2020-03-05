@@ -120,12 +120,6 @@ const postTranslationStatusByCrontab = async (language) => {
     `EXEC postTranslationsStatusByCrontab for language ${language}`
   )
 
-  if (language === 'en') {
-    logger.debug(
-      `No need for postTranslationStatusByCrontab for language en`
-    )
-    return false
-  }
   try {
     let getArasaacCrowdin
     let getAdminArasaacCrowdin
