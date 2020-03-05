@@ -29,7 +29,8 @@ const materialSchema = new Schema({
   },
   authors: [{
     author: { type: Schema.Types.ObjectId, ref: 'User' },
-    role: { type: String, default: 'author' }
+    role: { type: String, default: 'author' },
+    _id: false
   }],
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },

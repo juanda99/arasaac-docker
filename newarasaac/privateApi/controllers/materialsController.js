@@ -39,10 +39,6 @@ const create = (req, res, io) => {
         error: 'It neeeds at least title and desc in one language'
       })
     }
-    const { translations } = formData
-    const originalData = translations.shift()
-    // const originalData = translations.slice(0, 1)
-    // set lang if needed (not only language)
 
     /* get id for material */
     // get last file id:
@@ -53,9 +49,8 @@ const create = (req, res, io) => {
         dirName =>
           !isNaN(dirName)
       )
-
-    let idMaterial = Math.max(...materialDirs) + 1
-    const data = { ...formData, translations, ...originalData, idMaterial }
+    const idMaterial = materialDirs.length ? Math.max(...materialDirs) : 1
+    const data = { ...formData, idMaterial }
 
     const Material = new Materials(data)
     try {
