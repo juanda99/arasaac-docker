@@ -43,7 +43,8 @@ const postTranslationStatus = async (req, res) => {
           crowdinLanguage = 'pt-PT'
           break
         case 'br':
-          crowdinLanguage = 'pt-BR'
+          // we use pt with crowdin
+          crowdinLanguage = 'pt-PT'
           break
         default:
           crowdinLanguage = language
