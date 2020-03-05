@@ -19,41 +19,47 @@ const postTranslationStatus = async (req, res) => {
   )
 
   try {
-    const config = {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
-    let crowdinLanguage
-    switch (language) {
-      case 'es':
-        crowdinLanguage = 'es-ES'
-        break
-      case 'val':
-        crowdinLanguage = 'val-ES'
-        break
-      case 'zh':
-        crowdinLanguage = 'zh-CN'
-        break
-      case 'pt':
-        crowdinLanguage = 'pt-PT'
-        break
-      case 'br':
-        crowdinLanguage = 'pt-BR'
-        break
-      default:
-        crowdinLanguage = language
-    }
+    let getArasaacCrowdin
+    let getAdminArasaacCrowdin
+    if (language === 'en') {
+      getArasaacCrowdin = Promise.resolve(100)
+      getArasaacCrowdin = Promise.resolve(100)
+    } else {
+      const config = {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+      let crowdinLanguage
+      switch (language) {
+        case 'es':
+          crowdinLanguage = 'es-ES'
+          break
+        case 'val':
+          crowdinLanguage = 'val-ES'
+          break
+        case 'zh':
+          crowdinLanguage = 'zh-CN'
+          break
+        case 'pt':
+          crowdinLanguage = 'pt-PT'
+          break
+        case 'br':
+          crowdinLanguage = 'pt-BR'
+          break
+        default:
+          crowdinLanguage = language
+      }
+      getArasaacCrowdin = axios.post(
+        `https://api.crowdin.com/api/project/arasaac/language-status?key=${CROWDIN_ARASAAC_API_KEY}`,
+        qs.stringify({ language: crowdinLanguage, json: '' }),
+        config
+      )
 
-    const getArasaacCrowdin = axios.post(
-      `https://api.crowdin.com/api/project/arasaac/language-status?key=${CROWDIN_ARASAAC_API_KEY}`,
-      qs.stringify({ language: crowdinLanguage, json: '' }),
-      config
-    )
-
-    const getAdminArasaacCrowdin = axios.post(
-      `https://api.crowdin.com/api/project/arasaac-management/language-status?key=${CROWDIN_ADMIN_ARASAAC_API_KEY}`,
-      qs.stringify({ language: crowdinLanguage, json: '' }),
-      config
-    )
+      getAdminArasaacCrowdin = axios.post(
+        `https://api.crowdin.com/api/project/arasaac-management/language-status?key=${CROWDIN_ADMIN_ARASAAC_API_KEY}`,
+        qs.stringify({ language: crowdinLanguage, json: '' }),
+        config
+      )
+    }
 
     const getTotalPictograms = Pictograms[language]
       .find({ available: true })
@@ -77,10 +83,10 @@ const postTranslationStatus = async (req, res) => {
       getPictogramsValidated
     ])
 
-    const arasaacPhrases = arasaacCrowdin.data.files[0].phrases
-    const arasaacTranslated = arasaacCrowdin.data.files[0].translated
-    const adminPhrases = adminArasaacCrowdin.data.files[0].phrases
-    const adminTranslated = adminArasaacCrowdin.data.files[0].translated
+    const arasaacPhrases = language === 'en' ? 100 : arasaacCrowdin.data.files[0].phrases
+    const arasaacTranslated = language === 'en' ? 100 : arasaacCrowdin.data.files[0].translated
+    const adminPhrases = language === 'en' ? 100 : adminArasaacCrowdin.data.files[0].phrases
+    const adminTranslated = language === 'en' ? 100 : adminArasaacCrowdin.data.files[0].translated
     const updated = Date.now()
     await Translations.findOneAndUpdate(
       { language },
@@ -121,41 +127,47 @@ const postTranslationStatusByCrontab = async (language) => {
     return false
   }
   try {
-    const config = {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-    }
-    let crowdinLanguage
-    switch (language) {
-      case 'es':
-        crowdinLanguage = 'es-ES'
-        break
-      case 'val':
-        crowdinLanguage = 'val-ES'
-        break
-      case 'zh':
-        crowdinLanguage = 'zh-CN'
-        break
-      case 'pt':
-        crowdinLanguage = 'pt-PT'
-        break
-      case 'br':
-        crowdinLanguage = 'pt-BR'
-        break
-      default:
-        crowdinLanguage = language
-    }
+    let getArasaacCrowdin
+    let getAdminArasaacCrowdin
+    if (language === 'en') {
+      getArasaacCrowdin = Promise.resolve(100)
+      getArasaacCrowdin = Promise.resolve(100)
+    } else {
+      const config = {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+      let crowdinLanguage
+      switch (language) {
+        case 'es':
+          crowdinLanguage = 'es-ES'
+          break
+        case 'val':
+          crowdinLanguage = 'val-ES'
+          break
+        case 'zh':
+          crowdinLanguage = 'zh-CN'
+          break
+        case 'pt':
+          crowdinLanguage = 'pt-PT'
+          break
+        case 'br':
+          crowdinLanguage = 'pt-BR'
+          break
+        default:
+          crowdinLanguage = language
+      }
+      getArasaacCrowdin = axios.post(
+        `https://api.crowdin.com/api/project/arasaac/language-status?key=${CROWDIN_ARASAAC_API_KEY}`,
+        qs.stringify({ language: crowdinLanguage, json: '' }),
+        config
+      )
 
-    const getArasaacCrowdin = axios.post(
-      `https://api.crowdin.com/api/project/arasaac/language-status?key=${CROWDIN_ARASAAC_API_KEY}`,
-      qs.stringify({ language: crowdinLanguage, json: '' }),
-      config
-    )
-
-    const getAdminArasaacCrowdin = axios.post(
-      `https://api.crowdin.com/api/project/arasaac-management/language-status?key=${CROWDIN_ADMIN_ARASAAC_API_KEY}`,
-      qs.stringify({ language: crowdinLanguage, json: '' }),
-      config
-    )
+      getAdminArasaacCrowdin = axios.post(
+        `https://api.crowdin.com/api/project/arasaac-management/language-status?key=${CROWDIN_ADMIN_ARASAAC_API_KEY}`,
+        qs.stringify({ language: crowdinLanguage, json: '' }),
+        config
+      )
+    }
 
     const getTotalPictograms = Pictograms[language]
       .find({ available: true })
@@ -179,10 +191,10 @@ const postTranslationStatusByCrontab = async (language) => {
       getPictogramsValidated
     ])
 
-    const arasaacPhrases = arasaacCrowdin.data.files[0].phrases
-    const arasaacTranslated = arasaacCrowdin.data.files[0].translated
-    const adminPhrases = adminArasaacCrowdin.data.files[0].phrases
-    const adminTranslated = adminArasaacCrowdin.data.files[0].translated
+    const arasaacPhrases = language === 'en' ? 100 : arasaacCrowdin.data.files[0].phrases
+    const arasaacTranslated = language === 'en' ? 100 : arasaacCrowdin.data.files[0].translated
+    const adminPhrases = language === 'en' ? 100 : adminArasaacCrowdin.data.files[0].phrases
+    const adminTranslated = language === 'en' ? 100 : adminArasaacCrowdin.data.files[0].translated
     const updated = Date.now()
     await Translations.findOneAndUpdate(
       { language },
