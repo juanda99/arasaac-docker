@@ -6,10 +6,11 @@ const locutions = require('./locutions')
 const categories = require('./categories.js')
 const translations = require('./translations.js')
 const keywords = require('./keywords.js')
+const materials = require('./materials')
 
 const returnRouter = io => {
   const catalogs = require('./catalogs')(io)
-  const materials = require('./materials')(io)
+  router.use('/materials', materials)
   router.use('/pictograms', pictograms)
   router.use('/locutions', locutions)
   router.use('/users', users)

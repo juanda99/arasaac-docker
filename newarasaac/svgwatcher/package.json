@@ -23,7 +23,6 @@
     "async": "^2.6.2",
     "chokidar": "^3.3.0",
     "d3-queue": "^3.0.7",
-    "dotenv": "^6.0.0",
     "fs-extra": "^7.0.1",
     "imagemin": "^6.0.0",
     "imagemin-pngquant": "^6.0.0",

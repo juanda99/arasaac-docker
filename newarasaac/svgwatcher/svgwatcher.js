@@ -6,12 +6,9 @@ const logger = require("./logger");
 const createPNGFiles = require("./createPNGFiles");
 const { preCompiledOptions } = require("./utils/svg");
 
-// global
-require("dotenv").config();
-
 const INCLUDE_FILE = "include";
 const EXCLUDE_FILE = "exclude";
-const SVG_DIR = process.env.SVG_DIR || "/app/svg";
+const SVG_DIR = process.env.SVG_DIR || "/svg";
 const usePolling = parseInt(process.env.CHOKIDAR_USEPOLLING) || 1;
 const RESOLUTIONS = [300, 500, 2500];
 

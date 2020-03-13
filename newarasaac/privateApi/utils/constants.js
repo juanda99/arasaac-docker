@@ -1,8 +1,9 @@
 const path = require('path')
-const IMAGE_DIR = '/app/pictograms'
-const MATERIAL_DIR = '/app/materials'
-const CONJUGATIONS_DIR = '/app/conjugations'
-const SVG_DIR = '/app/svg'
+const IMAGE_DIR = '/pictograms'
+const MATERIAL_DIR = '/materials'
+const CONJUGATIONS_DIR = '/conjugations'
+const LOCUTIONS_DIR = '/locutions'
+const SVG_DIR = '/svg'
 // catalogs must "depend" on IMAGE_DIR to prevent error with hard links: EXDEV: cross-device link not permitted
 const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
 const tmpCatalogDirRoot = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
@@ -65,6 +66,7 @@ module.exports = {
   CATALOG_DIR,
   MATERIAL_DIR,
   CONJUGATIONS_DIR,
+  LOCUTIONS_DIR,
   SVG_DIR,
   tmpCatalogDirRoot,
   tmpCatalogDir,

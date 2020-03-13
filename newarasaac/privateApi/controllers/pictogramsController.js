@@ -6,7 +6,7 @@ const { ObjectID } = require('mongodb')
 const path = require('path')
 const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
-const { IMAGE_DIR, SVG_DIR } = require('../utils/constants')
+const { IMAGE_DIR, SVG_DIR, LOCUTIONS_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
 const stopWords = require('../utils/stopWords')
 const languages = require('../utils/languages')
@@ -458,7 +458,7 @@ const getPictogramsIdBySearch = async (req, res) => {
     if (pictograms.length === 0) return res.status(404).json([])
     return res.json(pictograms)
   } catch (err) {
-    logger.err(
+    logger.error(
       `Error executing getPictogramsIdBySearch with locale ${locale} and searchText ${searchText}: ${err}`
     )
     return res.status(500).json({
@@ -500,7 +500,7 @@ const getKeywordsById = async (req, res) => {
       return res.status(404).json([])
     }
   } catch (err) {
-    logger.err(
+    logger.error(
       `Error executing getKeywordsById with id ${_id} and locale ${locale}: ${err}`
     )
     return res.status(500).json({
@@ -535,7 +535,7 @@ const getTypesById = async (req, res) => {
       return res.status(404).json([])
     }
   } catch (err) {
-    logger.err(`ERROR executing getTypesById with _id: ${_id}`)
+    logger.error(`ERROR executing getTypesById with _id: ${_id}`)
     // TODO: return err o err.messsage?????
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
@@ -565,7 +565,7 @@ const remove = async (req, res) => {
     )
     return res.status(204).json()
   } catch (err) {
-    logger.err(`ERROR executing remove for pictogram with id: ${_id}`)
+    logger.error(`ERROR executing remove for pictogram with id: ${_id}`)
     // TODO: return err o err.messsage?????
     return res.status(500).json({
       message: 'Error removing pictogram. See error field for detail',
@@ -600,7 +600,7 @@ const postCustomPictogramFromBase64 = async (req, res) => {
 
 const getCustomPictogramByName = (req, res) => {
   const { fileName } = req.params
-  const destFileName = `/app/pictograms/${fileName}`
+  const destFileName = `${IMAGE_DIR}/${fileName}`
   logger.debug(`EXEC getCustomPictogramByName for fileName ${fileName}`)
   try {
     const newFileName = fileName.substring(fileName.indexOf('-') + 1)
@@ -618,7 +618,7 @@ const getCustomPictogramByName = (req, res) => {
 const getLocutionById = (req, res) => {
   const { id, locale, text } = req.params
   try {
-    const locution = `/app/locutions/${locale}/${id}.mp3`
+    const locution = `${LOCUTIONS_DIR}/${locale}/${id}.mp3`
     // let locutionName = sanitize(text)
     // locutionName = locutionName ? `${locutionName}.mp3` : `{$id}.mp3`
     res.download(locution, `${id}.mp4`)

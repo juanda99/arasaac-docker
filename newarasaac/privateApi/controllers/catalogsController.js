@@ -159,7 +159,7 @@ const getAllCatalogs = async (req, res) => {
     )
     return res.json(languagesCatalog)
   } catch (err) {
-    logger.err(err.message)
+    logger.error(err.message)
     return res.status(500).json({
       message: 'Error searching pictogram. See error field for detail',
       error: err.message
@@ -174,7 +174,7 @@ const getCatalogsByLanguage = async (req, res) => {
     if (catalogs.length === 0) return res.status(404).json([]) // send http code 404!!!
     return res.json(catalogs)
   } catch (err) {
-    logger.err(err.message)
+    logger.error(err.message)
     return res.status(500).json({
       message: 'Error searching pictogram. See error field for detail',
       error: err.message

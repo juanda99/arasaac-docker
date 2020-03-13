@@ -224,7 +224,7 @@ const getAll = async (req, res) => {
     )
     return res.status(200).json(users)
   } catch (err) {
-    logger.err(`Error getting data from all users: ${err.message} `)
+    logger.error(`Error getting data from all users: ${err.message} `)
     return res.status(500).json(err)
   }
 }

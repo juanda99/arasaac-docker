@@ -213,7 +213,7 @@ server.exchange(
 );
 
 server.exchange(
-  oauth2orizeFacebook(function(client, profile, scope, done) {
+  oauth2orizeFacebook(function (client, profile, scope, done) {
     //if user does not exists we create it
     const query = {
       $or: [{ "facebook.id": profile.id }, { email: profile.email }]
@@ -229,7 +229,8 @@ server.exchange(
         locale: profile.locale,
         email: profile.email,
         active: true,
-        name: profile.name
+        name: profile.name,
+        pictureProvider: 'facebook'
       }
     };
     const options = {
@@ -271,7 +272,7 @@ var option = {
   googleConfig: {}
 };
 server.exchange(
-  oauth2orizeGoogle(option, function(client, profile, scope, done) {
+  oauth2orizeGoogle(option, function (client, profile, scope, done) {
     //if user does not exists we create it
     const query = {
       $or: [{ "google.id": profile.sub }, { email: profile.email }]
@@ -287,7 +288,8 @@ server.exchange(
         locale: profile.locale,
         email: profile.email,
         active: true,
-        name: profile.name
+        name: profile.name,
+        pictureProvider: 'google'
       }
     };
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };

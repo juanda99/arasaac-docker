@@ -26,7 +26,7 @@ const UserSchema = new Schema(
       default: true
     },
     id: Number, // just for old data. New values with _id
-    provider: String,
+    pictureProvider: { type: String, default: 'arasaac' },
     locale: { type: String, default: 'en' },
     password: String,
     verifyToken: String,
@@ -80,15 +80,15 @@ const validatePresenceOf = value => value && value.length
 
 // the below 5 validations only apply if you are signing up traditionally
 
-UserSchema.path('name').validate(function(name) {
+UserSchema.path('name').validate(function (name) {
   return name.length
 }, 'Name cannot be blank')
 
-UserSchema.path('email').validate(function(email) {
+UserSchema.path('email').validate(function (email) {
   return email.length
 }, 'Email cannot be blank')
 
-UserSchema.path('email').validate(function(email) {
+UserSchema.path('email').validate(function (email) {
   const User = mongoose.model('User')
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
@@ -101,7 +101,7 @@ UserSchema.path('email').validate(function(email) {
  * Pre-save hook
  */
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   if (!this.isNew) return next()
 
   if (!validatePresenceOf(this.password)) {
@@ -131,7 +131,7 @@ UserSchema.methods = {
   }
 }
 
-UserSchema.virtual('isVerified').get(function() {
+UserSchema.virtual('isVerified').get(function () {
   return !this.verifyToken // && !!this.password
 })
 

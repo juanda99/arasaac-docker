@@ -9,9 +9,6 @@ const _ = require("lodash");
 var sharp = require("sharp");
 const logger = require("./logger");
 
-// load environment
-require("dotenv").config();
-
 // global variables and constants
 var materialFiles = {};
 var localePattern = /^[A-z]{2,3}$/g;
@@ -20,7 +17,7 @@ const EXCLUDE_FILE = "exclude";
 const INCLUDE_DIR = "includedir";
 const EXCLUDE_DIR = "excludedir";
 const SCREENSHOTS_DIR = process.env.SCREENSHOTS_DIR || "screenshots";
-const MATERIALS = process.env.MATERIALS || "/app/materials";
+const MATERIALS = process.env.MATERIALS || "/materials";
 const RESOLUTION = process.env.RESOLUTION || 300;
 const NODE_ENV = process.env.NODE_ENV || "development";
 const usePolling = parseInt(process.env.CHOKIDAR_USEPOLLING) || 1;

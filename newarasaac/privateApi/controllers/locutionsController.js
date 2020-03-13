@@ -1,9 +1,10 @@
 const filenamify = require('filenamify')
+const { LOCUTIONS_DIR } = require('../utils/constants')
 
 const getLocutionById = (req, res) => {
   const { id, locale, keyword } = req.params
   try {
-    const locution = `/app/locutions/${locale}/${id}`
+    const locution = `${LOCUTIONS_DIR}/${locale}/${id}`
     let locutionName = filenamify(keyword, { replacement: '' }) || `{$id}.mp3`
     res.download(locution, locutionName)
   } catch (err) {

@@ -1,6 +1,7 @@
 const axios = require('axios')
 const passport = require('passport')
 const Strategy = require('passport-http-bearer').Strategy
+const AnonymousStrategy = require('passport-anonymous').Strategy
 const jwt = require('jsonwebtoken')
 const logger = require('./utils/logger')
 
@@ -46,3 +47,5 @@ passport.use(
     }
   })
 )
+
+passport.use(new AnonymousStrategy())

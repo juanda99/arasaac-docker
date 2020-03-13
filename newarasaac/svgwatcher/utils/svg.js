@@ -4,7 +4,7 @@ const sharp = require('sharp')
 var flatten = require('arr-flatten')
 const { pluralSVGCode, pastSVGCode, futureSVGCode } = require('./svgCodes')
 
-const IMAGE_DIR = '/app/pictograms';
+const IMAGE_DIR = process.env.IMAGE_DIR || "/pictograms";
 
 const skin = {
   white: '#F5E5DE',
@@ -241,8 +241,7 @@ const modifySVG = (fileContent, options) => {
   }
   if (!color) content = modifyLayer(content, 'relleno', '')
   if (action === 'future') content = addLayer(content, 'action', futureSVGCode)
-  else if (action === 'past')
-    {content = addLayer(content, "action", pastSVGCode);}
+  else if (action === 'past') { content = addLayer(content, "action", pastSVGCode); }
   if (hair) content = modifyHair(content, hair)
   if (skin) content = modifySkin(content, skin)
 

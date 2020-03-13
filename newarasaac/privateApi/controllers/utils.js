@@ -1,14 +1,13 @@
 const fs = require('fs-extra')
 const path = require('path')
 const languages = require('../utils/languages')
-const MATERIALS = process.env.MATERIALS || '/app/materials'
 const puppeteer = require('puppeteer')
 const cheerio = require('cheerio')
 const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
 const { PAST, PRESENT, FUTURE } = require('./constants')
 const _ = require('lodash')
-const { CONJUGATIONS_DIR } = require('../utils/constants')
+const { CONJUGATIONS_DIR, LOCUTIONS_DIR, MATERIAL_DIR } = require('../utils/constants')
 
 const saveFiles = async (files, dir, newName) => {
   await fs.ensureDir(dir)
@@ -59,19 +58,19 @@ const saveFilesByType = async (formFiles, id) => {
   const langFilesPattern = new RegExp(`^[A-z]{2,3}_files$`, 'i')
   const langScreenshotsPattern = new RegExp(`^[A-z]{2,3}_screenshotfiles$`, 'i')
 
-  await fs.ensureDir(path.resolve(MATERIALS, `${id}`))
+  await fs.ensureDir(path.resolve(MATERIAL_DIR, `${id}`))
 
   if (formFiles.files) {
     filesPromise = saveFiles(
       formFiles.files,
-      path.resolve(MATERIALS, `${id}`)
+      path.resolve(MATERIAL_DIR, `${id}`)
     )
   }
 
   if (formFiles.screenshots) {
     screenshotsPromise = saveFiles(
       formFiles.screenshots,
-      path.resolve(MATERIALS, `${id}`, 'screenshots')
+      path.resolve(MATERIAL_DIR, `${id}`, 'screenshots')
     )
   }
 
@@ -83,7 +82,7 @@ const saveFilesByType = async (formFiles, id) => {
     const locale = langFile.substr(0, langFile.indexOf('_files'))
     return saveFiles(
       formFiles[langFile],
-      path.resolve(MATERIALS, `${id}`, locale)
+      path.resolve(MATERIAL_DIR, `${id}`, locale)
     )
   })
 
@@ -98,7 +97,7 @@ const saveFilesByType = async (formFiles, id) => {
     )
     return saveFiles(
       formFiles[langScreenshot],
-      path.resolve(MATERIALS, `${id}`, 'screenshots', locale)
+      path.resolve(MATERIAL_DIR, `${id}`, 'screenshots', locale)
     )
   })
 
@@ -272,7 +271,7 @@ const loadLocutionsFiles = () => {
     let files
     locutions[language] = []
     try {
-      files = fs.readdirSync(`/app/locutions/${language}`)
+      files = fs.readdirSync(`${LOCUTIONS_DIR}/${language}`)
       files.forEach((file) => {
         locutions[language].push(path.basename(file, '.mp3'))
       })

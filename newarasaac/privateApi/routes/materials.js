@@ -4,30 +4,36 @@ const materialsController = require('../controllers/materialsController')
 const passport = require('passport')
 const { hasRole } = require('../middlewares')
 
-// TODO:  websockets not used now in materialController, need to remove io
+router.get('/new/:numItems',
+  passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  (req, res) => {
+    materialsController.getLastMaterials(req, res)
+  })
 
-const returnRouter = io => {
-  router.post('/',
-    passport.authenticate('bearer', { session: false }),
-    hasRole('admin'),
-    (req, res) => {
-      materialsController.create(req, res, io)
-    })
+router.get('/:locale/:searchText',
+  passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  (req, res) => {
+    materialsController.searchMaterials(req, res)
+  })
 
-  router.put('/:id',
-    passport.authenticate('bearer', { session: false }),
-    hasRole('admin'),
-    (req, res) => {
-      materialsController.update(req, res)
-    })
+router.post('/',
+  passport.authenticate('bearer', { session: false }),
+  (req, res) => {
+    materialsController.create(req, res)
+  })
 
-  router.delete('/:id',
-    passport.authenticate('bearer', { session: false }),
-    hasRole('admin'),
-    (req, res) => {
-      materialsController.remove(req, res)
-    })
-  return router
-}
+router.put('/:id',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    materialsController.update(req, res)
+  })
 
-module.exports = returnRouter
+router.delete('/:id',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    materialsController.remove(req, res)
+  })
+
+module.exports = router
