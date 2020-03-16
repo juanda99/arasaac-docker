@@ -58,7 +58,7 @@ services:
     command: npm run serve
     volumes:
       - ./watcher:/app
-      - ${MATERIAL_DIR}:/app/materials
+      - ${MATERIAL_DIR}:/materials
       - /app/node_modules
       - /app/.config
     environment:
@@ -73,10 +73,10 @@ services:
     command: npm run serve
     volumes:
       - ./svgwatcher:/app
-      - ${SVG_DIR}:/app/svg:ro
+      - ${SVG_DIR}:/svg:ro
       - /app/node_modules
       - /app/.config
-      - ${IMAGE_DIR}:/app/pictograms
+      - ${IMAGE_DIR}:/pictograms
     environment:
       NODE_ENV: $NODE_ENV
       CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING

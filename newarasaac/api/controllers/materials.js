@@ -10,6 +10,7 @@ const recursive = require('recursive-readdir')
 const path = require('path')
 const logger = require('../utils/logger')
 const Promise = require('bluebird')
+const PUBLISHED = 1
 
 module.exports = {
   getMaterialById: (req, res) => {
@@ -71,7 +72,7 @@ module.exports = {
     }
     logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage}`)
     Materials
-      .find({ $text: { $search: searchText, $language: customLanguage } }, { score: { $meta: 'textScore' } })
+      .find({ $text: { $search: searchText, $language: customLanguage }, published: PUBLISHED }, { score: { $meta: 'textScore' } })
       .sort({ 'score': { '$meta': 'textScore' } })
       .populate('authors.author', 'name email company url facebook google')
       .lean()
@@ -162,8 +163,8 @@ const initMaterial = material => {
 const getFiles = material => {
   initMaterial(material)
   return new Promise(resolve => {
-    let materialLocales = [material.lang]
-    let baseDir = `${config.materialsDir}${path.sep}${material.idMaterial}${path.sep}`
+    const materialLocales = []
+    let baseDir = path.resolve(config.materialsDir, material.idMaterial.toString())
     material.translations.map(translation => materialLocales.push(translation.lang))
     recursive(baseDir, (err, files) => {
       // if err return material, if err is different from no screenshots dir, warning through console
@@ -176,7 +177,7 @@ const getFiles = material => {
           if (fileName === 'index.html') return // extra files from previous app
           let dir = path.dirname(relativeFile)
           let subdir = path.dirname(relativeFile).split(path.sep).pop()
-          if (dir === '.') {
+          if (dir === '.' || dir === '/') {
             //if file is tar.gz, put it inside file json  {es: xxx-es.tgz, fr: xxx.fr.tgz...}
             let filePattern = new RegExp('^index-[A-z]{2,3}-[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}.tgz$', 'i')
             if (filePattern.test(fileName)) {
@@ -195,6 +196,7 @@ const getFiles = material => {
           }
         })
       }
+
       resolve(material)
     })
   })

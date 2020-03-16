@@ -19,18 +19,21 @@ services:
     environment:
       DEBUG: "oauth2orize"
 
-  svgwatcher:
-    hostname: svgwatcher
-    container_name: svgwatcher
+  watcher:
+    hostname: watcher
+    container_name: watcher
     build:
-      context: ./svgwatcher
-    command: npm run serve
+      context: ./watcher
+    ports:
+      - "9225:9229"
+    command: npm start
     volumes:
-      - ./svgwatcher:/app
-      - ${SVG_DIR}:/app/svg:ro
+      - ./watcher:/app
+      - ${MATERIAL_DIR}:/materials
       - /app/node_modules
       - /app/.config
-      - ${IMAGE_DIR}:/app/pictograms
+    environment:
+      NODE_ENV: $NODE_ENV
     restart: always
 
 networks:

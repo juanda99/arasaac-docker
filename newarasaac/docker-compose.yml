@@ -12,10 +12,10 @@ services:
       - auth
     volumes:
       - ./api:/app
-      - ${MATERIAL_DIR}:/app/materials
+      - ${MATERIAL_DIR}:/materials
       - /app/.config
-      - ${SVG_DIR}:/app/svg:ro
-      - ${IMAGE_DIR}:/app/pictograms
+      - ${SVG_DIR}:/svg:ro
+      - ${IMAGE_DIR}:/pictograms
       - /app/node_modules
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
@@ -42,13 +42,13 @@ services:
       - auth
     volumes:
       - ./privateApi:/app
-      - ${MATERIAL_DIR}:/app/materials
-      - ./locutions:/app/locutions
+      - ${MATERIAL_DIR}:/materials
+      - ./locutions:/locutions
       - ./certs:/root/.ssh
-      - ${IMAGE_DIR}:/app/pictograms
-      - ${CONJUGATIONS_DIR}:/app/conjugations
-      - ${SVG_DIR}:/app/svg:rw
-      - ./tmp:/app/tmp
+      - ${IMAGE_DIR}:/pictograms
+      - ${CONJUGATIONS_DIR}:/conjugations
+      - ${SVG_DIR}:/svg:rw
+      - ./tmp:/tmp
       - /app/.config
       - /app/node_modules
     environment:
