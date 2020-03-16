@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "DEBUG=email-templates nodemon --verbose --inspect=0.0.0.0:9229 --ignore '*.json' --ignore 'materials/' --ignore 'conjugations/' --ignore 'locutions/' --ignore 'svg/' --ignore 'tmpSVG' --ignore 'pictograms/' privateapi.js",
-    "serve": "node privateapi.js",
+    "serve": "pm2-runtime start ecosystem.config.js",
     "precommit": "lint-staged"
   },
   "lint-staged": {

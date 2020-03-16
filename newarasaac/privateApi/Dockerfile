@@ -38,5 +38,6 @@ ENV HOME=/app
 # Install dependencies
 COPY package.json package-lock.json $HOME/
 RUN npm install
+RUN npm install pm2 -g
 
 EXPOSE $PORT

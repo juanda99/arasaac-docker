@@ -9,6 +9,11 @@ newarasaac/ssh_keys/*pub
 # Runtime configuration for swagger app
 newarasaac/api/config/runtime.yaml
 newarasaac/api/.config
+newarasaac/api/.pm2
+
+# ***** PRIVATE-API *****
+newarasaac/privateapi/.config
+newarasaac/privateapi/.pm2
 
 # ***** AUTH *****
 newarasaac/auth/certs/**/

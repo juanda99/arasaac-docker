@@ -23,5 +23,6 @@ ENV LANGUAGE es_ES.UTF-8
 # Install dependencies
 COPY package.json package-lock.json $HOME/
 RUN npm install
+RUN npm install pm2 -g
 
 EXPOSE $PORT
