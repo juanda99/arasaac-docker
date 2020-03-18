@@ -89,11 +89,6 @@ router.post(
 
 router.delete(
   '/favorites',
-  (req, res, next) => {
-    console.log('kkkkkkkk')
-    console.log(req.headers)
-    next()
-  },
   passport.authenticate('bearer', { session: false }),
   hasRole('user'),
   (req, res) => {
