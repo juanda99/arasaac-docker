@@ -26,30 +26,42 @@ const UserSchema = new Schema(
       default: true
     },
     id: Number, // just for old data. New values with _id
-    provider: String,
+    pictureProvider: { type: String, default: 'arasaac' },
     locale: { type: String, default: 'en' },
     password: String,
     verifyToken: String,
-    passwordlessToken: String,
     created: { type: Date, default: Date.now },
+    // to control which docs should be downloaded to the client
+    updated: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now },
-    url: String,
-    company: String,
+    verifyDate: { type: Date },
+    url: {
+      type: String,
+      default: ''
+    },
+    company: {
+      type: String,
+      default: ''
+    },
     role: { type: String, default: 'user' },
     targetLanguages: [String],
     facebook: {
       id: String,
-      token: String,
+      picture: String,
       email: String,
       name: String
     },
     google: {
       id: String,
-      token: String,
+      picture: String,
       email: String,
       name: String
     },
-    favorites: { defaultList: [] },
+    favorites: {
+      type: Object,
+      required: true,
+      default: { defaultList: [] }
+    },
     favoritesLimit: {
       type: Number,
       default: 10
@@ -68,20 +80,16 @@ const validatePresenceOf = value => value && value.length
 
 // the below 5 validations only apply if you are signing up traditionally
 
-UserSchema.path('name').validate(function(name) {
-  if (this.skipValidation()) return true
+UserSchema.path('name').validate(function (name) {
   return name.length
 }, 'Name cannot be blank')
 
-UserSchema.path('email').validate(function(email) {
-  if (this.skipValidation()) return true
+UserSchema.path('email').validate(function (email) {
   return email.length
 }, 'Email cannot be blank')
 
-UserSchema.path('email').validate(function(email) {
+UserSchema.path('email').validate(function (email) {
   const User = mongoose.model('User')
-  if (this.skipValidation()) return true
-
   // Check only when it is a new user or when email field is modified
   if (this.isNew || this.isModified('email')) {
     return User.find({ email }).exec((err, users) => !err && users.length === 0)
@@ -89,25 +97,21 @@ UserSchema.path('email').validate(function(email) {
   return true
 }, 'Email already exists')
 
-UserSchema.path('password').validate(function(password) {
-  if (this.skipValidation()) return true
-  return password.length
-}, 'Password cannot be blank')
-
 /**
  * Pre-save hook
  */
 
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   if (!this.isNew) return next()
 
-  if (!validatePresenceOf(this.password) && !this.skipValidation()) {
+  if (!validatePresenceOf(this.password)) {
     return next(new CustomError('Invalid password', 400))
   }
   // override password with the hashed one:
   this.password = `${SHA256(this.password)}`
   // generate randomToken for user activation
   this.verifyToken = randomize('Aa0', 32)
+  this.verifyDate = Date.now()
   return next()
 })
 
@@ -121,23 +125,14 @@ UserSchema.methods = {
     return this.verifyToken ? false : `${SHA256(plainText)}` === this.password
   },
 
-  /**
-   * Validation is not required if using OAuth
-   */
-
-  skipValidation() {
-    return Boolean(this.passwordlessToken)
-    // return ~oAuthTypes.indexOf(this.provider)
-  },
-
   activate(verifyToken) {
-    if (verifyToken === this.verifyToken) this.verifyToken = '';
-    return '';
+    if (verifyToken === this.verifyToken) this.verifyToken = ''
+    return ''
   }
 }
 
-UserSchema.virtual('isVerified').get(function() {
-  return !this.verifyToken
+UserSchema.virtual('isVerified').get(function () {
+  return !this.verifyToken // && !!this.password
 })
 
 const User = mongoose.model('User', UserSchema, 'users')

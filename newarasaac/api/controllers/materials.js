@@ -14,13 +14,15 @@ const PUBLISHED = 1
 
 module.exports = {
   getMaterialById: (req, res) => {
-    var id = req.swagger.params.idMaterial.value
+    const id = req.swagger.params.idMaterial.value
+    logger.debug(`EXEC getMaterialById with id ${id}`)
     // Use lean to get a plain JS object to modify it, instead of a full model instance
     // Materials.findOne({idMaterial: id}, function(err, material){
-    Materials.findOne({ idMaterial: id }).populate('authors.author', 'name email company url facebook google').lean().exec(async (err, material) => {
+    Materials.findOne({ idMaterial: id }).populate('authors.author', 'name email company url facebook google pictureProvider').lean().exec(async (err, material) => {
       if (err) {
+        logger.error(`getMaterialById with id ${id}: ${err} `)
         return res.status(500).json({
-          message: 'Se ha producido un error al obtener el material',
+          message: `Error get MaterialById with id ${id}`,
           error: err
         })
       }
@@ -72,7 +74,7 @@ module.exports = {
     }
     logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage}`)
     Materials
-      .find({ $text: { $search: searchText, $language: customLanguage }, published: PUBLISHED }, { score: { $meta: 'textScore' } })
+      .find({ $text: { $search: searchText, $language: customLanguage }, status: PUBLISHED }, { score: { $meta: 'textScore' } })
       .sort({ 'score': { '$meta': 'textScore' } })
       .populate('authors.author', 'name email company url facebook google')
       .lean()

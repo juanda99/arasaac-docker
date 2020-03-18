@@ -13,7 +13,13 @@ const translationSchema = new Schema({
   lang: String,
   language: String,
   validated: { type: Boolean, default: true },
-  authors: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  authors: [
+    {
+      author: { type: Schema.Types.ObjectId, ref: 'User' },
+      role: { type: String, default: 'translator' },
+      _id: false
+    }
+  ],
   _id: false
 })
 
@@ -39,7 +45,7 @@ const materialSchema = new Schema({
   lastUpdated: { type: Date, default: Date.now },
   downloads: Number,
   idMaterial: Number,
-  published: { type: Number, default: 2 }, // 0 no published, 1 published, 2 pending
+  status: { type: Number, default: 2 }, // 0 no published, 1 published, 2 pending
   translations: [translationSchema]
 })
 
