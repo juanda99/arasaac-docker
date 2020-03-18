@@ -351,7 +351,7 @@ const resetPassword = async (req, res) => {
 
   /* we generate passwordless token */
   const cleanPassword = randomize('Aa0', 8)
-  const password = `${SHA256(cleanPassword)} `
+  const password = `${SHA256(cleanPassword)}`
   try {
     const user = await User.findOneAndUpdate(
       { email: email },
