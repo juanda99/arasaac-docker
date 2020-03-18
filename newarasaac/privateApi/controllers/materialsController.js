@@ -28,6 +28,7 @@ const create = (req, res) => {
   form.parse(req, async (_err, fields, files) => {
     let material
     const formData = JSON.parse(fields.formData)
+    logger.debug(`Material formData: ${JSON.stringify(formData)}`)
     if (!formData.translations) {
       logger.debug(`Invalid material, need at least title and desc in one language`)
       return res.status(422).json({
@@ -74,7 +75,7 @@ const create = (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params
-  const { translations, areas, activities, published } = req.body
+  const { translations, areas, activities, status } = req.body
   const now = Date.now()
 
   logger.debug(
@@ -108,7 +109,7 @@ const update = async (req, res) => {
       let newTranslations
       if (areas) material.areas = areas
       if (activities) material.activities = activities
-      if (published) material.published = published
+      material.status = status
       if (translations) {
         newTranslations = [...translations]
         material.translations = material.translations.map(translation => {
@@ -193,8 +194,8 @@ const searchMaterials = (req, res) => {
     query = { $text: { $search: searchText, $language: customLanguage } }
     logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage}`)
   } else {
-    query = { $text: { $search: searchText, $language: customLanguage }, published: PUBLISHED }
-    logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and published ${PUBLISHED}`)
+    query = { $text: { $search: searchText, $language: customLanguage }, status: PUBLISHED }
+    logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED}`)
   }
 
   Materials
@@ -221,7 +222,7 @@ const searchMaterials = (req, res) => {
 const getLastMaterials = (req, res) => {
   const numItems = parseInt(req.params.numItems)
   logger.debug(`EXEC getLastMaterials, total number: ${numItems}`)
-  let query = { published: PUBLISHED }
+  let query = { status: PUBLISHED }
   if (req.user) {
     query = {}
   }
@@ -244,7 +245,7 @@ const getLastMaterials = (req, res) => {
       // we filter unpublished:
       let filterMaterials = materials
       if (req.user && req.user.role !== 'admin') {
-        filterMaterials = materials.filter(material => material.published === PUBLISHED || material.authors.some(author => author.author._id.toString() === req.user.id))
+        filterMaterials = materials.filter(material => material.status === PUBLISHED || material.authors.some(author => author.author._id.toString() === req.user.id))
         // we should filter translations not validated though we will validate all by default
         // filterMaterials = filterMaterials.filter(material => {
         //   material.translations = material.translations.filter(translation => translation.validated === true)
