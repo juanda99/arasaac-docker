@@ -75,15 +75,15 @@ const validatePresenceOf = value => value && value.length;
 
 // the below 5 validations only apply if you are signing up traditionally
 
-UserSchema.path("name").validate(function(name) {
+UserSchema.path("name").validate(function (name) {
   return name.length;
 }, "Name cannot be blank");
 
-UserSchema.path("email").validate(function(email) {
+UserSchema.path("email").validate(function (email) {
   return email.length;
 }, "Email cannot be blank");
 
-UserSchema.path("email").validate(function(email) {
+UserSchema.path("email").validate(function (email) {
   const User = mongoose.model("User");
 
   // Check only when it is a new user or when email field is modified
@@ -111,7 +111,7 @@ UserSchema.methods = {
   }
 };
 
-UserSchema.virtual("isVerified").get(function() {
+UserSchema.virtual("isVerified").get(function () {
   return !this.verifyToken;
 });
 
