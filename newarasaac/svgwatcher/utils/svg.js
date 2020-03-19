@@ -4,7 +4,7 @@ const sharp = require('sharp')
 var flatten = require('arr-flatten')
 const { pluralSVGCode, pastSVGCode, futureSVGCode } = require('./svgCodes')
 
-const IMAGE_DIR = process.env.IMAGE_DIR || "/pictograms";
+const IMAGE_DIR = process.env.IMAGE_DIR || '/pictograms'
 
 const skin = {
   white: '#F5E5DE',
@@ -14,7 +14,7 @@ const skin = {
   aztec: '#CF9D7C'
 }
 
-const schematic = '#FEFEFE';
+const schematic = '#FEFEFE'
 
 const hair = {
   brown: '#A65E26',
@@ -39,7 +39,7 @@ const getNextLayer = layer => {
   if (layerIndex < 4) {
     return `<g id="${layers[layerIndex]}">`
   }
-  return '</svg>';
+  return '</svg>'
 }
 
 const modifyLayer = (fileContent, layer, layerText) => {
@@ -51,12 +51,12 @@ const modifyLayer = (fileContent, layer, layerText) => {
     0,
     s
   )}<g id="${layer}">${layerText}</g>\n${fileContent.substr(f)}`
-};
+}
 
 const addLayer = (fileContent, layer, layerText) => {
   let s = fileContent.indexOf('</svg>')
   return `${fileContent.substr(0, s)}<g id="${layer}">${layerText}</g>\n</svg>`
-};
+}
 
 const getPNGFileName = async (file, options) => {
   const { plural, color, action, resolution, hair, skin } = options
@@ -70,7 +70,7 @@ const getPNGFileName = async (file, options) => {
   fileName = `${fileName}_${resolution}`
   await fs.ensureDir(path.resolve(IMAGE_DIR, idFile))
   return path.resolve(IMAGE_DIR, idFile, `${fileName}.png`)
-};
+}
 
 const getPeopleAppearanceOptions = (defaultValues, initOptions) => {
   const options = []
@@ -164,7 +164,7 @@ const getPeopleAppearanceOptions = (defaultValues, initOptions) => {
     })
   }
   return flatten(options)
-};
+}
 
 const getOptions = resolution => {
   const initOptions = preCompiledOptions[resolution]
@@ -192,7 +192,7 @@ const getOptions = resolution => {
     options.push(getPeopleAppearanceOptions(defaultValues, initOptions))
   }
   return flatten(options)
-};
+}
 
 const skinsToRemove = `${skin.white}|${schematic}`
 
@@ -202,20 +202,20 @@ const modifySkin = (fileContent, key) => {
   // we define it every time we use it!!!!
   const reSkin = new RegExp(skinsToRemove, 'gim')
   return fileContent.replace(reSkin, skin[key] || key)
-};
+}
 
 const hasSkin = fileContent => {
   const reSkin = new RegExp(skinsToRemove, 'gim')
   return reSkin.test(fileContent)
-};
+}
 
 const hairToRemove = () => {
-  let value = '';
+  let value = ''
   Object.keys(hair).forEach(function (key) {
     value += `${hair[key]}|`
   })
   return value.slice(0, -1)
-};
+}
 
 const modifyHair = (fileContent, key) => {
   // important ! regex without -g option because it's acumulative between interations
@@ -223,11 +223,11 @@ const modifyHair = (fileContent, key) => {
   // we define it every time we use it!!!!
   const reHair = new RegExp(hairToRemove(), 'gim')
   return fileContent.replace(reHair, hair[key] || key)
-};
+}
 const hasHair = fileContent => {
   const reHair = new RegExp(hairToRemove(), 'gim')
   return reHair.test(fileContent)
-};
+}
 const modifySVG = (fileContent, options) => {
   let content = fileContent
   const { plural, color, backgroundColor, action, hair, skin } = options
@@ -241,13 +241,13 @@ const modifySVG = (fileContent, options) => {
   }
   if (!color) content = modifyLayer(content, 'relleno', '')
   if (action === 'future') content = addLayer(content, 'action', futureSVGCode)
-  else if (action === 'past') { content = addLayer(content, "action", pastSVGCode); }
+  else if (action === 'past') { content = addLayer(content, 'action', pastSVGCode) }
   if (hair) content = modifyHair(content, hair)
   if (skin) content = modifySkin(content, skin)
 
   /* eslint-enable no-param-reassign */
   return content
-};
+}
 
 const convertSVG = (fileContent, resolution) => {
   // density 450p is for 3125x image
@@ -256,7 +256,7 @@ const convertSVG = (fileContent, resolution) => {
   return sharp(fileBuffer, { density })
     .png()
     .toBuffer()
-};
+}
 
 module.exports = {
   getOptions,
