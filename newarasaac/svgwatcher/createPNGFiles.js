@@ -12,7 +12,7 @@ const {
   hasSkin
 } = require('./utils/svg')
 
-const SVG_DIR = '/app/svg'
+const SVG_DIR = '/svg'
 // env variable come as a string! Be careful!!
 const overwrite = process.env.OVERWRITE === '1'
 
