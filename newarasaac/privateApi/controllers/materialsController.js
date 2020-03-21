@@ -109,7 +109,7 @@ const update = async (req, res) => {
       let newTranslations
       if (areas) material.areas = areas
       if (activities) material.activities = activities
-      material.status = status
+      if (status !== undefined && status !== null) material.status = status
       if (translations) {
         newTranslations = [...translations]
         material.translations = material.translations.map(translation => {
@@ -133,8 +133,11 @@ const update = async (req, res) => {
     }
     material.lastUpdated = now
     /* fill with files */
-    await Materials.findOneAndUpdate({ idMaterial: id }, material)
-    const response = await getFiles(material)
+    const modifyMaterial = await Materials
+      .findOneAndUpdate({ idMaterial: id }, material, { new: true })
+      .populate('authors.author', 'name email company url facebook google pictureProvider')
+      .lean()
+    const response = await getFiles(modifyMaterial)
     return res.json(response)
   } catch (err) {
     logger.error(`ERROR executing update material with id ${id}`)
