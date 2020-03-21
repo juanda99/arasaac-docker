@@ -18,6 +18,7 @@ const languages = [
   'pt',
   'ro',
   'ru',
+  'sk',
   'val',
   'zh'
 ]
