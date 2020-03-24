@@ -8,6 +8,7 @@ const logger = require('../utils/logger')
 const { saveFilesByType } = require('./utils')
 const { MATERIAL_DIR } = require('../utils/constants')
 const CustomError = require('../utils/CustomError')
+const _ = require('lodash')
 const PUBLISHED = 1
 // const UNPUBLISHED = 0
 // const PENDING = 2
@@ -146,6 +147,42 @@ const update = async (req, res) => {
       error: err.message
     })
   }
+}
+
+const getMaterialById = (req, res) => {
+  const { id } = req.params
+  logger.debug(`EXEC getMaterialById with id ${id}`)
+  // Use lean to get a plain JS object to modify it, instead of a full model instance
+  // Materials.findOne({idMaterial: id}, function(err, material){
+  Materials.findOne({ idMaterial: id }).populate('authors.author', 'name email company url facebook google pictureProvider').lean().exec(async (err, material) => {
+    if (err) {
+      logger.error(`getMaterialById with id ${id}: ${err} `)
+      return res.status(500).json({
+        message: `Error get MaterialById with id ${id}`,
+        error: err
+      })
+    }
+    if (!material) {
+      return res.status(404).json({
+        message: 'Material not found',
+        err
+      })
+    }
+    /* check by user */
+    if (material.status !== PUBLISHED) {
+      if (!req.user) return res.status(403).json({ message: 'Material not published, access forbidden', err })
+      else if (req.user.role !== 'admin') {
+        /* if no author, it's not showned */
+        let languageAuthors = material.translations.map(translation => translation.authors)
+        languageAuthors = _.flatten(languageAuthors)
+        const authors = [...languageAuthors, ...material.authors]
+        const authorExists = authors.some(author => author.author._id.toString() === req.user.id)
+        if (!authorExists) return res.status(403).json({ message: 'Material not published, access forbidden', err })
+      }
+    }
+    const response = await getFiles(material)
+    return res.json(response)
+  })
 }
 
 const remove = (req, res) => {
@@ -313,5 +350,6 @@ module.exports = {
   update,
   remove,
   getLastMaterials,
-  searchMaterials
+  searchMaterials,
+  getMaterialById
 }

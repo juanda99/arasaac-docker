@@ -16,6 +16,12 @@ router.get('/:locale/:searchText',
     materialsController.searchMaterials(req, res)
   })
 
+router.get('/:id',
+  passport.authenticate(['bearer', 'anonymous'], { session: false }),
+  (req, res) => {
+    materialsController.getMaterialById(req, res)
+  })
+
 router.post('/',
   passport.authenticate('bearer', { session: false }),
   (req, res) => {

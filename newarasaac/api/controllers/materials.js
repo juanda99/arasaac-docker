@@ -18,7 +18,7 @@ module.exports = {
     logger.debug(`EXEC getMaterialById with id ${id}`)
     // Use lean to get a plain JS object to modify it, instead of a full model instance
     // Materials.findOne({idMaterial: id}, function(err, material){
-    Materials.findOne({ idMaterial: id }).populate('authors.author', 'name email company url facebook google pictureProvider').lean().exec(async (err, material) => {
+    Materials.findOne({ idMaterial: id, status: PUBLISHED }).populate('authors.author', 'name email company url facebook google pictureProvider').lean().exec(async (err, material) => {
       if (err) {
         logger.error(`getMaterialById with id ${id}: ${err} `)
         return res.status(500).json({
