@@ -2,7 +2,6 @@ const fs = require('fs-extra')
 const Materials = require('../models/Material')
 const recursive = require('recursive-readdir')
 const Promise = require('bluebird')
-const rimraf = require('rimraf')
 const path = require('path')
 const formidable = require('formidable')
 const logger = require('../utils/logger')
@@ -77,7 +76,7 @@ const create = (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params
-  const { translations, areas, activities, status } = req.body
+  const { translations, areas, activities, status, authors } = req.body
   const now = Date.now()
 
   logger.debug(
@@ -111,6 +110,7 @@ const update = async (req, res) => {
       let newTranslations
       if (areas) material.areas = areas
       if (activities) material.activities = activities
+      if (authors) material.authors = authors
       if (status !== undefined && status !== null) material.status = status
       if (translations) {
         newTranslations = [...translations]
@@ -120,6 +120,7 @@ const update = async (req, res) => {
             if (translations[i].language === translation.language) {
               translation.title = translations[i].title
               translation.desc = translations[i].desc
+              translation.authors = translations[i].authors
               translation.lastUpdated = now
               newTranslations = newTranslations.filter(newTranslation => newTranslation.language !== translation.language)
               break
@@ -155,44 +156,48 @@ const getMaterialById = (req, res) => {
   logger.debug(`EXEC getMaterialById with id ${id}`)
   // Use lean to get a plain JS object to modify it, instead of a full model instance
   // Materials.findOne({idMaterial: id}, function(err, material){
-  Materials.findOne({ idMaterial: id }).populate('authors.author', 'name email company url facebook google pictureProvider').lean().exec(async (err, material) => {
-    if (err) {
-      logger.error(`getMaterialById with id ${id}: ${err} `)
-      return res.status(500).json({
-        message: `Error get MaterialById with id ${id}`,
-        error: err
-      })
-    }
-    if (!material) {
-      return res.status(404).json({
-        message: 'Material not found',
-        err
-      })
-    }
-    /* check by user */
-    if (material.status !== PUBLISHED) {
-      if (!req.user) return res.status(403).json({ message: 'Material not published, access forbidden', err })
-      else if (req.user.role !== 'admin') {
-        /* if no author, it's not showned */
-        let languageAuthors = material.translations.map(translation => translation.authors)
-        languageAuthors = _.flatten(languageAuthors)
-        const authors = [...languageAuthors, ...material.authors]
-        const authorExists = authors.some(author => author.author._id.toString() === req.user.id)
-        if (!authorExists) return res.status(403).json({ message: 'Material not published, access forbidden', err })
+  Materials
+    .findOne({ idMaterial: id })
+    .populate('authors.author', 'name email company url facebook google pictureProvider')
+    .populate('translations.authors.author', 'name email company url facebook google pictureProvider')
+    .lean().exec(async (err, material) => {
+      if (err) {
+        logger.error(`getMaterialById with id ${id}: ${err} `)
+        return res.status(500).json({
+          message: `Error get MaterialById with id ${id}`,
+          error: err
+        })
       }
-    }
-    const response = await getFiles(material)
-    return res.json(response)
-  })
+      if (!material) {
+        return res.status(404).json({
+          message: 'Material not found',
+          err
+        })
+      }
+      /* check by user */
+      if (material.status !== PUBLISHED) {
+        if (!req.user) return res.status(403).json({ message: 'Material not published, access forbidden', err })
+        else if (req.user.role !== 'admin') {
+          /* if no author, it's not showned */
+          let languageAuthors = material.translations.map(translation => translation.authors)
+          languageAuthors = _.flatten(languageAuthors)
+          const authors = [...languageAuthors, ...material.authors]
+          const authorExists = authors.some(author => author.author._id.toString() === req.user.id)
+          if (!authorExists) return res.status(403).json({ message: 'Material not published, access forbidden', err })
+        }
+      }
+      const response = await getFiles(material)
+      return res.json(response)
+    })
 }
 
 const remove = async (req, res) => {
   const { id } = req.params
   logger.debug(`EXEC remove material with id ${id}`)
   try {
-    const material = await Materials.findByIdAndRemove(id)
-    if (!material) throw new CustomError(`Remove material with id: ${_id} not found`, 404)
-    /* now we remove from file system*/
+    const material = await Materials.deleteOne({ 'idMaterial': id })
+    if (!material.n) throw new CustomError(`Remove material with id: ${id} not found`, 404)
+    /* now we remove from file system */
     await fs.remove(`${MATERIAL_DIR}/${id}`)
     return res.json({ id })
   } catch (err) {
@@ -201,8 +206,7 @@ const remove = async (req, res) => {
       message: `Error remove material with id ${id}`,
       error: err.message
     })
-  })
-
+  }
 }
 
 const searchMaterials = (req, res) => {
