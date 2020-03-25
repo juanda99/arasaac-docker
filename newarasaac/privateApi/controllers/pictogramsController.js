@@ -425,10 +425,10 @@ const update = async (req, res) => {
     }
     // so we can leave null items for form, but not in mongo
     modifiedPictogram.keywords = pictogram.keywords
-    res.json(modifiedPictogram)
+    return res.json(modifiedPictogram)
   } catch (err) {
     logger.error(`Error updating pictogram: ${err.message}`)
-    res.status(err.httpCode || 500).json({
+    return res.status(err.httpCode || 500).json({
       message: 'Error updating pictogram. See error field for detail',
       error: err.message
     })
