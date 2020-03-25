@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const Materials = require('../models/Material')
 const recursive = require('recursive-readdir')
 const Promise = require('bluebird')
+const rimraf = require('rimraf')
 const path = require('path')
 const formidable = require('formidable')
 const logger = require('../utils/logger')
@@ -185,16 +186,23 @@ const getMaterialById = (req, res) => {
   })
 }
 
-const remove = (req, res) => {
+const remove = async (req, res) => {
   const { id } = req.params
-  Materials.findByIdAndRemove(id, (err, material) => {
-    if (err) {
-      return res.json(500, {
-        message: 'No hemos encontrado la cerveza'
-      })
-    }
-    return res.json(material)
+  logger.debug(`EXEC remove material with id ${id}`)
+  try {
+    const material = await Materials.findByIdAndRemove(id)
+    if (!material) throw new CustomError(`Remove material with id: ${_id} not found`, 404)
+    /* now we remove from file system*/
+    await fs.remove(`${MATERIAL_DIR}/${id}`)
+    return res.json({ id })
+  } catch (err) {
+    logger.error(`Error remove material with id ${id}: ${err.message}`)
+    return res.status(err.httpCode || 500).json({
+      message: `Error remove material with id ${id}`,
+      error: err.message
+    })
   })
+
 }
 
 const searchMaterials = (req, res) => {
@@ -232,10 +240,10 @@ const searchMaterials = (req, res) => {
   let query
   if (req.user && req.user.role === 'admin') {
     query = { $text: { $search: searchText, $language: customLanguage } }
-    logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage}`)
+    logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage} `)
   } else {
     query = { $text: { $search: searchText, $language: customLanguage }, status: PUBLISHED }
-    logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED}`)
+    logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED} `)
   }
 
   Materials
@@ -254,14 +262,14 @@ const searchMaterials = (req, res) => {
       // if no items, return empty array
       if (materials.length === 0) return res.status(404).json([]) // send http code 404!!!
       const response = await Promise.all(materials.map(async material => await getFiles(material))) // not async&await as we want to get all material images in parallel
-      logger.debug(`DONE: ${JSON.stringify(response)}`)
+      logger.debug(`DONE: ${JSON.stringify(response)} `)
       return res.json(response)
     })
 }
 
 const getLastMaterials = (req, res) => {
   const numItems = parseInt(req.params.numItems)
-  logger.debug(`EXEC getLastMaterials, total number: ${numItems}`)
+  logger.debug(`EXEC getLastMaterials, total number: ${numItems} `)
   let query = { status: PUBLISHED }
   if (req.user) {
     query = {}
