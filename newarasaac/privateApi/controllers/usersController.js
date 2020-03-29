@@ -124,13 +124,13 @@ const getUserByEmail = async (req, res) => {
   const { email } = req.params
   /* prevent changing role by not admin user: */
   try {
-    const user = await User.findOne({ email }, { name: 1, email: 1, url: 1, company: 1, facebook: 1, google: 1 })
+    const user = await User.findOne({ email }, { name: 1, email: 1, url: 1, company: 1, facebook: 1, google: 1, pictureProvider: 1 })
     if (!user) throw new CustomError(USER_NOT_FOUND, 404)
     return res.status(200).json(user)
   } catch (err) {
     logger.error(`Error getting user by email ${email}: ${err.message}`)
     return res.status(err.httpCode || 500).json({
-      message: 'Error getting user by email ${email}. See error field for detail',
+      message: `Error getting user by email ${email}. See error field for detail`,
       error: err.message
     })
   }
