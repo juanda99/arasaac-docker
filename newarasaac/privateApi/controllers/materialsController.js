@@ -139,7 +139,9 @@ const update = async (req, res) => {
     const modifyMaterial = await Materials
       .findOneAndUpdate({ idMaterial: id }, material, { new: true })
       .populate('authors.author', 'name email company url facebook google pictureProvider')
+      .populate('translations.authors.author', 'name email company url facebook google pictureProvider')
       .lean()
+
     const response = await getFiles(modifyMaterial)
     return res.json(response)
   } catch (err) {
@@ -199,7 +201,7 @@ const remove = async (req, res) => {
     if (!material.n) throw new CustomError(`Remove material with id: ${id} not found`, 404)
     /* now we remove from file system */
     await fs.remove(`${MATERIAL_DIR}/${id}`)
-    return res.json({ id })
+    return res.json({ idMaterial: id })
   } catch (err) {
     logger.error(`Error remove material with id ${id}: ${err.message}`)
     return res.status(err.httpCode || 500).json({
