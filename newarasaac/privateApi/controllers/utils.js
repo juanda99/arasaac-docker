@@ -56,7 +56,7 @@ const saveFilesByType = async (formFiles, id) => {
   let filesPromise
   let screenshotsPromise
   const langFilesPattern = new RegExp(`^[A-z]{2,3}_files$`, 'i')
-  const langScreenshotsPattern = new RegExp(`^[A-z]{2,3}_screenshotfiles$`, 'i')
+  const langScreenshotsPattern = new RegExp(`^[A-z]{2,3}_screenshots$`, 'i')
 
   await fs.ensureDir(path.resolve(MATERIAL_DIR, `${id}`))
 
@@ -93,7 +93,7 @@ const saveFilesByType = async (formFiles, id) => {
   const langScreenshotsPromises = langScreenshotsFiles.map(langScreenshot => {
     const locale = langScreenshot.substr(
       0,
-      langScreenshot.indexOf('_screenshotfiles')
+      langScreenshot.indexOf('_screenshots')
     )
     return saveFiles(
       formFiles[langScreenshot],

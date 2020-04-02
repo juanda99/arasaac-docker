@@ -28,6 +28,12 @@ router.post('/',
     materialsController.create(req, res)
   })
 
+router.post('/translations/:idMaterial',
+  passport.authenticate('bearer', { session: false }),
+  (req, res) => {
+    materialsController.addTranslation(req, res)
+  })
+
 router.put('/:id',
   passport.authenticate('bearer', { session: false }),
   hasRole('admin'),

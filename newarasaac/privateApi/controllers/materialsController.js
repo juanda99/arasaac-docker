@@ -23,7 +23,7 @@ const create = (req, res) => {
   })
 
   form.on('error', (err) => {
-    logger.error(`Error updating pictogram: ${err.message}`)
+    logger.error(`Error creating material: ${err.message}`)
   })
 
   form.parse(req, async (_err, fields, files) => {
@@ -69,6 +69,66 @@ const create = (req, res) => {
       return res.status(500).json({
         message: 'Error saving material',
         error: err
+      })
+    }
+  })
+}
+
+const addTranslation = (req, res) => {
+  const { idMaterial } = req.params
+  logger.debug(`EXEC addTranslation`)
+  const form = formidable({
+    encoding: 'utf-8',
+    keepExtensions: true,
+    multiples: true,
+    maxFileSize: 600 * 1024 * 1024 // 600MB instead of 200MB (default value)
+  })
+
+  form.on('error', (err) => {
+    logger.error(`Error addTranslation: ${err.message}`)
+  })
+
+  form.parse(req, async (_err, fields, files) => {
+    const formData = JSON.parse(fields.formData)
+    logger.debug(`Material formData: ${JSON.stringify(formData)}`)
+    if (!formData.translations) {
+      logger.debug(`Invalid material, need at least one translation`)
+      return res.status(422).json({
+        error: 'It neeeds at least one translation'
+      })
+    }
+
+    try {
+      const material = await Materials.findOne({ idMaterial }).lean()
+      if (!material) {
+        throw new CustomError(
+          `Material with id ${idMaterial} not found`,
+          500
+        )
+      }
+
+      /* chek that the language does not exists */
+      /* first language is the one that matters */
+      const targetLanguage = formData.translations[0]
+      const existsLanguage = material.translations.some(translation => translation.language === targetLanguage)
+      if (existsLanguage) {
+        throw new CustomError(
+          `Translation provided already exists in the material and could cause conflicts`,
+          403
+        )
+      }
+      material.translations.push(targetLanguage)
+      material.lastUpdated = Date.now()
+      await Materials.findOneAndUpdate({ idMaterial }, material)
+      await saveFilesByType(files, idMaterial)
+      return res.status(201).json({
+        id: idMaterial
+      })
+    } catch (err) {
+      logger.error(`Error adding translation to material: ${err.message}`)
+      return res.status(err.httpCode || 500).json({
+        message: `Error adding translation to material ${idMaterial}`,
+        error: err.message
       })
     }
   })
@@ -146,8 +206,8 @@ const update = async (req, res) => {
     return res.json(response)
   } catch (err) {
     logger.error(`ERROR executing update material with id ${id}`)
-    return res.status(500).json({
-      message: 'Error getting pictograms. See error field for detail',
+    return res.status(err.httpCode || 500).json({
+      message: 'Error updating material. See error field for detail',
       error: err.message
     })
   }
@@ -361,6 +421,7 @@ const getFiles = material => {
 
 module.exports = {
   create,
+  addTranslation,
   update,
   remove,
   getLastMaterials,
