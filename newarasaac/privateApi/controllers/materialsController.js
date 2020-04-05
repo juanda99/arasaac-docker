@@ -407,7 +407,7 @@ const getFiles = material => {
             material.screenshots[subdir]
               ? material.screenshots[subdir].push(fileName)
               : material.screenshots[subdir] = [fileName]
-          } else if (dir.match(/^[A-z]{2,3}$/)) {
+          } else if (dir.match(/^\/[A-z]{2,3}$/)) {
             material.files[subdir]
               ? material.files[subdir].push(fileName)
               : material.files[subdir] = [fileName]
