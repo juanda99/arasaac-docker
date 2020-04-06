@@ -78,6 +78,15 @@ router.get(
   }
 )
 
+router.get(
+  '/favorites/:listName',
+  passport.authenticate('bearer', { session: false }),
+  hasRole('user'),
+  (req, res) => {
+    usersController.downloadFavoriteList(req, res)
+  }
+)
+
 router.post(
   '/favorites',
   passport.authenticate('bearer', { session: false }),

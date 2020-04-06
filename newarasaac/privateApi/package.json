@@ -52,6 +52,7 @@
     "socket.io": "^2.2.0",
     "stopword": "^0.1.13",
     "stopwords-iso": "^0.4.0",
+    "tar": "^6.0.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {

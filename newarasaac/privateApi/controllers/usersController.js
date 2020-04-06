@@ -3,13 +3,16 @@ const { ObjectID } = require('mongodb')
 const moment = require('moment')
 const randomize = require('randomatic')
 const { SHA256 } = require('crypto-js')
+const tar = require('tar')
 // TODO: use Joi or mongodb validation
 // const Joi = require('joi')
 const CustomError = require('../utils/CustomError')
+const path = require('path')
 const { sendWelcomeMail, sendPasswordRecoveryMail, sendContactMail } = require('../emails')
 const logger = require('../utils/logger')
 const USER_NOT_EXISTS = 'USER_NOT_EXISTS'
 const USER_NOT_FOUND = 'USER_NOT_FOUND'
+const { IMAGE_DIR } = require('../utils/constants')
 
 const create = async (req, res) => {
   const {
@@ -497,6 +500,43 @@ const renameFavoriteList = async (req, res) => {
   }
 }
 
+const downloadFavoriteList = async (req, res) => {
+  const { listName } = req.params
+  const { id } = req.user
+  logger.debug(
+    `EXEC downloadFavoriteList for user ${id} and listName ${listName} `
+  )
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(USER_NOT_EXISTS, 404)
+    }
+    const pictograms = user.favorites[listName].map(pictogram => path.resolve(IMAGE_DIR, pictogram.toString(), `${pictogram}_500.png`))
+    console.log(pictograms, 'pictograms')
+    const fileName = `/tmp/${listName}-${id}.tgz`
+    console.log(fileName, 'fileName')
+    tar.c(
+      {
+        gzip: true,
+        sync: true,
+        file: fileName
+      }, pictograms)
+
+    logger.debug(
+      `DONE downloadFavoriteList for user ${id} and listName ${listName}`
+    )
+    return res.download(fileName)
+  } catch (err) {
+    logger.error(
+      `ERROR downloadFavoriteList  for user ${id} and listName ${listName}: ${err.message} `
+    )
+    return res.status(err.httpCode || 500).json({
+      message: 'Error downloadFavoriteList. See error field for detail',
+      error: err.message
+    })
+  }
+}
+
 module.exports = {
   create,
   sendContactForm,
@@ -513,5 +553,6 @@ module.exports = {
   addFavoriteList,
   deleteFavoriteList,
   renameFavoriteList,
+  downloadFavoriteList,
   getUserByEmail
 }
