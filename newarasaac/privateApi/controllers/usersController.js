@@ -525,7 +525,8 @@ const downloadFavoriteList = async (req, res) => {
     logger.debug(
       `DONE downloadFavoriteList for user ${id} and listName ${listName}`
     )
-    return res.download(fileName)
+    console.log('downloading.....')
+    res.download(fileName)
   } catch (err) {
     logger.error(
       `ERROR downloadFavoriteList  for user ${id} and listName ${listName}: ${err.message} `
