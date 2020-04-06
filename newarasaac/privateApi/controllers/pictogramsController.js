@@ -182,7 +182,6 @@ const getPictogramById = async (req, res) => {
 const getPictogramsById = async (req, res) => {
   const { locale } = req.params
   const favoriteIds = [].concat.apply([], req.body.favoriteIds)
-  console.log(favoriteIds, '***********')
   logger.debug(
     `EXEC getPictogramByIds with ids ${favoriteIds} and locale ${locale} `
   )
@@ -199,7 +198,7 @@ const getPictogramsById = async (req, res) => {
       logger.debug(
         `Not found pictograms with ids ${favoriteIds} and locale ${locale} `
       )
-      return res.status(404).json()
+      return res.json([])
     }
     return res.json(pictograms)
   } catch (err) {
