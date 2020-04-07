@@ -4,6 +4,7 @@ const moment = require('moment')
 const randomize = require('randomatic')
 const { SHA256 } = require('crypto-js')
 const tar = require('tar')
+const fs = require('fs-extra')
 // TODO: use Joi or mongodb validation
 // const Joi = require('joi')
 const CustomError = require('../utils/CustomError')
@@ -510,16 +511,22 @@ const downloadFavoriteList = async (req, res) => {
     if (!user) {
       throw new CustomError(USER_NOT_EXISTS, 404)
     }
-    const pictograms = user.favorites[listName].map(pictogram => path.resolve(IMAGE_DIR, pictogram.toString(), `${pictogram}_500.png`))
+    const pictograms = user.favorites[listName].map(pictogram => (
+      {
+        route: path.resolve(IMAGE_DIR, pictogram.toString(), `${pictogram}_500.png`),
+        newRoute: path.resolve('/tmp', `${pictogram}.png`)
+      }
+    ))
     console.log(pictograms, 'pictograms')
-    const fileName = `/tmp/${listName}-${id}.tgz`
-    console.log(fileName, 'fileName')
-    tar.c(
+    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, pictogram.newRoute))
+    await Promise.all(promises)
+    const files = pictograms.map(file => file.newRoute)
+    const fileName = `${listName}.tar.gz`
+    await tar.c(
       {
         gzip: true,
-        sync: true,
         file: fileName
-      }, pictograms)
+      }, files)
 
     logger.debug(
       `DONE downloadFavoriteList for user ${id} and listName ${listName}`
