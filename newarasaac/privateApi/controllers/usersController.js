@@ -517,7 +517,7 @@ const downloadFavoriteList = async (req, res) => {
         fileName: `${pictogram}.png`
       }
     ))
-    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, `/tmp/${listName}/${fileName}`))
+    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, `/tmp/${listName}/${pictogram.fileName}`))
     await Promise.all(promises)
     const files = pictograms.map(file => `${listName}/${file.fileName}`)
     const fileName = `${listName}.tar.gz`
