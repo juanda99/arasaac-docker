@@ -514,25 +514,23 @@ const downloadFavoriteList = async (req, res) => {
     const pictograms = user.favorites[listName].map(pictogram => (
       {
         route: path.resolve(IMAGE_DIR, pictogram.toString(), `${pictogram}_500.png`),
-        newRoute: path.resolve('/tmp', `${pictogram}.png`)
+        fileName: `${pictogram}.png`
       }
     ))
-    console.log(pictograms, 'pictograms')
-    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, pictogram.newRoute))
+    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, `/tmp/${listName}/{fileName}`))
     await Promise.all(promises)
-    const files = pictograms.map(file => file.newRoute)
+    const files = pictograms.map(file => file.fileName)
     const fileName = `${listName}.tar.gz`
     await tar.c(
       {
         gzip: true,
-        file: fileName,
+        file: `${listName}/${fileName}`,
         cwd: '/tmp'
       }, files)
 
     logger.debug(
       `DONE downloadFavoriteList for user ${id} and listName ${listName}`
     )
-    console.log('downloading.....')
     res.download(fileName)
   } catch (err) {
     logger.error(
