@@ -525,7 +525,8 @@ const downloadFavoriteList = async (req, res) => {
     await tar.c(
       {
         gzip: true,
-        file: fileName
+        file: fileName,
+        cwd: '/tmp'
       }, files)
 
     logger.debug(
