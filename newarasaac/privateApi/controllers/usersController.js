@@ -519,12 +519,12 @@ const downloadFavoriteList = async (req, res) => {
     ))
     const promises = pictograms.map(pictogram => fs.copy(pictogram.route, `/tmp/${listName}/{fileName}`))
     await Promise.all(promises)
-    const files = pictograms.map(file => file.fileName)
+    const files = pictograms.map(file => `${listName}/${file.fileName}`)
     const fileName = `${listName}.tar.gz`
     await tar.c(
       {
         gzip: true,
-        file: `${listName}/${fileName}`,
+        file: fileName,
         cwd: '/tmp'
       }, files)
 
