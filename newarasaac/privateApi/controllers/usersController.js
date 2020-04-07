@@ -501,8 +501,7 @@ const renameFavoriteList = async (req, res) => {
 }
 
 const downloadFavoriteList = async (req, res) => {
-  const { listName } = req.params
-  const { id } = req.user
+  const { listName, id } = req.params
   logger.debug(
     `EXEC downloadFavoriteList for user ${id} and listName ${listName} `
   )

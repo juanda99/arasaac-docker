@@ -79,9 +79,7 @@ router.get(
 )
 
 router.get(
-  '/favorites/:listName',
-  passport.authenticate('bearer', { session: false }),
-  hasRole('user'),
+  '/favorites/:id/:listName',
   (req, res) => {
     usersController.downloadFavoriteList(req, res)
   }
