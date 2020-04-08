@@ -60,7 +60,12 @@ const create = (req, res) => {
       })
     }
     try {
-      await saveFilesByType(files, material.idMaterial)
+      const saveMaterialFiles = saveFilesByType(files, material.idMaterial)
+      // create a dir per language if not exists, just for languages without specific languagefiles */
+      const promisesLanguageDir = material.translations
+        .map(translation => translation.lang)
+        .map(language => fs.ensureDir(path.resolve(MATERIAL_DIR, idMaterial.toString(), language)))
+      await Promise.all([saveMaterialFiles, promisesLanguageDir])
       return res.status(201).json({
         id: material.idMaterial
       })
