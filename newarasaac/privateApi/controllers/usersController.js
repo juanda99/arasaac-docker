@@ -284,14 +284,20 @@ const addFavorite = async (req, res) => {
       throw new CustomError(USER_NOT_EXISTS, 404)
     }
     if (!user.favorites) user.favorites = { defaultList: [] }
-    if (!listName) user.favorites['defaultList'].push(fileName)
-    else user.favorites[listName].push(fileName)
-    user.markModified('favorites')
-    user.updated = now
-    await user.save()
-    logger.debug(
-      `DONE addFavorite for user ${id}, listName ${listName} and file ${fileName} `
-    )
+    const customList = listName || 'defaultList'
+    if (user.favorites[customList].indexOf(fileName) === -1) {
+      user.favorites[customList].push(fileName)
+      user.markModified('favorites')
+      user.updated = now
+      await user.save()
+      logger.debug(
+        `DONE addFavorite for user ${id}, listName ${listName} and file ${fileName} `
+      )
+    } else {
+      logger.debug(
+        `NOT need to addFavorite for user ${id}, listName ${listName} and file ${fileName} `
+      )
+    }
     return res.status(204).json({ resultado: 'ok' })
   } catch (err) {
     logger.debug(
