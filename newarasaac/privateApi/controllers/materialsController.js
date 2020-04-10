@@ -376,6 +376,30 @@ const getLastMaterials = (req, res) => {
     })
 }
 
+const getUnpublished = async (req, res) => {
+  logger.debug(`EXEC getUnpublished materials`)
+  let query = { status: { $ne: PUBLISHED } }
+
+  try {
+    const materials = await Materials
+      .find(query)
+      .sort({ lastUpdated: -1 })
+      .populate('authors.author', 'name email company url facebook google')
+      .lean()
+    // if no items, return empty array
+    if (materials.length === 0) return res.status(200).json([]) // send http code 404!!!
+    // we also get files:
+    const response = await Promise.all(materials.map(material => getFiles(material)))
+    return res.json(response)
+  } catch (err) {
+    logger.error(`Error getUnpublished: ${err.message}`)
+    return res.status(err.httpCode || 500).json({
+      message: `Error getting materials with status neq PUBLISHED`,
+      error: err.message
+    })
+  }
+}
+
 const initMaterial = material => {
   material.commonFiles = []
   material.screenshots = {}
@@ -431,5 +455,6 @@ module.exports = {
   remove,
   getLastMaterials,
   searchMaterials,
-  getMaterialById
+  getMaterialById,
+  getUnpublished
 }

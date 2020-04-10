@@ -10,6 +10,13 @@ router.get('/new/:numItems',
     materialsController.getLastMaterials(req, res)
   })
 
+router.get('/unpublished',
+  passport.authenticate(['bearer'], { session: false }),
+  hasRole('admin'),
+  (req, res) => {
+    materialsController.getUnpublished(req, res)
+  })
+
 router.get('/:locale/:searchText',
   passport.authenticate(['bearer', 'anonymous'], { session: false }),
   (req, res) => {
