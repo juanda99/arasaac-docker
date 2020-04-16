@@ -29,8 +29,13 @@ require('./crontab')
 require('./auth')
 
 app.use(cors())
+
 io.set('origins', '*:*')
 app.set('etag', false)
+
+// configure and use pug for pagesRoutes (for social share)
+app.set('views', './views')
+app.set('view engine', 'pug')
 
 // const locutionsFiles = loadLocutionsFiles()
 
