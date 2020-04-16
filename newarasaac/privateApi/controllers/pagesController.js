@@ -30,7 +30,7 @@ const getMaterial = async (req, res) => {
     }
     const { title, desc } = currentTranslation
     // console.log(currentTranslation, '***********s')
-    res.render('material', { title, desc, image })
+    res.render('material', { title, desc, image, language, idMaterial })
   } catch (error) {
     logger.error(
       `Error executing getmaterial in page controller. See error: ${error.message}`
