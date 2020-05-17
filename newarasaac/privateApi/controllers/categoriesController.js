@@ -256,11 +256,15 @@ const remove = async (req, res) => {
   })
 }
 
-const equalsArray = (array1, array2) =>
-  array1.length === array2.length &&
-  array1.sort().every(function (value, index) {
-    return value === array2.sort()[index]
-  })
+const equalsArray = (array1, array2) => {
+  const sortedArray1 = array1.slice().sort()
+  const sortedArray2 = array2.slice().sort()
+  return array1.length === array2.length &&
+    sortedArray1.every(function (value, index) {
+      return value === sortedArray2[index]
+    })
+}
+
 
 module.exports = {
   update,
