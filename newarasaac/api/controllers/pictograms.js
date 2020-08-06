@@ -78,6 +78,34 @@ const getPictogramByIdWithLocales = async (req, res) => {
   }
 }
 
+
+const getAllPictograms = async (req, res) => {
+
+  logger.debug(`Get list of all pictograms`)
+  const locale = req.swagger.params.locale.value
+
+  try {
+    let pictogram = await Pictograms[locale].find(
+      { published: true },
+      { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+    )
+    if (!pictogram) {
+      logger.debug(`No pictograms found`)
+      return res.status(404).json({
+        error: `No pictograms found`
+      })
+    }
+    logger.debug(`Pictograms found`)
+    return res.json(pictogram)
+  } catch (err) {
+    logger.error(`Error getting pictograms. See error: ${err}`)
+    return res.status(500).json({
+      message: 'Error getting pictograms. See error field for detail',
+      error: err
+    })
+  }
+}
+
 const getPictogramsBySynset = async (req, res) => {
   let synset = req.swagger.params.synset.value
   const locale = req.swagger.params.locale.value
@@ -89,12 +117,12 @@ const getPictogramsBySynset = async (req, res) => {
   try {
     if (wordnet !== '31') {
       const key = `old_keys.pwn${wordnet}`
-      // we neeed to get syncset for wordnet3.1
+      // we neeed to get synset for wordnet3.1
       const data = await Synsets.findOne({ [key]: synset }, { id: 1, _id: 0 })
       if (!data) {
-        logger.debug(`Syncset ${synset} not found for Wordnet ${wordnet} in our data`)
+        logger.debug(`Synset ${synset} not found for Wordnet ${wordnet} in our data`)
         return res.status(404).json({
-          error: `Syncset ${synset} not found for Wordnet ${wordnet} in our data`
+          error: `Synset ${synset} not found for Wordnet ${wordnet} in our data`
         })
       }
       synset = data.id
@@ -225,7 +253,7 @@ const searchPictograms = async (req, res) => {
         { score: { $meta: 'textScore' } }
       )
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
-      .sort({ score: { $meta: 'textScore' } })
+
       .lean()
 
     // pictogramsByText.forEach(pictogram =>
@@ -336,6 +364,7 @@ const getLastPictograms = async (req, res) => {
 
 module.exports = {
   getPictogramById,
+  getAllPictograms,
   getPictogramByIdWithLocales,
   getPictogramFileById,
   getPictogramsBySynset,

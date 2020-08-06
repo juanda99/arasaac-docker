@@ -389,6 +389,32 @@
                 }
             }
         },
+        "/pictograms/all/{locale}": {
+            "x-swagger-router-controller": "pictograms",
+            "get": {
+                "operationId": "getAllPictograms",
+                "description": "Obtain all pictograms. The pictogram image url can be generated based on pictogram key value and the desired resolution (300px, 500px or 2500px). For example https://static.arasaac.org/pictograms/2340/2340_2500.png for pictogram with key 2350 and resolution 2500px.",
+                "tags": [
+                    "pictograms"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/Locale"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "500": {
+                        "description": "Error generating pictograms data",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/pictograms/{idPictogram}": {
             "x-swagger-router-controller": "pictograms",
             "get": {
