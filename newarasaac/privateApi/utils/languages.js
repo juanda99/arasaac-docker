@@ -13,6 +13,7 @@ const languages = [
   'hr',
   'hu',
   'it',
+  'mk',
   'nl',
   'pl',
   'pt',
