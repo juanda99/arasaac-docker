@@ -156,8 +156,8 @@ const update = async (req, res) => {
     /* we update depending on role */
     if (req.user.role !== 'admin') {
       // we just add translations if not exists:
-      const languages = translations.map(translation => translation.language)
-      const targetLanguages = material.translations.map(translation => translation.language)
+      const languages = translations.map(translation => translation.lang)
+      const targetLanguages = material.translations.map(translation => translation.lang)
       const found = languages.some(r => targetLanguages.indexOf(r) >= 0)
       if (found) {
         throw new CustomError(
@@ -179,24 +179,25 @@ const update = async (req, res) => {
       if (status !== undefined && status !== null) material.status = status
       if (translations) {
         newTranslations = [...translations]
-        material.translations = material.translations.map(translation => {
-          /* if translation already there, we modify it */
-          for (let i = 0; i < translations.length; i++) {
-            if (translations[i].language === translation.language) {
-              translation.title = translations[i].title
-              translation.desc = translations[i].desc
-              translation.authors = translations[i].authors
-              translation.lastUpdated = now
-              newTranslations = newTranslations.filter(newTranslation => newTranslation.language !== translation.language)
-              break
-            }
-          }
+        material.translations = newTranslations
+        // material.translations = material.translations.map(translation => {
+        /* if translation already there, we modify it */
+        //   for (let i = 0; i < translations.length; i++) {
+        //     if (translations[i].lang === translation.lang) {
+        //       translation.title = translations[i].title
+        //       translation.desc = translations[i].desc
+        //       translation.authors = translations[i].authors
+        //       translation.lastUpdated = now
+        //       newTranslations = newTranslations.filter(newTranslation => newTranslation.lang !== translation.lang)
+        //       break
+        //     }
+        //   }
 
-          /* return modify translations and not touched ones */
-          return translation
-        })
-        /* add new translations */
-        material.translations.push(...newTranslations)
+        //   /* return modify translations and not touched ones */
+        //   return translation
+        // })
+        // /* add new translations */
+        // material.translations.push(...newTranslations)
       }
     }
     material.lastUpdated = now
