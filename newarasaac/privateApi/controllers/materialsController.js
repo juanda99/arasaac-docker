@@ -343,9 +343,9 @@ const getLastMaterials = (req, res) => {
   const numItems = parseInt(req.params.numItems)
   logger.debug(`EXEC getLastMaterials, total number: ${numItems} `)
   let query = { status: PUBLISHED }
-  if (req.user) {
-    query = {}
-  }
+  // if (req.user) {
+  //   query = {}
+  // }
   Materials
     .find(query)
     .sort({ lastUpdated: -1 })
