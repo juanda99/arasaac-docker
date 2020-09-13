@@ -6,6 +6,7 @@ const languages = [
   'de',
   'en',
   'es',
+  'el',
   'eu',
   'fr',
   'gl',
