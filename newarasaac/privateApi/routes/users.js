@@ -61,6 +61,13 @@ router.get(
 )
 
 router.get(
+  '/authors',
+  (req, res) => {
+    usersController.getAuthors(req, res)
+  }
+)
+
+router.get(
   '/:id',
   passport.authenticate('bearer', { session: false }),
   hasRole('admin'),

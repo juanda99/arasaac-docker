@@ -1,4 +1,5 @@
 const User = require('../models/User')
+const Materials = require('../models/Material')
 const { ObjectID } = require('mongodb')
 const moment = require('moment')
 const randomize = require('randomatic')
@@ -549,6 +550,47 @@ const downloadFavoriteList = async (req, res) => {
   }
 }
 
+const getAuthors = async (req, res) => {
+  logger.debug(`EXEC getUnpublished materials`)
+  // let query = { status: { $ne: PUBLISHED } }
+
+  try {
+    const materials = await Materials
+      .find({}, { authors: 1, "translations.authors": 1, _id: 0 })
+      .populate('authors.author', 'name')
+      .populate('translations.authors.author', 'name')
+      .lean()
+    // if no items, return empty array
+    if (materials.length === 0) return res.status(200).json([]) // send http code 404!!!
+    const authors = []
+    const seen = new Set();
+    materials.forEach(material => {
+      material.authors.forEach(author => {
+        authors.push({ _id: ObjectID(author.author._id).toString(), name: author.author.name })
+      })
+      material.translations.forEach(translation => {
+        translation.authors.forEach(author => {
+          authors.push({ _id: ObjectID(author.author._id).toString(), name: author.author.name })
+        })
+      })
+    })
+    const filteredAuthors = authors.filter(el => {
+      const duplicate = seen.has(el._id);
+      seen.add(el._id);
+      return !duplicate;
+    });
+    return res.status(200).json(filteredAuthors)
+    // we also get files:
+    return res.json(authors)
+  } catch (err) {
+    logger.error(`Error getAuthors: ${err.message}`)
+    return res.status(err.httpCode || 500).json({
+      message: `Error getting authors with materials`,
+      error: err.message
+    })
+  }
+}
+
 module.exports = {
   create,
   sendContactForm,
@@ -566,5 +608,6 @@ module.exports = {
   deleteFavoriteList,
   renameFavoriteList,
   downloadFavoriteList,
-  getUserByEmail
+  getUserByEmail,
+  getAuthors
 }

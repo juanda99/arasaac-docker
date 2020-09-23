@@ -1,5 +1,7 @@
 const fs = require('fs-extra')
 const Materials = require('../models/Material')
+const Users = require('../models/User')
+const { ObjectID } = require('mongodb')
 const recursive = require('recursive-readdir')
 const Promise = require('bluebird')
 const path = require('path')
@@ -277,8 +279,38 @@ const remove = async (req, res) => {
   }
 }
 
-const searchMaterials = (req, res) => {
-  const { locale, searchText } = req.params
+
+
+const addFavoriteList = async (req, res) => {
+  const { listName } = req.params
+  const { id } = req.user
+  const now = Date.now()
+  logger.debug(`EXEC addFavoriteList for user ${id} and listName ${listName} `)
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      throw new CustomError(USER_NOT_EXISTS, 404)
+    }
+    if (!user.favorites) user.favorites = { defaultList: [], listName: [] }
+    else user.favorites[listName] = []
+    user.markModified('favorites')
+    user.updated = now
+    await user.save()
+    logger.debug(`DONE addFavoriteList for user ${id} and listName ${listName} `)
+    return res.status(204).json()
+  } catch (err) {
+    logger.error(
+      `ERROR addFavoriteList for user ${id} and listName ${listName}: ${err} `
+    )
+    return res.status(err.httpCode || 500).json({
+      message: 'Error updating favorites.   See error field for detail',
+      error: err
+    })
+  }
+}
+
+const searchMaterials = async (req, res) => {
+  const { locale, searchText, searchType } = req.params
   logger.debug(`EXEC searchMaterials with locale ${locale} and searchText ${searchText}`)
   // depending on language we can use $text index or we should set $language to none, so no stopwords
   let customLanguage
@@ -310,12 +342,62 @@ const searchMaterials = (req, res) => {
   }
 
   let query
-  if (req.user && req.user.role === 'admin') {
-    query = { $text: { $search: searchText, $language: customLanguage } }
-    logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage} `)
-  } else {
-    query = { $text: { $search: searchText, $language: customLanguage }, status: PUBLISHED }
-    logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED} `)
+  /* we can search by content, author or type of material */
+
+  if (searchType === 'activity') {
+    if (req.user && req.user.role === 'admin') {
+      query = { activities: searchText }
+      logger.debug(`Exec find with activity ${searchText}`)
+    } else {
+      query = { activities: searchText, status: PUBLISHED }
+      logger.debug(`Exec find with activity ${searchText}and status ${PUBLISHED}`)
+    }
+  }
+  else if (searchType === 'area') {
+    if (req.user && req.user.role === 'admin') {
+      query = { areas: searchText }
+      logger.debug(`Exec find with area ${searchText}`)
+    } else {
+      query = { areas: searchText, status: PUBLISHED }
+      logger.debug(`Exec find with area ${searchText} and status ${PUBLISHED}`)
+    }
+  }
+
+  else if (searchType === 'author') {
+    try {
+      const users = await Users.find({ name: searchText }).lean()
+      if (!users.length) {
+        logger.debug(
+          `Not found user with name ${searchText} `
+        )
+        return res.status(404).json([])
+      }
+      if (req.user && req.user.role === 'admin') {
+        query = { $or: [{ "authors.author": { $in: users.map(user => ObjectID(user._id)) } }, { "translations.authors.author": { $in: users.map(user => ObjectID(user._id)) } }] }
+        logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage} `)
+      } else {
+        query = { $or: [{ "authors.author": { $in: users.map(user => ObjectID(user._id)) } }, { "translations.authors.author": { $in: users.map(user => ObjectID(user._id)) } }], status: PUBLISHED }
+        logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED} `)
+      }
+
+    } catch (err) {
+      logger.error(
+        `ERROR Getting materials for searchType ${searchType} and searchText ${searchText}: ${err} `
+      )
+      return res.status(err.httpCode || 500).json({
+        message: 'Error getting materials. See error field for detail',
+        error: err
+      })
+    }
+  }
+  else {
+    if (req.user && req.user.role === 'admin') {
+      query = { $text: { $search: searchText, $language: customLanguage } }
+      logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage} `)
+    } else {
+      query = { $text: { $search: searchText, $language: customLanguage }, status: PUBLISHED }
+      logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED} `)
+    }
   }
 
   Materials
@@ -334,7 +416,7 @@ const searchMaterials = (req, res) => {
       // if no items, return empty array
       if (materials.length === 0) return res.status(404).json([]) // send http code 404!!!
       const response = await Promise.all(materials.map(async material => await getFiles(material))) // not async&await as we want to get all material images in parallel
-      logger.debug(`DONE: ${JSON.stringify(response)} `)
+      logger.debug(`DONE: Materials sended `)
       return res.json(response)
     })
 }

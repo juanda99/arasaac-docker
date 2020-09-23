@@ -17,7 +17,7 @@ router.get('/unpublished',
     materialsController.getUnpublished(req, res)
   })
 
-router.get('/:locale/:searchText',
+router.get('/:locale/:searchType/:searchText',
   passport.authenticate(['bearer', 'anonymous'], { session: false }),
   (req, res) => {
     materialsController.searchMaterials(req, res)
