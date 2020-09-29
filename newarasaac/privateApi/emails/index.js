@@ -30,7 +30,7 @@ const {
 const transport = nodemailer.createTransport({
   host: EMAIL_SMTP,
   port: 587,
-  secure: true, // upgrade later with STARTTLS
+  secure: false, // upgrade later with STARTTLS
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASSWORD
