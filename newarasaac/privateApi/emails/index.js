@@ -13,29 +13,29 @@ const {
   NODE_ENV
 } = process.env
 
-const transport = nodemailer.createTransport({
-  // service: 'gmail',
-  auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASSWORD
-  },
-  port: 465,
-  secure: true,
-  host: EMAIL_SMTP
-})
+// const transport = nodemailer.createTransport({
+//   // service: 'gmail',
+//   auth: {
+//     user: EMAIL_USER,
+//     pass: EMAIL_PASSWORD
+//   },
+//   port: 465,
+//   secure: true,
+//   host: EMAIL_SMTP
+// })
 
 // TODO: Iconos redes sociales más pequeños, centrado al medio, icono red social también con el mismo estilo black&white. Quitar copyright y poner frase del tipo
 // Arasaac es una marca registrada por.....
 
-// const transport = nodemailer.createTransport({
-//   host: EMAIL_SMTP,
-//   port: 587,
-//   secure: false, // upgrade later with STARTTLS
-//   auth: {
-//     user: EMAIL_USER,
-//     pass: EMAIL_PASSWORD
-//   }
-// })
+const transport = nodemailer.createTransport({
+  host: EMAIL_SMTP,
+  port: 587,
+  secure: true, // upgrade later with STARTTLS
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASSWORD
+  }
+})
 
 // remove val, it does not work, we will use ca
 const locales = languages.filter(language => language !== 'val')
@@ -166,8 +166,7 @@ const sendPasswordRecoveryMail = (user, password) =>
       .catch(error => {
         reject(
           new CustomError(
-            `Error sending password recovery email OK to ${
-            user.email
+            `Error sending password recovery email OK to ${user.email
             }: ${error}`,
             500
           )
