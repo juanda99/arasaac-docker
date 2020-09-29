@@ -65,7 +65,7 @@ const create = async (req, res) => {
     user = new User(userData)
     const savedUser = await user.save()
     logger.debug(`Created user with data: ${JSON.stringify(savedUser)}`)
-    // await sendWelcomeMail(user)
+    await sendWelcomeMail(user)
 
     // else send verification email based on its locale
     return res.status(201).json({
