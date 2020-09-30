@@ -34,7 +34,9 @@ const transport = nodemailer.createTransport({
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASSWORD
-  }
+  },
+  requireTLS: true,
+  debug: true
 })
 
 // remove val, it does not work, we will use ca
