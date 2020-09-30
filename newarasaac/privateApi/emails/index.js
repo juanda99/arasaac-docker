@@ -43,7 +43,7 @@ const transport = nodemailer.createTransport({
 const locales = languages.filter(language => language !== 'val')
 const email = new Email({
   message: {
-    from: EMAIL_FROM
+    from: `${EMAIL_FROM} <${EMAIL_USER}>`,
   },
   // uncomment below to send emails in development/test env:
   send: true,
@@ -56,13 +56,18 @@ const email = new Email({
 
 const contactEmail = (userEmail) => new Email({
   message: {
-    from: EMAIL_FROM,
+    /* change EMAIL_TO for EMAIL_USER for aragon.es: */
+    from: `${EMAIL_FROM} <${EMAIL_USER}>`,
     replyTo: userEmail
   },
   // uncomment below to send emails in development/test env:
   send: true,
   transport
 })
+
+
+
+
 
 const sendContactMail = data =>
   new Promise((resolve, reject) => {
@@ -76,8 +81,8 @@ const sendContactMail = data =>
           name: data.name,
           email: data.email,
           message: data.message
-        },
-        htmlToText: true
+        }
+        // htmlToText: true
       })
       .then(() => {
         logger.debug(`Sent contact email from user ${data.email}`)
