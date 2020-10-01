@@ -1,12 +1,12 @@
 {
-  "Hi": "Hi",
-  "activateUserText": "Join ARASAAC",
-  "welcome": "Welcome to ARASAAC!",
-  "intro": "ARASAAC is a website that offers resouces and materials to help people with communication problems.",
-  "activateMessage": "You are almost ready to join the ARASAAC community. Click on the following button to activate your user account.",
-  "contactar": "You can contact us at arasaac@gmail.com",
-  "passwordChangeSubject": "ARASAAC new password",
-  "introResetPassword": "According to your request we have modified your password to access ARASAAC. Your new password is:",
-  "accessText": "Login on ARASAAC",
-  "rememberChangePassword": "This password has been generated randomly. Remember you can modify your password from your user profile"
+  "Hi": "Здраво",
+  "activateUserText": "Придружете се на ARASAAC",
+  "welcome": "Добредојдовте во  ARASAAC!",
+  "intro": "ARASAAC е веб-страница која нуди ресурси и материјали за да им помогне на луѓето со комуникациски проблеми.",
+  "activateMessage": "Скоро сте подготвени да се приклучите на заедницата ARASAAC. Кликнете на следното копче за да ја активирате вашата корисничка сметка.",
+  "contactar": "Можете да контактирате со нас на arasaac@aragon.es",
+  "passwordChangeSubject": "Нова лозинка на ARASAAC",
+  "introResetPassword": "Според вашето барање, ја изменивме вашата лозинка за пристап до ARASAAC. Вашата нова лозинка е:",
+  "accessText": "Пријавете се на ARASAAC",
+  "rememberChangePassword": "Оваа лозинка е генерирана по случаен избор. Запомнете дека можете да ја измените вашата лозинка од вашиот кориснички профил."
 }

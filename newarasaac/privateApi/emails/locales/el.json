@@ -1,12 +1,12 @@
 {
-  "Hi": "Hi",
-  "activateUserText": "Join ARASAAC",
-  "welcome": "Welcome to ARASAAC!",
-  "intro": "ARASAAC is a website that offers resouces and materials to help people with communication problems.",
-  "activateMessage": "You are almost ready to join the ARASAAC community. Click on the following button to activate your user account.",
-  "contactar": "You can contact us at arasaac@gmail.com",
-  "passwordChangeSubject": "ARASAAC new password",
-  "introResetPassword": "According to your request we have modified your password to access ARASAAC. Your new password is:",
-  "accessText": "Login on ARASAAC",
-  "rememberChangePassword": "This password has been generated randomly. Remember you can modify your password from your user profile"
+  "Hi": "γεια",
+  "activateUserText": "Εγγραφείτε στο ARASAAC",
+  "welcome": "Καλώς ήλθατε στο ARASAAC!",
+  "intro": "Το ARASAAC είναι ένας ιστότοπος που προσφέρει πόρους και υλικό για να βοηθήσει άτομα με προβλήματα επικοινωνίας.",
+  "activateMessage": "Είστε σχεδόν έτοιμοι να συμμετάσχετε στην κοινότητα ARASAAC. Κάντε κλικ στο παρακάτω κουμπί για να ενεργοποιήσετε τον λογαριασμό χρήστη σας.",
+  "contactar": "Μπορείτε να επικοινωνήσετε μαζί μας στη διεύθυνση arasaac@aragon.es",
+  "passwordChangeSubject": "Νέος κωδικός πρόσβασης ARASAAC",
+  "introResetPassword": "Σύμφωνα με το αίτημά σας, τροποποιήσαμε τον κωδικό πρόσβασής σας για πρόσβαση στο ARASAAC. Ο νέος σας κωδικός είναι:",
+  "accessText": "Συνδεθείτε στο ARASAAC",
+  "rememberChangePassword": "Αυτός ο κωδικός δημιουργήθηκε τυχαία. Θυμηθείτε ότι μπορείτε να τροποποιήσετε τον κωδικό πρόσβασης από το προφίλ χρήστη σας."
 }

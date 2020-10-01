@@ -2,15 +2,11 @@
   "Hi": "Hallo",
   "activateUserText": "ARASAAC beitreten",
   "welcome": "Willkommen in ARASAAC!",
-  "intro":
-    "ARASAAC ist eine Website, die Ressourcen und Materialien zur Verfügung stellt, um Menschen mit Kommunikationsproblemen zu helfen.",
-  "activateMessage":
-    "Sie sind fast bereit, der ARASAAC-Community beizutreten. Klicken Sie auf die folgende Schaltfläche, um Ihr Benutzerkonto zu aktivieren.",
-  "contactar": "Sie können uns unter arasaac@gmail.com kontaktieren",
+  "intro": "ARASAAC ist eine Website, die Ressourcen und Materialien zur Verfügung stellt, um Menschen mit Kommunikationsproblemen zu helfen.",
+  "activateMessage": "Sie sind fast bereit, der ARASAAC-Community beizutreten. Klicken Sie auf die folgende Schaltfläche, um Ihr Benutzerkonto zu aktivieren.",
+  "contactar": "Sie können uns unter arasaac@aragon.es kontaktieren",
   "passwordChangeSubject": "ARASAAC neues Passwort",
-  "introResetPassword":
-    "Entsprechend Ihrer Anfrage haben wir Ihr Passwort für den Zugriff auf ARASAAC geändert. Dein neues Passwort ist: ",
+  "introResetPassword": "Entsprechend Ihrer Anfrage haben wir Ihr Passwort für den Zugriff auf ARASAAC geändert. Dein neues Passwort ist: ",
   "accessText": "Melden Sie sich bei ARASAAC an",
-  "rememberChangePassword":
-    "Dieses Passwort wurde zufällig generiert. Denken Sie daran, dass Sie Ihr Passwort über Ihr Benutzerprofil ändern können."
+  "rememberChangePassword": "Dieses Passwort wurde zufällig generiert. Denken Sie daran, dass Sie Ihr Passwort über Ihr Benutzerprofil ändern können."
 }

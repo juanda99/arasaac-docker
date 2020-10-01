@@ -1,12 +1,12 @@
 {
-  "Hi": "Hi",
-  "welcome": "welcome",
-  "intro": "intro",
-  "activateMessage": "activateMessage",
-  "activateUserText": "activateUserText",
-  "contactar": "contactar",
-  "passwordChangeSubject": "passwordChangeSubject",
-  "introResetPassword": "introResetPassword",
-  "rememberChangePassword": "rememberChangePassword",
-  "accessText": "accessText"
+  "Hi": "Hoi",
+  "activateUserText": "Word lid van ARASAAC",
+  "welcome": "Welkom bij ARASAAC!",
+  "intro": "ARASAAC is een website die middelen en materialen biedt om mensen met communicatieproblemen te helpen.",
+  "activateMessage": "Je bent bijna klaar om lid te worden van de ARASAAC-gemeenschap. Klik op de volgende knop om uw gebruikersaccount te activeren.",
+  "contactar": "U kunt contact met ons opnemen via arasaac@aragon.es",
+  "passwordChangeSubject": "ARASAAC nieuw wachtwoord",
+  "introResetPassword": "Op uw verzoek hebben we uw wachtwoord gewijzigd om toegang te krijgen tot ARASAAC. Uw nieuwe wachtwoord is:",
+  "accessText": "Log in op ARASAAC",
+  "rememberChangePassword": "Dit wachtwoord is willekeurig gegenereerd. Onthoud dat u uw wachtwoord kunt wijzigen vanuit uw gebruikersprofiel."
 }
