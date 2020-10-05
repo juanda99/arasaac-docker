@@ -16,6 +16,21 @@ services:
       - nginxproxy_frontend
     restart: always
 
+  test:
+    image: nginx
+    hostname: test
+    container_name: test
+    volumes:
+      - ./test/conf/:/etc/nginx/conf.d:ro
+      - ./test/code/:/usr/share/nginx/html
+    environment:
+      LETSENCRYPT_HOST: "test.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "test.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
   admin:
     image: nginx
     hostname: admin
