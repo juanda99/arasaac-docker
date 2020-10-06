@@ -54,10 +54,10 @@ const email = new Email({
   }
 })
 
-const contactEmail = (userEmail) => new Email({
+const contactEmail = (userEmail, userName) => new Email({
   message: {
     /* change EMAIL_TO for EMAIL_USER for aragon.es: */
-    from: `${EMAIL_FROM} <${EMAIL_USER}>`,
+    from: `${userName} <${EMAIL_USER}>`,
     replyTo: userEmail
   },
   // uncomment below to send emails in development/test env:
@@ -71,7 +71,7 @@ const contactEmail = (userEmail) => new Email({
 
 const sendContactMail = data =>
   new Promise((resolve, reject) => {
-    return contactEmail(data.email)
+    return contactEmail(data.email, data.name)
       .send({
         template: 'tplContact',
         message: {
@@ -79,6 +79,7 @@ const sendContactMail = data =>
         },
         locals: {
           name: data.name,
+          subject: data.subject,
           email: data.email,
           message: data.message
         }
