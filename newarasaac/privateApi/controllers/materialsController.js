@@ -6,6 +6,7 @@ const recursive = require('recursive-readdir')
 const Promise = require('bluebird')
 const path = require('path')
 const formidable = require('formidable')
+const { sendNewMaterialEmail } = require('../emails')
 const logger = require('../utils/logger')
 const { saveFilesByType } = require('./utils')
 const { MATERIAL_DIR } = require('../utils/constants')
@@ -39,38 +40,28 @@ const create = (req, res) => {
       })
     }
 
-    /* get id for material */
-    // get last file id:
+    /* get id for material, get last one */
     const dirs = await fs.readdir(MATERIAL_DIR)
-    /* filter only *.svg files with numeric basename */
     const materialDirs = dirs
       .filter(
         dirName =>
           !isNaN(dirName)
       )
     const idMaterial = materialDirs.length ? Math.max(...materialDirs) + 1 : 1
-    const data = { ...formData, idMaterial }
 
+    /* prepare data to be saved in MongoDB  */
+    const data = { ...formData, idMaterial }
     const Material = new Materials(data)
+
+    /* save document in MongoDB and material files into the file system */
     try {
       material = await Material.save()
-    } catch (err) {
-      console.log(err)
-      return res.status(500).json({
-        message: 'Error al guardar el material',
-        error: err
-      })
-    }
-    try {
       const saveMaterialFiles = saveFilesByType(files, material.idMaterial)
       // create a dir per language if not exists, just for languages without specific languagefiles */
       const promisesLanguageDir = material.translations
         .map(translation => translation.lang)
         .map(language => fs.ensureDir(path.resolve(MATERIAL_DIR, idMaterial.toString(), language)))
       await Promise.all([saveMaterialFiles, promisesLanguageDir])
-      return res.status(201).json({
-        id: material.idMaterial
-      })
     } catch (err) {
       logger.error(`Error creating material: ${err}`)
       return res.status(500).json({
@@ -78,6 +69,18 @@ const create = (req, res) => {
         error: err
       })
     }
+
+    /* get material authors data and send email, if error we report it but show must go on */
+    try {
+      sendNewMaterialEmail(data)
+    } catch (err) {
+      /* we just inform. As the material is created ok, we  send 201 afterwards */
+      logger.error(`Error sending email from creating materials: ${err}`)
+    }
+
+    return res.status(201).json({
+      id: material.idMaterial
+    })
   })
 }
 
@@ -143,7 +146,7 @@ const addTranslation = (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params
-  const { translations, areas, activities, status, authors } = req.body
+  const { translations, areas, activities, status, authors, lastUpdated } = req.body
   const now = Date.now()
 
   logger.debug(
@@ -202,7 +205,7 @@ const update = async (req, res) => {
         // material.translations.push(...newTranslations)
       }
     }
-    material.lastUpdated = now
+    material.lastUpdated = lastUpdated || now
     /* fill with files */
     const modifyMaterial = await Materials
       .findOneAndUpdate({ idMaterial: id }, material, { new: true })

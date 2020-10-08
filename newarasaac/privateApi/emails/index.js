@@ -62,12 +62,12 @@ const contactEmail = (userEmail, userName) => new Email({
   },
   // uncomment below to send emails in development/test env:
   send: true,
-  transport
+  transport,
+  i18n: {
+    locales,
+    directory: path.resolve(__dirname, 'locales')
+  }
 })
-
-
-
-
 
 const sendContactMail = data =>
   new Promise((resolve, reject) => {
@@ -102,15 +102,12 @@ const sendContactMail = data =>
 const sendWelcomeMail = user =>
   new Promise((resolve, reject) => {
     var tokenUrl = ''
-    var direction = 'ltr'
     if (NODE_ENV === 'development') {
       tokenUrl = `${DEV_ARASAAC_URL}/activate/${user.verifyToken}`
     } else tokenUrl = `${ARASAAC_URL}/activate/${user.verifyToken}`
 
     if (user.locale === 'val') user.locale = 'ca'
-    if (user.locale === 'ar' || user.locale === 'he') {
-      direction = 'rtl'
-    }
+    const direction = getDirection(user.locale)
     return email
       .send({
         template: 'tplWelcome',
@@ -143,14 +140,10 @@ const sendWelcomeMail = user =>
 const sendPasswordRecoveryMail = (user, password) =>
   new Promise((resolve, reject) => {
     var accessUrl = ''
-    var direction = 'ltr'
     if (NODE_ENV === 'development') {
       accessUrl = `${DEV_ARASAAC_URL}/signin`
     } else accessUrl = `${ARASAAC_URL}/signin`
-    if (user.locale === 'val') user.locale = 'ca'
-    if (user.locale === 'ar' || user.locale === 'he') {
-      direction = 'rtl'
-    }
+    const direction = getDirection(user.locale)
     return email
       .send({
         template: 'tplPasswordRecovery',
@@ -182,8 +175,53 @@ const sendPasswordRecoveryMail = (user, password) =>
       })
   })
 
+/* we  use contactEmail as it's a  message for us, and maybe we would like to reply to
+the author off the material */
+const sendNewMaterialEmail = data =>
+  new Promise((resolve, reject) => {
+    var materialUrl
+    if (NODE_ENV === 'development') {
+      materialUrl = `${DEV_ARASAAC_URL}/materials/es/${data.idMaterial}`
+    } else materialUrl = `${ARASAAC_URL}/materials/es/${data.idMaterial}`
+    return contactEmail(data.emailAuthors.email, data.emailAuthors.name)
+      .send({
+        template: 'tplNewMaterial',
+        message: {
+          to: 'arasaac@aragon.es'
+
+        },
+        locals: {
+          name: data.emailAuthors.name,
+          message: data.message,
+          locale: 'es',
+          materialUrl
+        }
+        // htmlToText: true
+      })
+      .then(() => {
+        logger.debug(`Sent new material email from user ${data.email}`)
+        resolve()
+      })
+      .catch(error => {
+        reject(
+          new CustomError(
+            `Error sending contact email from user ${data.email}: ${error}`,
+            500
+          )
+        )
+      })
+  })
+
+
+
+
+const getDirection = (locale) => (user.locale === 'ar' || user.locale === 'he') ? 'rtl' : 'ltr'
+
 module.exports = {
   sendWelcomeMail,
   sendPasswordRecoveryMail,
-  sendContactMail
+  sendContactMail,
+  sendNewMaterialEmail,
+  // sendTranslationEmail,
+  // sendPublishMaterialEmail
 }
