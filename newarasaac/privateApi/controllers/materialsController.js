@@ -6,7 +6,7 @@ const recursive = require('recursive-readdir')
 const Promise = require('bluebird')
 const path = require('path')
 const formidable = require('formidable')
-const { sendNewMaterialEmail } = require('../emails')
+const { sendNewMaterialEmail, sendTranslationEmail, sendPublishedMaterialEmail } = require('../emails')
 const logger = require('../utils/logger')
 const { saveFilesByType } = require('./utils')
 const { MATERIAL_DIR } = require('../utils/constants')
@@ -28,6 +28,7 @@ const create = (req, res) => {
   form.on('error', (err) => {
     logger.error(`Error creating material: ${err.message}`)
   })
+
 
   form.parse(req, async (_err, fields, files) => {
     let material
@@ -86,6 +87,7 @@ const create = (req, res) => {
 
 const addTranslation = (req, res) => {
   const { idMaterial } = req.params
+  var emailData
   logger.debug(`EXEC addTranslation`)
   const form = formidable({
     encoding: 'utf-8',
@@ -131,9 +133,20 @@ const addTranslation = (req, res) => {
       material.lastUpdated = Date.now()
       await Materials.findOneAndUpdate({ idMaterial }, material)
       await saveFilesByType(files, idMaterial)
+
+      /* for sending notification email at the end */
+      emailData = {
+        name: formData.name,
+        email: formData.email,
+        targetLanguage: targetLanguage.lang,
+        idMaterial
+      }
+
+      sendTranslationEmail(emailData)
       return res.status(201).json({
         id: idMaterial
       })
+
     } catch (err) {
       logger.error(`Error adding translation to material: ${err.message}`)
       return res.status(err.httpCode || 500).json({
@@ -146,19 +159,25 @@ const addTranslation = (req, res) => {
 
 const update = async (req, res) => {
   const { id } = req.params
+  /* not const, we  can loose translation or authors value inside try as
+  it is another scope */
   const { translations, areas, activities, status, authors, lastUpdated } = req.body
   const now = Date.now()
 
   logger.debug(
     `EXEC update for material with id ${id} and data ${JSON.stringify(req.body)}`
   )
+
+  let response, material, isPublished
+
   try {
-    const material = await Materials.findOne({ idMaterial: id }).lean()
+    material = await Materials.findOne({ idMaterial: id }).lean()
     if (!material) {
       logger.debug(`Material with id ${id} not found`)
       return res.status(404).json([])
     }
-    /* we update depending on role */
+    isPublished = status === PUBLISHED && material.status !== status
+    /* we update depending on role s*/
     if (req.user.role !== 'admin') {
       // we just add translations if not exists:
       const languages = translations.map(translation => translation.lang)
@@ -180,6 +199,7 @@ const update = async (req, res) => {
       let newTranslations
       if (areas) material.areas = areas
       if (activities) material.activities = activities
+      console.log(typeof authors)
       if (authors) material.authors = authors
       if (status !== undefined && status !== null) material.status = status
       if (translations) {
@@ -213,8 +233,9 @@ const update = async (req, res) => {
       .populate('translations.authors.author', 'name email company url facebook google pictureProvider')
       .lean()
 
-    const response = await getFiles(modifyMaterial)
-    return res.json(response)
+
+    response = await getFiles(modifyMaterial)
+
   } catch (err) {
     logger.error(`ERROR executing update material with id ${id}`)
     return res.status(err.httpCode || 500).json({
@@ -222,6 +243,35 @@ const update = async (req, res) => {
       error: err.message
     })
   }
+
+  /* if published  we send notification to authors */
+  if (isPublished) {
+    logger.debug('Start sending notifications...')
+    try {
+      /* get all the authors id's */
+      /* now we send the emails */
+      const mainAuthors = material.authors.map(item => item.author)
+      const tmpOtherAuthors = material.translations.map(translation =>
+        translation.authors.map(item => item.author))
+      const otherAuthors = [].concat.apply([], tmpOtherAuthors);
+      const allAuthors = [...mainAuthors, ...otherAuthors]
+      const uniqueAuthors = allAuthors.filter((item, pos) => allAuthors.indexOf(item) == pos)
+
+      const users = await Users.find({ _id: { $in: uniqueAuthors.map(author => ObjectID(author)) } }, { name: 1, email: 1, locale: 1 }).lean()
+      if (!users.length) {
+        logger.error(`Not sending email after publishing material: no users found for material with id ${material.idMaterial}!`)
+      }
+      users.forEach(user => {
+        logger.info(`Sending notification email to user ${user.email} in language ${user.locale}`)
+        sendPublishedMaterialEmail({ locale: user.locale, email: user.email, name: user.name, idMaterial: id })
+      });
+
+    } catch (err) {
+      logger.error(`ERROR sending material publication email: ${err} `)
+    }
+    logger.debug('End sending notifications...')
+  }
+  return res.json(response)
 }
 
 const getMaterialById = (req, res) => {

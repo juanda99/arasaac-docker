@@ -1,0 +1,56 @@
+body {
+  font-family: "Roboto";
+  padding: 20px;
+  background-color: #aed581;
+  color: black;
+}
+img {
+  padding-top: 40px;
+  padding-bottom: 20px;
+  height: 150px;
+}
+.logo {
+  margin: 0 auto;
+  width: 160px;
+}
+h1 {
+  font-family: "Roboto";
+  text-align: center;
+}
+p {
+  font-family: "Roboto";
+}
+.box {
+  font-family: "Roboto";
+  max-width: 450px;
+  margin: 0 auto;
+}
+.logobox {
+  width: 240px;
+  margin: 0 auto;
+}
+.logobox2 {
+  width: 142px;
+  margin: 0 auto;
+}
+.button{
+  font-weight: 800;
+  margin: 20px auto;
+  padding: 10px;
+  width: 250px;
+  background: #33691e;
+  text-align: center;
+  color: white;
+  text-transform: uppercase;
+}
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 50%;
+}
+.icon {
+  height: 45px !important;
+}
