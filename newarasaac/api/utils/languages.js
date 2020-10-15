@@ -1,4 +1,5 @@
 const languages = [
+  'an',
   'ar',
   'bg',
   'br',
@@ -21,6 +22,7 @@ const languages = [
   'ro',
   'ru',
   'sk',
+  'sq',
   'val',
   'zh'
 ]

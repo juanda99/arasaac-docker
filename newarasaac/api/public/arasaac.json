@@ -53,6 +53,7 @@
             "required": true,
             "description": "Language associated with the searchText and the results.",
             "enum": [
+                "an",
                 "ar",
                 "bg",
                 "br",
@@ -75,7 +76,7 @@
                 "ro",
                 "ru",
                 "sk",
-                "val",
+                "sq'val",
                 "zh"
             ]
         },

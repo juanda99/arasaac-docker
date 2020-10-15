@@ -1,12 +1,13 @@
 const languages = [
+  'an',
   'ar',
   'bg',
   'br',
   'ca',
   'de',
+  'el',
   'en',
   'es',
-  'el',
   'eu',
   'fr',
   'gl',
@@ -20,6 +21,7 @@ const languages = [
   'pt',
   'ro',
   'ru',
+  'sq',
   'sk',
   'val',
   'zh'
