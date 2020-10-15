@@ -1,10 +1,12 @@
 db = db.getSiblingDB("arasaac");
 const languages = [
+  "an",
   "ar",
   "bg",
   "br",
   "ca",
   "de",
+  "el",
   "en",
   "es",
   "eu",
@@ -12,12 +14,16 @@ const languages = [
   "gl",
   "hr",
   "he",
+  "hu",
   "it",
+  "mk",
   "nl",
   "pl",
   "pt",
   "ro",
   "ru",
+  "sk",
+  "sq",
   "val",
   "zh"
 ];
@@ -33,15 +39,11 @@ languages.forEach(language => {
 });
 db.materials.createIndex(
   {
-    title: "text",
-    desc: "text",
     "translations.title": "text",
     "translations.desc": "text"
   },
   {
     weights: {
-      title: 3,
-      desc: 1,
       "translations.title": 3,
       "translations.desc": 1
     },
