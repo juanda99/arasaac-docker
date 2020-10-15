@@ -39,8 +39,8 @@ const transport = nodemailer.createTransport({
   debug: true
 })
 
-// remove val, it does not work, we will use ca
-const locales = languages.filter(language => language !== 'val')
+// remove val and an, it does not work, we will use ca
+const locales = languages.filter(language => language !== 'val' && language !== 'an')
 const newEmail = new Email({
   message: {
     from: `${EMAIL_FROM} <${EMAIL_USER}>`,
@@ -107,6 +107,7 @@ const sendWelcomeMail = user =>
     } else tokenUrl = `${ARASAAC_URL}/activate/${user.verifyToken}`
 
     if (user.locale === 'val') user.locale = 'ca'
+    else if (user.locale === 'an') user.locale = 'es'
     const direction = getDirection(user.locale)
     return newEmail
       .send({
@@ -144,6 +145,8 @@ const sendPasswordRecoveryMail = (user, password) =>
       accessUrl = `${DEV_ARASAAC_URL}/signin`
     } else accessUrl = `${ARASAAC_URL}/signin`
     const direction = getDirection(user.locale)
+    if (user.locale === 'val') user.locale = 'ca'
+    else if (user.locale === 'an') user.locale = 'es'
     return newEmail
       .send({
         template: 'tplPasswordRecovery',
@@ -254,8 +257,11 @@ const sendTranslationEmail = data =>
 const sendPublishedMaterialEmail = data =>
   new Promise((resolve, reject) => {
     const { idMaterial, name, email, locale } = data
-    var materialUrl
+    var materialUrl, userLocale
     const direction = getDirection(locale)
+    if (user.locale === 'val') userLocale = 'ca'
+    else if (user.locale === 'an') userLocale = 'es'
+    else userLocale = locale
     if (NODE_ENV === 'development') {
       materialUrl = `${DEV_ARASAAC_URL}/materials/es/${idMaterial}`
     } else materialUrl = `${ARASAAC_URL}/materials/es/${idMaterial}`
@@ -267,7 +273,7 @@ const sendPublishedMaterialEmail = data =>
         },
         locals: {
           name,
-          locale,
+          locale: userLocale,
           direction,
           materialUrl
         }
