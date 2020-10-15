@@ -76,7 +76,8 @@
                 "ro",
                 "ru",
                 "sk",
-                "sq'val",
+                "sq",
+                "val",
                 "zh"
             ]
         },
@@ -136,6 +137,7 @@
                     "locale": {
                         "type": "string",
                         "enum": [
+                            "an",
                             "ar",
                             "bg",
                             "br",
@@ -158,6 +160,7 @@
                             "ro",
                             "ru",
                             "sk",
+                            "sq",
                             "val",
                             "zh"
                         ]
@@ -279,6 +282,7 @@
             "in": "path",
             "required": true,
             "enum": [
+                "an",
                 "ar",
                 "bg",
                 "br",
@@ -301,6 +305,7 @@
                 "ro",
                 "ru",
                 "sk",
+                "sq",
                 "val",
                 "zh"
             ]
@@ -315,6 +320,7 @@
             "items": {
                 "type": "string",
                 "enum": [
+                    "an",
                     "ar",
                     "bg",
                     "br",
@@ -337,6 +343,7 @@
                     "ro",
                     "ru",
                     "sk",
+                    "sq",
                     "val",
                     "zh"
                 ]
@@ -916,6 +923,7 @@
                 "locale": {
                     "type": "string",
                     "enum": [
+                        "an",
                         "ar",
                         "bg",
                         "br",
@@ -938,6 +946,7 @@
                         "ro",
                         "ru",
                         "sk",
+                        "sq",
                         "val",
                         "zh"
                     ],
