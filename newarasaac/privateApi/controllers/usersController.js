@@ -56,7 +56,7 @@ const create = async (req, res) => {
       logger.debug(
         `Updated user not activated with data: ${JSON.stringify(savedUser)}`
       )
-      res.status(201).json({
+      return res.status(201).json({
         message:
           'An email has been sent to you. Please check it to verify your account.',
         _id: savedUser._id
