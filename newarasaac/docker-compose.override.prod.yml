@@ -9,14 +9,15 @@ services:
       - ./frontend/conf/:/etc/nginx/conf.d:ro
       - ./frontend/code/:/usr/share/nginx/html
     environment:
-      LETSENCRYPT_HOST: "beta.arasaac.org"
+      LETSENCRYPT_HOST: "beta.arasaac.org,www.beta.arasaac.org,arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es,arasaac.net,www.arasaac.net"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "beta.arasaac.org"
+      VIRTUAL_HOST: "arasaac.org,www.arasaac.org,beta.arasaac.org,www.beta.arasaac.org,arasaac.es,www.arasaac.es,arasaac.net,www.arasaac.net"
     networks:
       - nginxproxy_frontend
     restart: always
 
   test:
+    # image: fholzer/nginx-brotli
     image: nginx
     hostname: test
     container_name: test
