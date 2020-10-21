@@ -58,7 +58,7 @@ const hair = {
 
 /* websocket msg */
 const WS_CATALOG_STATUS = 'catalogStatus'
-const ARASAAC_URL = 'https://beta.arasaac.org'
+const ARASAAC_URL = 'https://arasaac.org'
 const DEV_ARASAAC_URL = 'http://localhost:3000'
 
 module.exports = {
