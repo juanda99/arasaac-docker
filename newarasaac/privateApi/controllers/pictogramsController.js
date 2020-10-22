@@ -493,7 +493,7 @@ const getKeywordsById = async (req, res) => {
           .map(keyword => keyword.keyword)
           .join()}`
       )
-      return res.status(200).json({ keywords })
+      return res.status(200).json({ keywords: pictogram.keywords })
     } else {
       logger.debug(`No keywords found for pictogram id ${_id}`)
       return res.status(404).json([])
