@@ -58,6 +58,9 @@ services:
       - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
       - ./locutions:/usr/share/nginx/html/locutions:ro
       - ./webstatic-conf/:/etc/nginx/conf.d:ro
+      - ./LSE_acepciones:/usr/share/nginx/html/lse-acepciones:ro
+      - ./LSE_definiciones:/usr/share/nginx/html/lse-definiciones:ro
+      - ./LSE_images:/usr/share/nginx/html/lse-images:ro
     environment:
       LETSENCRYPT_HOST: "static.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
