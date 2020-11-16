@@ -1,8 +1,9 @@
 const Keywords = require('../models/Keyword')
 const setPictogramModel = require('../models/Pictogram')
 const languages = require('../utils/languages')
-
-// const CustomError = require('../utils/CustomError')
+const Category = require('../models/Category')
+const jp = require('jsonpath')
+const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
 
 const Pictograms = languages.reduce((dict, language) => {
@@ -54,8 +55,19 @@ const updateKeywords = async (req, res) => {
       }
     }
 
-    let merged = [].concat(...words)
-    merged = [].concat(...merged).sort()
+    const category = await Category.findOne({ locale: language }, { _id: 0 })
+    let catkeywords = [] 
+    if (!category) {
+      logger.warn(`No categories found for locale ${locale} we set it empty for keywords generation!`)
+    }
+    else {
+      const keywords = jp.query(category.data, '$..keywords')
+      catKeywords = [].concat(...keywords)
+    }
+
+
+    // let merged = [].concat(...words)
+    merged = [].concat(...words, ...catKeywords).sort()
     // remove duplicates
     merged = [...new Set(merged)]
 
@@ -122,8 +134,20 @@ const updateKeywordsByCrontab = async language => {
       }
     }
 
-    let merged = [].concat(...words)
-    merged = [].concat(...merged).sort()
+    const category = await Category.findOne({ locale: language }, { _id: 0 })
+    let catkeywords = [] 
+    if (!category) {
+      logger.warn(`No categories found for locale ${locale} we set it empty for keywords generation!`)
+    }
+    else {
+      const keywords = jp.query(category.data, '$..keywords')
+      catKeywords = [].concat(...keywords)
+    }
+
+
+
+    // let merged = [].concat(...words)
+    merged = [].concat(...words, ...catKeywords).sort()
     // remove duplicates
     merged = [...new Set(merged)]
 

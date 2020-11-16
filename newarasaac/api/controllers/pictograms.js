@@ -1,9 +1,11 @@
 const fs = require('fs-extra')
 const path = require('path')
+const jp = require('jsonpath')
 const imagemin = require('imagemin')
 const imageminPngquant = require('imagemin-pngquant')
 // we load pictos model for all languages
 const setPictogramModel = require('../models/Pictograms')
+const Category = require('../models/Category')
 const stopWords = require('../utils/stopWords')
 const { IMAGE_DIR, SVG_DIR, IMAGE_URL } = require('../config')
 
@@ -238,29 +240,50 @@ const searchPictograms = async (req, res) => {
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .lean()
 
-    console.log(pictogramsByKeyword, '******')
-
-    let pictogramsByText = await Pictograms[locale]
-      .find(
-        {
-          $text: {
-            $search: searchText,
-            $language: 'none',
-            $diacriticSensitive: false
-          },
+    const category = await Category.findOne({ locale }, { _id: 0 })
+    let pictogramsByCategory
+    if (category) {
+      const nodes = jp.nodes(category.data, '$..keywords');
+      const categories = nodes
+        .filter(node => node.value.some(keyword => keyword === searchText))
+        .map(node=>node.path[node.path.length -2])
+      pictogramsByCategory = await Pictograms[locale]
+        .find({
+          categories: { $in: categories }, 
           published: true
-        },
-        { score: { $meta: 'textScore' } }
-      )
-      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+        })
+        .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+        .lean()
 
-      .lean()
+
+    }
+
+    /* if  category, we don't look by text */
+    let pictogramsByText  = []
+    if (!pictogramsByCategory.length) {
+      pictogramsByText = await Pictograms[locale]
+        .find(
+          {
+            $text: {
+              $search: searchText,
+              $language: 'none',
+              $diacriticSensitive: false
+            },
+            published: true
+          },
+          { score: { $meta: 'textScore' } }
+        )
+        .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+
+        .lean()
+      }
 
     // pictogramsByText.forEach(pictogram =>
     //   Reflect.deleteProperty(pictogram, 'score'))
 
     let pictograms = [
       ...pictogramsByKeyword,
+      ...pictogramsByCategory,
       ...pictogramsByText
     ]
 

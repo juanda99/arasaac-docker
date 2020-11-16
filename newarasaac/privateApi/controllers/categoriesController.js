@@ -4,6 +4,8 @@ const logger = require('../utils/logger')
 const languages = require('../utils/languages')
 const CustomError = require('../utils/CustomError')
 const removeKeys = require('../utils/removeKeys')
+
+/* also called from keywords controller */
 const get = async (req, res) => {
   const { locale, lastUpdated } = req.params
   let clientDate
