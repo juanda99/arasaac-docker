@@ -35,7 +35,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "mongodb": "^3.2.2",
-    "mongoose": "^5.0.11",
+    "mongoose": "^5.7.5",
     "mongoose-plugin-autoinc": "^1.1.9",
     "nodemailer": "^6.0.0",
     "passport": "^0.4.0",
