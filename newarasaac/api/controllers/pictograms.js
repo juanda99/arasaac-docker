@@ -265,7 +265,7 @@ const searchPictograms = async (req, res) => {
     /* if  category, we don't look by text */
     let pictogramsByText  = []
     if (!pictogramsByCategory.length) {
-      const searchText = stopWords(fulllSearchText, locale)
+      const searchText = stopWords(fullSearchText, locale)
       pictogramsByText = await Pictograms[locale]
         .find(
           {
@@ -298,7 +298,7 @@ const searchPictograms = async (req, res) => {
     logger.debug(`Found ${uniquePictograms.length} pictograms`)
     return res.json(uniquePictograms)
   } catch (err) {
-    logger.error(`Error getting pictograms with locale ${locale} and searchText ${searchText}. See error: ${err}`)
+    logger.error(`Error getting pictograms with locale ${locale} and searchText ${fullSearchText}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
