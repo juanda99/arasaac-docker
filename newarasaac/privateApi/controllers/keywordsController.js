@@ -147,7 +147,7 @@ const updateKeywordsByCrontab = async language => {
 
 
     // let merged = [].concat(...words)
-    merged = [].concat(...words, ...catKeywords).sort()
+    let merged = [].concat(...words, ...catKeywords).sort()
     // remove duplicates
     merged = [...new Set(merged)]
 
