@@ -8,7 +8,7 @@ const languages = require('./utils/languages')
 if (process.env.CRONTAB.toUpperCase() === 'YES') {
   logger.info('Configuring CRONTAB!')
   // update autocomplete keywords by crontab:
-  const job = new CronJob('00 30 03 * * *', () => {
+  const job = new CronJob('00 30 * * * *', () => {
     for (const language of languages) {
       const result = updateKeywordsByCrontab(language)
       const msg = result
