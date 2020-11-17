@@ -219,8 +219,9 @@ const getPictogramFileById = async (req, res) => {
 
 const searchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
-  const searchText = stopWords(req.swagger.params.searchText.value, locale)
-  logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${searchText}`)
+  /* without stopwords for searching categories */
+  const fullSearchText  = req.swagger.params.searchText.value
+  logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${fullSearchText}`)
 
   /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
   y por último categoría exacta */
@@ -229,10 +230,10 @@ const searchPictograms = async (req, res) => {
       .find({
         $or: [
           {
-            'keywords.keyword': req.swagger.params.searchText.value
+            'keywords.keyword': fullSearchText
           },
           {
-            'keywords.plural': req.swagger.params.searchText.value
+            'keywords.plural': fullSearchText
           }
         ],
         published: true
@@ -241,26 +242,30 @@ const searchPictograms = async (req, res) => {
       .lean()
 
     const category = await Category.findOne({ locale }, { _id: 0 })
-    let pictogramsByCategory
+    let pictogramsByCategory = []
     if (category) {
       const nodes = jp.nodes(category.data, '$..keywords');
       const categories = nodes
-        .filter(node => node.value.some(keyword => keyword === searchText))
+        .filter(node => node.value.some(keyword => keyword === fullSearchText))
         .map(node=>node.path[node.path.length -2])
-      pictogramsByCategory = await Pictograms[locale]
-        .find({
-          categories: { $in: categories }, 
-          published: true
-        })
-        .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
-        .lean()
-
-
+      if (categories.length) {
+        const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
+        const subCategories = getSubcategories(partialData, [categories[0]])
+        pictogramsByCategory = await Pictograms[locale]
+          .find({
+            categories: { $in: subCategories }, 
+            published: true
+          })
+          .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+          .lean()
+      }
     }
 
+    
     /* if  category, we don't look by text */
     let pictogramsByText  = []
     if (!pictogramsByCategory.length) {
+      const searchText = stopWords(fulllSearchText, locale)
       pictogramsByText = await Pictograms[locale]
         .find(
           {
@@ -300,6 +305,21 @@ const searchPictograms = async (req, res) => {
     })
   }
 }
+
+const getSubcategories = (tree, categories) => {
+  // const partialData = jp.value(tree, `$..["${category}"]`)
+  // const partialData = jp.nodes(tree, `$..["${category}"]`)
+  if (tree.children) {
+    const kk = Object.entries(tree.children)
+    return Object.entries(tree.children).reduce(
+      (accumulator, currentValue) => {
+        if (currentValue[0]) categories.push(currentValue[0])
+        return getSubcategories(currentValue[1], categories)
+      }, [])
+  }
+  return categories
+}
+
 
 const bestSearchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
