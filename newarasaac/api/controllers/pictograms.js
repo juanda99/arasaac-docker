@@ -258,8 +258,22 @@ const searchPictograms = async (req, res) => {
           })
           .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
           .lean()
+        
+        pictogramsByCategory.sort((a, b) =>{
+          const aPosition = subCategories.reduce((accumulator, currentValue)=>{
+            const position = a.categories.indexOf(currentValue)
+            return position === -1 ? accumulator : Math.min(position, accumulator)
+          }, 100)
+          const bPosition = subCategories.reduce((accumulator, currentValue)=>{
+            const position = b.categories.indexOf(currentValue)
+            return position === -1 ? accumulator : Math.min(position, accumulator)
+          }, 100)
+          return aPosition - bPosition
+        })
       }
     }
+
+
 
     
     /* if  category, we don't look by text */
