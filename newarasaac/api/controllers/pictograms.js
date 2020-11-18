@@ -13,6 +13,8 @@ const languages = require('../utils/languages')
 const logger = require('../utils/logger')
 const { convertSVG, getPNGFileName, modifySVG } = require('../utils/svg')
 
+const removeDiacritics = require('../utils/removeDiacritics')
+
 const Synsets = require('../models/Synsets')
 const Pictograms = languages.reduce((dict, language) => {
   dict[language] = setPictogramModel(language)
@@ -220,7 +222,9 @@ const getPictogramFileById = async (req, res) => {
 const searchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
   /* without stopwords for searching categories */
-  const fullSearchText  = req.swagger.params.searchText.value
+  const fullSearchText  = req.swagger.params.searchText.value.toLowerCase()
+
+  const searchText = stopWords(fullSearchText, locale)
   logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${fullSearchText}`)
 
   /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
@@ -246,7 +250,7 @@ const searchPictograms = async (req, res) => {
     if (category) {
       const nodes = jp.nodes(category.data, '$..keywords');
       const categories = nodes
-        .filter(node => node.value.some(keyword => keyword === fullSearchText))
+        .filter(node => node.value.some(keyword => removeDiacritics(stopWords(keyword, locale)).toLowerCase() === removeDiacritics(stopWords(fullSearchText, locale))))
         .map(node=>node.path[node.path.length -2])
       if (categories.length) {
         const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
@@ -268,7 +272,10 @@ const searchPictograms = async (req, res) => {
             const position = b.categories.indexOf(currentValue)
             return position === -1 ? accumulator : Math.min(position, accumulator)
           }, 100)
-          return aPosition - bPosition
+          let  position = aPosition - bPosition
+          /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
+          if (position === 0) position  = a.categories.length - b.categories.length
+          return position
         })
       }
     }
@@ -279,7 +286,6 @@ const searchPictograms = async (req, res) => {
     /* if  category, we don't look by text */
     let pictogramsByText  = []
     if (!pictogramsByCategory.length) {
-      const searchText = stopWords(fullSearchText, locale)
       pictogramsByText = await Pictograms[locale]
         .find(
           {
