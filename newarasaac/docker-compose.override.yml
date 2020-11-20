@@ -1,1 +1,1 @@
-docker-compose.override.prod.yml
+docker-compose.override.dev.yml
