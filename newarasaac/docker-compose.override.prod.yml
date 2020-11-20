@@ -118,6 +118,7 @@ services:
       - ${IMAGE_DIR}:/home/betaarasaac/pictograms
       - ./images:/home/betaarasaac/images
       - ./docs:/home/betaarasaac/docs
+      - /data/oldarasaac:/home/betaarasaac/oldarasaac
     ports:
       - "8005:22"
     command: betaarasaac:${SFTP_PASSWORD}
