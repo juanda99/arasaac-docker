@@ -69,6 +69,21 @@ services:
       - nginxproxy_frontend
     restart: always
 
+  storage:
+    image: nginx
+    hostname: storage
+    container_name: storage
+    volumes:
+      - ${STORAGE_DIR}:/usr/share/nginx/html
+
+    environment:
+      LETSENCRYPT_HOST: "storage.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "storage.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
   watcher:
     hostname: watcher
     container_name: watcher
@@ -118,7 +133,8 @@ services:
       - ${IMAGE_DIR}:/home/betaarasaac/pictograms
       - ./images:/home/betaarasaac/images
       - ./docs:/home/betaarasaac/docs
-      - /data/oldarasaac:/home/betaarasaac/oldarasaac
+      - ${OLDARASAAC_DIR}:/home/betaarasaac/oldarasaac
+      - ${STORAGE_DIR}:/home/betaarasaac/storage
     ports:
       - "8005:22"
     command: betaarasaac:${SFTP_PASSWORD}
