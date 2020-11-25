@@ -36,6 +36,48 @@ services:
       NODE_ENV: $NODE_ENV
     restart: always
 
+  svgwatcher:
+    hostname: svgwatcher
+    container_name: svgwatcher
+    build:
+      context: ./svgwatcher
+    command: npm run serve
+    volumes:
+      - ./svgwatcher:/app
+      - ${SVG_DIR}:/svg:ro
+      - /app/node_modules
+      - /app/.config
+      - ${IMAGE_DIR}:/pictograms
+    environment:
+      NODE_ENV: $NODE_ENV
+      CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING
+      OVERWRITE: $OVERWRITE
+    ports:
+      - "9226:9229"
+    restart: always
+
+  webstatic:
+    image: nginx
+    hostname: webstatic
+    container_name: webstatic
+    volumes:
+      - ${MATERIAL_DIR}:/usr/share/nginx/html/materials:ro
+      - ./images:/usr/share/nginx/html/images:ro
+      - ./docs:/usr/share/nginx/html/docs:ro
+      - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
+      - ./locutions:/usr/share/nginx/html/locutions:ro
+      - ./webstatic-conf/:/etc/nginx/conf.d:ro
+      - ./LSE_acepciones:/usr/share/nginx/html/lse-acepciones:ro
+      - ./LSE_definiciones:/usr/share/nginx/html/lse-definiciones:ro
+      - ./LSE_images:/usr/share/nginx/html/lse-images:ro
+    environment:
+      LETSENCRYPT_HOST: "static.arasaac.org"
+      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "static.arasaac.org"
+    networks:
+      - nginxproxy_frontend
+    restart: always
+
 networks:
   nginxproxy_frontend:
     external: true

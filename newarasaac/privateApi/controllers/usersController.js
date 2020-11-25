@@ -372,9 +372,10 @@ const resetPassword = async (req, res) => {
     if (!user) {
       throw new CustomError(USER_NOT_EXISTS, 404)
     }
-    logger.debug(`User ${email} reset password OK`)
+    
     /* generate mail with info */
     await sendPasswordRecoveryMail(user, cleanPassword)
+    logger.info(`Password recovery  to user ${email}. New  password: ${cleanPassword}`)
     return res.status(200).json({ _id: user._id })
   } catch (err) {
     logger.error(
