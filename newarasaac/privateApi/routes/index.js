@@ -7,6 +7,7 @@ const categories = require('./categories.js')
 const translations = require('./translations.js')
 const keywords = require('./keywords.js')
 const materials = require('./materials')
+const sitemap = require('./sitemap')
 const pages = require('./pages.js')
 
 const returnRouter = io => {
@@ -21,6 +22,7 @@ const returnRouter = io => {
   router.use('/translations', translations)
   router.use('/keywords', keywords)
   router.use('/materials', materials)
+  router.use('/sitemap', sitemap)
   router.use('/pages', pages)
 
   router.get('/', (req, res) => {

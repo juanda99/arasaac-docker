@@ -1,5 +1,4 @@
-FROM node:8.11.1
-
+FROM node:14-buster
 LABEL maintainer="juandacorreo@gmail.com"
 
 ENV NODE_ENV=development 

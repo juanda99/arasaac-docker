@@ -2,12 +2,15 @@ const fs = require('fs-extra')
 const randomize = require('randomatic')
 const filenamify = require('filenamify')
 const formidable = require('formidable')
+const jp = require('jsonpath')
 const { ObjectID } = require('mongodb')
 const path = require('path')
 const CustomError = require('../utils/CustomError')
 const logger = require('../utils/logger')
 const { IMAGE_DIR, SVG_DIR, LOCUTIONS_DIR } = require('../utils/constants')
 const setPictogramModel = require('../models/Pictogram')
+const Category = require('../models/Category')
+const removeDiacritics = require('../utils/removeDiacritics')
 const stopWords = require('../utils/stopWords')
 const languages = require('../utils/languages')
 const { saveFiles } = require('./utils')
@@ -58,49 +61,87 @@ const downloadPictogram = async (req, res) => {
 }
 
 const searchPictograms = async (req, res) => {
+  /* we send all of them, in  frontend, we my hide them depending on user role */
+  /* first we search by id or syncset, then by exact match (also plulral), categories and textScore */
+
   const locale = req.params.locale
-  const searchText = stopWords(req.params.searchText, locale)
+  const fullSearchText  = req.params.searchText.toLowerCase()
+  const searchText = stopWords(fullSearchText, locale)
 
-  logger.debug(
-    `EXEC searchPictograms with searchText ${searchText} and locale ${locale} `
-  )
+  logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${fullSearchText}`)
 
-  /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
-  y por último categoría exacta */
+
   try {
     let pictogramsById
-    let pictograms
-    if (isNaN(searchText)) {
+    if (isNaN(fullSearchText)) {
       pictogramsById = await Pictograms[locale]
         .find({
-          synsets: req.params.searchText
+          synsets: fullSearchText
         })
         .select({ __v: 0 })
         .lean()
     } else {
       pictogramsById = await Pictograms[locale]
         .find({
-          _id: req.params.searchText
+          _id: fullSearchText
         })
         .select({ __v: 0 })
         .lean()
     }
 
+
     let pictogramsByKeyword = await Pictograms[locale]
       .find({
         $or: [
           {
-            'keywords.keyword': req.params.searchText
+            'keywords.keyword': fullSearchText
           },
           {
-            'keywords.plural': req.params.searchText
+            'keywords.plural': fullSearchText
           }
         ]
       })
       .select({ __v: 0 })
       .lean()
-    if (pictogramsById.length === 0) {
-      let pictogramsByText = await Pictograms[locale]
+
+      const category = await Category.findOne({ locale }, { _id: 0 })
+      let pictogramsByCategory = []
+      if (category) {
+        const nodes = jp.nodes(category.data, '$..keywords');
+        const categories = nodes
+          .filter(node => node.value.some(keyword => removeDiacritics(stopWords(keyword, locale)).toLowerCase() === removeDiacritics(stopWords(fullSearchText, locale))))
+          .map(node=>node.path[node.path.length -2])
+        if (categories.length) {
+          const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
+          const subCategories = getSubcategories(partialData, [categories[0]])
+          pictogramsByCategory = await Pictograms[locale]
+            .find({
+              categories: { $in: subCategories }
+            })
+            .select({ __v: 0 })
+            .lean()
+          
+          pictogramsByCategory.sort((a, b) =>{
+            const aPosition = subCategories.reduce((accumulator, currentValue)=>{
+              const position = a.categories.indexOf(currentValue)
+              return position === -1 ? accumulator : Math.min(position, accumulator)
+            }, 100)
+            const bPosition = subCategories.reduce((accumulator, currentValue)=>{
+              const position = b.categories.indexOf(currentValue)
+              return position === -1 ? accumulator : Math.min(position, accumulator)
+            }, 100)
+            let  position = aPosition - bPosition
+            /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
+            if (position === 0) position  = a.categories.length - b.categories.length
+            return position
+          })
+        }
+      }
+
+    /* if  category, we don't look by text */
+    let pictogramsByText  = []
+    if (!pictogramsByCategory.length) {
+      pictogramsByText = await Pictograms[locale]
         .find(
           {
             $text: {
@@ -112,32 +153,48 @@ const searchPictograms = async (req, res) => {
           { score: { $meta: 'textScore' } }
         )
         .select({ __v: 0 })
-        .sort({ score: { $meta: 'textScore' } })
         .lean()
-      pictogramsByText.forEach(pictogram =>
-        Reflect.deleteProperty(pictogram, 'score')
-      )
-      pictograms = [...pictogramsByKeyword, ...pictogramsByText]
-    } else {
-      pictograms = [...pictogramsById, ...pictogramsByKeyword]
     }
 
-    const uniquePictograms = Array.from(
-      new Set(pictograms.map(pictogram => pictogram._id))
-    ).map(_id => pictograms.find(a => a._id === _id))
+    // pictogramsByText.forEach(pictogram =>
+    //   Reflect.deleteProperty(pictogram, 'score'))
+
+    let pictograms = [
+      ...pictogramsById,
+      ...pictogramsByKeyword,
+      ...pictogramsByCategory,
+      ...pictogramsByText
+    ]
+
+    const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram._id))).map(_id => pictograms.find(a => a._id === _id))
 
     if (uniquePictograms.length === 0) return res.status(404).json([])
+    logger.debug(`Found ${uniquePictograms.length} pictograms`)
     return res.json(uniquePictograms)
   } catch (err) {
-    logger.error(
-      `Error getting pictograms with locale ${locale} and searchText ${searchText}.See error: ${err} `
-    )
+    logger.error(`Error getting pictograms with locale ${locale} and searchText ${fullSearchText}. See error: ${err}`)
     return res.status(500).json({
       message: 'Error getting pictograms. See error field for detail',
       error: err
     })
   }
 }
+
+const getSubcategories = (tree, categories) => {
+  // const partialData = jp.value(tree, `$..["${category}"]`)
+  // const partialData = jp.nodes(tree, `$..["${category}"]`)
+  if (tree.children) {
+    const kk = Object.entries(tree.children)
+    return Object.entries(tree.children).reduce(
+      (accumulator, currentValue) => {
+        if (currentValue[0]) categories.push(currentValue[0])
+        return getSubcategories(currentValue[1], categories)
+      }, [])
+  }
+  return categories
+}
+
+
 
 const getAll = async (req, res) => {
   const { locale } = req.params
@@ -191,7 +248,7 @@ const getPictogramsById = async (req, res) => {
         _id: { $in: favoriteIds },
         published: true
       },
-      { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+      { published: 0, validated: 0, available: 0, __v: 0 }
     )
     logger.debug(`Search pictogram with id ${favoriteIds} and locale ${locale} `)
     if (!pictograms.length) {
@@ -340,7 +397,7 @@ const update = async (req, res) => {
     'sex',
     'synsets'
   ]
-  // specificData = ['keywords', 'desc']
+
   const globalUpdate = {}
   const specificUpdate = {}
 
@@ -372,7 +429,6 @@ const update = async (req, res) => {
       })
     }
 
-    if (pictogram.desc !== Pictogram.desc) specificUpdate.desc = pictogram.desc
     if (pictogram.validated !== Pictogram.validated) {
       specificUpdate.validated = pictogram.validated
     }

@@ -3,6 +3,7 @@ const logger = require('./utils/logger')
 const updateKeywordsByCrontab = require('./controllers/keywordsController')
   .updateKeywordsByCrontab
 const { postTranslationStatusByCrontab } = require('./controllers/translationsController')
+// const createSitemapByCrontab = require('./controllelrs/sitemapController.js')
 const languages = require('./utils/languages')
 
 if (process.env.CRONTAB.toUpperCase() === 'YES') {
@@ -11,10 +12,8 @@ if (process.env.CRONTAB.toUpperCase() === 'YES') {
   const job = new CronJob('00 30 * * * *', () => {
     for (const language of languages) {
       const result = updateKeywordsByCrontab(language)
-      const msg = result
-        ? `CRON OK updateKeywords for language ${language}`
-        : `CRON FAILED updateKeywords for language ${language}`
-      logger.info(msg)
+      if  (result) logger.info(`CRON OK updateKeywords for language ${language}`)
+      else logger.error(`CRON FAILED updateKeywords for language ${language}`)
     }
   })
   job.start()
@@ -29,10 +28,8 @@ if (process.env.CRONTAB.toUpperCase() === 'YES') {
   const jobFirstHalf = new CronJob('00 10 * * * *', () => {
     for (const language of firstHalfLanguages) {
       const result = postTranslationStatusByCrontab(language)
-      const msg = result
-        ? `CRON OK postTranslationStatusByCrontab for language ${language}`
-        : `CRON FAILED postTranslationStatusByCrontab for language ${language}`
-      logger.info(msg)
+      if  (result) logger.info(`CRON OK postTranslationStatusByCrontab for language ${language}`)
+      else logger.error(`CRON FAILED postTranslationStatusByCrontab for language ${language}`)
     }
   })
   jobFirstHalf.start()
@@ -40,13 +37,21 @@ if (process.env.CRONTAB.toUpperCase() === 'YES') {
   const jobSecondHalf = new CronJob('00 20 * * * *', () => {
     for (const language of secondHalfLanguages) {
       const result = postTranslationStatusByCrontab(language)
-      const msg = result
-        ? `CRON OK postTranslationStatusByCrontab for language ${language}`
-        : `CRON FAILED postTranslationStatusByCrontab for language ${language}`
-      logger.info(msg)
+      if  (result) logger.info(`CRON OK postTranslationStatusByCrontab for language ${language}`)
+      else logger.error(`CRON FAILED postTranslationStatusByCrontab for language ${language}`)
     }
   })
   jobSecondHalf.start()
+
+  // const jobSiteMap = new CronJob('00 00 2 * * *', () => {
+  //   for (const language of secondHalfLanguages) {
+  //     const result = createSitemap()
+  //     if  (result) logger.info('CRON OK generating sitemap')
+  //     else logger.error('CRON FAILED generating sitemap')
+  //   }
+  // })
+  // jobSiteMap.start()
+
   logger.info('Configured CRONTAB!')
 } else {
   logger.info('NOT executing CRONTAB!')

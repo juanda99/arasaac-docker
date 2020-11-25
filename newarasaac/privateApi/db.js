@@ -7,7 +7,8 @@ const logger = require('./utils/logger')
 mongoose.Promise = global.Promise
 mongoose
   .connect(databaseUrl, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
   })
   .then(
     () => {

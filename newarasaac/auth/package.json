@@ -35,7 +35,7 @@
   "scripts": {
     "lint": "eslint *.js config db test",
     "serve": "node app-auth.js",
-    "start": "nodemon --inspect=0.0.0.0:9229 --watch . --watch views --watch config --watch db -e js,ejs app-auth.js",
+    "start": "nodemon --inspect=0.0.0.0:9229 --watch . --watch views --watch config --watch db -e js,ejs --trace-deprecation app-auth.js",
     "test": "mocha test test/db test/config",
     "test:watch": "npm run test -- --watch",
     "test:integration": "mocha test/integration"
