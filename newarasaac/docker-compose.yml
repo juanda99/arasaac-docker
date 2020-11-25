@@ -16,7 +16,7 @@ services:
       - /app/.config
       - ${SVG_DIR}:/svg:ro
       - ${IMAGE_DIR}:/pictograms
-      - /app/node_modules
+      - api-libs:/app/node_modules
     environment:
       LETSENCRYPT_HOST: "api.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -50,7 +50,7 @@ services:
       - ${SVG_DIR}:/svg:rw
       - ./tmp:/tmp
       - /app/.config
-      - /app/node_modules
+      - privateapi-libs:/app/node_modules
     environment:
       LETSENCRYPT_HOST: "privateapi.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -84,7 +84,7 @@ services:
     volumes:
       - ./auth:/app
       - /app/.config
-      - /app/node_modules
+      - auth-libs:/app/node_modules
     environment:
       LETSENCRYPT_HOST: "auth.arasaac.org"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
@@ -120,3 +120,8 @@ networks:
     external: true
   backend:
     driver: bridge
+
+volumes:
+  api-libs:
+  privateapi-libs:
+  auth-libs:

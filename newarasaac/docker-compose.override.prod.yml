@@ -93,7 +93,7 @@ services:
     volumes:
       - ./watcher:/app
       - ${MATERIAL_DIR}:/materials
-      - /app/node_modules
+      - watcher-libs:/app/node_modules
       - /app/.config
     environment:
       NODE_ENV: $NODE_ENV
@@ -108,7 +108,7 @@ services:
     volumes:
       - ./svgwatcher:/app
       - ${SVG_DIR}:/svg:ro
-      - /app/node_modules
+      - svgwatcher-libs:/app/node_modules
       - /app/.config
       - ${IMAGE_DIR}:/pictograms
     environment:
@@ -147,3 +147,7 @@ networks:
     external: true
   backend:
     driver: bridge
+
+volumes:
+  watcher-libs:
+  svgwatcher-libs:
