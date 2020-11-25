@@ -27,7 +27,7 @@ const getPictogramById = async (req, res) => {
   try {
     let pictogram = await Pictograms[locale].findOne(
       { _id, published: true },
-      { published: 0, validated: 0, available: 0, desc: 0, __v: 0 }
+      { published: 0, validated: 0, available: 0, __v: 0 }
     )
     logger.debug(`Search pictogram with id ${_id} and locale ${locale}`)
     if (!pictogram) {
@@ -260,7 +260,7 @@ const searchPictograms = async (req, res) => {
             categories: { $in: subCategories }, 
             published: true
           })
-          .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+          .select({ published: 0, validated: 0, available: 0, __v: 0 })
           .lean()
         
         pictogramsByCategory.sort((a, b) =>{
@@ -280,9 +280,6 @@ const searchPictograms = async (req, res) => {
       }
     }
 
-
-
-    
     /* if  category, we don't look by text */
     let pictogramsByText  = []
     if (!pictogramsByCategory.length) {
@@ -298,7 +295,7 @@ const searchPictograms = async (req, res) => {
           },
           { score: { $meta: 'textScore' } }
         )
-        .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+        .select({ published: 0, validated: 0, available: 0, __v: 0 })
 
         .lean()
       }
@@ -345,8 +342,7 @@ const bestSearchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
   logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${req.swagger.params.searchText.value}`)
 
-  /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
-  y por último categoría exacta */
+  /* haremos búsqueda exacta */
   try {
     let pictogramsByKeyword = await Pictograms[locale]
       .find({
@@ -360,7 +356,7 @@ const bestSearchPictograms = async (req, res) => {
         ],
         published: true
       })
-      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+      .select({ published: 0, validated: 0, available: 0, __v: 0 })
       .lean()
 
     if (pictogramsByKeyword.length === 0) return res.status(404).json([])
@@ -407,7 +403,7 @@ const getLastPictograms = async (req, res) => {
   try {
     let pictograms = await Pictograms[locale]
       .find({ published: true })
-      .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
+      .select({ published: 0, validated: 0, available: 0,  __v: 0 })
       // .sort({ lastUpdated: -1 }) modifing a lot, doesn't make sense
       .sort({ created: -1 })
       .limit(numItems)
