@@ -115,8 +115,8 @@ services:
       NODE_ENV: $NODE_ENV
       CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING
       OVERWRITE: $OVERWRITE
-    ports:
-      - "9226:9229"
+    # ports:
+    #   - "9226:9229"
     restart: always
 
   sftp:
