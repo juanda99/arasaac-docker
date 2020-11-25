@@ -201,13 +201,13 @@ const sendNewMaterialEmail = data =>
         // htmlToText: true
       })
       .then(() => {
-        logger.debug(`Sent new material email from user ${data.email}`)
+        logger.debug(`Sent new material email from user ${data.emailAuthors.email}`)
         resolve()
       })
       .catch(error => {
         reject(
           new CustomError(
-            `Error sending contact email from user ${data.email}: ${error}`,
+            `Error sending contact email from user ${data.emailAuthors.email}: ${error}`,
             500
           )
         )
