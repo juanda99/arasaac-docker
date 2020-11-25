@@ -4,6 +4,7 @@ const MATERIAL_DIR = '/materials'
 const CONJUGATIONS_DIR = '/conjugations'
 const LOCUTIONS_DIR = '/locutions'
 const SVG_DIR = '/svg'
+const  TMP_DIR = '/tmp'
 // catalogs must "depend" on IMAGE_DIR to prevent error with hard links: EXDEV: cross-device link not permitted
 const CATALOG_DIR = path.resolve(IMAGE_DIR, 'catalogs')
 const tmpCatalogDirRoot = locale => path.resolve(CATALOG_DIR, 'tmp', locale)
@@ -68,6 +69,7 @@ module.exports = {
   CONJUGATIONS_DIR,
   LOCUTIONS_DIR,
   SVG_DIR,
+  TMP_DIR,
   tmpCatalogDirRoot,
   tmpCatalogDir,
   schematic,

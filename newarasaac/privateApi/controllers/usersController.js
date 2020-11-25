@@ -14,7 +14,7 @@ const { sendWelcomeMail, sendPasswordRecoveryMail, sendContactMail } = require('
 const logger = require('../utils/logger')
 const USER_NOT_EXISTS = 'USER_NOT_EXISTS'
 const USER_NOT_FOUND = 'USER_NOT_FOUND'
-const { IMAGE_DIR } = require('../utils/constants')
+const { IMAGE_DIR, TMP_DIR } = require('../utils/constants')
 
 const create = async (req, res) => {
   const {
@@ -524,20 +524,19 @@ const downloadFavoriteList = async (req, res) => {
         fileName: `${pictogram}.png`
       }
     ))
-    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, `/tmp/${listName}/${pictogram.fileName}`))
+    const promises = pictograms.map(pictogram => fs.copy(pictogram.route, `${TMP_DIR}/${listName}/${pictogram.fileName}`))
     await Promise.all(promises)
     const files = pictograms.map(file => `${listName}/${file.fileName}`)
-    const fileName = `${listName}.tar.gz`
+    const fileName = `${TMP_DIR}/${listName}.tar.gz`
     await tar.c(
       {
         gzip: true,
         file: fileName,
-        cwd: '/tmp'
+        cwd: TMP_DIR
       }, files)
 
-    logger.debug(
-      `DONE downloadFavoriteList for user ${id} and listName ${listName}`
-    )
+    fs.removeSync(`${TMP_DIR}/${listName}`)
+    logger.debug(`DONE downloadFavoriteList for user ${id} and listName ${listName}`)
     res.download(fileName)
   } catch (err) {
     logger.error(
@@ -556,7 +555,7 @@ const getAuthors = async (req, res) => {
 
   try {
     const materials = await Materials
-      .find({}, { authors: 1, "translations.authors": 1, _id: 0 })
+      .find({}, { authors: 1, "translations.authors": 1, _id: 1 })
       .populate('authors.author', 'name')
       .populate('translations.authors.author', 'name')
       .lean()
@@ -565,6 +564,7 @@ const getAuthors = async (req, res) => {
     const authors = []
     const seen = new Set();
     materials.forEach(material => {
+      console.log(material._id)
       material.authors.forEach(author => {
         authors.push({ _id: ObjectID(author.author._id).toString(), name: author.author.name })
       })
