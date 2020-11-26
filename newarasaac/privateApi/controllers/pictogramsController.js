@@ -112,8 +112,16 @@ const searchPictograms = async (req, res) => {
           .filter(node => node.value.some(keyword => removeDiacritics(stopWords(keyword, locale)).toLowerCase() === removeDiacritics(stopWords(fullSearchText, locale))))
           .map(node=>node.path[node.path.length -2])
         if (categories.length) {
-          const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
-          const subCategories = getSubcategories(partialData, [categories[0]])
+          const subCategories = []
+          categories.forEach(categoryItem => {
+            const partialData = jp.value(category.data, `$..["${categoryItem}"]`)
+            const newCategories = getSubcategories(partialData, [categoryItem])
+            newCategories.forEach(element => {
+              subCategories.push(element)
+            });
+          })
+        // const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
+        // const subCategories = getSubcategories(partialData, [categories[0]])
           pictogramsByCategory = await Pictograms[locale]
             .find({
               categories: { $in: subCategories }
