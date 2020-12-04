@@ -339,11 +339,9 @@ const searchPictograms = async (req, res) => {
   }
 }
 
+
 const getSubcategories = (tree, categories) => {
-  // const partialData = jp.value(tree, `$..["${category}"]`)
-  // const partialData = jp.nodes(tree, `$..["${category}"]`)
-  if (tree.children) {
-    const kk = Object.entries(tree.children)
+  if (tree.children && Object.keys(tree.children).length !== 0 ) {
     return Object.entries(tree.children).reduce(
       (accumulator, currentValue) => {
         if (currentValue[0]) categories.push(currentValue[0])
