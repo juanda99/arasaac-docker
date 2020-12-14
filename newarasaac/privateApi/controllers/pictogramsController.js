@@ -421,7 +421,11 @@ const update = async (req, res) => {
     'schematic',
     'violence',
     'sex',
-    'synsets'
+    'synsets',
+    'aac',
+    'aacColor',
+    'skin',
+    'hair'
   ]
 
   const globalUpdate = {}

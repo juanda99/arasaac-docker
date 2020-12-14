@@ -50,6 +50,22 @@ const pictogramSchema = new Schema({
     type: Boolean,
     default: false
   },
+  aac: {
+    type: Boolean,
+    default: false
+  },
+  aacColor: {
+    type: Boolean,
+    default: false
+  },
+  skin: {
+    type: Boolean,
+    default: false
+  },
+  hair: {
+    type: Boolean,
+    default: false
+  },
   created: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
   downloads: {
