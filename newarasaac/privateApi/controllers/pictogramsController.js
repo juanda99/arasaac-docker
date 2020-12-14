@@ -174,6 +174,27 @@ const searchPictograms = async (req, res) => {
       ...pictogramsByText
     ]
 
+
+        // if  no results we try by  phonemes (no more than five letters)
+    if (pictograms.length === 0 && fullSearchText.length>1 && fullSearchText.length<6) {
+
+        pictograms = await Pictograms[locale]
+          .find(
+            {
+              $or: [
+                {
+                  'keywords.keyword': new RegExp(fullSearchText)
+                },
+                {
+                  'keywords.plural': new RegExp(fullSearchText)
+                }
+              ]
+            }
+          )
+          .select({ __v: 0 })
+          .lean()
+    }
+
     const uniquePictograms = Array.from(new Set(pictograms.map(pictogram => pictogram._id))).map(_id => pictograms.find(a => a._id === _id))
 
     if (uniquePictograms.length === 0) return res.status(404).json([])
