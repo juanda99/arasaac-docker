@@ -368,6 +368,10 @@ const upload = async (req, res, next) => {
         }
       }
       if (pictograms.length) {
+        const allPictograms = pictograms.map(pictogram => {
+          pictogram.skin = hasSkin(pictogram._id)
+          pictogram.hair = hasHair(pictogram._id)
+        })
         // if new, we insert them into all picto collections
         for (const language of languages) {
           logger.debug(
@@ -721,6 +725,51 @@ const isArrayEqual = (x, y) => {
     .xorWith(y, _.isEqual)
     .isEmpty()
 }
+
+
+const skin = {
+  white: '#F5E5DE',
+  black: '#A65C17',
+  assian: '#F4ECAD',
+  mulatto: '#E3AB72',
+  aztec: '#CF9D7C',
+  schematic: '#FEFEFE'
+}
+const hair = {
+  brown: '#A65E26',
+  blonde: '#FDD700',
+  red: '#ED4120',
+  black: '#020100',
+  gray: '#EFEFEF',
+  darkGray: '#AAABAB',
+  darkBrown: '#6A2703'
+}
+
+const skins = `${skin.white}|${skin.schematic}`
+
+const hasSkin = (id) => {
+   // important ! regex without -g option because it's acumulative between interations
+  // see http://2ality.com/2013/08/regexp-g.html
+  let reSkin = new RegExp(skins, 'gim')
+  const str = fs.readFileSync(`${SVG_DIR}/${id}.svg`).toString();
+  return reSkin.test(str);
+}
+
+const hairToRemove = () => {
+  let value = ''
+  Object.keys(hair).forEach(function(key) {
+    value += `${hair[key]}|`
+  })
+  return value.slice(0, -1)
+}
+
+
+const hasHair = (id) => {
+  const reHair = new RegExp(hairToRemove(), 'gim')
+  const str = fs.readFileSync(`${SVG_DIR}/${id}.svg`).toString();
+  return reHair.test(str);
+}
+
 
 module.exports = {
   getPictogramsFromDate,
