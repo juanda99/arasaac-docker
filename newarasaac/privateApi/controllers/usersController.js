@@ -180,7 +180,7 @@ const activate = async (req, res) => {
 const changePassword = async (req, res) => {
   const { id } = req.user
   const { password } = req.body
-  console.log(req.user)
+  // console.log(req.user)
   logger.debug(`EXEC changePassword for user with id: ${id}`)
   try {
     if (!ObjectID.isValid(id)) {
@@ -565,7 +565,7 @@ const getAuthors = async (req, res) => {
     const authors = []
     const seen = new Set();
     materials.forEach(material => {
-      console.log(material._id)
+      // console.log(material._id)
       material.authors.forEach(author => {
         authors.push({ _id: ObjectID(author.author._id).toString(), name: author.author.name })
       })
