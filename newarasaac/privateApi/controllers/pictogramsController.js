@@ -141,6 +141,21 @@ const searchPictograms = async (req, res) => {
             let  position = aPosition - bPosition
             /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
             if (position === 0) position  = a.categories.length - b.categories.length
+
+            /* subcategories later than categories if needed*/
+            if (position===0) {
+              const aPosition = categories.reduce((accumulator, currentValue)=>{
+                const position = a.categories.indexOf(currentValue)
+                return position === -1 ? accumulator : Math.min(position, accumulator)
+              }, 100)
+              const bPosition = categories.reduce((accumulator, currentValue)=>{
+                const position = b.categories.indexOf(currentValue)
+                return position === -1 ? accumulator : Math.min(position, accumulator)
+              }, 100)
+            position = aPosition - bPosition
+            }
+
+
             return position
           })
         }

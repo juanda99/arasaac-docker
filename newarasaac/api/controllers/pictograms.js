@@ -227,8 +227,8 @@ const searchPictograms = async (req, res) => {
   const searchText = stopWords(fullSearchText, locale)
   logger.debug(`EXEC searchPictograms with locale ${locale} and searchText ${fullSearchText}`)
 
-  /* primero haremos búsqueda exacta, también con plural, luego añadiremos textScore,
-  y por último categoría exacta */
+  /* primero haremos búsqueda exacta, también con plural, luego busqueda por categoría
+  y si no hay nada, por textScore */
   try {
     let pictogramsByKeyword = await Pictograms[locale]
       .find({
@@ -259,8 +259,9 @@ const searchPictograms = async (req, res) => {
           return  false
         }))
         .map(node=>node.path[node.path.length -2])
-      if (categories.length) {
 
+      // we get all subcategories from searchText do to the find  in ddbb:  
+      if (categories.length) {
         const subCategories = []
         categories.forEach(categoryItem => {
           const partialData = jp.value(category.data, `$..["${categoryItem}"]`)
@@ -269,8 +270,8 @@ const searchPictograms = async (req, res) => {
             subCategories.push(element)
           });
         })
-        // const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
-        // const subCategories = getSubcategories(partialData, [categories[0]])
+
+        // search ddbb:
         pictogramsByCategory = await Pictograms[locale]
           .find({
             categories: { $in: subCategories }, 
@@ -279,6 +280,8 @@ const searchPictograms = async (req, res) => {
           .select({ published: 0, validated: 0, available: 0, __v: 0 })
           .lean()
         
+        // sort data, first pictos classified in this category or subcategories as first
+        // category
         pictogramsByCategory.sort((a, b) =>{
           const aPosition = subCategories.reduce((accumulator, currentValue)=>{
             const position = a.categories.indexOf(currentValue)
@@ -291,6 +294,20 @@ const searchPictograms = async (req, res) => {
           let  position = aPosition - bPosition
           /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
           if (position === 0) position  = a.categories.length - b.categories.length
+
+          /* subcategories later than categories if needed*/
+          if (position===0) {
+            const aPosition = categories.reduce((accumulator, currentValue)=>{
+              const position = a.categories.indexOf(currentValue)
+              return position === -1 ? accumulator : Math.min(position, accumulator)
+            }, 100)
+            const bPosition = categories.reduce((accumulator, currentValue)=>{
+              const position = b.categories.indexOf(currentValue)
+              return position === -1 ? accumulator : Math.min(position, accumulator)
+            }, 100)
+          position = aPosition - bPosition
+          }
+
           return position
         })
       }
