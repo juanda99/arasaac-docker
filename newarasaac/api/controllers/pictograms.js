@@ -292,8 +292,6 @@ const searchPictograms = async (req, res) => {
             return position === -1 ? accumulator : Math.min(position, accumulator)
           }, 100)
           let  position = aPosition - bPosition
-          /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
-          if (position === 0) position  = a.categories.length - b.categories.length
 
           /* subcategories later than categories if needed*/
           if (position===0) {
@@ -307,6 +305,9 @@ const searchPictograms = async (req, res) => {
             }, 100)
           position = aPosition - bPosition
           }
+
+          /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
+          if (position === 0) position  = a.categories.length - b.categories.length
 
           return position
         })
