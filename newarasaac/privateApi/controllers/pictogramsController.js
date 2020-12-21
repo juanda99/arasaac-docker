@@ -105,7 +105,7 @@ const searchPictograms = async (req, res) => {
       .lean()
 
       const category = await Category.findOne({ locale }, { _id: 0 })
-      let pictogramsByCategory = []
+      let weightPictos = []
       if (category) {
         const nodes = jp.nodes(category.data, '$..keywords');
         const categories = nodes
@@ -120,8 +120,7 @@ const searchPictograms = async (req, res) => {
               subCategories.push(element)
             });
           })
-        // const partialData = jp.value(category.data, `$..["${categories[0]}"]`)
-        // const subCategories = getSubcategories(partialData, [categories[0]])
+
           pictogramsByCategory = await Pictograms[locale]
             .find({
               categories: { $in: subCategories }
@@ -129,41 +128,27 @@ const searchPictograms = async (req, res) => {
             .select({ __v: 0 })
             .lean()
           
-          pictogramsByCategory.sort((a, b) =>{
-            const aPosition = subCategories.reduce((accumulator, currentValue)=>{
-              const position = a.categories.indexOf(currentValue)
-              return position === -1 ? accumulator : Math.min(position, accumulator)
-            }, 100)
-            const bPosition = subCategories.reduce((accumulator, currentValue)=>{
-              const position = b.categories.indexOf(currentValue)
-              return position === -1 ? accumulator : Math.min(position, accumulator)
-            }, 100)
-            let  position = aPosition - bPosition
-            /* hack para poner los animales de mar por delante de los  verbos en comida por ej */
-            if (position === 0) position  = a.categories.length - b.categories.length
-
-            /* subcategories later than categories if needed*/
-            if (position===0) {
-              const aPosition = categories.reduce((accumulator, currentValue)=>{
-                const position = a.categories.indexOf(currentValue)
-                return position === -1 ? accumulator : Math.min(position, accumulator)
-              }, 100)
-              const bPosition = categories.reduce((accumulator, currentValue)=>{
-                const position = b.categories.indexOf(currentValue)
-                return position === -1 ? accumulator : Math.min(position, accumulator)
-              }, 100)
-            position = aPosition - bPosition
-            }
-
-
-            return position
+          const onlySubcategories = subCategories.filter(subCategory => categories.indexOf(subCategory) === -1)
+          weightPictos = pictogramsByCategory.map(picto => {          
+            let score = categories.reduce((accumulator, currentValue)=>{
+                const position = picto.categories.indexOf(currentValue) +1
+                return position ? accumulator + 1000 / position : accumulator
+              }, 0)
+            score = onlySubcategories.reduce((accumulator, currentValue)=>{
+                const position = picto.categories.indexOf(currentValue) + 1 
+                return position ? accumulator + 500 / position : accumulator
+              }, score)
+            score = score + picto.categories.length
+            return  { ...picto, score}
           })
+          weightPictos.sort((a, b) =>b.score - a.score)
+          weightPictos.forEach(picto => delete picto.score)
         }
       }
 
     /* if  category, we don't look by text */
     let pictogramsByText  = []
-    if (!pictogramsByCategory.length) {
+    if ((!weightPictos.length)) {
       pictogramsByText = await Pictograms[locale]
         .find(
           {
@@ -185,7 +170,7 @@ const searchPictograms = async (req, res) => {
     let pictograms = [
       ...pictogramsById,
       ...pictogramsByKeyword,
-      ...pictogramsByCategory,
+      ...weightPictos,
       ...pictogramsByText
     ]
 
