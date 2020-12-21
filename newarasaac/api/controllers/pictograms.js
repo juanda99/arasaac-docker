@@ -253,7 +253,6 @@ const searchPictograms = async (req, res) => {
         .filter(node => node.value.some(keyword => {
           
           if(removeDiacritics(stopWords(keyword, locale)).toLowerCase() === removeDiacritics(searchText)) {
-            console.log(node.value, keyword,  searchText)
             return true;
           }
           return  false
@@ -283,23 +282,23 @@ const searchPictograms = async (req, res) => {
         // sort data, first pictos classified in this category or subcategories as first
         // category
         pictogramsByCategory.sort((a, b) =>{
-          const aPosition = subCategories.reduce((accumulator, currentValue)=>{
-            const position = a.categories.indexOf(currentValue)
-            return position === -1 ? accumulator : Math.min(position, accumulator)
-          }, 100)
-          const bPosition = subCategories.reduce((accumulator, currentValue)=>{
-            const position = b.categories.indexOf(currentValue)
-            return position === -1 ? accumulator : Math.min(position, accumulator)
-          }, 100)
-          let  position = aPosition - bPosition
-
-          /* subcategories later than categories if needed*/
-          if (position===0) {
             const aPosition = categories.reduce((accumulator, currentValue)=>{
               const position = a.categories.indexOf(currentValue)
               return position === -1 ? accumulator : Math.min(position, accumulator)
             }, 100)
             const bPosition = categories.reduce((accumulator, currentValue)=>{
+              const position = b.categories.indexOf(currentValue)
+              return position === -1 ? accumulator : Math.min(position, accumulator)
+            }, 100)
+          let position = aPosition - bPosition
+
+          /* subcategories later than categories if needed*/
+          if (position===0) {
+            const aPosition = subCategories.reduce((accumulator, currentValue)=>{
+              const position = a.categories.indexOf(currentValue)
+              return position === -1 ? accumulator : Math.min(position, accumulator)
+            }, 100)
+            const bPosition = subCategories.reduce((accumulator, currentValue)=>{
               const position = b.categories.indexOf(currentValue)
               return position === -1 ? accumulator : Math.min(position, accumulator)
             }, 100)
