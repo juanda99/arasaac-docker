@@ -65,7 +65,11 @@ const UserSchema = new Schema(
     favoritesLimit: {
       type: Number,
       default: 10
-    }
+    },
+    searchLanguage: { type: String, default: 'en' },
+    sex:  { type: Boolean, default: false },
+    violence:  { type: Boolean, default: false },
+    color:  { type: Boolean, default: true }
   },
   {
     strict: false
