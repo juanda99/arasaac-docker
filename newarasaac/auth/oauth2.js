@@ -417,12 +417,11 @@ exports.token = [
   (req, res, next) => {
     const allow_origins = [
       "http://localhost:3000",
-      "https://beta.arasaac.org",
       "https://arasaac.org",
       "https://www.arasaac.org",
-      "https://www.beta.arasaac.org",
       "https://admin.arasaac.org",
-      "https://www.admin.arasaac.org"
+      "https://www.admin.arasaac.org",
+      "https://test.arasaac.org"
     ];
     if (allow_origins.includes(req.headers.origin)) next();
     else res.status(401).json({ error: "Only allowed for arasaac.org" });
