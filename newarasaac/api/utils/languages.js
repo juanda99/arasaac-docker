@@ -9,6 +9,7 @@ const languages = [
   'es',
   'el',
   'eu',
+  'fa',
   'fr',
   'gl',
   'he',
@@ -23,6 +24,8 @@ const languages = [
   'ru',
   'sk',
   'sq',
+  'su',
+  'sr',
   'val',
   'zh'
 ]
