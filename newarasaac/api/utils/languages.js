@@ -8,6 +8,7 @@ const languages = [
   'en',
   'es',
   'el',
+  'et',
   'eu',
   'fa',
   'fr',
