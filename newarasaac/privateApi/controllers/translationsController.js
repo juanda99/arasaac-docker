@@ -145,6 +145,9 @@ const postTranslationStatusByCrontab = async (language) => {
         case 'pt':
           crowdinLanguage = 'pt-PT'
           break
+        case 'sv':
+          crowdinLanguage = 'sv-SE'
+          break
         case 'br':
           // we use pt with crowdin
           crowdinLanguage = 'pt-PT'
