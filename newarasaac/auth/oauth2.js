@@ -227,6 +227,7 @@ server.exchange(
       "facebook.picture": `https://graph.facebook.com/${profile.id}/picture?type=large`,
       $setOnInsert: {
         locale: profile.locale,
+        searchLanguage: profile.locale,
         email: profile.email,
         active: true,
         name: profile.name,
@@ -286,6 +287,7 @@ server.exchange(
       "google.picture": profile.picture,
       $setOnInsert: {
         locale: profile.locale,
+        searchLanguage: profile.locale,
         email: profile.email,
         active: true,
         name: profile.name,

@@ -55,7 +55,6 @@ const createToken = ({
       algorithm: "RS256"
     }
   );
-  console.log(`Token: ${token} ****************************************`);
   return token;
 };
 

@@ -25,7 +25,7 @@ const UserSchema = new Schema(
       default: true
     },
     id: Number, // just for old data. New values with _id
-    provider: String,
+    pictureProvider: { type: String, default: 'arasaac' },
     locale: { type: String, default: "en" },
     password: String,
     verifyToken: String,
@@ -56,11 +56,19 @@ const UserSchema = new Schema(
       email: String,
       name: String
     },
-    favorites: { defaultList: [] },
+    favorites: {
+      type: Object,
+      required: true,
+      default: { defaultList: [] }
+    },
     favoritesLimit: {
       type: Number,
       default: 10
-    }
+    },
+    searchLanguage: { type: String, default: 'en' },
+    sex:  { type: Boolean, default: false },
+    violence:  { type: Boolean, default: false },
+    color:  { type: Boolean, default: true }
   },
   {
     strict: false
