@@ -47,10 +47,11 @@ const getPictogramsFromDate = async (req, res) => {
 }
 
 const downloadPictogram = async (req, res) => {
-  const { fileName, keyword } = req.params
+  const { fileName, keyword, color } = req.params
   const newName = keyword === null ? fileName : keyword
-  logger.debug(`EXEC downloadPictogram for filename: ${fileName}`)
-  const filePath = path.resolve(IMAGE_DIR, fileName, `${fileName}_500.png`)
+  const fileEncodedName = color === 'false' ? `${fileName}_nocolor_500.png`: `${fileName}_500p.png`
+  logger.debug(`EXEC downloadPictogram for filename: ${fileEncodedName}`)
+  const filePath = path.resolve(IMAGE_DIR, fileName, `${fileEncodedName}`)
   const exists = await fs.pathExists(filePath)
   if (!exists) {
     logger.error(`ERROR executing downloadPictogram for file: ${filePath} `)

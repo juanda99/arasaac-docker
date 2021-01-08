@@ -7,7 +7,7 @@ router.get('/keywords/:locale/:_id', (req, res) => {
   pictogramsController.getKeywordsById(req, res)
 })
 
-router.get('/download/:fileName/:keyword?', (req, res) => {
+router.get('/download/:fileName/:color/:keyword?', (req, res) => {
   pictogramsController.downloadPictogram(req, res)
 })
 
