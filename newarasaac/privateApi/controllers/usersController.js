@@ -26,7 +26,8 @@ const create = async (req, res) => {
     url,
     company,
     role,
-    targetLanguages
+    targetLanguages,
+    searchLanguage
   } = req.body
   const userData = {
     name,
@@ -37,7 +38,8 @@ const create = async (req, res) => {
     url,
     company,
     role,
-    targetLanguages
+    targetLanguages,
+    searchLanguage
   }
 
   logger.debug(`Creating user with data: ${JSON.stringify(userData)}`)
