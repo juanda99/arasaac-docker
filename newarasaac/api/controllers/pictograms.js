@@ -242,16 +242,18 @@ const searchPictograms = async (req, res) => {
         ],
         published: true
       })
+      .collation({locale, strength: 1})
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .lean()
 
+    // we make an exception with animals category, in that case we don't care that it is defined in several catogories, its better!
+    let isAnimal = false
     const category = await Category.findOne({ locale }, { _id: 0 })
     let weightPictos = []
     if (category) {
       const nodes = jp.nodes(category.data, '$..keywords');
       const categories = nodes
         .filter(node => node.value.some(keyword => {
-          
           if(removeDiacritics(stopWords(keyword, locale)).toLowerCase() === removeDiacritics(searchText)) {
             return true;
           }
@@ -263,6 +265,7 @@ const searchPictograms = async (req, res) => {
       if (categories.length) {
         const subCategories = []
         categories.forEach(categoryItem => {
+          if  (categoryItem === 'animal') isAnimal = true
           const partialData = jp.value(category.data, `$..["${categoryItem}"]`)
           const newCategories = getSubcategories(partialData, [categoryItem])
           newCategories.forEach(element => {
@@ -281,20 +284,26 @@ const searchPictograms = async (req, res) => {
         
 
         const onlySubcategories = subCategories.filter(subCategory => categories.indexOf(subCategory) === -1)
-        weightPictos = pictogramsByCategory.map(picto => {          
-          let score = categories.reduce((accumulator, currentValue)=>{
+        weightPictos = pictogramsByCategory.map(picto => { 
+          let count =  0         
+          // if pictogram has the category it gets  1000 or 1000/2 or 1000/3... 
+          let score = categories.reduce((accumulator, currentValue) => {
               const position = picto.categories.indexOf(currentValue) +1
+              if (position) count = count + 1
               return position ? accumulator + 1000 / position : accumulator
             }, 0)
+          // if pictogram has the subcategory it gets  500 or 500/2 or 500/3... depending on the order.
           score = onlySubcategories.reduce((accumulator, currentValue)=>{
               const position = picto.categories.indexOf(currentValue) + 1 
-              return position ? accumulator + 500 / position : accumulator
+              if (position) count = count + 1
+              return position ? accumulator + 1000 / position : accumulator
             }, score)
-          score = score + picto.categories.length
+          // the less categories the picto have the most important if it fits the search except for animals... 
+          if (!isAnimal) score = score / picto.categories.length
           return  { ...picto, score}
         })
-        weightPictos.sort((a, b) =>b.score - a.score)
-        weightPictos.forEach(picto => delete picto.score)
+      weightPictos.sort((a, b) =>b.score - a.score)
+      weightPictos.forEach(picto => delete picto.score)
       }
     }
 
