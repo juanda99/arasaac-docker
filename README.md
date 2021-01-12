@@ -1,6 +1,6 @@
 # Arasaac server
 
-This is the backend server for [beta Arasaac Project](https://beta.arasaac.org/).
+This is the backend server for [Arasaac Project](https://github.com/juanda99/arasaac-frontend). 
 
 ## Project layout
 
@@ -20,10 +20,14 @@ Located in *newarasaac* folder. It runs several services (see *newarasaac/docker
 - **frontend**: nginx service for [our SPA](https://github.com/juanda99/arasaac-frontend)
   - **code**: Our client code, based on React.
   - **conf**: nginx configuration
+- **admin**: nginx service for [our admin SPA](https://github.com/juanda99/arasaac-admin)
+  - **code**: Our client code, based on React.
+  - **conf**: nginx configuration
 - **webstatic**: nginx service for Arasaac materials, pictograms and locutions.
+- **storage**: nginx service for downloads.
 - [**api**](./docs/api.md): Our backend api based on node.js, express, swagger-ui and mongodb. Used by Arasaac SPA and third apps.
 - [**privateapi**](./docs/privateapi.md): Our backend private API.
-- [**auth**](./docs/auth.md): Our auth server
+- [**auth**](./docs/auth.md): Our oauth2 server
 - **svgwatcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and convert svg files (pictograms) to png files
 - **watcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and generate zip files from materials uploaded by Arasaac users. Images are reduced and minified. 
 - **mongo**: mongodb service
@@ -33,9 +37,9 @@ Located in *newarasaac* folder. It runs several services (see *newarasaac/docker
 
 - Create several entries in */etc/hosts* file to resolve domains locally:
 ```
-127.0.0.1       www.api.arasaac.org            api.arasaac.org
-127.0.0.1       www.beta.arasaac.org           beta.arasaac.org
-127.0.0.1       www.static.arasaac.org         static.arasaac.org
+127.0.0.1       www.api.arasaac.org             api.arasaac.org
+127.0.0.1       www.privateapi.arasaac.org      privateapi.arasaac.org
+127.0.0.1       www.auth.arasaac.org            auth.arasaac.org
 ```
 
 - Copy certificates from server (*nginx-proxy/certs* folder) or execute:
