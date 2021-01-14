@@ -56,7 +56,6 @@ const getPictogramByIdWithLocales = async (req, res) => {
       ).lean())
     }
     const pictograms = await Promise.all(results)
-    console.log(pictograms[0], 'entra????')
     if (!pictograms[0]) {
       logger.debug(`Not found pictograms with id ${_id} and languages ${languages.join(', ')}`)
       return res.status(404).json({ error: `Not found pictograms with id ${_id} and languages ${languages.join(', ')}` })
@@ -65,7 +64,6 @@ const getPictogramByIdWithLocales = async (req, res) => {
     pictogramData.keywordsByLocale = {}
     let i = 0
     for (const pictogram of pictograms) {
-      console.log(pictogram)
       pictogramData.keywordsByLocale[languages[i]] = pictogram.keywords
       i += 1
     }
@@ -221,6 +219,10 @@ const getPictogramFileById = async (req, res) => {
 
 const searchPictograms = async (req, res) => {
   const locale = req.swagger.params.locale.value
+  /* mongo doesn't have locale for br and val we do it here: */
+  let customLocale = locale
+  if (customLocale==='val') customLocale='ca'
+  if (customLocale==='br') customLocale='pt'
   /* without stopwords for searching categories */
   const fullSearchText  = req.swagger.params.searchText.value.toLowerCase()
 
@@ -242,7 +244,7 @@ const searchPictograms = async (req, res) => {
         ],
         published: true
       })
-      .collation({locale, strength: 1})
+      .collation({locale: customLocale, strength: 1})
       .select({ published: 0, validated: 0, available: 0, desc: 0, __v: 0 })
       .lean()
 
@@ -303,6 +305,7 @@ const searchPictograms = async (req, res) => {
           return  { ...picto, score}
         })
       weightPictos.sort((a, b) =>b.score - a.score)
+      // weightPictos.forEach(picto => console.log(picto.keywords[0].keyword, picto.score))
       weightPictos.forEach(picto => delete picto.score)
       }
     }
