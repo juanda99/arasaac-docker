@@ -172,7 +172,6 @@ const getFiles = material => {
       // if err return material, if err is different from no screenshots dir, warning through console
       if (err) err.code !== 'ENOENT' && console.warn(err)
       if (files) {
-        console.log(`Files: ${files}`)
         files.map(file => {
           let relativeFile = file.replace(baseDir, '')
           let fileName = path.basename(file)
