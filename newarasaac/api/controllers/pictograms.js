@@ -253,6 +253,7 @@ const searchPictograms = async (req, res) => {
     let isAnimal = false
     const category = await Category.findOne({ locale }, { _id: 0 })
     let weightPictos = []
+    const bareCategories = []
     if (category) {
       const nodes = jp.nodes(category.data, '$..keywords');
       const categories = nodes
@@ -306,7 +307,16 @@ const searchPictograms = async (req, res) => {
           return  { ...picto, score}
         })
       weightPictos.sort((a, b) =>b.score - a.score)
-      // weightPictos.forEach(picto => console.log(picto.keywords[0].keyword, picto.score))
+      // weightPictos.forEach(picto => console.log(picto.keywords[0].keyword, picto.categories[0], picto.score))
+      const bareCategories = categories.map(category => removeDiacritics(category).toLowerCase() )
+      weightPictos.sort((a,b) =>{
+        if (b.score === a.score) {
+          const aCategory = removeDiacritics(a.categories[0]).toLowerCase()
+          const isPresent = (bareCategories.indexOf(aCategory) >=  0 )
+          return  isPresent ? -1  : 1
+        }
+        return 0
+      })
       weightPictos.forEach(picto => delete picto.score)
       }
     }
