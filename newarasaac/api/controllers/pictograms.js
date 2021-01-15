@@ -223,6 +223,7 @@ const searchPictograms = async (req, res) => {
   let customLocale = locale
   if (customLocale==='val') customLocale='ca'
   if (customLocale==='br') customLocale='pt'
+  if (customLocale==='eu') customLocale='es'
   /* without stopwords for searching categories */
   const fullSearchText  = req.swagger.params.searchText.value.toLowerCase()
 
