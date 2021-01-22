@@ -7,8 +7,8 @@ var server = prerender({
   logRequests: true,
   followRedirects: true
 });
+server.use(prerender.whitelist());
 server.use(require('prerender-memory-cache'));
-
 server.use(prerender.sendPrerenderHeader());
 // server.use(prerender.blockResources());
 server.use(prerender.removeScriptTags());
