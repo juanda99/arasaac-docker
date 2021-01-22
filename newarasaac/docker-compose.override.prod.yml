@@ -159,6 +159,7 @@ services:
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
       VIRTUAL_HOST: "prerenderapp.arasaac.org"
       VIRTUAL_PORT: 3000
+      ALLOWED_DOMAINS: "arasaac.org"
     restart: always
     networks:
       - nginxproxy_frontend
