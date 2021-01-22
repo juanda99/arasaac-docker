@@ -142,6 +142,29 @@ services:
       - nginxproxy_frontend
     restart: always
 
+  prerenderapp:
+    hostname: prerenderapp
+    container_name: prerenderapp
+    build:
+      context: ./prerenderapp
+    command: npm start
+    volumes:
+      - ./prerenderapp:/app
+      - /app/.config
+      - prerenderapp-libs:/app/node_modules
+    environment:
+      CACHE_MAXSIZE: 10000
+      CACHE_TTL: 864000 # 10 days
+      # LETSENCRYPT_HOST: "static.arasaac.org"
+      # LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
+      VIRTUAL_HOST: "prerenderapp.arasaac.org"
+    ports:
+      - "3000:3000"
+    restart: always
+    networks:
+      - nginxproxy_frontend
+      - backend
+
 networks:
   nginxproxy_frontend:
     external: true
@@ -151,3 +174,4 @@ networks:
 volumes:
   watcher-libs:
   svgwatcher-libs:
+  prerenderapp-libs:

@@ -1,0 +1,17 @@
+{
+  "name": "react-prerender",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "prerender": "^5.8.0",
+    "prerender-memory-cache": "^1.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha",
+    "start": "node server.js"
+  },
+  "author": "juanda <juandacorreo@gmail.com>",
+  "license": "MIT"
+}
