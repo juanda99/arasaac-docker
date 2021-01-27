@@ -3,7 +3,7 @@ const logger = require('./utils/logger')
 const updateKeywordsByCrontab = require('./controllers/keywordsController')
   .updateKeywordsByCrontab
 const { postTranslationStatusByCrontab } = require('./controllers/translationsController')
-// const createSitemapByCrontab = require('./controllelrs/sitemapController.js')
+const {createSitemap} = require('./controllers/sitemapController.js')
 const languages = require('./utils/languages')
 
 if (process.env.CRONTAB.toUpperCase() === 'YES') {
@@ -17,6 +17,10 @@ if (process.env.CRONTAB.toUpperCase() === 'YES') {
     }
   })
   job.start()
+
+  const sitemapJob = new CronJob('00 00 3 * * *', () => createSitemap())
+  sitemapJob.start()
+
 
   // update translation status, crowdin rate limit is 20 simultaneous requests
   // so we split our languages array and make two cronjobs

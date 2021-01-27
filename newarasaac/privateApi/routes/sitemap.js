@@ -7,7 +7,7 @@ router.get('/',
   // passport.authenticate('bearer', { session: false }),
   // hasRole('admin'),
   (req, res) => {
-    sitemapController.get(req, res)
+    sitemapController.createSitemap(req, res)
   }
 )
 

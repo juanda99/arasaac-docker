@@ -53,6 +53,7 @@ services:
     container_name: webstatic
     volumes:
       - ${MATERIAL_DIR}:/usr/share/nginx/html/materials:ro
+      - ${SITEMAP_DIR}:/usr/share/nginx/html/sitemap:ro
       - ./images:/usr/share/nginx/html/images:ro
       - ./docs:/usr/share/nginx/html/docs:ro
       - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro

@@ -45,6 +45,7 @@ services:
       - ${MATERIAL_DIR}:/materials
       - ./locutions:/locutions
       - ./certs:/root/.ssh
+      - ${SITEMAP_DIR}:/sitemap
       - ${IMAGE_DIR}:/pictograms
       - ${CONJUGATIONS_DIR}:/conjugations
       - ${SVG_DIR}:/svg:rw

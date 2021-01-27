@@ -2,6 +2,7 @@ const path = require('path')
 const IMAGE_DIR = '/pictograms'
 const MATERIAL_DIR = '/materials'
 const CONJUGATIONS_DIR = '/conjugations'
+const PUBLISHED =  1
 const LOCUTIONS_DIR = '/locutions'
 const SVG_DIR = '/svg'
 const  TMP_DIR = '/tmp'
@@ -68,6 +69,7 @@ module.exports = {
   MATERIAL_DIR,
   CONJUGATIONS_DIR,
   LOCUTIONS_DIR,
+  PUBLISHED,
   SVG_DIR,
   TMP_DIR,
   tmpCatalogDirRoot,
