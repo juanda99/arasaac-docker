@@ -8,6 +8,7 @@ services:
     volumes:
       - ./frontend/conf/:/etc/nginx/conf.d:ro
       - ./frontend/code/:/usr/share/nginx/html
+      - ${SITEMAP_DIR}:/usr/share/nginx/html/sitemap:ro
     environment:
       LETSENCRYPT_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es,arasaac.net,www.arasaac.net"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
