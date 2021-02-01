@@ -25,13 +25,13 @@ Located in *newarasaac* folder. It runs several services (see *newarasaac/docker
   - **conf**: nginx configuration
 - **webstatic**: nginx service for Arasaac materials, pictograms and locutions.
 - **storage**: nginx service for downloads.
-- [**api**](./docs/api.md): Our backend api based on node.js, express, swagger-ui and mongodb. Used by Arasaac SPA and third apps.
+- [**api**](./docs/api.md): Our backend API based on node.js, express, swagger-UI, and MongoDB. Used by Arasaac SPA and third party apps.
 - [**privateapi**](./docs/privateapi.md): Our backend private API.
 - [**auth**](./docs/auth.md): Our oauth2 server
-- **svgwatcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and convert svg files (pictograms) to png files
+- **svgwatcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and convert SVG files (pictograms) to png files
 - **watcher**: [Uses file system watchers](https://github.com/paulmillr/chokidar) and generate zip files from materials uploaded by Arasaac users. Images are reduced and minified. 
 - **mongo**: mongodb service
-- **sftp**: sftp service to access material and svg folders.
+- **sftp**: SFTP service to access material and SVG folders.
 
 ## Local replication
 
