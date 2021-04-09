@@ -247,8 +247,9 @@ const searchPictograms = async (req, res) => {
   /* mongo doesn't have locale for br and val we do it here: */
   let customLocale = locale;
   if (customLocale === "val") customLocale = "ca";
-  if (customLocale === "br") customLocale = "pt";
-  if (customLocale === "eu") customLocale = "es";
+  else if (customLocale === "br") customLocale = "pt";
+  else if (customLocale === "eu") customLocale = "es";
+  else if (customLocale === "an") customLocale = "ca";
   /* without stopwords for searching categories */
   const fullSearchText = req.swagger.params.searchText.value.toLowerCase();
 
