@@ -57,7 +57,7 @@ services:
       - ${SITEMAP_DIR}:/usr/share/nginx/html/sitemap:ro
       - ./images:/usr/share/nginx/html/images:ro
       - ./docs:/usr/share/nginx/html/docs:ro
-      - ./maps:/usr/share/nginx/html/maps:ro
+      - ./map:/usr/share/nginx/html/map:ro
       - ./lim:/usr/share/nginx/html/lim:ro
       - ${IMAGE_DIR}:/usr/share/nginx/html/pictograms:ro
       - ./locutions:/usr/share/nginx/html/locutions:ro
@@ -136,7 +136,7 @@ services:
       - ${MATERIAL_DIR}:/home/betaarasaac/materials
       - ${IMAGE_DIR}:/home/betaarasaac/pictograms
       - ./images:/home/betaarasaac/images
-      - ./maps:/home/betaarasaac/maps
+      - ./map:/home/betaarasaac/map
       - ./lim:/home/betaarasaac/lim
       - ./docs:/home/betaarasaac/docs
       - ${OLDARASAAC_DIR}:/home/betaarasaac/oldarasaac
