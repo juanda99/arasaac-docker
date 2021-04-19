@@ -29,7 +29,6 @@ const create = (req, res) => {
     logger.error(`Error creating material: ${err.message}`)
   })
 
-
   form.parse(req, async (_err, fields, files) => {
     let material
     const formData = JSON.parse(fields.formData)
@@ -146,7 +145,6 @@ const addTranslation = (req, res) => {
       return res.status(201).json({
         id: idMaterial
       })
-
     } catch (err) {
       logger.error(`Error adding translation to material: ${err.message}`)
       return res.status(err.httpCode || 500).json({
@@ -177,7 +175,7 @@ const update = async (req, res) => {
       return res.status(404).json([])
     }
     isPublished = status === PUBLISHED && material.status !== status
-    /* we update depending on role s*/
+    /* we update depending on role s */
     if (req.user.role !== 'admin') {
       // we just add translations if not exists:
       const languages = translations.map(translation => translation.lang)
@@ -233,9 +231,7 @@ const update = async (req, res) => {
       .populate('translations.authors.author', 'name email company url facebook google pictureProvider')
       .lean()
 
-
     response = await getFiles(modifyMaterial)
-
   } catch (err) {
     logger.error(`ERROR executing update material with id ${id}`)
     return res.status(err.httpCode || 500).json({
@@ -253,7 +249,7 @@ const update = async (req, res) => {
       const mainAuthors = material.authors.map(item => item.author)
       const tmpOtherAuthors = material.translations.map(translation =>
         translation.authors.map(item => item.author))
-      const otherAuthors = [].concat.apply([], tmpOtherAuthors);
+      const otherAuthors = [].concat.apply([], tmpOtherAuthors)
       const allAuthors = [...mainAuthors, ...otherAuthors]
       const uniqueAuthors = allAuthors.filter((item, pos) => allAuthors.indexOf(item) == pos)
 
@@ -264,8 +260,7 @@ const update = async (req, res) => {
       users.forEach(user => {
         logger.info(`Sending notification email to user ${user.email} in language ${user.locale}`)
         sendPublishedMaterialEmail({ locale: user.locale, email: user.email, name: user.name, idMaterial: id })
-      });
-
+      })
     } catch (err) {
       logger.error(`ERROR sending material publication email: ${err} `)
     }
@@ -331,8 +326,6 @@ const remove = async (req, res) => {
     })
   }
 }
-
-
 
 const addFavoriteList = async (req, res) => {
   const { listName } = req.params
@@ -405,8 +398,7 @@ const searchMaterials = async (req, res) => {
       query = { activities: searchText, status: PUBLISHED }
       logger.debug(`Exec find with activity ${searchText}and status ${PUBLISHED}`)
     }
-  }
-  else if (searchType === 'area') {
+  } else if (searchType === 'area') {
     if (req.user && req.user.role === 'admin') {
       query = { areas: searchText }
       logger.debug(`Exec find with area ${searchText}`)
@@ -414,9 +406,15 @@ const searchMaterials = async (req, res) => {
       query = { areas: searchText, status: PUBLISHED }
       logger.debug(`Exec find with area ${searchText} and status ${PUBLISHED}`)
     }
-  }
-
-  else if (searchType === 'author') {
+  } else if (searchType === 'language') {
+    if (req.user && req.user.role === 'admin') {
+      query = { }
+      logger.debug(`Exec find with language ${searchText}`)
+    } else {
+      query = { status: PUBLISHED }
+      logger.debug(`Exec find with language ${searchText} and status ${PUBLISHED}`)
+    }
+  } else if (searchType === 'author') {
     try {
       const users = await Users.find({ name: searchText }).lean()
       if (!users.length) {
@@ -426,13 +424,12 @@ const searchMaterials = async (req, res) => {
         return res.status(404).json([])
       }
       if (req.user && req.user.role === 'admin') {
-        query = { $or: [{ "authors.author": { $in: users.map(user => ObjectID(user._id)) } }, { "translations.authors.author": { $in: users.map(user => ObjectID(user._id)) } }] }
+        query = { $or: [{ 'authors.author': { $in: users.map(user => ObjectID(user._id)) } }, { 'translations.authors.author': { $in: users.map(user => ObjectID(user._id)) } }] }
         logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage} `)
       } else {
-        query = { $or: [{ "authors.author": { $in: users.map(user => ObjectID(user._id)) } }, { "translations.authors.author": { $in: users.map(user => ObjectID(user._id)) } }], status: PUBLISHED }
+        query = { $or: [{ 'authors.author': { $in: users.map(user => ObjectID(user._id)) } }, { 'translations.authors.author': { $in: users.map(user => ObjectID(user._id)) } }], status: PUBLISHED }
         logger.debug(`Exec find with searchText ${searchText}, language ${customLanguage} and status ${PUBLISHED} `)
       }
-
     } catch (err) {
       logger.error(
         `ERROR Getting materials for searchType ${searchType} and searchText ${searchText}: ${err} `
@@ -442,8 +439,7 @@ const searchMaterials = async (req, res) => {
         error: err
       })
     }
-  }
-  else {
+  } else {
     if (req.user && req.user.role === 'admin') {
       query = { $text: { $search: searchText, $language: customLanguage } }
       logger.debug(`Exec find with searchText ${searchText} and language ${customLanguage} `)
@@ -467,8 +463,13 @@ const searchMaterials = async (req, res) => {
         })
       }
       // if no items, return empty array
-      if (materials.length === 0) return res.status(404).json([]) // send http code 404!!!
-      const response = await Promise.all(materials.map(async material => await getFiles(material))) // not async&await as we want to get all material images in parallel
+      if (materials.length === 0) return res.status(404).json([])
+      /* in case of language,  we need to filter by language afterwards */
+      let filterMaterials = materials
+      if (searchType === 'language') {
+        filterMaterials = materials.filter(material => material.translations.some(translation => translation.lang === searchText))
+      }
+      const response = await Promise.all(filterMaterials.map(async material => getFiles(material))) // not async&await as we want to get all material images in parallel
       logger.debug(`DONE: Materials sended `)
       return res.json(response)
     })
