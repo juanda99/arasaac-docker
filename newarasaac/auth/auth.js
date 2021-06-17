@@ -7,7 +7,7 @@ const passport = require("passport");
 const { Strategy: LocalStrategy } = require("passport-local");
 const { BasicStrategy } = require("passport-http");
 const {
-  Strategy: ClientPasswordStrategy
+  Strategy: ClientPasswordStrategy,
 } = require("passport-oauth2-client-password");
 const { Strategy: BearerStrategy } = require("passport-http-bearer");
 const validate = require("./validate");
@@ -23,14 +23,14 @@ const { logAndThrow } = require("./utils");
  */
 passport.use(
   new LocalStrategy((username, password, done) => {
-    User.findOne({ email: username, verifyToken: "" })
-      .then(user =>
+    User.findOne({ email: username.toLowerCase(), verifyToken: "" })
+      .then((user) =>
         user
           ? user.validate(password)
           : logAndThrow(`User ${username} not found`)
       )
-      .then(user => done(null, user))
-      .catch(error => {
+      .then((user) => done(null, user))
+      .catch((error) => {
         console.log(`Login error: ${error.message}`);
         done(null, false);
       });
@@ -50,15 +50,14 @@ passport.use(
  */
 passport.use(
   new BasicStrategy((clientId, clientSecret, done) => {
-    console.log("kkkkkkkkkkkkkkkkk3");
     Client.findOne({ clientId: clientId })
-      .then(client =>
+      .then((client) =>
         client
           ? client.validate(clientSecret)
           : logAndThrow(`Client with id ${clientId} not found`)
       )
-      .then(client => done(null, client))
-      .catch(error => {
+      .then((client) => done(null, client))
+      .catch((error) => {
         console.log(`Login error: ${error.message}`);
         done(null, false);
       });
@@ -91,13 +90,13 @@ passport.use(
 passport.use(
   new ClientPasswordStrategy((clientId, clientSecret, done) => {
     Client.findOne({ clientId: clientId })
-      .then(client =>
+      .then((client) =>
         client
           ? client.validate(clientSecret)
           : logAndThrow(`Client with id ${clientId} not2 found`)
       )
-      .then(client => done(null, client))
-      .catch(error => {
+      .then((client) => done(null, client))
+      .catch((error) => {
         console.log(`Login error: ${error.message}`);
         done(null, false);
       });
@@ -119,8 +118,8 @@ passport.use(
   new BearerStrategy((accessToken, done) => {
     db.accessTokens
       .find(accessToken)
-      .then(token => validate.token(token, accessToken))
-      .then(token => done(null, token, { scope: "*" }))
+      .then((token) => validate.token(token, accessToken))
+      .then((token) => done(null, token, { scope: "*" }))
       .catch(() => done(null, false));
   })
 );

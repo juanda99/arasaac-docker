@@ -27,7 +27,7 @@ var oauth2orizeGoogle = require("./oauth2orize-google");
 
 // Configured expiresIn
 const expiresIn = {
-  expires_in: config.token.expiresIn
+  expires_in: config.token.expiresIn,
 };
 
 /**
@@ -46,12 +46,12 @@ server.grant(
       aud: client.name,
       name: user.username,
       role: user.role,
-      exp: config.codeToken.expiresIn
+      exp: config.codeToken.expiresIn,
     });
     db.authorizationCodes
       .save(code, client.id, redirectURI, user.id, client.scope)
       .then(() => done(null, code))
-      .catch(err => done(err));
+      .catch((err) => done(err));
   })
 );
 
@@ -72,14 +72,14 @@ server.grant(
       name: user.username,
       scope,
       role: user.role,
-      exp: config.token.expiresIn
+      exp: config.token.expiresIn,
     });
     const expiration = config.token.calculateExpirationDate();
 
     db.accessTokens
       .save(token, expiration, user.id, client.id, client.scope)
       .then(() => done(null, token, expiresIn))
-      .catch(err => done(err));
+      .catch((err) => done(err));
   })
 );
 
@@ -95,9 +95,11 @@ server.exchange(
   oauth2orize.exchange.code((client, code, redirectURI, done) => {
     db.authorizationCodes
       .delete(code)
-      .then(authCode => validate.authCode(code, authCode, client, redirectURI))
-      .then(authCode => validate.generateTokens(authCode))
-      .then(tokens => {
+      .then((authCode) =>
+        validate.authCode(code, authCode, client, redirectURI)
+      )
+      .then((authCode) => validate.generateTokens(authCode))
+      .then((tokens) => {
         if (tokens.length === 1) {
           return done(null, tokens[0], null, expiresIn);
         }
@@ -116,7 +118,7 @@ server.exchange(
  *
  */
 
-const getScopes = user => {
+const getScopes = (user) => {
   if (user.role === "admin") return ["read", "write", "translate", "admin"];
   else if (user.role === "translator") return ["read", "write", "translate"];
   else return ["read", "write"];
@@ -137,9 +139,10 @@ server.exchange(
       try {
         // active: true for old users, otherwise it's set active by activate endpoint
         const user = await User.findOneAndUpdate(
-          { email: username },
+          { email: username.toLowerCase() },
           { lastLogin: new Date(), active: true }
         );
+        console.log(user);
         if (!user) return done(null, false);
         if (!user.authenticate(password)) return done(null, false);
         const scope = getScopes(user);
@@ -148,7 +151,7 @@ server.exchange(
           userID: user._id,
           clientID: client.name,
           targetLanguages: user.targetLanguages,
-          role: user.role
+          role: user.role,
         });
         if (tokens === false) {
           return done(null, false);
@@ -181,14 +184,14 @@ server.exchange(
       aud: client.name,
       name: client.name,
       role: "app",
-      exp: config.token.expiresIn
+      exp: config.token.expiresIn,
     });
     const expiration = config.token.calculateExpirationDate();
     // Pass in a null for user id since there is no user when using this grant type
     db.accessTokens
       .save(token, expiration, null, client.id, scope)
       .then(() => done(null, token, null, expiresIn))
-      .catch(err => done(err));
+      .catch((err) => done(err));
   })
 );
 
@@ -203,11 +206,11 @@ server.exchange(
   oauth2orize.exchange.refreshToken((client, refreshToken, scope, done) => {
     db.refreshTokens
       .find(refreshToken)
-      .then(foundRefreshToken =>
+      .then((foundRefreshToken) =>
         validate.refreshToken(foundRefreshToken, refreshToken, client)
       )
-      .then(foundRefreshToken => validate.generateToken(foundRefreshToken))
-      .then(token => done(null, token, null, expiresIn))
+      .then((foundRefreshToken) => validate.generateToken(foundRefreshToken))
+      .then((token) => done(null, token, null, expiresIn))
       .catch(() => done(null, false));
   })
 );
@@ -216,7 +219,7 @@ server.exchange(
   oauth2orizeFacebook(function (client, profile, scope, done) {
     //if user does not exists we create it
     const query = {
-      $or: [{ "facebook.id": profile.id }, { email: profile.email }]
+      $or: [{ "facebook.id": profile.id }, { email: profile.email }],
     };
     // const query = { "facebook.id": profile.id };
     const update = {
@@ -231,26 +234,26 @@ server.exchange(
         email: profile.email,
         active: true,
         name: profile.name,
-        pictureProvider: 'facebook'
-      }
+        pictureProvider: "facebook",
+      },
     };
     const options = {
       upsert: true,
       new: true,
-      setDefaultsOnInsert: true
+      setDefaultsOnInsert: true,
     };
     User.findOneAndUpdate(query, update, options)
-      .then(user => {
+      .then((user) => {
         const scope = getScopes(user);
         return validate.generateTokens({
           scope,
           userID: user._id,
           targetLanguages: user.targetLanguages,
           role: user.role,
-          clientID: client.name
+          clientID: client.name,
         });
       })
-      .then(tokens => {
+      .then((tokens) => {
         if (tokens === false) {
           return done(null, false);
         }
@@ -262,7 +265,7 @@ server.exchange(
         }
         throw new Error("Error exchanging facebook authcode for tokens");
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         done(null, false);
       });
@@ -270,13 +273,13 @@ server.exchange(
 );
 
 var option = {
-  googleConfig: {}
+  googleConfig: {},
 };
 server.exchange(
   oauth2orizeGoogle(option, function (client, profile, scope, done) {
     //if user does not exists we create it
     const query = {
-      $or: [{ "google.id": profile.sub }, { email: profile.email }]
+      $or: [{ "google.id": profile.sub }, { email: profile.email }],
     };
 
     const update = {
@@ -291,23 +294,23 @@ server.exchange(
         email: profile.email,
         active: true,
         name: profile.name,
-        pictureProvider: 'google'
-      }
+        pictureProvider: "google",
+      },
     };
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
     User.findOneAndUpdate(query, update, options)
-      .then(user => {
+      .then((user) => {
         const scope = getScopes(user);
         return validate.generateTokens({
           scope,
           role: user.role,
           userID: user._id,
           targetLanguages: user.targetLanguages,
-          clientID: client.name
+          clientID: client.name,
         });
       })
-      .then(tokens => {
+      .then((tokens) => {
         if (tokens === false) {
           return done(null, false);
         }
@@ -319,7 +322,7 @@ server.exchange(
         }
         throw new Error("Error exchanging google authcode for tokens");
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         done(null, false);
       });
@@ -347,7 +350,7 @@ exports.authorization = [
   login.ensureLoggedIn(),
   server.authorization((clientID, redirectURI, scope, done) => {
     Client.findOne({ clientId: clientID })
-      .then(client => {
+      .then((client) => {
         if (!client) logAndThrow(`Client with id ${clientId} not found`);
         client.scope = scope;
         done(null, client, redirectURI);
@@ -356,7 +359,7 @@ exports.authorization = [
       // redirectURI provided by the client matches one registered with the
       // server.  For simplicity, this example does not. You have been
       // warned.
-      .catch(err => done(err));
+      .catch((err) => done(err));
   }),
   (req, res, next) => {
     // Render the decision dialog if the client isn't a trusted client
@@ -364,7 +367,7 @@ exports.authorization = [
     // record that they have consented but also make a mechanism so that if the user
     // revokes access to any of the clients then they will have to re-consent.
     Client.findOne({ clientId: req.query.client_id })
-      .then(client => {
+      .then((client) => {
         if (
           client != null &&
           client.trustedClient &&
@@ -373,7 +376,7 @@ exports.authorization = [
           // This is how we short call the decision like the dialog below does
           server.decision(
             {
-              loadTransaction: false
+              loadTransaction: false,
             },
             (serverReq, callback) => {
               callback(null, { allow: true });
@@ -383,7 +386,7 @@ exports.authorization = [
           res.render("dialog", {
             transactionID: req.oauth2.transactionID,
             user: req.user,
-            client: req.oauth2.client
+            client: req.oauth2.client,
           });
         }
       })
@@ -391,10 +394,10 @@ exports.authorization = [
         res.render("dialog", {
           transactionID: req.oauth2.transactionID,
           user: req.user,
-          client: req.oauth2.client
+          client: req.oauth2.client,
         })
       );
-  }
+  },
 ];
 
 /**
@@ -423,17 +426,17 @@ exports.token = [
       "https://www.arasaac.org",
       "https://admin.arasaac.org",
       "https://www.admin.arasaac.org",
-      "https://test.arasaac.org"
+      "https://test.arasaac.org",
     ];
     if (allow_origins.includes(req.headers.origin)) next();
     else res.status(401).json({ error: "Only allowed for arasaac.org" });
   },
   // changeHeaderAuthSecret({ clientId: 'abc123', secretId: 'ttttt' }),
   passport.authenticate(["basic", "oauth2-client-password"], {
-    session: false
+    session: false,
   }),
   server.token(),
-  server.errorHandler()
+  server.errorHandler(),
 ];
 
 // Register serialialization and deserialization functions.

@@ -298,7 +298,7 @@ const addFavorite = async (req, res) => {
       )
     } else {
       logger.debug(
-        `NOT need to addFavorite for user ${id}, listName ${listName} and file ${fileName} `
+        `NOT need to add   for user ${id}, listName ${listName} and file ${fileName} `
       )
     }
     return res.status(204).json({ resultado: 'ok' })
@@ -359,7 +359,7 @@ const deleteFavorite = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-  const email = req.body.username
+  const { email } = req.body
   logger.debug(`Reset password to user with email: ${email} `)
 
   /* we generate passwordless token */
@@ -374,7 +374,7 @@ const resetPassword = async (req, res) => {
     if (!user) {
       throw new CustomError(USER_NOT_EXISTS, 404)
     }
-    
+
     /* generate mail with info */
     await sendPasswordRecoveryMail(user, cleanPassword)
     logger.info(`Password recovery  to user ${email}. New  password: ${cleanPassword}`)
@@ -558,14 +558,14 @@ const getAuthors = async (req, res) => {
 
   try {
     const materials = await Materials
-      .find({}, { authors: 1, "translations.authors": 1, _id: 1 })
+      .find({}, { authors: 1, 'translations.authors': 1, _id: 1 })
       .populate('authors.author', 'name')
       .populate('translations.authors.author', 'name')
       .lean()
     // if no items, return empty array
     if (materials.length === 0) return res.status(200).json([]) // send http code 404!!!
     const authors = []
-    const seen = new Set();
+    const seen = new Set()
     materials.forEach(material => {
       // console.log(material._id)
       material.authors.forEach(author => {
@@ -578,10 +578,10 @@ const getAuthors = async (req, res) => {
       })
     })
     const filteredAuthors = authors.filter(el => {
-      const duplicate = seen.has(el._id);
-      seen.add(el._id);
-      return !duplicate;
-    });
+      const duplicate = seen.has(el._id)
+      seen.add(el._id)
+      return !duplicate
+    })
     return res.status(200).json(filteredAuthors)
     // we also get files:
     return res.json(authors)
