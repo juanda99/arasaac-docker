@@ -52,7 +52,7 @@ parameters:
     in: path
     required: true
     description: Language associated with the searchText and the results.
-    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
   Wordnet:
     name: wordnet
     type: string
@@ -92,7 +92,7 @@ parameters:
           type: string
         locale:
           type: string
-          enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+          enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
         company:
           type: string
         website:
@@ -165,7 +165,7 @@ parameters:
     type: string
     in: path
     required: true
-    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
   Languages:
     name: languages
     description: Languages than we currently use for pictograms searches.
@@ -175,7 +175,7 @@ parameters:
     required: true
     items:
       type: string
-    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
   Days:
     name: days
     description: Material identifier
@@ -319,7 +319,7 @@ paths:
     get:
       operationId: searchPictograms
       description: 
-        Obtain a list of pictograms based on the searchText. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). There are some variations available for each pictogram using filename parameters (see below). You can see them in use and some more (available using API endpoint *GET /pictograms/{idPictogram}*) at https://beta.arasaac.org/pictograms/en/2349
+        Obtain a list of pictograms based on the searchText. The pictogram url can be generated based on pictogram id value and the desired resolution (300px, 500px or 2500px). There are some variations available for each pictogram using filename parameters (see below). You can see them in use and some more (available using API endpoint *GET /pictograms/{idPictogram}*) at https://arasaac.org/pictograms/en/2349
         
         
         **Filename parameters**
@@ -370,7 +370,7 @@ paths:
     get:
       operationId: bestSearchPictograms
       description: 
-        Obtain best pictograms based on the searchText. The pictogram url can be generated based on pictogram id value and the resolution desire (300px, 500px or 2500px). There are some variations available for each pictogram using filename parameters (see below). You can see them in use and some more (available using API endpoint *GET /pictograms/{idPictogram}*) at https://beta.arasaac.org/pictograms/en/2349
+        Obtain best pictograms based on the searchText. The pictogram url can be generated based on pictogram id value and the desired resolution (300px, 500px or 2500px). There are some variations available for each pictogram using filename parameters (see below). You can see them in use and some more (available using API endpoint *GET /pictograms/{idPictogram}*) at https://arasaac.org/pictograms/en/2349
         
         
         **Filename parameters**
@@ -611,7 +611,7 @@ definitions:
     properties:
       locale:
         type: string
-        enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+        enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
         description: Language of the keywords, same as requested locale parameter.
       words:
         type: array
