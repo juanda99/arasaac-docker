@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   version: "0.0.1"
-  description: "REST API for Arasaac pictograms. WIP!!!"
+  description: "REST API for Arasaac pictograms."
   title: "API Arasaac"
 # during dev, should point to your local machine
 host: api.arasaac.org
@@ -175,7 +175,7 @@ parameters:
     required: true
     items:
       type: string
-    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+      enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
   Days:
     name: days
     description: Material identifier
