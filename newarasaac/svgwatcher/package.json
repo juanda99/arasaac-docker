@@ -20,7 +20,7 @@
   "homepage": "https://github.com/juanda99/arasaac-watcher#readme",
   "dependencies": {
     "arr-flatten": "^1.1.0",
-    "async": "^2.6.2",
+    "async": "^3.2.2",
     "chokidar": "^3.3.0",
     "d3-queue": "^3.0.7",
     "fs-extra": "^7.0.1",
