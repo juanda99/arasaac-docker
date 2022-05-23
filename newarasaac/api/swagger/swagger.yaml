@@ -52,7 +52,7 @@ parameters:
     in: path
     required: true
     description: Language associated with the searchText and the results.
-    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'uk', 'zh']
   Wordnet:
     name: wordnet
     type: string
@@ -92,7 +92,7 @@ parameters:
           type: string
         locale:
           type: string
-          enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+          enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'uk', 'zh']
         company:
           type: string
         website:
@@ -165,7 +165,7 @@ parameters:
     type: string
     in: path
     required: true
-    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+    enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'uk', 'zh']
   Languages:
     name: languages
     description: Languages than we currently use for pictograms searches.
@@ -175,7 +175,7 @@ parameters:
     required: true
     items:
       type: string
-      enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'zh']
+      enum: ['an',  'ar', 'bg', 'br', 'ca', 'de', 'el', 'en', 'es', 'et', 'eu', 'fa', 'fr', 'gl', 'he', 'hr', 'hu', 'it', 'ko', 'lt', 'lv', 'mk', 'nl', 'pl', 'pt', 'ro', 'ru', 'sk', 'sq', 'sv', 'sr', 'val', 'uk', 'zh']
   Days:
     name: days
     description: Material identifier
