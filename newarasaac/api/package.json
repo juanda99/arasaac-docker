@@ -38,7 +38,7 @@
     "passport-twitter": "^1.0.4",
     "recursive-readdir": "^2.2.2",
     "request": "^2.88.2",
-    "sharp": "^0.26.3",
+    "sharp": "^0.30.5",
     "stopword": "0.1.10",
     "stopwords-iso": "0.4.0",
     "swagger": "^0.7.5",
