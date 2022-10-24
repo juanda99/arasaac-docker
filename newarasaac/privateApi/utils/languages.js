@@ -21,6 +21,7 @@ const languages = [
   'lt',
   'lv',
   'mk',
+  'nb',
   'nl',
   'pl',
   'pt',
