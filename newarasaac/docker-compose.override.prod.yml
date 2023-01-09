@@ -10,9 +10,9 @@ services:
       - ./frontend/code/:/usr/share/nginx/html
       - ${SITEMAP_DIR}:/usr/share/nginx/html/sitemap:ro
     environment:
-      LETSENCRYPT_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es,arasaac.net,www.arasaac.net"
+      LETSENCRYPT_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es"
       LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es,arasaac.net,www.arasaac.net"
+      VIRTUAL_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es"
     networks:
       - nginxproxy_frontend
     restart: always
