@@ -12,13 +12,13 @@ networks:
 
 services:
   traefik:
-    image: "traefik:v2.9.6"
-    container_name: "traefik"
+    image: 'traefik:v2.9.6'
+    container_name: 'traefik'
     ports:
-      - "80:80"
-      - "443:443"
-      # for metrics 
-      - "8082:8082"
+      - '80:80'
+      - '443:443'
+      # for metrics
+      - '8082:8082'
     volumes:
       - ./traefik:/etc/traefik
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -27,8 +27,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.dashboard.entrypoints=websecure
-      # - traefik.http.routers.dashboard.tls=false
-      # - traefik.http.routers.dashboard.tls.certresolver=production
+      - traefik.http.routers.dashboard.tls=false
+      - traefik.http.routers.dashboard.tls.certresolver=production
       - traefik.http.routers.dashboard.rule=Host(`proxy.arasaac.org`)
       - traefik.http.routers.dashboard.service=api@internal
       - traefik.http.routers.dashboard.middlewares=auth
@@ -37,7 +37,7 @@ services:
       - frontend
     restart: always
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "200m"
-        max-file: "5"
+        max-size: '200m'
+        max-file: '5'
