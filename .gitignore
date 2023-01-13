@@ -1,3 +1,5 @@
+proxy/traefik/ssl
+
 # ***** SFTP *****
 newarasaac/ssh_keys/*key
 newarasaac/ssh_keys/*pub

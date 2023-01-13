@@ -70,16 +70,19 @@ services:
       - ./LSE_acepciones:/usr/share/nginx/html/lse-acepciones:ro
       - ./LSE_definiciones:/usr/share/nginx/html/lse-definiciones:ro
       - ./LSE_images:/usr/share/nginx/html/lse-images:ro
-    environment:
-      LETSENCRYPT_HOST: "static.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "static.arasaac.org"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.static.entrypoints=websecure
+      - traefik.http.routers.static.tls=true
+      - traefik.http.routers.static.tls.certresolver=production
+      - traefik.http.routers.static.rule=Host(`static.arasaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
+
 networks:
-  nginxproxy_frontend:
+  proxy_frontend:
     external: true
   backend:
     driver: bridge

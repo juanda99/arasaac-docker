@@ -1,0 +1,129 @@
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+          scheme: https
+  
+  metrics:
+    address: :8082
+
+  websecure:
+    address: :443
+
+################################################################
+# Traefik logs configuration
+################################################################
+
+log:
+
+  level: DEBUG # default  ERROR
+
+  # Sets the filepath for the traefik log. If not specified, stdout will be used.
+  # Intermediate directories are created if necessary.
+  #
+  # Optional
+  # Default: os.Stdout
+  #
+#  filePath: log/traefik.log
+
+  # Format is either "json" or "common".
+  #
+  # Optional
+  # Default: "common"
+  #
+#  format: json
+
+################################################################
+# Access logs configuration
+################################################################
+
+# Enable access logs
+# By default it will write to stdout and produce logs in the textual
+# Common Log Format (CLF), extended with additional fields.
+#
+# Optional
+#
+#accessLog:
+  # Sets the file path for the access log. If not specified, stdout will be used.
+  # Intermediate directories are created if necessary.
+  #
+  # Optional
+  # Default: os.Stdout
+  #
+#  filePath: /path/to/log/log.txt
+
+  # Format is either "json" or "common".
+  #
+  # Optional
+  # Default: "common"
+  #
+#  format: json
+
+################################################################
+# API and dashboard configuration
+################################################################
+
+api:
+  insecure: false
+  dashboard: true
+
+
+################################################################
+# Ping configuration
+################################################################
+
+# Enable ping
+#ping:
+  # Name of the related entry point
+  #
+  # Optional
+  # Default: "traefik"
+  #
+#  entryPoint: traefik
+
+################################################################
+# Docker configuration backend
+################################################################
+
+providers:
+  docker:
+    exposedByDefault: false
+    network: proxy_frontend
+
+    # With the file provider, Traefik listens for file system notifications to update the dynamic configuration.
+  file:
+    # watch for dynamic configuration changes
+    directory: /etc/traefik
+    watch: true
+
+certificatesResolvers:
+  staging:
+    acme:
+      email: juandacorreo@gmail.com
+      storage: ./ssl/acme-dev.json
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+  production:
+    acme:
+      email: juandacorreo@gmail.com
+      storage: ./ssl/acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory" #default value
+      httpChallenge:
+        entryPoint: web
+
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    entryPoint: metrics
+
+accessLog:
+  bufferingSize: 100

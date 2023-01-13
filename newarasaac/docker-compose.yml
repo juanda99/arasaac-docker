@@ -18,16 +18,19 @@ services:
       - ${IMAGE_DIR}:/pictograms
       - api-libs:/app/node_modules
     environment:
-      LETSENCRYPT_HOST: "api.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "api.arasaac.org"
       NODE_ENV: $NODE_ENV
       LOG_LEVEL: $LOG_LEVEL
       MONGO_DB_USER: $MONGO_DB_USER
       MONGO_DB_PWD: $MONGO_DB_PWD
       WAIT_HOSTS: mongodb:27017
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.api.tls=true
+      - traefik.http.routers.api.tls.certresolver=production
+      - traefik.http.routers.api.rule=Host(`api.arasaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
       - backend
     restart: always
 
@@ -53,9 +56,6 @@ services:
       - /app/.config
       - privateapi-libs:/app/node_modules
     environment:
-      LETSENCRYPT_HOST: "privateapi.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "privateapi.arasaac.org"
       NODE_ENV: $NODE_ENV
       EMAIL_FROM: $EMAIL_FROM
       EMAIL_USER: $EMAIL_USER
@@ -69,8 +69,14 @@ services:
       MONGO_DB_USER: $MONGO_DB_USER
       MONGO_DB_PWD: $MONGO_DB_PWD
       WAIT_HOSTS: mongodb:27017
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.privateapi.entrypoints=websecure
+      # - traefik.http.routers.privateapi.tls=true
+      # - traefik.http.routers.privateapi.tls.certresolver=production
+      - traefik.http.routers.privateapi.rule=Host(`privateapi.arasaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
       - backend
     restart: always
 
@@ -87,15 +93,18 @@ services:
       - /app/.config
       - auth-libs:/app/node_modules
     environment:
-      LETSENCRYPT_HOST: "auth.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "auth.arasaac.org"
       NODE_ENV: $NODE_ENV
       MONGO_DB_USER: $MONGO_DB_USER
       MONGO_DB_PWD: $MONGO_DB_PWD
       WAIT_HOSTS: mongodb:27017
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.auth.entrypoints=websecure
+      - traefik.http.routers.auth.tls=true
+      - traefik.http.routers.auth.tls.certresolver=production
+      - traefik.http.routers.auth.rule=Host(`auth.arasaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
       - backend
     restart: always
 
@@ -117,7 +126,7 @@ services:
       - "27000:27017"
 
 networks:
-  nginxproxy_frontend:
+  proxy_frontend:
     external: true
   backend:
     driver: bridge

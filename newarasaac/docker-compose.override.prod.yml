@@ -9,12 +9,14 @@ services:
       - ./frontend/conf/:/etc/nginx/conf.d:ro
       - ./frontend/code/:/usr/share/nginx/html
       - ${SITEMAP_DIR}:/usr/share/nginx/html/sitemap:ro
-    environment:
-      LETSENCRYPT_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "arasaac.org,www.arasaac.org,arasaac.es,www.arasaac.es"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.entrypoints=websecure
+      - traefik.http.routers.frontend.tls=true
+      - traefik.http.routers.frontend.tls.certresolver=production
+      - traefik.http.routers.frontend.rule=Host(`arasaac.org`, `www.arasaac.org`, `arasaac.es`, `www.arasaac.es`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
   test:
@@ -25,12 +27,14 @@ services:
     volumes:
       - ./test/conf/:/etc/nginx/conf.d:ro
       - ./test/code/:/usr/share/nginx/html
-    environment:
-      LETSENCRYPT_HOST: "test.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "test.arasaac.org"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.test.entrypoints=websecure
+      - traefik.http.routers.test.tls=true
+      - traefik.http.routers.test.tls.certresolver=production
+      - traefik.http.routers.test.rule=Host(`test.arasaac.org`, `www.test.arasaac.org`, `test.arasaac.es`, `www.test.arasaac.es`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
   admin:
@@ -40,12 +44,14 @@ services:
     volumes:
       - ./admin/conf/:/etc/nginx/conf.d:ro
       - ./admin/code/:/usr/share/nginx/html
-    environment:
-      LETSENCRYPT_HOST: "admin.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "admin.arasaac.org"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.admin.entrypoints=websecure
+      - traefik.http.routers.admin.tls=true
+      - traefik.http.routers.admin.tls.certresolver=production
+      - traefik.http.routers.admin.rule=Host(`admin.arasaaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
   webstatic:
@@ -67,12 +73,14 @@ services:
       - ./LSE_definiciones:/usr/share/nginx/html/lse-definiciones:ro
       - ./LSE_images:/usr/share/nginx/html/lse-images:ro
       - ./templates:/usr/share/nginx/html/templates:ro
-    environment:
-      LETSENCRYPT_HOST: "static.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "static.arasaac.org"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.static.entrypoints=websecure
+      - traefik.http.routers.static.tls=true
+      - traefik.http.routers.static.tls.certresolver=production
+      - traefik.http.routers.static.rule=Host(`static.arasaaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
   storage:
@@ -82,12 +90,14 @@ services:
     volumes:
       - ${STORAGE_DIR}:/usr/share/nginx/html
 
-    environment:
-      LETSENCRYPT_HOST: "storage.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "storage.arasaac.org"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.storage.entrypoints=websecure
+      - traefik.http.routers.storage.tls=true
+      - traefik.http.routers.storage.tls.certresolver=production
+      - traefik.http.routers.storage.rule=Host(`storage.arasaaac.org`)
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
   watcher:
@@ -121,8 +131,6 @@ services:
       NODE_ENV: $NODE_ENV
       CHOKIDAR_USEPOLLING: $CHOKIDAR_USEPOLLING
       OVERWRITE: $OVERWRITE
-    # ports:
-    #   - "9226:9229"
     restart: always
 
   sftp:
@@ -149,7 +157,7 @@ services:
       - "8005:22"
     command: betaarasaac:${SFTP_PASSWORD}
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
     restart: always
 
   prerenderapp:
@@ -165,18 +173,20 @@ services:
     environment:
       CACHE_MAXSIZE: 10000
       CACHE_TTL: 864000 # 10 days
-      LETSENCRYPT_HOST: "prerenderapp.arasaac.org"
-      LETSENCRYPT_EMAIL: $LETSENCRYPT_EMAIL
-      VIRTUAL_HOST: "prerenderapp.arasaac.org"
-      VIRTUAL_PORT: 3000
       ALLOWED_DOMAINS: "arasaac.org"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prerenderapp.entrypoints=websecure
+      - traefik.http.routers.prerenderapp.tls=true
+      - traefik.http.routers.prerenderapp.tls.certresolver=production
+      - traefik.http.routers.prerenderapp.rule=Host(`prerenderapp.arasaaac.org`)
     restart: always
     networks:
-      - nginxproxy_frontend
+      - proxy_frontend
       - backend
 
 networks:
-  nginxproxy_frontend:
+  proxy_frontend:
     external: true
   backend:
     driver: bridge
