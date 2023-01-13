@@ -27,7 +27,7 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.dashboard.entrypoints=websecure
-      - traefik.http.routers.dashboard.tls=false
+      - traefik.http.routers.dashboard.tls=true
       - traefik.http.routers.dashboard.tls.certresolver=production
       - traefik.http.routers.dashboard.rule=Host(`proxy.arasaac.org`)
       - traefik.http.routers.dashboard.service=api@internal
