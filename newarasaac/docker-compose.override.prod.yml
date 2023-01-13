@@ -75,6 +75,8 @@ services:
       - ./templates:/usr/share/nginx/html/templates:ro
     labels:
       - traefik.enable=true
+      - traefik.http.middlewares.serviceheaders.headers.accessControlAllowOriginList=*
+      - traefik.http.routers.static.middlewares=serviceheaders
       - traefik.http.routers.static.entrypoints=websecure
       - traefik.http.routers.static.tls=true
       - traefik.http.routers.static.tls.certresolver=production
