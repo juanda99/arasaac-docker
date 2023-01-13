@@ -78,7 +78,7 @@ services:
       - traefik.http.routers.static.entrypoints=websecure
       - traefik.http.routers.static.tls=true
       - traefik.http.routers.static.tls.certresolver=production
-      - traefik.http.routers.static.rule=Host(`static.arasaaac.org`)
+      - traefik.http.routers.static.rule=Host(`static.arasaac.org`)
     networks:
       - proxy_frontend
     restart: always
