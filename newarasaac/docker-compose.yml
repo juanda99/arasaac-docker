@@ -72,8 +72,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.privateapi.entrypoints=websecure
-      # - traefik.http.routers.privateapi.tls=true
-      # - traefik.http.routers.privateapi.tls.certresolver=production
+      - traefik.http.routers.privateapi.tls=true
+      - traefik.http.routers.privateapi.tls.certresolver=production
       - traefik.http.routers.privateapi.rule=Host(`privateapi.arasaac.org`)
     networks:
       - proxy_frontend
