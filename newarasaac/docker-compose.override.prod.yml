@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   frontend:
@@ -49,7 +49,7 @@ services:
       - traefik.http.routers.admin.entrypoints=websecure
       - traefik.http.routers.admin.tls=true
       - traefik.http.routers.admin.tls.certresolver=production
-      - traefik.http.routers.admin.rule=Host(`admin.arasaaac.org`)
+      - traefik.http.routers.admin.rule=Host(`admin.arasaac.org`)
     networks:
       - proxy_frontend
     restart: always
@@ -156,7 +156,7 @@ services:
       - ${OLDARASAAC_DIR}:/home/betaarasaac/oldarasaac
       - ${STORAGE_DIR}:/home/betaarasaac/storage
     ports:
-      - "8005:22"
+      - '8005:22'
     command: betaarasaac:${SFTP_PASSWORD}
     networks:
       - proxy_frontend
@@ -175,7 +175,7 @@ services:
     environment:
       CACHE_MAXSIZE: 10000
       CACHE_TTL: 864000 # 10 days
-      ALLOWED_DOMAINS: "arasaac.org"
+      ALLOWED_DOMAINS: 'arasaac.org'
     labels:
       - traefik.enable=true
       - traefik.http.routers.prerenderapp.entrypoints=websecure
