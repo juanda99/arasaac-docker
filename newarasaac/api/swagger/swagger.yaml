@@ -337,6 +337,25 @@ parameters:
     type: integer
     in: path
     required: true
+
+  NLTKLanguage:
+    name: language
+    description: Languages than we currently use for pictograms searches.
+    type: string
+    in: path
+    required: true
+    enum:
+      [
+        "es",
+        "en"
+      ] 
+  Phrase:
+    name: phrase
+    description: Phrase to convert to natural language
+    type: string
+    in: path
+    required: true
+
 tags:
   - name: materials
     description: Everything about materiales made with Arasaac pictograms
@@ -346,6 +365,8 @@ tags:
     description: words used to classify Arasaac pictograms
   - name: users
     description: everything about Arasaac users
+  - name: phrases
+    description: Natural language analysis about user searches or selections
 paths:
   /keywords/{language}:
     # our controller name
@@ -367,6 +388,29 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+
+  /phrases/flex/{language}/{phrase}:
+    # our controller name
+    x-swagger-router-controller: phrases
+    get:
+      operationId: getFlex
+      description: Obtain a list of keywords for pictograms for an specific language (es, en...)
+      tags:
+        - phrases
+      # define the type of response for Success "200" and Error
+      parameters:
+        - $ref: "#/parameters/NLTKLanguage"
+        - $ref: "#/parameters/Phrase"
+      responses:
+        "200":
+          description: A phrase
+          schema:
+            $ref: "#/definitions/Phrase"
+        500:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
 
   /pictograms/all/{locale}:
     x-swagger-router-controller: pictograms
@@ -937,6 +981,12 @@ definitions:
         type: object
       provider:
         type: object
+  Phrase:
+    required:
+      - message
+    properties:
+      message:
+        type: string
   ErrorMessage:
     required:
       - message

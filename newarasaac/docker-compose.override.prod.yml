@@ -181,7 +181,7 @@ services:
       - traefik.http.routers.prerenderapp.entrypoints=websecure
       - traefik.http.routers.prerenderapp.tls=true
       - traefik.http.routers.prerenderapp.tls.certresolver=production
-      - traefik.http.routers.prerenderapp.rule=Host(`prerenderapp.arasaaac.org`)
+      - traefik.http.routers.prerenderapp.rule=Host(`prerenderapp.arasaac.org`)
     restart: always
     networks:
       - proxy_frontend

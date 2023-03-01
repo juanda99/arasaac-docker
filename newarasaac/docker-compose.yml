@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   api:
@@ -123,7 +123,17 @@ services:
       - backend
     restart: always
     ports:
-      - "27000:27017"
+      - '27000:27017'
+
+  freeling:
+    hostname: freeling
+    container_name: freeling
+    image: cateduac/freeling:1.0.2
+    networks:
+      - backend
+    restart: always
+    ports:
+      - '9999:5000'
 
 networks:
   proxy_frontend:

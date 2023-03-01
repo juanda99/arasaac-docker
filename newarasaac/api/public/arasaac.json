@@ -75,6 +75,7 @@
                 "lt",
                 "lv",
                 "mk",
+                "nb",
                 "nl",
                 "pl",
                 "pt",
@@ -85,6 +86,7 @@
                 "sv",
                 "sr",
                 "val",
+                "uk",
                 "zh"
             ]
         },
@@ -166,6 +168,7 @@
                             "lt",
                             "lv",
                             "mk",
+                            "nb",
                             "nl",
                             "pl",
                             "pt",
@@ -176,6 +179,7 @@
                             "sv",
                             "sr",
                             "val",
+                            "uk",
                             "zh"
                         ]
                     },
@@ -318,6 +322,7 @@
                 "lt",
                 "lv",
                 "mk",
+                "nb",
                 "nl",
                 "pl",
                 "pt",
@@ -328,6 +333,7 @@
                 "sv",
                 "sr",
                 "val",
+                "uk",
                 "zh"
             ]
         },
@@ -363,6 +369,7 @@
                     "lt",
                     "lv",
                     "mk",
+                    "nb",
                     "nl",
                     "pl",
                     "pt",
@@ -373,6 +380,7 @@
                     "sv",
                     "sr",
                     "val",
+                    "uk",
                     "zh"
                 ]
             }
@@ -389,6 +397,24 @@
             "name": "numItems",
             "description": "Number of items",
             "type": "integer",
+            "in": "path",
+            "required": true
+        },
+        "NLTKLanguage": {
+            "name": "language",
+            "description": "Languages than we currently use for pictograms searches.",
+            "type": "string",
+            "in": "path",
+            "required": true,
+            "enum": [
+                "es",
+                "en"
+            ]
+        },
+        "Phrase": {
+            "name": "phrase",
+            "description": "Phrase to convert to natural language",
+            "type": "string",
             "in": "path",
             "required": true
         }
@@ -409,6 +435,10 @@
         {
             "name": "users",
             "description": "everything about Arasaac users"
+        },
+        {
+            "name": "phrases",
+            "description": "Natural language analysis about user searches or selections"
         }
     ],
     "paths": {
@@ -430,6 +460,38 @@
                         "description": "An object with the list of keywords for the specified language.",
                         "schema": {
                             "$ref": "#/definitions/Suggestions"
+                        }
+                    },
+                    "500": {
+                        "description": "Error",
+                        "schema": {
+                            "$ref": "#/definitions/ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/phrases/flex/{language}/{phrase}": {
+            "x-swagger-router-controller": "phrases",
+            "get": {
+                "operationId": "getFlex",
+                "description": "Obtain a list of keywords for pictograms for an specific language (es, en...)",
+                "tags": [
+                    "phrases"
+                ],
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/NLTKLanguage"
+                    },
+                    {
+                        "$ref": "#/parameters/Phrase"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A phrase",
+                        "schema": {
+                            "$ref": "#/definitions/Phrase"
                         }
                     },
                     "500": {
@@ -973,6 +1035,7 @@
                         "lt",
                         "lv",
                         "mk",
+                        "nb",
                         "nl",
                         "pl",
                         "pt",
@@ -1206,6 +1269,16 @@
                 },
                 "provider": {
                     "type": "object"
+                }
+            }
+        },
+        "Phrase": {
+            "required": [
+                "message"
+            ],
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },
