@@ -340,14 +340,13 @@ parameters:
 
   NLTKLanguage:
     name: language
-    description: Languages than we currently use for pictograms searches.
+    description: Languages than we currently support for natural language analysis.
     type: string
     in: path
     required: true
     enum:
       [
-        "es",
-        "en"
+        "es"
       ] 
   Phrase:
     name: phrase
@@ -394,7 +393,7 @@ paths:
     x-swagger-router-controller: phrases
     get:
       operationId: getFlex
-      description: Obtain a list of keywords for pictograms for an specific language (es, en...)
+      description: Get a phase in natural language based on pictogram keywords. It tries to convert sentences like *I + to eat + hamburger + yesterday* to  *I ate a hamburger yesterday*
       tags:
         - phrases
       # define the type of response for Success "200" and Error
