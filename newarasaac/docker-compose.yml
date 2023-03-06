@@ -128,7 +128,7 @@ services:
   freeling:
     hostname: freeling
     container_name: freeling
-    image: cateduac/freeling:1.0.2
+    image: cateduac/freeling:1.0.3
     networks:
       - backend
     restart: always
