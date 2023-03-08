@@ -30,6 +30,7 @@ const languages = [
   'sq',
   'sr',
   'sv',
+  'sl',
   'sk',
   'uk',
   'val',
