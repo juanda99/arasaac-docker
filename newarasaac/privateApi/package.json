@@ -26,7 +26,7 @@
     "cron": "^1.7.2",
     "crypto-js": "^3.1.9-1",
     "email-templates": "^5.0.4",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "filenamify": "^2.1.0",
     "formidable": "^1.2.1",
     "fs-extra": "5.0.0",
