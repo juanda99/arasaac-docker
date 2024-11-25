@@ -5,7 +5,7 @@ bs4==0.0.1
 chardet==3.0.4
 decorator==4.2.1
 enum34==1.1.6
-ipython==5.5.0
+ipython==8.10.0
 ipython-genutils==0.2.0
 mongoengine==0.15.0
 mysql==0.0.1
