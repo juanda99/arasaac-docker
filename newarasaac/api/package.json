@@ -29,7 +29,7 @@
     "intl-locales-supported": "^1.8.12",
     "jsonpath": "^1.0.2",
     "jwt-decode": "^2.2.0",
-    "mongoose": "^5.10.15",
+    "mongoose": "^5.13.15",
     "oauth2orize": "^1.11.0",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
